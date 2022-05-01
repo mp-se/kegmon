@@ -1,0 +1,4 @@
+.pio/*
+.vscode/*
+*.map
+src_docs/_build/*
