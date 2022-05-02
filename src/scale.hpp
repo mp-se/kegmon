@@ -21,21 +21,28 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#ifndef SRC_RESOURCES_HPP_
-#define SRC_RESOURCES_HPP_
+#ifndef SRC_SCALE_HPP_
+#define SRC_SCALE_HPP_
 
-#define PARAM_ID "id"
-#define PARAM_MDNS "mdns"
-#define PARAM_SSID "wifi-ssid"
-#define PARAM_PASS "wifi-pass"
-#define PARAM_SSID2 "wifi-ssid2"
-#define PARAM_PASS2 "wifi-pass2"
-#define PARAM_TEMPFORMAT "temp-format"
+#include <main.hpp>
+#include <HX711.h>
 
-#define PARAM_SCALE_FACTOR "scale-factor"
-#define PARAM_SCALE_WEIGHT "scale-weight"
-#define PARAM_SCALE_RAW "scale-raw"
-#define PARAM_SCALE_OFFSET "scale-offset"
-#define PARAM_WEIGHT "weight"
+class Scale {
+ private:
+  HX711 *_scale;
+  int _readCount = 10;
 
-#endif  // SRC_RESOURCES_HPP_
+ public:
+  Scale();
+  void setup();
+  void tare();
+  float getValue();
+  long getRawValue();
+  void findScale(float weight);
+};
+
+extern Scale myScale;
+
+#endif  // SRC_SCALE_HPP_
+
+// EOF

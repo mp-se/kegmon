@@ -21,21 +21,39 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#ifndef SRC_RESOURCES_HPP_
-#define SRC_RESOURCES_HPP_
+#ifndef SRC_DISPLAY_HPP_
+#define SRC_DISPLAY_HPP_
 
-#define PARAM_ID "id"
-#define PARAM_MDNS "mdns"
-#define PARAM_SSID "wifi-ssid"
-#define PARAM_PASS "wifi-pass"
-#define PARAM_SSID2 "wifi-ssid2"
-#define PARAM_PASS2 "wifi-pass2"
-#define PARAM_TEMPFORMAT "temp-format"
+#include <main.hpp>
+#include <SSD1306Wire.h> 
 
-#define PARAM_SCALE_FACTOR "scale-factor"
-#define PARAM_SCALE_WEIGHT "scale-weight"
-#define PARAM_SCALE_RAW "scale-raw"
-#define PARAM_SCALE_OFFSET "scale-offset"
-#define PARAM_WEIGHT "weight"
+enum FontSize { 
+  FONT_10 = 10, 
+  FONT_16 = 16, 
+  FONT_24 = 24 
+};
 
-#endif  // SRC_RESOURCES_HPP_
+class Display {
+ private:
+  SSD1306Wire *_display;
+  int _width = 128;
+  int _height = 64;
+  FontSize _fontSize = FontSize::FONT_10;
+
+ public:
+  Display();
+  void setup();
+  void clear() { _display->clear(); }
+  void show() { _display->display(); }
+  void setFont(FontSize fs);
+  int  getTextWidth(const String& text);
+
+  void printPosition(int x, int y, const String& text);
+  void printLineCentered(int l, const String& text);
+};
+
+extern Display myDisplay;
+
+#endif  // SRC_DISPLAY_HPP_
+
+// EOF

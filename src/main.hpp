@@ -21,21 +21,28 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#ifndef SRC_RESOURCES_HPP_
-#define SRC_RESOURCES_HPP_
+#ifndef SRC_MAIN_HPP_
+#define SRC_MAIN_HPP_
 
-#define PARAM_ID "id"
-#define PARAM_MDNS "mdns"
-#define PARAM_SSID "wifi-ssid"
-#define PARAM_PASS "wifi-pass"
-#define PARAM_SSID2 "wifi-ssid2"
-#define PARAM_PASS2 "wifi-pass2"
-#define PARAM_TEMPFORMAT "temp-format"
+#include <Arduino.h>
+#include <ArduinoJson.h>
+#include <ArduinoLog.h>
+#include <stdlib.h>
+#include <LittleFS.h>
+#define ESP_RESET ESP.reset
+#define PIN_LED 2
+#define PIN_OLED_SDA D2
+#define PIN_OLED_SCL D1
+#define PIN_SCALE_SDA D5
+#define PIN_SCALE_SCL D6
 
-#define PARAM_SCALE_FACTOR "scale-factor"
-#define PARAM_SCALE_WEIGHT "scale-weight"
-#define PARAM_SCALE_RAW "scale-raw"
-#define PARAM_SCALE_OFFSET "scale-offset"
-#define PARAM_WEIGHT "weight"
+class SerialDebug {
+ public:
+  explicit SerialDebug(const uint32_t serialSpeed = 115200L);
+  static Logging* getLog() { return &Log; }
+};
 
-#endif  // SRC_RESOURCES_HPP_
+char* convertFloatToString(float f, char* buffer, int dec);
+float reduceFloatPrecision(float f, int dec);
+
+#endif  // SRC_MAIN_HPP_

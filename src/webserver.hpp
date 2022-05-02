@@ -21,21 +21,37 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#ifndef SRC_RESOURCES_HPP_
-#define SRC_RESOURCES_HPP_
+#ifndef SRC_WEBSERVER_HPP_
+#define SRC_WEBSERVER_HPP_
 
-#define PARAM_ID "id"
-#define PARAM_MDNS "mdns"
-#define PARAM_SSID "wifi-ssid"
-#define PARAM_PASS "wifi-pass"
-#define PARAM_SSID2 "wifi-ssid2"
-#define PARAM_PASS2 "wifi-pass2"
-#define PARAM_TEMPFORMAT "temp-format"
+#include <ESP8266WebServer.h>
+#include <ESP8266WiFi.h>
+#include <ESP8266mDNS.h>
+#include <incbin.h>
 
-#define PARAM_SCALE_FACTOR "scale-factor"
-#define PARAM_SCALE_WEIGHT "scale-weight"
-#define PARAM_SCALE_RAW "scale-raw"
-#define PARAM_SCALE_OFFSET "scale-offset"
-#define PARAM_WEIGHT "weight"
+/*INCBIN_EXTERN(IndexHtm);
+INCBIN_EXTERN(FirmwareHtm);*/
 
-#endif  // SRC_RESOURCES_HPP_
+class WebServerHandler {
+ private:
+  ESP8266WebServer* _server = 0;
+
+  void populateScaleJson(DynamicJsonDocument& doc);
+
+  void webScale();
+  void webScaleTare();
+  void webScaleFactor();
+  void webConfigGet();
+  void webConfigPost();
+
+ public:
+  bool setupWebServer();
+  void loop();
+};
+
+// Global instance created
+extern WebServerHandler myWebServerHandler;
+
+#endif  // SRC_WEBSERVER_HPP_
+
+// EOF

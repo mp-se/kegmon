@@ -40,11 +40,26 @@ class Config {
   String _wifiSSID[2] = {"", ""};
   String _wifiPASS[2] = {"", ""};
 
+  float _scaleFactor = 0.0;
+  long _scaleOffset = 0L;
+
   void formatFileSystem();
 
  public:
   Config();
   const char* getID() { return _id.c_str(); }
+
+  long getScaleOffset() { return _scaleOffset; }
+  void setScaleOffset(long l) {
+    _scaleOffset = l;
+    _saveNeeded = true;
+  }
+
+  float getScaleFactor() { return _scaleFactor; }
+  void setScaleFactor(float f) {
+    _scaleFactor = f;
+    _saveNeeded = true;
+  }
 
   const char* getMDNS() { return _mDNS.c_str(); }
   void setMDNS(String s) {
