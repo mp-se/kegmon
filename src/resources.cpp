@@ -21,45 +21,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#ifndef SRC_WEBSERVER_HPP_
-#define SRC_WEBSERVER_HPP_
-
-#include <ESP8266WebServer.h>
-#include <ESP8266WiFi.h>
-#include <ESP8266mDNS.h>
+#define INCBIN_OUTPUT_SECTION ".irom.text"
 #include <incbin.h>
+#include <resources.hpp>
 
-INCBIN_EXTERN(IndexHtm);
-INCBIN_EXTERN(ConfigHtm);
-INCBIN_EXTERN(CalibrateHtm);
-INCBIN_EXTERN(AboutHtm);
+INCBIN(IndexHtm, "html/index.min.htm");
+INCBIN(ConfigHtm, "html/config.min.htm");
+INCBIN(CalibrateHtm, "html/calibration.min.htm");
+INCBIN(AboutHtm, "html/about.min.htm");
 
-class WebServerHandler {
- private:
-  ESP8266WebServer* _server = 0;
-
-  void populateScaleJson(DynamicJsonDocument& doc);
-
-  void webScale();
-  void webScaleTare();
-  void webScaleFactor();
-  void webConfigGet();
-  void webConfigPost();
-  void webStatus();
-
-  void webIndexHtm() { _server->send_P(200, "text/html", (const char*)gIndexHtmData, gIndexHtmSize); }
-  void webConfigHtm() { _server->send_P(200, "text/html", (const char*)gConfigHtmData, gConfigHtmSize); }
-  void webCalibrateHtm() { _server->send_P(200, "text/html", (const char*)gCalibrateHtmData, gCalibrateHtmSize); }
-  void webAboutHtm() { _server->send_P(200, "text/html", (const char*)gAboutHtmData, gAboutHtmSize); }
-
- public:
-  bool setupWebServer();
-  void loop();
-};
-
-// Global instance created
-extern WebServerHandler myWebServerHandler;
-
-#endif  // SRC_WEBSERVER_HPP_
 
 // EOF

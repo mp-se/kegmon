@@ -119,7 +119,7 @@ void WifiConnection::startPortal() {
   myWifiManager = new ESP_WiFiManager(WIFI_MDNS);
   myWifiManager->setMinimumSignalQuality(-1);
   myWifiManager->setConfigPortalChannel(0);
-  myWifiManager->setConfigPortalTimeout(120);
+  myWifiManager->setConfigPortalTimeout(myConfig.getWifiPortalTimeout());
 
   String mdns("<p>Default mDNS name is: http://");
   mdns += myConfig.getMDNS();
@@ -205,16 +205,19 @@ bool WifiConnection::waitForConnection(int maxTime) {
 //
 bool WifiConnection::connect() {
   // If success to seconday is successful this is used as standard
-  int timeout = 30;
+  int timeout = myConfig.getWifiConnectionTimeout();
 
   connectAsync(0);
   if (!waitForConnection(timeout)) {
     Log.warning(F("WIFI: Failed to connect to first SSID %s." CR), myConfig.getWifiSSID(0));
-    connectAsync(1);
 
-    if (waitForConnection(timeout)) {
-      Log.notice(F("WIFI: Connected to second SSID %s." CR), myConfig.getWifiSSID(1));
-      return true;
+    if (strlen(myConfig.getWifiSSID(1))) {
+      connectAsync(1);
+
+      if (waitForConnection(timeout)) {
+        Log.notice(F("WIFI: Connected to second SSID %s." CR), myConfig.getWifiSSID(1));
+        return true;
+      }
     }
 
     Log.warning(F("WIFI: Failed to connect to any SSID." CR));

@@ -49,6 +49,13 @@ bool WebServerHandler::setupWebServer() {
   _server->on("/api/scale/factor", HTTP_GET, std::bind(&WebServerHandler::webScaleFactor, this));
   _server->on("/api/config", HTTP_GET, std::bind(&WebServerHandler::webConfigGet, this));
   _server->on("/api/config", HTTP_POST, std::bind(&WebServerHandler::webConfigPost, this));
+  _server->on("/api/status", HTTP_GET, std::bind(&WebServerHandler::webStatus, this));
+
+  _server->on("/", HTTP_GET, std::bind(&WebServerHandler::webIndexHtm, this));
+  _server->on("/index.htm", HTTP_GET, std::bind(&WebServerHandler::webIndexHtm, this));
+  _server->on("/config.htm", HTTP_GET, std::bind(&WebServerHandler::webConfigHtm, this));
+  _server->on("/calibration.htm", HTTP_GET, std::bind(&WebServerHandler::webCalibrateHtm, this));
+  _server->on("/about.htm", HTTP_GET, std::bind(&WebServerHandler::webAboutHtm, this));
 
   _server->begin();
   Log.notice(F("WEB : Web server started." CR));
@@ -118,6 +125,9 @@ void WebServerHandler::webConfigGet() {
   DynamicJsonDocument doc(1024);
   myConfig.createJson(doc);
 
+  doc[PARAM_PASS] = "**hidden**";
+  doc[PARAM_PASS2] = "**hidden**";
+
   String out;
   out.reserve(1024);
   serializeJson(doc, out);
@@ -128,13 +138,33 @@ void WebServerHandler::webConfigPost() {
   Log.notice(F("WEB : webServer callback /api/config(post)." CR));
 
   if (_server->hasArg(PARAM_MDNS)) myConfig.setMDNS(_server->arg(PARAM_MDNS));
-  if (_server->hasArg(PARAM_SSID)) myConfig.setWifiSSID(_server->arg(PARAM_SSID), 0);
-  if (_server->hasArg(PARAM_PASS)) myConfig.setWifiPass(_server->arg(PARAM_PASS), 0);
-  if (_server->hasArg(PARAM_SSID2)) myConfig.setWifiSSID(_server->arg(PARAM_SSID2), 1);
-  if (_server->hasArg(PARAM_PASS2)) myConfig.setWifiPass(_server->arg(PARAM_PASS2), 1);
+  // if (_server->hasArg(PARAM_SSID)) myConfig.setWifiSSID(_server->arg(PARAM_SSID), 0);
+  // if (_server->hasArg(PARAM_PASS)) myConfig.setWifiPass(_server->arg(PARAM_PASS), 0);
+  // if (_server->hasArg(PARAM_SSID2)) myConfig.setWifiSSID(_server->arg(PARAM_SSID2), 1);
+  // if (_server->hasArg(PARAM_PASS2)) myConfig.setWifiPass(_server->arg(PARAM_PASS2), 1);
   if (_server->hasArg(PARAM_TEMPFORMAT)) myConfig.setTempFormat(_server->arg(PARAM_TEMPFORMAT).charAt(0));
 
-  _server->send(200, "application/json", "");
+  myConfig.saveFile();
+  _server->sendHeader("Location", "/config.htm", true);
+  _server->send(302, "text/plain", "Config updated");
+}
+
+void WebServerHandler::webStatus() {
+  Log.notice(F("WEB : webServer callback /api/status." CR));
+
+  DynamicJsonDocument doc(1024);
+  populateScaleJson(doc);
+
+  doc[PARAM_MDNS] = myConfig.getMDNS();
+  doc[PARAM_ID] = myConfig.getID();
+  doc[PARAM_SSID] = myConfig.getWifiSSID(0);
+  doc[PARAM_APP_VER] = CFG_APPVER;
+  doc[PARAM_APP_BUILD] = CFG_GITREV;
+
+  String out;
+  out.reserve(1024);
+  serializeJson(doc, out);
+  _server->send(200, "application/json", out.c_str());
 }
 
 // EOF

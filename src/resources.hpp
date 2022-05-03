@@ -31,6 +31,8 @@ SOFTWARE.
 #define PARAM_SSID2 "wifi-ssid2"
 #define PARAM_PASS2 "wifi-pass2"
 #define PARAM_TEMPFORMAT "temp-format"
+#define PARAM_APP_VER "app-ver"
+#define PARAM_APP_BUILD "app-build"
 
 #define PARAM_SCALE_FACTOR "scale-factor"
 #define PARAM_SCALE_WEIGHT "scale-weight"

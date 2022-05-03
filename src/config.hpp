@@ -48,6 +48,9 @@ class Config {
  public:
   Config();
   const char* getID() { return _id.c_str(); }
+  int getWifiConnectionTimeout() { return 30; }
+  int getWifiPortalTimeout() { return 120; }
+  int getWeightPrecision() { return 2; }
 
   long getScaleOffset() { return _scaleOffset; }
   void setScaleOffset(long l) {
