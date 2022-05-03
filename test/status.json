@@ -3,7 +3,7 @@
   "scale-weight": -0.000141,
   "scale-raw": -6,
   "scale-offset": -286557,
-
+  "pints": 22,
   "app-ver": "0.0.1",
   "app-build": "build",
   "mdns": "hostname",

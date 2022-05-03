@@ -43,8 +43,11 @@ class Config {
   float _scaleFactor = 0.0;
   long _scaleOffset = 0L;
 
-  int _weightPrecision = 2;
+  float _kegWeight = 0;
+  float _pintWeight = 0;
 
+  int _weightPrecision = 2;
+  
   void formatFileSystem();
 
  public:
@@ -52,6 +55,18 @@ class Config {
   const char* getID() { return _id.c_str(); }
   int getWifiConnectionTimeout() { return 30; }
   int getWifiPortalTimeout() { return 120; }
+
+  float getKegWeight() { return _kegWeight; }
+  void setKegWeight(float f) {
+    _kegWeight = f;
+    _saveNeeded = true;
+  }
+
+  float getPintWeight() { return _pintWeight; }
+  void setPintWeight(float f) {
+    _pintWeight = f;
+    _saveNeeded = true;
+  }
 
   int getWeightPrecision() { return _weightPrecision; }
   void setWeightPrecision(int i) { 

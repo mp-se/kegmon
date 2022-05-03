@@ -96,7 +96,7 @@ void WebServerHandler::webScaleFactor() {
   float weight = _server->arg(PARAM_WEIGHT).toFloat();
   Log.notice(F("WEB : webServer callback /api/scale/factor, weight=%F." CR), weight);
 
-  myScale.findScale(weight);
+  myScale.findFactor(weight);
 
   DynamicJsonDocument doc(256);
   populateScaleJson(doc);
@@ -144,6 +144,8 @@ void WebServerHandler::webConfigPost() {
   // if (_server->hasArg(PARAM_PASS2)) myConfig.setWifiPass(_server->arg(PARAM_PASS2), 1);
   if (_server->hasArg(PARAM_TEMPFORMAT)) myConfig.setTempFormat(_server->arg(PARAM_TEMPFORMAT).charAt(0));
   if (_server->hasArg(PARAM_WEIGHT_PRECISION)) myConfig.setWeightPrecision(_server->arg(PARAM_WEIGHT_PRECISION).toInt());
+  if (_server->hasArg(PARAM_KEG_WEIGHT)) myConfig.setKegWeight(_server->arg(PARAM_KEG_WEIGHT).toFloat());
+  if (_server->hasArg(PARAM_PINT_WEIGHT)) myConfig.setPintWeight(_server->arg(PARAM_PINT_WEIGHT).toFloat());
 
   myConfig.saveFile();
   _server->sendHeader("Location", "/config.htm", true);
@@ -161,6 +163,7 @@ void WebServerHandler::webStatus() {
   doc[PARAM_SSID] = myConfig.getWifiSSID(0);
   doc[PARAM_APP_VER] = CFG_APPVER;
   doc[PARAM_APP_BUILD] = CFG_GITREV;
+  doc[PARAM_PINTS] = myScale.calculateNoPints();
 
   String out;
   out.reserve(1024);

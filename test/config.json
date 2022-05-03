@@ -6,6 +6,8 @@
   "wifi-ssid2": "",
   "wifi-pass2": "**hidden**",
   "temp-format": "C",
+  "keg-weight": 1.0,
+  "pint-weight": 0.1, 
   "weight-precision": 2,
   "scale-factor": -21284.12,
   "scale-offset": -286557

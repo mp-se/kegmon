@@ -84,26 +84,30 @@
         <div id="collapseSoftware" class="accordion-collapse collapse show" aria-labelledby="headingSoftware" data-bs-parent="#accordion" >
           <div class="accordion-body">
             <div class="row mb-3">
-              <div class="col-md-4 bg-light">Current version:</div>
+              <div class="col-md-4 bg-light">Current version</div>
               <div class="col-md-4 bg-light" id="app-ver">Loading...</div>
             </div>
             <div class="row mb-3">
-              <div class="col-md-4 bg-light">Host name:</div>
+              <div class="col-md-4 bg-light">Host name</div>
               <div class="col-md-4 bg-light" id="mdns">Loading...</div>
             </div>
             <div class="row mb-3">
-              <div class="col-md-4 bg-light">Device ID:</div>
+              <div class="col-md-4 bg-light">Device ID</div>
               <div class="col-md-4 bg-light" id="id">Loading...</div>
             </div>
             <div class="row mb-3">
-              <div class="col-md-4 bg-light">SSID:</div>
+              <div class="col-md-4 bg-light">SSID</div>
               <div class="col-md-4 bg-light" id="wifi-ssid">Loading...</div>
             </div>
             <div class="row mb-3">
-              <div class="col-md-4 bg-light">Weight:</div>
+              <div class="col-md-4 bg-light">Weight</div>
               <div class="col-md-4 bg-light" id="scale-weight">Loading...</div>
             </div>
+            <div class="row mb-3">
+              <div class="col-md-4 bg-light">Pints left</div>
+              <div class="col-md-4 bg-light" id="pints">Loading...</div>
             </div>
+          </div>
         </div>
       </div>
 
@@ -126,6 +130,7 @@
         $("#id").text(cfg["id"]);
         $("#wifi-ssid").text(cfg["wifi-ssid"]); 
         $("#scale-weight").text(cfg["scale-weight"] + " kg");
+        $("#pints").text(cfg["pints"]);
       })
       .fail(function () {
         showError('Unable to get data from the device.');

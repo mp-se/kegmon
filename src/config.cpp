@@ -50,6 +50,8 @@ void Config::createJson(DynamicJsonDocument& doc) {
   doc[PARAM_SCALE_FACTOR] = getScaleFactor();
   doc[PARAM_SCALE_OFFSET] = getScaleOffset();
   doc[PARAM_WEIGHT_PRECISION] = getWeightPrecision();
+  doc[PARAM_KEG_WEIGHT] = getKegWeight();
+  doc[PARAM_PINT_WEIGHT] = getPintWeight();
 }
 
 bool Config::saveFile() {
@@ -125,9 +127,11 @@ bool Config::loadFile() {
     String s = doc[PARAM_TEMPFORMAT];
     setTempFormat(s.charAt(0));
   }
-  if (!doc[PARAM_SCALE_FACTOR].isNull()) setScaleFactor(doc[PARAM_SCALE_FACTOR]);
-  if (!doc[PARAM_SCALE_OFFSET].isNull()) setScaleOffset(doc[PARAM_SCALE_OFFSET]);
+  if (!doc[PARAM_SCALE_FACTOR].isNull()) setScaleFactor(doc[PARAM_SCALE_FACTOR].as<float>());
+  if (!doc[PARAM_SCALE_OFFSET].isNull()) setScaleOffset(doc[PARAM_SCALE_OFFSET].as<float>());
   if (!doc[PARAM_WEIGHT_PRECISION].isNull()) setWeightPrecision(doc[PARAM_WEIGHT_PRECISION].as<int>());
+  if (!doc[PARAM_KEG_WEIGHT].isNull()) setKegWeight(doc[PARAM_KEG_WEIGHT].as<float>());
+  if (!doc[PARAM_PINT_WEIGHT].isNull()) setPintWeight(doc[PARAM_PINT_WEIGHT].as<float>());
 
   _saveNeeded = false;
   Log.notice(F("Cfg : Configuration file " CFG_FILENAME " loaded." CR));

@@ -61,7 +61,6 @@ void Scale::tare() {
   _scale->set_offset(l);  
 
   myConfig.setScaleOffset(l);
-  myConfig.setScaleFactor(0);
   myConfig.saveFile();
 }
 
@@ -69,7 +68,7 @@ long Scale::getRawValue() {
   return _scale->get_value(_readCount);
 }
 
-void Scale::findScale(float weight) {
+void Scale::findFactor(float weight) {
   long l = getRawValue();
 
   float f = l/weight;
@@ -77,6 +76,16 @@ void Scale::findScale(float weight) {
 
   myConfig.setScaleFactor(f);
   myConfig.saveFile();
+}
+
+int Scale::calculateNoPints() {
+  float v = getValue();
+  float p = myConfig.getPintWeight();
+
+  if (p == 0.0) 
+    p = 1;
+
+  return (v - myConfig.getKegWeight()) / p;
 }
 
 // EOF

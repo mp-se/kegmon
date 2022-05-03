@@ -107,17 +107,25 @@ void loop() {
   if (abs((int32_t)(millis() - loopMillis)) > loopInterval) {
     loopMillis = millis();
     loopCounter++;
+
     char buf[20];
+    int pint = myScale.calculateNoPints();
     convertFloatToString(myScale.getValue(), &buf[0], myConfig.getWeightPrecision());
-    Log.verbose(F("Loop: Reading scale and updating display %s." CR), &buf[0]);
+    Log.verbose(F("Loop: Reading scale and updating display weight=%s pints=%d." CR), &buf[0], pint);
 
     myDisplay.clear();
     myDisplay.setFont(FontSize::FONT_16);
     myDisplay.printLineCentered(0, CFG_APPNAME);
     myDisplay.printLineCentered(1, &buf[0]);
-    if (!(loopCounter % 3)) {
+    snprintf(&buf[0], sizeof(buf), "%d pints", pint);
+    myDisplay.printLineCentered(2, &buf[0]);
+
+    if (!(loopCounter % 8)) {
       myDisplay.setFont(FontSize::FONT_10);
       myDisplay.printLineCentered(5, myWifi.getIPAddress());
+    } else if (!(loopCounter % 12)) {
+      myDisplay.setFont(FontSize::FONT_10);
+      myDisplay.printLineCentered(5, WiFi.SSID());
     }
     myDisplay.show();
   }

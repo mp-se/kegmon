@@ -38,7 +38,8 @@ class Scale {
   void tare();
   float getValue();
   long getRawValue();
-  void findScale(float weight);
+  void findFactor(float weight);
+  int calculateNoPints();
 };
 
 extern Scale myScale;

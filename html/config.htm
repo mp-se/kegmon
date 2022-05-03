@@ -93,10 +93,26 @@
                 </div>
               </div>
 
-              <div class="row">
+              <div class="row mb-3">
                 <label for="weight-precision" class="col-sm-2 col-form-label">Weight precision</label>
                 <div class="col-sm-3">
                   <input type="number" step="1" min="0" max="4" class="form-control" name="weight-precision" id="weight-precision" placeholder="2" data-bs-toggle="tooltip" title="The number of decimals to show for the weight."> 
+                </div>
+              </div>
+
+              <hr>
+
+              <div class="row mb-3">
+                <label for="keg-weight" class="col-sm-2 col-form-label">Keg weight</label>
+                <div class="col-sm-3">
+                  <input type="number" step=".001" min="0" max="50" class="form-control" name="keg-weight" id="keg-weight" placeholder="1.00" data-bs-toggle="tooltip" title="The weight of an empty keg."> 
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label for="pint-weight" class="col-sm-2 col-form-label">Pint weight</label>
+                <div class="col-sm-3">
+                  <input type="number" step=".001" min="0" max="50" class="form-control" name="pint-weight" id="pint-weight" placeholder="0.10" data-bs-toggle="tooltip" title="The weight of a unit of beer."> 
                 </div>
               </div>
 
@@ -118,7 +134,7 @@
               </div>
               -->
  
-              <div class="row mb-3 row-margin-10">
+              <div class="row mb-3">
                 <div class="col-sm-4 offset-sm-2">
                   <button type="submit" class="btn btn-primary" id="config-btn" data-bs-toggle="tooltip" title="Save changes in this section">Save</button>
                 </div>
@@ -152,6 +168,8 @@
 
         $("#mdns").val(cfg["mdns"]);
         $("#weight-precision").val(cfg["weight-precision"]);      
+        $("#keg-weight").val(cfg["keg-weight"]);      
+        $("#pint-weight").val(cfg["pint-weight"]);      
       })
       .fail(function () {
         showError('Unable to get data from the device.');

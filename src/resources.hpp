@@ -34,11 +34,13 @@ SOFTWARE.
 #define PARAM_APP_VER "app-ver"
 #define PARAM_APP_BUILD "app-build"
 #define PARAM_WEIGHT_PRECISION "weight-precision"
-
+#define PARAM_KEG_WEIGHT "keg-weight"
+#define PARAM_PINT_WEIGHT "pint-weight"
 #define PARAM_SCALE_FACTOR "scale-factor"
 #define PARAM_SCALE_WEIGHT "scale-weight"
 #define PARAM_SCALE_RAW "scale-raw"
 #define PARAM_SCALE_OFFSET "scale-offset"
 #define PARAM_WEIGHT "weight"
+#define PARAM_PINTS "pints"
 
 #endif  // SRC_RESOURCES_HPP_
