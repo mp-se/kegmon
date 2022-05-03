@@ -43,6 +43,8 @@ class Config {
   float _scaleFactor = 0.0;
   long _scaleOffset = 0L;
 
+  int _weightPrecision = 2;
+
   void formatFileSystem();
 
  public:
@@ -50,7 +52,12 @@ class Config {
   const char* getID() { return _id.c_str(); }
   int getWifiConnectionTimeout() { return 30; }
   int getWifiPortalTimeout() { return 120; }
-  int getWeightPrecision() { return 2; }
+
+  int getWeightPrecision() { return _weightPrecision; }
+  void setWeightPrecision(int i) { 
+    _weightPrecision = i;
+    _saveNeeded = true;
+  }
 
   long getScaleOffset() { return _scaleOffset; }
   void setScaleOffset(long l) {

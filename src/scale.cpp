@@ -30,7 +30,7 @@ Scale::Scale() {
 }
 
 void Scale::setup() {
-  //Log.verbose(F("Scal: Initializing scale, using offset %l." CR), myConfig.getScaleOffset());
+  // Log.verbose(F("Scal: Initializing scale, using offset %l." CR), myConfig.getScaleOffset());
   _scale = new HX711();
   _scale->begin(PIN_SCALE_SDA, PIN_SCALE_SCL);
   _scale->set_offset(myConfig.getScaleOffset());  
@@ -45,22 +45,23 @@ float Scale::getValue() {
   _scale->set_scale(fs);
 
   float f = _scale->get_units();
-  //Log.verbose(F("Scal: Reading weight=%F (scale factor=%F)." CR), f, fs);
-  return f;
+  // Log.verbose(F("Scal: Reading weight=%F (scale factor=%F)." CR), f, fs);
+  return reduceFloatPrecision(f, myConfig.getWeightPrecision());
 }
 
 void Scale::tare() {
-  //Log.verbose(F("Scal: Set scale to zero, prepare for calibration." CR));
+  // Log.verbose(F("Scal: Set scale to zero, prepare for calibration." CR));
 
   _scale->set_scale();
   _scale->tare();
 
   long l = _scale->read_average();
   
-  //Log.verbose(F("Scal: New scale offset found %l." CR), l);
+  // Log.verbose(F("Scal: New scale offset found %l." CR), l);
   _scale->set_offset(l);  
 
   myConfig.setScaleOffset(l);
+  myConfig.setScaleFactor(0);
   myConfig.saveFile();
 }
 
@@ -72,7 +73,7 @@ void Scale::findScale(float weight) {
   long l = getRawValue();
 
   float f = l/weight;
-  //Log.verbose(F("Scal: Detecting factor for weight %F, raw %l %F." CR), weight, l, f);
+  // Log.verbose(F("Scal: Detecting factor for weight %F, raw %l %F." CR), weight, l, f);
 
   myConfig.setScaleFactor(f);
   myConfig.saveFile();

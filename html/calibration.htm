@@ -84,8 +84,51 @@
         <div id="collapseCalibration" class="accordion-collapse collapse show" aria-labelledby="headingCalibration" data-bs-parent="#accordion" >
           <div class="accordion-body">
             <div class="row mb-3">
-
+              <div class="col border bg-light">
+                <p class="h4">Step 1 - Reset scale</p>
+                <p>Remove any object from the scale and press the tare button to reset it to zero.</p>
+                <button class="btn btn-secondary" id="tare-btn" data-bs-toggle="tooltip" title="Will reset the scale to zero value, the scale should be without any load.">Tare</button>
+              </div>
+              <div class="col border bg-light">
+                <p class="h4">Step 2 - Calculate factor</p>
+                <p>Place a known weight on the scale and press the factor button. The scale will calculate a factor and complete calibration. Use a weight between 0-50 kg.</p>
+                <div class="row">
+                  <label for="weight" class="col-sm-2 col-form-label">Weight</label>
+                  <div class="col-sm-5">
+                    <input type="number" step="0.001" min="0" max="50" class="form-control" name="weight" id="weight" placeholder="0" data-bs-toggle="tooltip" title="Enter the value of the known weight in order to calibrate the scale."> 
+                  </div>
+                </div>
+                <br>
+                <button class="btn btn-secondary" id="factor-btn" data-bs-toggle="tooltip" title="Let the scale calcualate the factor based on the current load and known weight">Factor</button>
+                <br>
+                <br>
+              </div>
+              <div class="col border bg-light">
+                <p class="h4">Step 3 - Check result</p>
+                <p>Place a known weight on the scale and press the read button and the current value will be displayed below.</p>
+                <br>
+                <button class="btn btn-secondary" id="test-btn" data-bs-toggle="tooltip" title="Read the current value">Read</button>
+                <br>
+                <br>
+              </div>
             </div>
+
+            <div class="row mb-3">
+              <div class="col border bg-light">
+                <label name="scale-offset" id="scale-offset" class="col-sm-2 col-form-label">...</label>
+              </div>  
+              <div class="col border bg-light">
+                <label name="scale-factor" id="scale-factor" class="col-sm-2 col-form-label">...</label>
+              </div>  
+              <div class="col border bg-light">
+                <label name="scale-raw" id="scale-raw" class="col-sm-2 col-form-label">...</label>
+              </div>  
+              <div class="col border bg-light">
+                <label name="scale-weight" id="scale-weight" class="col-sm-2 col-form-label">...</label>
+              </div>
+            </div>
+
+
           </div>
         </div>
       </div>
@@ -93,6 +136,80 @@
   </div>
 
   <script type="text/javascript">
+    //window.onload = start;
+
+    $("#tare-btn").click(function(e){
+      console.log( "Resetting scale..." );
+      $.ajax( { 
+        type: "GET",
+        url: "/api/scale/tare", 
+        //url: "../test/scale.json", 
+        data: { }, 
+        success: function(result) { 
+          showSuccess('Scale is now reset to zero weight, procceed to step 2.');  
+          showScaleJson(result);
+        },
+        error: function(result) { showError('Unable reset scale to zero weight.'); }
+      } );
+    });
+
+    $("#factor-btn").click(function(e){
+      console.log( "Creating factor with known weight..." );
+      $.ajax( { 
+        type: "GET",
+        url: "/api/scale/factor", 
+        //url: "../test/scale.json", 
+        data: { weight: $("#weight").val() }, 
+        success: function(result) { 
+          showSuccess('Scale is now calibrated...');  
+          showScaleJson(result);
+        },
+        error: function(result) { showError('Unable calculate factor.'); }
+      } );
+    });
+
+    $("#test-btn").click(function(e){
+      console.log( "Reading scale..." );
+      $.ajax( { 
+        type: "GET",
+        url: "/api/scale", 
+        //url: "../test/scale.json", 
+        data: { }, 
+        success: function(result) { 
+          showScaleJson(result);
+        },
+        error: function(result) { showError('Unable read scale.'); }
+      } );
+    });
+
+    function showScaleJson(result) {
+      console.log(result);
+      $("#scale-offset").text("Offset: " + result["scale-offset"]);
+      $("#scale-factor").text("Factor: " + result["scale-factor"]);
+      $("#scale-raw").text("Raw: " + result["scale-raw"]);
+      $("#scale-weight").text("Weight: " + result["scale-weight"]);
+    }
+
+    /*function getScale() {
+      var url = "/api/scale";
+      //var url = "/test/scale.json";
+      $('#spinner').show(); 
+
+      $.getJSON(url, function (cfg) {
+        showScaleJson(cfg);
+      })
+      .fail(function () {
+        showError('Unable to get data from the device.');
+      })
+      .always(function() {
+        $('#spinner').hide(); 
+      });
+    }*/
+
+    /*function start() {
+      setInterval(getScale, 3000);
+    }*/
+
   </script>
 
   <!-- START FOOTER -->

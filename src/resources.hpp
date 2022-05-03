@@ -33,6 +33,7 @@ SOFTWARE.
 #define PARAM_TEMPFORMAT "temp-format"
 #define PARAM_APP_VER "app-ver"
 #define PARAM_APP_BUILD "app-build"
+#define PARAM_WEIGHT_PRECISION "weight-precision"
 
 #define PARAM_SCALE_FACTOR "scale-factor"
 #define PARAM_SCALE_WEIGHT "scale-weight"

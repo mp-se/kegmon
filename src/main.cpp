@@ -29,7 +29,7 @@ SOFTWARE.
 #include <webserver.hpp>
 
 SerialDebug mySerial;
-const int loopInterval = 3000; 
+const int loopInterval = 1000; 
 
 void printTimestamp(Print* _logOutput, int _logLevel) {
   char c[12];
@@ -64,7 +64,7 @@ float reduceFloatPrecision(float f, int dec) {
 }
 
 void setup() {
-  //Log.verbose(F("Main: Reset reason %s." CR), ESP.getResetInfo().c_str());
+  // Log.verbose(F("Main: Reset reason %s." CR), ESP.getResetInfo().c_str());
 
   Log.notice(F("Main: Started setup for %s." CR), String(ESP.getChipId(), HEX).c_str());
   Log.notice(F("Main: Build options: %s (%s) LOGLEVEL %d "CR), CFG_APPVER, CFG_GITREV, LOG_LEVEL);
@@ -79,24 +79,15 @@ void setup() {
   ESP.wdtEnable(5000);
 
   // No stored config, move to portal
-  if (!myWifi.hasConfig()) {
-    Log.notice(F("Main: No wifi configuration detected, entering wifi setup." CR));
+  if (!myWifi.hasConfig() || myWifi.isDoubleResetDetected()) {
+    Log.notice(F("Main: Missing wifi config or double reset detected, entering wifi setup." CR));
 
     myDisplay.clear();
+    myDisplay.setFont(FontSize::FONT_16);
     myDisplay.printLineCentered(0, "Entering");
     myDisplay.printLineCentered(1, "WIFI Portal");
+    myDisplay.printLineCentered(2, "192.168.4.1");
     myDisplay.show();
-    myWifi.startPortal();
-  }
-
-  // Double reset, go to portal.
-  if (myWifi.isDoubleResetDetected()) {
-    Log.notice(F("Main: Double reset detected, entering wifi setup." CR));
-
-    myDisplay.clear();
-    myDisplay.printLineCentered(0, "Entering");
-    myDisplay.printLineCentered(1, "WIFI Portal");
-    myDisplay.show(); 
     myWifi.startPortal();
   }
 
@@ -106,6 +97,7 @@ void setup() {
 }
 
 uint32_t loopMillis = 0;
+int loopCounter = 0;
 
 void loop() {
   // TODO: Check if wifi is lost and do reconnect.
@@ -114,15 +106,19 @@ void loop() {
 
   if (abs((int32_t)(millis() - loopMillis)) > loopInterval) {
     loopMillis = millis();
-    Log.verbose(F("Loop: Reading scale and updating display." CR));
-
-    float f = myScale.getValue();
+    loopCounter++;
     char buf[20];
-    convertFloatToString(f, &buf[0], 2);
+    convertFloatToString(myScale.getValue(), &buf[0], myConfig.getWeightPrecision());
+    Log.verbose(F("Loop: Reading scale and updating display %s." CR), &buf[0]);
 
     myDisplay.clear();
+    myDisplay.setFont(FontSize::FONT_16);
     myDisplay.printLineCentered(0, CFG_APPNAME);
     myDisplay.printLineCentered(1, &buf[0]);
+    if (!(loopCounter % 3)) {
+      myDisplay.setFont(FontSize::FONT_10);
+      myDisplay.printLineCentered(5, myWifi.getIPAddress());
+    }
     myDisplay.show();
   }
 }

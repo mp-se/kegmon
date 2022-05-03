@@ -36,7 +36,7 @@ Config::Config() {
   snprintf(&buf[0], sizeof(buf), "" WIFI_MDNS "%s", getID());
   _mDNS = String(&buf[0]);
 
-  //Log.verbose(F("Cfg : Created config for %s (%s)." CR), _id.c_str(), _mDNS.c_str());
+  // Log.verbose(F("Cfg : Created config for %s (%s)." CR), _id.c_str(), _mDNS.c_str());
 }
 
 void Config::createJson(DynamicJsonDocument& doc) {
@@ -49,11 +49,12 @@ void Config::createJson(DynamicJsonDocument& doc) {
   doc[PARAM_TEMPFORMAT] = String(getTempFormat());
   doc[PARAM_SCALE_FACTOR] = getScaleFactor();
   doc[PARAM_SCALE_OFFSET] = getScaleOffset();
+  doc[PARAM_WEIGHT_PRECISION] = getWeightPrecision();
 }
 
 bool Config::saveFile() {
   if (!_saveNeeded) {
-    //Log.verbose(F("Cfg : Skipping save, not needed." CR));
+    // Log.verbose(F("Cfg : Skipping save, not needed." CR));
     return true;
   }
 
@@ -82,7 +83,7 @@ bool Config::saveFile() {
 }
 
 bool Config::loadFile() {
-  //Log.verbose(F("Cfg : Loading configuration from file." CR));
+  // Log.verbose(F("Cfg : Loading configuration from file." CR));
 
   if (!LittleFS.exists(CFG_FILENAME)) {
     Log.error(F("Cfg : Configuration file does not exist."));
@@ -96,7 +97,7 @@ bool Config::loadFile() {
     return false;
   }
 
-  //Log.verbose(F("Cfg : Size of configuration file=%d bytes." CR), configFile.size());
+  // Log.verbose(F("Cfg : Size of configuration file=%d bytes." CR), configFile.size());
 
   DynamicJsonDocument doc(512);
   DeserializationError err = deserializeJson(doc, configFile);
@@ -113,7 +114,7 @@ bool Config::loadFile() {
     return false;
   }
 
-  //Log.verbose(F("Cfg : Parsed configuration file." CR));
+  // Log.verbose(F("Cfg : Parsed configuration file." CR));
 
   if (!doc[PARAM_MDNS].isNull()) setMDNS(doc[PARAM_MDNS]);
   if (!doc[PARAM_SSID].isNull()) setWifiSSID(doc[PARAM_SSID], 0);
@@ -126,6 +127,7 @@ bool Config::loadFile() {
   }
   if (!doc[PARAM_SCALE_FACTOR].isNull()) setScaleFactor(doc[PARAM_SCALE_FACTOR]);
   if (!doc[PARAM_SCALE_OFFSET].isNull()) setScaleOffset(doc[PARAM_SCALE_OFFSET]);
+  if (!doc[PARAM_WEIGHT_PRECISION].isNull()) setWeightPrecision(doc[PARAM_WEIGHT_PRECISION].as<int>());
 
   _saveNeeded = false;
   Log.notice(F("Cfg : Configuration file " CFG_FILENAME " loaded." CR));
@@ -138,7 +140,7 @@ void Config::formatFileSystem() {
 }
 
 void Config::checkFileSystem() {
-  //Log.verbose(F("Cfg : Checking if filesystem is valid." CR));
+  // Log.verbose(F("Cfg : Checking if filesystem is valid." CR));
 
   if (LittleFS.begin()) {
     Log.notice(F("Cfg : Filesystem mounted." CR));

@@ -27,10 +27,10 @@ SOFTWARE.
 #include <main.hpp>
 #include <SSD1306Wire.h> 
 
-enum FontSize { 
-  FONT_10 = 10, 
-  FONT_16 = 16, 
-  FONT_24 = 24 
+enum FontSize { // OLED Size - 128x64
+  FONT_10 = 10, // Support 6 lines 
+  FONT_16 = 16, // Support 5 lines
+  FONT_24 = 24  // Support 3 lines
 };
 
 class Display {

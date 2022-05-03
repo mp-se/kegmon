@@ -93,6 +93,13 @@
                 </div>
               </div>
 
+              <div class="row">
+                <label for="weight-precision" class="col-sm-2 col-form-label">Weight precision</label>
+                <div class="col-sm-3">
+                  <input type="number" step="1" min="0" max="4" class="form-control" name="weight-precision" id="weight-precision" placeholder="2" data-bs-toggle="tooltip" title="The number of decimals to show for the weight."> 
+                </div>
+              </div>
+
               <!--
               <div class="row mb-3">
                 <fieldset class="form-group row">
@@ -111,7 +118,7 @@
               </div>
               -->
  
-              <div class="row mb-3">
+              <div class="row mb-3 row-margin-10">
                 <div class="col-sm-4 offset-sm-2">
                   <button type="submit" class="btn btn-primary" id="config-btn" data-bs-toggle="tooltip" title="Save changes in this section">Save</button>
                 </div>
@@ -144,6 +151,7 @@
         console.log( cfg );
 
         $("#mdns").val(cfg["mdns"]);
+        $("#weight-precision").val(cfg["weight-precision"]);      
       })
       .fail(function () {
         showError('Unable to get data from the device.');

@@ -143,6 +143,7 @@ void WebServerHandler::webConfigPost() {
   // if (_server->hasArg(PARAM_SSID2)) myConfig.setWifiSSID(_server->arg(PARAM_SSID2), 1);
   // if (_server->hasArg(PARAM_PASS2)) myConfig.setWifiPass(_server->arg(PARAM_PASS2), 1);
   if (_server->hasArg(PARAM_TEMPFORMAT)) myConfig.setTempFormat(_server->arg(PARAM_TEMPFORMAT).charAt(0));
+  if (_server->hasArg(PARAM_WEIGHT_PRECISION)) myConfig.setWeightPrecision(_server->arg(PARAM_WEIGHT_PRECISION).toInt());
 
   myConfig.saveFile();
   _server->sendHeader("Location", "/config.htm", true);

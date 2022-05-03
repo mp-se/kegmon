@@ -1,12 +1,9 @@
 # TODO
 
-* Trim weight to a valid no decimals
-* Add calibration page workflow
-* 
 * Add about page
 * Create documentation
 * Write API tests
-* Show IP/mdns on screen
+* Show mdns on screen
 * Add pint weight field
 * Add keg weight field
 * Calcualte no pints/glasses left

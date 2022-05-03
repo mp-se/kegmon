@@ -30,7 +30,7 @@ Display::Display() {
 }
 
 void Display::setup() {
-  //Log.verbose(F("Disp: Setting up OLED display." CR));
+  // Log.verbose(F("Disp: Setting up OLED display." CR));
 
   _display->init();
   _display->displayOn();
@@ -43,7 +43,7 @@ void Display::setup() {
 }
 
 void Display::setFont(FontSize fs) {
-  //Log.verbose(F("Disp: Setting font size %d." CR), fs);
+  // Log.verbose(F("Disp: Setting font size %d." CR), fs);
   _fontSize = fs;
 
   switch (fs) {
@@ -63,17 +63,17 @@ void Display::setFont(FontSize fs) {
 
 int Display::getTextWidth(const String& text) {
   int w = _display->getStringWidth(text); 
-  //Log.verbose(F("Disp: Width of string %s is %d." CR), text.c_str(), w);
+  // Log.verbose(F("Disp: Width of string %s is %d." CR), text.c_str(), w);
   return w;
 }
 
 void Display::printPosition(int x, int y, const String& text) {
-  //Log.verbose(F("Disp: Printing text %s @ %d,%d." CR), text.c_str(), x, y);
+  // Log.verbose(F("Disp: Printing text %s @ %d,%d." CR), text.c_str(), x, y);
   _display->drawString(x, y, text);
 }
 
 void Display::printLineCentered(int l, const String& text) {
-  //Log.verbose(F("Disp: Printing text %s @ line %d." CR), text.c_str(), l);
+  // Log.verbose(F("Disp: Printing text %s @ line %d." CR), text.c_str(), l);
   int w = getTextWidth(text);
   printPosition( (_width-w)/2, _fontSize*l, text );
 }
