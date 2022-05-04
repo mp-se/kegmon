@@ -30,6 +30,8 @@ SOFTWARE.
 
 SerialDebug mySerial;
 const int loopInterval = 1000; 
+int loopCounter = 0;
+uint32_t loopMillis = 0;
 
 void printTimestamp(Print* _logOutput, int _logLevel) {
   char c[12];
@@ -96,8 +98,35 @@ void setup() {
   Log.notice(F("Main: Setup completed." CR));
 }
 
-uint32_t loopMillis = 0;
-int loopCounter = 0;
+void drawScreen() {
+  myDisplay.clear();
+  myDisplay.setFont(FontSize::FONT_16);
+
+  char buf[20];
+  int pint = myScale.calculateNoPints();
+
+  snprintf(&buf[0], sizeof(buf), "%s", myConfig.getBeerName());
+  myDisplay.printPosition(-1, 0, &buf[0]);
+
+  snprintf(&buf[0], sizeof(buf), "%.1f%%", myConfig.getBeerABV());
+  myDisplay.printPosition(-1, 16, &buf[0]);
+
+  snprintf(&buf[0], sizeof(buf), "%d pints", pint);
+  myDisplay.printPosition(-1, 32, &buf[0]);
+
+  convertFloatToString(myScale.getValue(), &buf[0], myConfig.getWeightPrecision());
+
+  // Lets draw the footer here.
+  myDisplay.setFont(FontSize::FONT_10);
+  if (!(loopCounter % 6))
+    myDisplay.printPosition(-1, myDisplay.getHeight() - myDisplay.getCurrentFontSize() - 1, &buf[0]);
+  else if (!(loopCounter % 4))
+    myDisplay.printPosition(-1, myDisplay.getHeight() - myDisplay.getCurrentFontSize() - 1, myWifi.getIPAddress());
+  else if (!(loopCounter % 2))
+    myDisplay.printPosition(-1, myDisplay.getHeight() - myDisplay.getCurrentFontSize() - 1, WiFi.SSID());
+
+  myDisplay.show();
+}
 
 void loop() {
   // TODO: Check if wifi is lost and do reconnect.
@@ -108,7 +137,8 @@ void loop() {
     loopMillis = millis();
     loopCounter++;
 
-    char buf[20];
+    drawScreen();
+/*
     int pint = myScale.calculateNoPints();
     convertFloatToString(myScale.getValue(), &buf[0], myConfig.getWeightPrecision());
     Log.verbose(F("Loop: Reading scale and updating display weight=%s pints=%d." CR), &buf[0], pint);
@@ -128,6 +158,7 @@ void loop() {
       myDisplay.printLineCentered(5, WiFi.SSID());
     }
     myDisplay.show();
+    */
   }
 }
 

@@ -52,11 +52,17 @@ void Config::createJson(DynamicJsonDocument& doc) {
   doc[PARAM_WEIGHT_PRECISION] = getWeightPrecision();
   doc[PARAM_KEG_WEIGHT] = getKegWeight();
   doc[PARAM_PINT_WEIGHT] = getPintWeight();
+  doc[PARAM_BEER_NAME] = getBeerName();
+  doc[PARAM_BEER_ABV] = getBeerABV();
+  doc[PARAM_BEER_EBC] = getBeerEBC();
+  doc[PARAM_BEER_IBU] = getBeerIBU();
+  doc[PARAM_BREWFATHER_APIKEY] = getBrewfatherApiKey();
+  doc[PARAM_BREWFATHER_USERKEY] = getBrewfatherUserKey();
 }
 
 bool Config::saveFile() {
   if (!_saveNeeded) {
-    // Log.verbose(F("Cfg : Skipping save, not needed." CR));
+    Log.verbose(F("Cfg : Skipping save, not needed." CR));
     return true;
   }
 
@@ -67,7 +73,7 @@ bool Config::saveFile() {
     return false;
   }
 
-  DynamicJsonDocument doc(1024);
+  DynamicJsonDocument doc(2048);
   createJson(doc);
 
 #if LOG_LEVEL == 6
@@ -99,9 +105,9 @@ bool Config::loadFile() {
     return false;
   }
 
-  // Log.verbose(F("Cfg : Size of configuration file=%d bytes." CR), configFile.size());
+  Log.verbose(F("Cfg : Size of configuration file=%d bytes." CR), configFile.size());
 
-  DynamicJsonDocument doc(512);
+  DynamicJsonDocument doc(2048);
   DeserializationError err = deserializeJson(doc, configFile);
 
 #if LOG_LEVEL == 6
@@ -130,8 +136,17 @@ bool Config::loadFile() {
   if (!doc[PARAM_SCALE_FACTOR].isNull()) setScaleFactor(doc[PARAM_SCALE_FACTOR].as<float>());
   if (!doc[PARAM_SCALE_OFFSET].isNull()) setScaleOffset(doc[PARAM_SCALE_OFFSET].as<float>());
   if (!doc[PARAM_WEIGHT_PRECISION].isNull()) setWeightPrecision(doc[PARAM_WEIGHT_PRECISION].as<int>());
+
   if (!doc[PARAM_KEG_WEIGHT].isNull()) setKegWeight(doc[PARAM_KEG_WEIGHT].as<float>());
   if (!doc[PARAM_PINT_WEIGHT].isNull()) setPintWeight(doc[PARAM_PINT_WEIGHT].as<float>());
+
+  if (!doc[PARAM_BEER_NAME].isNull()) setBeerName(doc[PARAM_BEER_NAME]);
+  if (!doc[PARAM_BEER_EBC].isNull()) setBeerEBC(doc[PARAM_BEER_EBC].as<int>());
+  if (!doc[PARAM_BEER_ABV].isNull()) setBeerABV(doc[PARAM_BEER_ABV].as<float>());
+  if (!doc[PARAM_BEER_IBU].isNull()) setBeerIBU(doc[PARAM_BEER_IBU].as<int>());
+
+  if (!doc[PARAM_BREWFATHER_APIKEY].isNull()) setBrewfatherApiKey(doc[PARAM_BREWFATHER_APIKEY]);
+  if (!doc[PARAM_BREWFATHER_USERKEY].isNull()) setBrewfatherUserKey(doc[PARAM_BREWFATHER_USERKEY]);
 
   _saveNeeded = false;
   Log.notice(F("Cfg : Configuration file " CFG_FILENAME " loaded." CR));

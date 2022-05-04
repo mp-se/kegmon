@@ -85,7 +85,8 @@ int Scale::calculateNoPints() {
   if (p == 0.0) 
     p = 1;
 
-  return (v - myConfig.getKegWeight()) / p;
+  int pints = (v - myConfig.getKegWeight()) / p;
+  return pints<0 ? 0 : pints;
 }
 
 // EOF

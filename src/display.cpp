@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 #include <display.hpp>
+#include <config.hpp>
 
 Display myDisplay;
 
@@ -36,9 +37,13 @@ void Display::setup() {
   _display->displayOn();
   _display->flipScreenVertically();
 
+  _height = _display->height();
+  _width = _display->width();
+
   clear();
   setFont( FontSize::FONT_16 );
-  printLineCentered(1, "Loading...");
+  printLineCentered(0, CFG_APPNAME);  
+  printLineCentered(2, "Loading");
   show();
 }
 
@@ -69,6 +74,11 @@ int Display::getTextWidth(const String& text) {
 
 void Display::printPosition(int x, int y, const String& text) {
   // Log.verbose(F("Disp: Printing text %s @ %d,%d." CR), text.c_str(), x, y);
+  if (x<0) {
+    int w = getTextWidth(text);    
+    x = (_width-w)/2;
+  }
+
   _display->drawString(x, y, text);
 }
 

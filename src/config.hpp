@@ -29,6 +29,13 @@ SOFTWARE.
 #define CFG_APPNAME "KegScale"          // Name of firmware
 #define CFG_FILENAME "/kegscale.json"   // Name of config file
 
+struct BeerInfo {
+    String _name = "";
+    float _abv = 0.0;
+    int _ebc = 0;
+    int _ibu = 0;
+};
+
 class Config {
  private:
   bool _saveNeeded = false;
@@ -36,9 +43,13 @@ class Config {
   String _id = "";
   String _mDNS = "";
   char _tempFormat = 'C';
+  int _weightPrecision = 2;
 
   String _wifiSSID[2] = {"", ""};
   String _wifiPASS[2] = {"", ""};
+
+  String _brewfatherUserKey = "";
+  String _brewfatherApiKey = "";
 
   float _scaleFactor = 0.0;
   long _scaleOffset = 0L;
@@ -46,8 +57,8 @@ class Config {
   float _kegWeight = 0;
   float _pintWeight = 0;
 
-  int _weightPrecision = 2;
-  
+  BeerInfo _beer;
+
   void formatFileSystem();
 
  public:
@@ -55,6 +66,38 @@ class Config {
   const char* getID() { return _id.c_str(); }
   int getWifiConnectionTimeout() { return 30; }
   int getWifiPortalTimeout() { return 120; }
+
+  const char* getBrewfatherUserKey() { return _brewfatherUserKey.c_str(); }
+  void setBrewfatherUserKey(String s) { 
+    _brewfatherUserKey = s; 
+    _saveNeeded = true;
+  }
+  const char* getBrewfatherApiKey() { return _brewfatherApiKey.c_str(); }
+  void setBrewfatherApiKey(String s) { 
+    _brewfatherApiKey = s; 
+    _saveNeeded = true;
+  }
+
+  const char* getBeerName() { return _beer._name.c_str(); }
+  void setBeerName(String s) { 
+    _beer._name = s; 
+    _saveNeeded = true;
+  }
+  float getBeerABV() { return _beer._abv; }
+  void setBeerABV(float f) { 
+    _beer._abv = f; 
+    _saveNeeded = true;
+  }
+  int getBeerEBC() { return _beer._ebc; }
+  void setBeerEBC(int i) { 
+    _beer._ebc = i; 
+    _saveNeeded = true;
+  }
+  int getBeerIBU() { return _beer._ibu; }
+  void setBeerIBU(int i) { 
+    _beer._ibu = i; 
+    _saveNeeded = true;
+  }
 
   float getKegWeight() { return _kegWeight; }
   void setKegWeight(float f) {

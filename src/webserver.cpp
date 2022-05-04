@@ -147,6 +147,14 @@ void WebServerHandler::webConfigPost() {
   if (_server->hasArg(PARAM_KEG_WEIGHT)) myConfig.setKegWeight(_server->arg(PARAM_KEG_WEIGHT).toFloat());
   if (_server->hasArg(PARAM_PINT_WEIGHT)) myConfig.setPintWeight(_server->arg(PARAM_PINT_WEIGHT).toFloat());
 
+  if (_server->hasArg(PARAM_BEER_NAME)) myConfig.setBeerName(_server->arg(PARAM_BEER_NAME));
+  if (_server->hasArg(PARAM_BEER_EBC)) myConfig.setBeerEBC(_server->arg(PARAM_BEER_EBC).toInt());
+  if (_server->hasArg(PARAM_BEER_ABV)) myConfig.setBeerABV(_server->arg(PARAM_BEER_ABV).toFloat());
+  if (_server->hasArg(PARAM_BEER_IBU)) myConfig.setBeerIBU(_server->arg(PARAM_BEER_IBU).toInt());
+
+  if (_server->hasArg(PARAM_BREWFATHER_APIKEY)) myConfig.setBrewfatherApiKey(_server->arg(PARAM_BREWFATHER_APIKEY));
+  if (_server->hasArg(PARAM_BREWFATHER_USERKEY)) myConfig.setBrewfatherUserKey(_server->arg(PARAM_BREWFATHER_USERKEY));
+
   myConfig.saveFile();
   _server->sendHeader("Location", "/config.htm", true);
   _server->send(302, "text/plain", "Config updated");

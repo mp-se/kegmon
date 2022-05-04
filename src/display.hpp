@@ -48,8 +48,14 @@ class Display {
   void setFont(FontSize fs);
   int  getTextWidth(const String& text);
 
+  int getWidth() { return _width; }
+  int getHeight() { return _height; }
+
   void printPosition(int x, int y, const String& text);
   void printLineCentered(int l, const String& text);
+
+  void drawRect(int x, int y, int w, int h) { _display->drawRect(x,y,w,h); }
+  int getCurrentFontSize() { return _fontSize; }
 };
 
 extern Display myDisplay;

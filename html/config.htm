@@ -89,7 +89,7 @@
               <div class="row mb-3">
                 <label for="mdns" class="col-sm-2 col-form-label">Device name</label>
                 <div class="col-sm-3">
-                  <input type="text" maxlength="12" class="form-control" name="mdns" id="mdns" placeholder="gravmon" data-bs-toggle="tooltip" title="Name of the device. Will be used for identifying the device on your local network.">
+                  <input type="text" maxlength="12" class="form-control" name="mdns" id="mdns" placeholder="kegscale" data-bs-toggle="tooltip" title="Name of the device. Will be used for identifying the device on your local network.">
                 </div>
               </div>
 
@@ -103,18 +103,66 @@
               <hr>
 
               <div class="row mb-3">
-                <label for="keg-weight" class="col-sm-2 col-form-label">Keg weight</label>
+                <label for="keg-weight" class="col-sm-2 col-form-label">Empty keg weight</label>
                 <div class="col-sm-3">
                   <input type="number" step=".001" min="0" max="50" class="form-control" name="keg-weight" id="keg-weight" placeholder="1.00" data-bs-toggle="tooltip" title="The weight of an empty keg."> 
                 </div>
               </div>
 
               <div class="row mb-3">
-                <label for="pint-weight" class="col-sm-2 col-form-label">Pint weight</label>
+                <label for="pint-weight" class="col-sm-2 col-form-label">Pint of beer weight</label>
                 <div class="col-sm-3">
                   <input type="number" step=".001" min="0" max="50" class="form-control" name="pint-weight" id="pint-weight" placeholder="0.10" data-bs-toggle="tooltip" title="The weight of a unit of beer."> 
                 </div>
               </div>
+
+              <hr>
+
+              <div class="row mb-3">
+                <label for="brewfather-userkey" class="col-sm-2 col-form-label">Brewfather User Key</label>
+                <div class="col-sm-3">
+                  <input type="text" maxlength="80" class="form-control" name="brewfather-userkey" id="brewfather-userkey" placeholder="" data-bs-toggle="tooltip" title="User key obtained from the control panel in brewfather. Need access to batches.">
+                </div>
+
+                <div class="col-sm-4">
+                  <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modal-brewfather" data-bs-toggle="tooltip" title="Select a brew from brewfather">Fetch beer from Brewfather</button>
+                </div>
+  
+              </div>
+              <div class="row mb-3">
+                <label for="brewfather-apikey" class="col-sm-2 col-form-label">Brewfather API Key</label>
+                <div class="col-sm-3">
+                  <input type="text" maxlength="80" class="form-control" name="brewfather-apikey" id="brewfather-apikey" placeholder="" data-bs-toggle="tooltip" title="API key obtained from the control panel in brewfather. Need access to batches.">
+                </div>
+              </div>
+
+              <hr>
+
+              <div class="row mb-3">
+                <label for="beer-name" class="col-sm-2 col-form-label">Beer name</label>
+                <div class="col-sm-3">
+                  <input type="text" maxlength="20" class="form-control" name="beer-name" id="beer-name" placeholder="" data-bs-toggle="tooltip" title="Name of the beer being served.">
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="beer-abv" class="col-sm-2 col-form-label">Beer ABV</label>
+                <div class="col-sm-3">
+                  <input type="number" step=".01" min="0" max="20" class="form-control" name="beer-abv" id="beer-abv" placeholder="4.5" data-bs-toggle="tooltip" title="ABV of the beer being served."> 
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="beer-abv" class="col-sm-2 col-form-label">Beer EBC</label>
+                <div class="col-sm-3">
+                  <input type="number" step="1" min="0" max="100" class="form-control" name="beer-ebc" id="beer-ebc"> 
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="beer-abv" class="col-sm-2 col-form-label">Beer IBU</label>
+                <div class="col-sm-3">
+                  <input type="number" step="1" min="0" max="100" class="form-control" name="beer-ibu" id="beer-ibu"> 
+                </div>
+              </div>
+
 
               <!--
               <div class="row mb-3">
@@ -147,6 +195,133 @@
     </div>
   </div>
 
+  <div class="modal fade" id="modal-brewfather" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modal-header" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modal-header">Fetch beer from Brewfather</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+          <div class="row mb-3">
+            <label class="col-sm-4 col-form-label" for="ble">Select beer</label>
+
+            <div class="col-sm-8">
+              <select class="form-select" id="brewfather-list" name="brewfather-list" data-bs-toggle="tooltip" title="List of beers fetched from Brewfather">
+                <option value="">-none-</option>
+              </select>
+            </div>
+          </div>
+<!--
+          <label for="http-header" class="col-form-label">Header 1 (Header: value)</label>
+          <input type="text" maxlength="100" class="form-control" id="header1" oninput="checkHeader(this)" placeholder="Content-Type: application/json" data-bs-toggle="tooltip" title="Set a http headers, empty string is skipped">
+          <label for="http-header" class="col-form-label">Header 2 (Header: value)</label>
+          <input type="text" maxlength="100" class="form-control" id="header2" oninput="checkHeader(this)" data-bs-toggle="tooltip" title="Set a http headers, empty string is skipped">
+          <input type="text" id="field1" hidden>
+          <input type="text" id="field2" hidden>
+-->
+</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal"  data-bs-toggle="tooltip" title="Close dialog, press the save button in the section to save data">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var brewFatherBatches = {};
+    // loadBrewfatherBatches();
+
+    // This is only for testing
+    /*function loadBrewfatherBatches() {
+      console.log( "Loading brewfather test data.");
+      var url = "/test/brewfather.json";
+      $.getJSON(url, function (res) {
+        brewFatherBatches = res;
+      })
+      .fail(function () {
+        showError('Unable to get data from the device.');
+      });
+    }*/
+
+    function parseBrewfatherBatches() {       
+      console.log( "Parsing brewfather batches");
+      var list = document.getElementById("brewfather-list");
+      for(var i = 0; i < brewFatherBatches.length; i++) {
+        var opt = document.createElement("option");
+        opt.textContent = brewFatherBatches[i]['recipe']['name'];
+        opt.value = brewFatherBatches[i]['_id'];
+        list.appendChild(opt);
+      }
+    }
+
+    $('#modal-brewfather').on('show.bs.modal', function (event) {
+      $( "#brewfather-list" ).prop( "disabled", true );
+      getBrewfatherBatches();
+      // parseBrewfatherBatches();
+      $( "#brewfather-list" ).prop( "disabled", false );
+    })
+
+    $('#modal-brewfather').on('hide.bs.modal', function (event) {
+      var modal = $(this);
+      beerId = modal.find('.modal-body #brewfather-list').val();   
+      for(var i = 0; i < brewFatherBatches.length; i++) {
+        if(beerId == brewFatherBatches[i]['_id']) {
+          $("#beer-name").val(brewFatherBatches[i]['recipe']['name']);
+          $("#beer-abv").val(brewFatherBatches[i]['recipe']['abv']);
+          $("#beer-ebc").val(Math.round(brewFatherBatches[i]['recipe']['color']));
+          $("#beer-ibu").val(Math.round(brewFatherBatches[i]['recipe']['ibu']));
+        }
+      }
+    })
+
+    function hideModal() {
+      $('#modal-brewfather').hide();
+      $(".modal-backdrop").hide();
+    }
+
+    function getBrewfatherBatches() {
+      var userkey = $("#brewfather-userkey").val();
+      var apikey = $("#brewfather-apikey").val();
+
+      if(userkey=="" || apikey==""){
+        showError('No user and api key is defined for brewfather.');
+        hideModal();
+        return;
+      }
+
+      var auth = userkey + ":" + apikey;
+
+      $('#spinner').show(); 
+      $.ajax({
+        url: 'https://api.brewfather.app/v1/batches',
+        type: 'GET',
+        headers: {"Authorization": 'Basic ' + btoa(auth) },
+        data: { include: 'recipe.abv,recipe.ibu,recipe.color', complete: false, status: 'Completed', limit: 20 },
+        success: function(res) { 
+          console.log(res);
+          brewFatherBatches = res;
+          parseBrewfatherBatches();
+        },
+        statusCode: {
+          401:function() { 
+            showError('Brewfather error 401 - Unauthorized.');          
+            hideModal();
+          }
+        },
+        fail: function() {
+          showError('Unable to get data brewfather. There are limitation on how often the API can be called per hour.');
+          hideModal();
+        }, 
+        always: function() {
+          $('#spinner').hide(); 
+        }
+      });
+    }
+
+  </script>
+
   <script type="text/javascript">
     window.onload = getConfig;
 
@@ -167,9 +342,15 @@
         console.log( cfg );
 
         $("#mdns").val(cfg["mdns"]);
-        $("#weight-precision").val(cfg["weight-precision"]);      
-        $("#keg-weight").val(cfg["keg-weight"]);      
-        $("#pint-weight").val(cfg["pint-weight"]);      
+        $("#weight-precision").val(cfg["weight-precision"]);
+        $("#keg-weight").val(cfg["keg-weight"]);
+        $("#pint-weight").val(cfg["pint-weight"]);
+        $("#brewfather-apikey").val(cfg["brewfather-apikey"]);
+        $("#brewfather-userkey").val(cfg["brewfather-userkey"]);
+        $("#beer-name").val(cfg["beer-name"]);
+        $("#beer-abv").val(cfg["beer-abv"]);
+        $("#beer-ebc").val(cfg["beer-ebc"]);
+        $("#beer-ibu").val(cfg["beer-ibu"]);
       })
       .fail(function () {
         showError('Unable to get data from the device.');

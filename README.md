@@ -15,14 +15,14 @@ it's not really well tested but the features so far;
 
 # Todo
 
-* Add about page
+* Allow user to select weight unit to show (does not really matter for the functionallity)
+* Allow control of more than one scale (and perhaps more screens / or bigger screens) from one esp (need one pin for data per scale)
+* Check if we loose wifi and do automatic reconnect.
+
+# Later
+* Do a ESP32 port (might be needed to attach more units)
+* Implement screen saver for OLED
+* Add integration to brewspy
 * Write API tests
 * Create documentation
-* Allow user to select weight unit to show (does not really matter for the functionallity)
-* Add integration to brewspy
-* Make a nice UI on the OLED
-* Implement screen saver for OLED
-* Do a ESP32 port (might be needed to attach more units)
-* Allow control of more than one scale (and perhaps screen) from one esp
 * Implement async webserver so it's more responsive to fast requests
-* Check if we loose wifi and do automatic reconnect.

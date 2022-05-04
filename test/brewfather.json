@@ -1,0 +1,268 @@
+[
+    {
+        "_id": "fU4JiXWOKKtBunwRU2yoO9LtlcFCrm",
+        "name": "Batch",
+        "batchNo": 50,
+        "status": "Completed",
+        "brewer": "Magnus Persson",
+        "brewDate": 1650578400000,
+        "recipe": {
+            "name": "49 - Verdant IPA",
+            "abv": 5.64,
+            "ibu": 39.3,
+            "color": 5.6
+        }
+    },
+    {
+        "_id": "vX7aBtK5leucIMtwSPTcV7356v4TFv",
+        "name": "Batch",
+        "batchNo": 47,
+        "status": "Completed",
+        "brewer": "Magnus Persson",
+        "brewDate": 1641510000000,
+        "recipe": {
+            "name": "Corona v3",
+            "abv": 5.12,
+            "ibu": 31.4,
+            "color": 3.3
+        }
+    },
+    {
+        "_id": "AXwgrJ08lMO7y2EZYMtYQbW8T1qZ4t",
+        "name": "Batch",
+        "batchNo": 46,
+        "status": "Completed",
+        "brewer": "Magnus Persson",
+        "brewDate": 1640127600000,
+        "recipe": {
+            "name": "Longboard v4",
+            "abv": 5.12,
+            "ibu": 28.7,
+            "color": 3.8
+        }
+    },
+    {
+        "_id": "9wyliUdYhtQV1edXz6zootWlrKoIjj",
+        "name": "Batch",
+        "batchNo": 45,
+        "status": "Completed",
+        "brewer": "Magnus Persson",
+        "brewDate": 1635579835729,
+        "recipe": {
+            "name": "45 - Guiness Clone",
+            "abv": 4.46,
+            "ibu": 39.4,
+            "color": 34.3
+        }
+    },
+    {
+        "_id": "SxlA78xEA3tysAbKhCzb5aEfrU2wsU",
+        "name": "Batch",
+        "batchNo": 44,
+        "status": "Completed",
+        "brewer": "Magnus Persson",
+        "brewDate": 1633212000000,
+        "recipe": {
+            "name": "42 - Finn Brown Ale Christmas",
+            "abv": 4.86,
+            "ibu": 44.8,
+            "color": 22.2
+        }
+    },
+    {
+        "_id": "jg5wCNw4oeIC0miGq9SPDPmf7ZYg0y",
+        "name": "Batch",
+        "batchNo": 43,
+        "status": "Completed",
+        "brewer": "Magnus Persson",
+        "brewDate": 1629799346951,
+        "recipe": {
+            "name": "45 - Hylliepan",
+            "abv": 6.43,
+            "ibu": 47.4,
+            "color": 4.6
+        }
+    },
+    {
+        "_id": "61CWDbVJbvcfeswA4zPXGbE0ox1yJK",
+        "name": "Batch",
+        "batchNo": 42,
+        "status": "Completed",
+        "brewer": "Magnus Persson",
+        "brewDate": 1628421137381,
+        "recipe": {
+            "name": "44 - Korsta Ale",
+            "abv": 5.51,
+            "ibu": 36.9,
+            "color": 5.2
+        }
+    },
+    {
+        "_id": "RTp7yQA433GG1uq4hrUGlvf39ibNXI",
+        "name": "Batch",
+        "batchNo": 41,
+        "status": "Completed",
+        "brewer": "Magnus Persson",
+        "brewDate": 1627375575963,
+        "recipe": {
+            "name": "41. Chimay Blue",
+            "abv": 7.74,
+            "ibu": 24.2,
+            "color": 16.9
+        }
+    },
+    {
+        "_id": "BzbmcUfyxuz4LJu3GnHQAKovhA80ou",
+        "name": "Batch",
+        "batchNo": 40,
+        "status": "Completed",
+        "brewer": "Magnus Persson",
+        "brewDate": 1626178657302,
+        "recipe": {
+            "name": "Timothy Taylor Landlord Clone",
+            "abv": 4.59,
+            "ibu": 38.8,
+            "color": 10.4
+        }
+    },
+    {
+        "_id": "djUTQnB6gfEhgbm2WbjgyrCwMdBEUK",
+        "name": "Batch",
+        "batchNo": 39,
+        "status": "Completed",
+        "brewer": "Magnus Persson",
+        "brewDate": 1623318955412,
+        "recipe": {
+            "name": "Hylliepan",
+            "abv": 6.43,
+            "ibu": 47.4,
+            "color": 4.6
+        }
+    },
+    {
+        "_id": "mzc9KRX0PZyz6dilpcaRkHr40iYlwW",
+        "name": "Batch",
+        "batchNo": 38,
+        "status": "Completed",
+        "brewer": "Magnus Persson",
+        "brewDate": 1623218192479,
+        "recipe": {
+            "name": "Corona v2",
+            "abv": 4.99,
+            "ibu": 25.7,
+            "color": 3.3
+        }
+    },
+    {
+        "_id": "mNMg9spF0RKV6HAjL8i8Kmwf5mnSb8",
+        "name": "Batch",
+        "batchNo": 37,
+        "status": "Completed",
+        "brewer": "Magnus Persson",
+        "brewDate": 1621435750502,
+        "recipe": {
+            "name": "Czech Dark Lager",
+            "abv": 4.99,
+            "ibu": 28.5,
+            "color": 19
+        }
+    },
+    {
+        "_id": "GSuhjl0L4FExGjHjrUSqZFbDFFAWg0",
+        "name": "Batch",
+        "batchNo": 36,
+        "status": "Completed",
+        "brewer": "Magnus Persson",
+        "brewDate": 1620810538062,
+        "recipe": {
+            "name": "Citrus NEIPA v3",
+            "abv": 6.17,
+            "ibu": 31.9,
+            "color": 5.5
+        }
+    },
+    {
+        "_id": "7U292UoBRmt35f6y706jd8NQaLbq6u",
+        "name": "Batch",
+        "batchNo": 35,
+        "status": "Completed",
+        "brewer": "Magnus Persson",
+        "brewDate": 1619709555997,
+        "recipe": {
+            "name": "APA v2",
+            "abv": 5.51,
+            "ibu": 39.8,
+            "color": 5
+        }
+    },
+    {
+        "_id": "MynPhgm3dSxJFV88DWpSv8FI56txM4",
+        "name": "Batch",
+        "batchNo": 34,
+        "status": "Completed",
+        "brewer": "Magnus Persson",
+        "brewDate": 1617819170099,
+        "recipe": {
+            "name": "Longboard v3",
+            "abv": 4.99,
+            "ibu": 32.7,
+            "color": 4
+        }
+    },
+    {
+        "_id": "FfpKhIMMjwV8eAL4iSyMuL3chsOJ4i",
+        "name": "Batch",
+        "batchNo": 32,
+        "status": "Completed",
+        "brewer": "Magnus Persson",
+        "brewDate": 1615308049242,
+        "recipe": {
+            "name": "Lakritsporter",
+            "abv": 4.99,
+            "ibu": 34.1,
+            "color": 29.4
+        }
+    },
+    {
+        "_id": "3H45nnQvbgai3G9s6iZoIbtxAfCdT2",
+        "name": "Batch",
+        "batchNo": 31,
+        "status": "Completed",
+        "brewer": "Magnus Persson",
+        "brewDate": 1613492563213,
+        "recipe": {
+            "name": "Samuel Adams Noble Clone",
+            "abv": 4.59,
+            "ibu": 33,
+            "color": 4.2
+        }
+    },
+    {
+        "_id": "THC5aJs8RKF41pd2Bx4jz4BfaTPl5V",
+        "name": "Batch",
+        "batchNo": 30,
+        "status": "Completed",
+        "brewer": "Magnus Persson",
+        "brewDate": 1611497833194,
+        "recipe": {
+            "name": "Big Wave Ale Clone",
+            "abv": 4.73,
+            "ibu": 21.4,
+            "color": 6.5
+        }
+    },
+    {
+        "_id": "Zlx8X61UKX6k3b0CxXWmW2xA0568Qk",
+        "name": "20200923 Porter",
+        "batchNo": 24,
+        "status": "Completed",
+        "brewer": "Magnus Persson",
+        "brewDate": 1600939569682,
+        "recipe": {
+            "name": "Porter",
+            "abv": 5.38,
+            "ibu": 33.9,
+            "color": 32.6
+        }
+    }
+]

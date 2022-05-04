@@ -42,5 +42,11 @@ SOFTWARE.
 #define PARAM_SCALE_OFFSET "scale-offset"
 #define PARAM_WEIGHT "weight"
 #define PARAM_PINTS "pints"
+#define PARAM_BEER_NAME "beer-name"
+#define PARAM_BEER_ABV "beer-abv"
+#define PARAM_BEER_EBC "beer-ebc"
+#define PARAM_BEER_IBU "beer-ibu"
+#define PARAM_BREWFATHER_USERKEY "brewfather-userkey"
+#define PARAM_BREWFATHER_APIKEY "brewfather-apikey"
 
 #endif  // SRC_RESOURCES_HPP_
