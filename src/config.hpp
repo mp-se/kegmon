@@ -44,20 +44,16 @@ class Config {
   String _mDNS = "";
   char _tempFormat = 'C';
   int _weightPrecision = 2;
-
-  String _wifiSSID[2] = {"", ""};
-  String _wifiPASS[2] = {"", ""};
-
+  String _wifiSSID[2] = { "", "" };
+  String _wifiPASS[2] = { "", "" };
   String _brewfatherUserKey = "";
   String _brewfatherApiKey = "";
 
-  float _scaleFactor = 0.0;
-  long _scaleOffset = 0L;
-
-  float _kegWeight = 0;
-  float _pintWeight = 0;
-
-  BeerInfo _beer;
+  float _scaleFactor[2] = { 0, 0 };
+  long _scaleOffset[2] = { 0, 0 };
+  float _kegWeight[2] = { 0, 0 };
+  float _pintWeight[2] = { 0, 0 };
+  BeerInfo _beer[2];
 
   void formatFileSystem();
 
@@ -78,36 +74,36 @@ class Config {
     _saveNeeded = true;
   }
 
-  const char* getBeerName() { return _beer._name.c_str(); }
-  void setBeerName(String s) { 
-    _beer._name = s; 
+  const char* getBeerName(int idx) { return _beer[idx]._name.c_str(); }
+  void setBeerName(int idx, String s) { 
+    _beer[idx]._name = s; 
     _saveNeeded = true;
   }
-  float getBeerABV() { return _beer._abv; }
-  void setBeerABV(float f) { 
-    _beer._abv = f; 
+  float getBeerABV(int idx) { return _beer[idx]._abv; }
+  void setBeerABV(int idx, float f) { 
+    _beer[idx]._abv = f; 
     _saveNeeded = true;
   }
-  int getBeerEBC() { return _beer._ebc; }
-  void setBeerEBC(int i) { 
-    _beer._ebc = i; 
+  int getBeerEBC(int idx) { return _beer[idx]._ebc; }
+  void setBeerEBC(int idx, int i) { 
+    _beer[idx]._ebc = i; 
     _saveNeeded = true;
   }
-  int getBeerIBU() { return _beer._ibu; }
-  void setBeerIBU(int i) { 
-    _beer._ibu = i; 
-    _saveNeeded = true;
-  }
-
-  float getKegWeight() { return _kegWeight; }
-  void setKegWeight(float f) {
-    _kegWeight = f;
+  int getBeerIBU(int idx) { return _beer[idx]._ibu; }
+  void setBeerIBU(int idx, int i) { 
+    _beer[idx]._ibu = i; 
     _saveNeeded = true;
   }
 
-  float getPintWeight() { return _pintWeight; }
-  void setPintWeight(float f) {
-    _pintWeight = f;
+  float getKegWeight(int idx) { return _kegWeight[idx]; }
+  void setKegWeight(int idx, float f) {
+    _kegWeight[idx] = f;
+    _saveNeeded = true;
+  }
+
+  float getPintWeight(int idx) { return _pintWeight[idx]; }
+  void setPintWeight(int idx, float f) {
+    _pintWeight[idx] = f;
     _saveNeeded = true;
   }
 
@@ -117,15 +113,15 @@ class Config {
     _saveNeeded = true;
   }
 
-  long getScaleOffset() { return _scaleOffset; }
-  void setScaleOffset(long l) {
-    _scaleOffset = l;
+  long getScaleOffset(int idx) { return _scaleOffset[idx]; }
+  void setScaleOffset(int idx, long l) {
+    _scaleOffset[idx] = l;
     _saveNeeded = true;
   }
 
-  float getScaleFactor() { return _scaleFactor; }
-  void setScaleFactor(float f) {
-    _scaleFactor = f;
+  float getScaleFactor(int idx) { return _scaleFactor[idx]; }
+  void setScaleFactor(int idx, float f) {
+    _scaleFactor[idx] = f;
     _saveNeeded = true;
   }
 

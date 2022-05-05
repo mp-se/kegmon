@@ -24,6 +24,7 @@ SOFTWARE.
 #ifndef SRC_RESOURCES_HPP_
 #define SRC_RESOURCES_HPP_
 
+// Configuration
 #define PARAM_ID "id"
 #define PARAM_MDNS "mdns"
 #define PARAM_SSID "wifi-ssid"
@@ -34,19 +35,34 @@ SOFTWARE.
 #define PARAM_APP_VER "app-ver"
 #define PARAM_APP_BUILD "app-build"
 #define PARAM_WEIGHT_PRECISION "weight-precision"
-#define PARAM_KEG_WEIGHT "keg-weight"
-#define PARAM_PINT_WEIGHT "pint-weight"
-#define PARAM_SCALE_FACTOR "scale-factor"
-#define PARAM_SCALE_WEIGHT "scale-weight"
-#define PARAM_SCALE_RAW "scale-raw"
-#define PARAM_SCALE_OFFSET "scale-offset"
-#define PARAM_WEIGHT "weight"
-#define PARAM_PINTS "pints"
-#define PARAM_BEER_NAME "beer-name"
-#define PARAM_BEER_ABV "beer-abv"
-#define PARAM_BEER_EBC "beer-ebc"
-#define PARAM_BEER_IBU "beer-ibu"
 #define PARAM_BREWFATHER_USERKEY "brewfather-userkey"
 #define PARAM_BREWFATHER_APIKEY "brewfather-apikey"
+
+#define PARAM_KEG_WEIGHT1 "keg-weight1"
+#define PARAM_KEG_WEIGHT2 "keg-weight2"
+#define PARAM_PINT_WEIGHT1 "pint-weight1"
+#define PARAM_PINT_WEIGHT2 "pint-weight2"
+#define PARAM_SCALE_FACTOR1 "scale-factor1"
+#define PARAM_SCALE_FACTOR2 "scale-factor2"
+#define PARAM_SCALE_WEIGHT1 "scale-weight1"
+#define PARAM_SCALE_WEIGHT2 "scale-weight2"
+#define PARAM_SCALE_RAW1 "scale-raw1"
+#define PARAM_SCALE_RAW2 "scale-raw2"
+#define PARAM_SCALE_OFFSET1 "scale-offset1"
+#define PARAM_SCALE_OFFSET2 "scale-offset2"
+#define PARAM_PINTS1 "pints1"
+#define PARAM_PINTS2 "pints2"
+#define PARAM_BEER_NAME1 "beer-name1"
+#define PARAM_BEER_NAME2 "beer-name2"
+#define PARAM_BEER_ABV1 "beer-abv1"
+#define PARAM_BEER_ABV2 "beer-abv2"
+#define PARAM_BEER_IBU1 "beer-ibu1"
+#define PARAM_BEER_IBU2 "beer-ibu2"
+#define PARAM_BEER_EBC1 "beer-ebc1"
+#define PARAM_BEER_EBC2 "beer-ebc2"
+
+// Calibration input
+#define PARAM_WEIGHT "weight"
+#define PARAM_SCALE "scale-index"
 
 #endif  // SRC_RESOURCES_HPP_

@@ -35,27 +35,29 @@ enum FontSize { // OLED Size - 128x64
 
 class Display {
  private:
-  SSD1306Wire *_display;
-  int _width = 128;
-  int _height = 64;
-  FontSize _fontSize = FontSize::FONT_10;
+  SSD1306Wire *_display[2] = { 0, 0 };
+  int _width[2] = { 128, 128 };
+  int _height[2] = { 64, 64 };
+  FontSize _fontSize[2] = { FontSize::FONT_10, FontSize::FONT_10 };
+
+  void scanI2C();
 
  public:
   Display();
-  void setup();
-  void clear() { _display->clear(); }
-  void show() { _display->display(); }
-  void setFont(FontSize fs);
-  int  getTextWidth(const String& text);
+  void setup(UnitIndex idx);
+  void clear(UnitIndex idx) { _display[idx]->clear(); }
+  void show(UnitIndex idx) { _display[idx]->display(); }
+  void setFont(UnitIndex idx, FontSize fs);
+  int  getTextWidth(UnitIndex idx, const String& text);
 
-  int getWidth() { return _width; }
-  int getHeight() { return _height; }
+  int getWidth(UnitIndex idx) { return _width[idx]; }
+  int getHeight(UnitIndex idx) { return _height[idx]; }
 
-  void printPosition(int x, int y, const String& text);
-  void printLineCentered(int l, const String& text);
+  void printPosition(UnitIndex index, int x, int y, const String& text);
+  void printLineCentered(UnitIndex index, int l, const String& text);
 
-  void drawRect(int x, int y, int w, int h) { _display->drawRect(x,y,w,h); }
-  int getCurrentFontSize() { return _fontSize; }
+  void drawRect(UnitIndex idx, int x, int y, int w, int h) { _display[idx]->drawRect(x,y,w,h); }
+  int getCurrentFontSize(UnitIndex idx) { return _fontSize[idx]; }
 };
 
 extern Display myDisplay;

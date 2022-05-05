@@ -23,69 +23,114 @@ SOFTWARE.
  */
 #include <display.hpp>
 #include <config.hpp>
+#include <Wire.h>
 
 Display myDisplay;
 
+#define DISPLAY_ADR1 0x3c
+#define DISPLAY_ADR2 0x3d
+
 Display::Display() {
-  _display = new SSD1306Wire(0x3c, PIN_OLED_SDA, PIN_OLED_SCL);
+  scanI2C();
+  _display[0] = new SSD1306Wire(DISPLAY_ADR1, PIN_OLED_SDA, PIN_OLED_SCL);
+  _display[1] = new SSD1306Wire(DISPLAY_ADR2, PIN_OLED_SDA, PIN_OLED_SCL);
 }
 
-void Display::setup() {
-  // Log.verbose(F("Disp: Setting up OLED display." CR));
+void Display::scanI2C() {
+#if LOG_LEVEL == 6
+  Wire.begin();
 
-  _display->init();
-  _display->displayOn();
-  _display->flipScreenVertically();
+  byte error, address;
+  int n = 0;
 
-  _height = _display->height();
-  _width = _display->width();
+  Log.verbose(F("Scanning I2C bus for devices: "));
 
-  clear();
-  setFont( FontSize::FONT_16 );
-  printLineCentered(0, CFG_APPNAME);  
-  printLineCentered(2, "Loading");
-  show();
+  for (address = 1; address < 127; address++) {
+    // The i2c_scanner uses the return value of
+    // the Write.endTransmisstion to see if
+    // a device did acknowledge to the address.
+    
+    Wire.beginTransmission(address);
+    error = Wire.endTransmission();
+
+    if (error == 0) {
+      Serial.print(address, HEX);
+      Serial.print("\t");   
+      n++;
+    }    
+  }
+  Serial.print("\n");   
+#endif
 }
 
-void Display::setFont(FontSize fs) {
-  // Log.verbose(F("Disp: Setting font size %d." CR), fs);
-  _fontSize = fs;
+void Display::setup(UnitIndex idx) {
+  Log.verbose(F("Disp: Setting up OLED display [%d]." CR), idx);
+
+  _display[idx]->init();
+  _display[idx]->displayOn();
+  _display[idx]->flipScreenVertically();
+
+  _height[idx] = _display[idx]->height();
+  _width[idx] = _display[idx]->width();
+
+  clear(idx);
+  setFont(idx, FontSize::FONT_16 );
+  printLineCentered(idx, 0, CFG_APPNAME);  
+  printLineCentered(idx, 2, "Loading");
+  show(idx);
+}
+
+void Display::setFont(UnitIndex idx, FontSize fs) {
+  if (!_display[idx])
+    return;
+
+  // Log.verbose(F("Disp: Setting font size %d [%d]." CR), fs, idx);
+  _fontSize[idx] = fs;
 
   switch (fs) {
     case FontSize::FONT_10:
-      _display->setFont(ArialMT_Plain_10);  
+      _display[idx]->setFont(ArialMT_Plain_10);  
     return;
 
     case FontSize::FONT_16:
-      _display->setFont(ArialMT_Plain_16);  
+      _display[idx]->setFont(ArialMT_Plain_16);  
     return;
 
     case FontSize::FONT_24:    
-      _display->setFont(ArialMT_Plain_24);  
+      _display[idx]->setFont(ArialMT_Plain_24);  
     return;
   }
 }
 
-int Display::getTextWidth(const String& text) {
-  int w = _display->getStringWidth(text); 
-  // Log.verbose(F("Disp: Width of string %s is %d." CR), text.c_str(), w);
+int Display::getTextWidth(UnitIndex idx, const String& text) {
+  if (!_display[idx])
+    return -1;
+
+  int w = _display[idx]->getStringWidth(text); 
+  // Log.verbose(F("Disp: Width of string %s is %d [%d]." CR), text.c_str(), w, idx);
   return w;
 }
 
-void Display::printPosition(int x, int y, const String& text) {
-  // Log.verbose(F("Disp: Printing text %s @ %d,%d." CR), text.c_str(), x, y);
+void Display::printPosition(UnitIndex idx, int x, int y, const String& text) {
+  if (!_display[idx])
+    return;
+
+  // Log.verbose(F("Disp: Printing text %s @ %d,%d [%d]." CR), text.c_str(), x, y, idx);
   if (x<0) {
-    int w = getTextWidth(text);    
-    x = (_width-w)/2;
+    int w = getTextWidth(idx, text);    
+    x = (_width[idx]-w)/2;
   }
 
-  _display->drawString(x, y, text);
+  _display[idx]->drawString(x, y, text);
 }
 
-void Display::printLineCentered(int l, const String& text) {
-  // Log.verbose(F("Disp: Printing text %s @ line %d." CR), text.c_str(), l);
-  int w = getTextWidth(text);
-  printPosition( (_width-w)/2, _fontSize*l, text );
+void Display::printLineCentered(UnitIndex idx, int l, const String& text) {
+  if (!_display[idx])
+    return;
+
+  // Log.verbose(F("Disp: Printing text %s @ line %d [%d]." CR), text.c_str(), l, idx);
+  int w = getTextWidth(idx, text);
+  printPosition(idx, (_width[idx]-w)/2, _fontSize[idx]*l, text );
 }
 
 // EOF

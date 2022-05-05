@@ -29,17 +29,17 @@ SOFTWARE.
 
 class Scale {
  private:
-  HX711 *_scale;
+  HX711 *_scale[2] = { 0, 0 };
   int _readCount = 10;
 
  public:
   Scale();
   void setup();
-  void tare();
-  float getValue();
-  long getRawValue();
-  void findFactor(float weight);
-  int calculateNoPints();
+  void tare(UnitIndex idx);
+  float getValue(UnitIndex idx);
+  long getRawValue(UnitIndex idx);
+  void findFactor(UnitIndex idx, float weight);
+  int calculateNoPints(UnitIndex idx);
 };
 
 extern Scale myScale;

@@ -71,7 +71,8 @@ void setup() {
   Log.notice(F("Main: Started setup for %s." CR), String(ESP.getChipId(), HEX).c_str());
   Log.notice(F("Main: Build options: %s (%s) LOGLEVEL %d "CR), CFG_APPVER, CFG_GITREV, LOG_LEVEL);
 
-  myDisplay.setup();
+  myDisplay.setup(UnitIndex::UNIT_1);
+  myDisplay.setup(UnitIndex::UNIT_2);
   myConfig.checkFileSystem();
   myConfig.loadFile();
   myWifi.init();
@@ -84,12 +85,12 @@ void setup() {
   if (!myWifi.hasConfig() || myWifi.isDoubleResetDetected()) {
     Log.notice(F("Main: Missing wifi config or double reset detected, entering wifi setup." CR));
 
-    myDisplay.clear();
-    myDisplay.setFont(FontSize::FONT_16);
-    myDisplay.printLineCentered(0, "Entering");
-    myDisplay.printLineCentered(1, "WIFI Portal");
-    myDisplay.printLineCentered(2, "192.168.4.1");
-    myDisplay.show();
+    myDisplay.clear(UnitIndex::UNIT_1);
+    myDisplay.setFont(UnitIndex::UNIT_1, FontSize::FONT_16);
+    myDisplay.printLineCentered(UnitIndex::UNIT_1, 0, "Entering");
+    myDisplay.printLineCentered(UnitIndex::UNIT_1, 1, "WIFI Portal");
+    myDisplay.printLineCentered(UnitIndex::UNIT_1, 2, "192.168.4.1");
+    myDisplay.show(UnitIndex::UNIT_1);
     myWifi.startPortal();
   }
 
@@ -98,38 +99,42 @@ void setup() {
   Log.notice(F("Main: Setup completed." CR));
 }
 
-void drawScreen() {
-  myDisplay.clear();
-  myDisplay.setFont(FontSize::FONT_16);
+void drawScreen(UnitIndex idx) {
+  myDisplay.clear(idx);
+  myDisplay.setFont(idx, FontSize::FONT_16);
 
   char buf[20];
-  int pint = myScale.calculateNoPints();
+  int pint = myScale.calculateNoPints(idx);
 
-  snprintf(&buf[0], sizeof(buf), "%s", myConfig.getBeerName());
-  myDisplay.printPosition(-1, 0, &buf[0]);
+  snprintf(&buf[0], sizeof(buf), "%s", myConfig.getBeerName(idx));
+  myDisplay.printPosition(idx, -1, 0, &buf[0]);
 
-  snprintf(&buf[0], sizeof(buf), "%.1f%%", myConfig.getBeerABV());
-  myDisplay.printPosition(-1, 16, &buf[0]);
+  snprintf(&buf[0], sizeof(buf), "%.1f%%", myConfig.getBeerABV(idx));
+  myDisplay.printPosition(idx, -1, 16, &buf[0]);
 
   snprintf(&buf[0], sizeof(buf), "%d pints", pint);
-  myDisplay.printPosition(-1, 32, &buf[0]);
+  myDisplay.printPosition(idx, -1, 32, &buf[0]);
 
-  convertFloatToString(myScale.getValue(), &buf[0], myConfig.getWeightPrecision());
+  convertFloatToString(myScale.getValue(idx), &buf[0], myConfig.getWeightPrecision());
 
-  // Lets draw the footer here.
-  myDisplay.setFont(FontSize::FONT_10);
-  if (!(loopCounter % 6))
-    myDisplay.printPosition(-1, myDisplay.getHeight() - myDisplay.getCurrentFontSize() - 1, &buf[0]);
-  else if (!(loopCounter % 4))
-    myDisplay.printPosition(-1, myDisplay.getHeight() - myDisplay.getCurrentFontSize() - 1, myWifi.getIPAddress());
-  else if (!(loopCounter % 2))
-    myDisplay.printPosition(-1, myDisplay.getHeight() - myDisplay.getCurrentFontSize() - 1, WiFi.SSID());
+  // Lets draw the footer here (only on display 1).
+  if (idx == UnitIndex::UNIT_1) {
+    myDisplay.setFont(idx, FontSize::FONT_10);
+    if (!(loopCounter % 6))
+      myDisplay.printPosition(idx, -1, myDisplay.getHeight(idx) - myDisplay.getCurrentFontSize(idx) - 1, &buf[0]);
+    else if (!(loopCounter % 4))
+      myDisplay.printPosition(idx, -1, myDisplay.getHeight(idx) - myDisplay.getCurrentFontSize(idx) - 1, myWifi.getIPAddress());
+    else if (!(loopCounter % 2))
+      myDisplay.printPosition(idx, -1, myDisplay.getHeight(idx) - myDisplay.getCurrentFontSize(idx) - 1, WiFi.SSID());  
+  }
 
-  myDisplay.show();
+  myDisplay.show(idx);
 }
 
 void loop() {
-  // TODO: Check if wifi is lost and do reconnect.
+  if (!myWifi.isConnected())
+    myWifi.connect();
+
   myWebServerHandler.loop();
   myWifi.loop();
 
@@ -137,28 +142,8 @@ void loop() {
     loopMillis = millis();
     loopCounter++;
 
-    drawScreen();
-/*
-    int pint = myScale.calculateNoPints();
-    convertFloatToString(myScale.getValue(), &buf[0], myConfig.getWeightPrecision());
-    Log.verbose(F("Loop: Reading scale and updating display weight=%s pints=%d." CR), &buf[0], pint);
-
-    myDisplay.clear();
-    myDisplay.setFont(FontSize::FONT_16);
-    myDisplay.printLineCentered(0, CFG_APPNAME);
-    myDisplay.printLineCentered(1, &buf[0]);
-    snprintf(&buf[0], sizeof(buf), "%d pints", pint);
-    myDisplay.printLineCentered(2, &buf[0]);
-
-    if (!(loopCounter % 8)) {
-      myDisplay.setFont(FontSize::FONT_10);
-      myDisplay.printLineCentered(5, myWifi.getIPAddress());
-    } else if (!(loopCounter % 12)) {
-      myDisplay.setFont(FontSize::FONT_10);
-      myDisplay.printLineCentered(5, WiFi.SSID());
-    }
-    myDisplay.show();
-    */
+    drawScreen(UnitIndex::UNIT_1);
+    drawScreen(UnitIndex::UNIT_2);
   }
 }
 

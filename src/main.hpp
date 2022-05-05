@@ -36,6 +36,11 @@ SOFTWARE.
 #define PIN_SCALE_SDA D5
 #define PIN_SCALE_SCL D6
 
+enum UnitIndex {
+  UNIT_1 = 0, 
+  UNIT_2 = 1
+};
+
 class SerialDebug {
  public:
   explicit SerialDebug(const uint32_t serialSpeed = 115200L);

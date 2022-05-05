@@ -101,11 +101,13 @@
             </div>
             <div class="row mb-3">
               <div class="col-md-4 bg-light">Weight</div>
-              <div class="col-md-4 bg-light" id="scale-weight">Loading...</div>
+              <div class="col-md-2 bg-light" id="scale-weight1">Loading...</div> 
+              <div class="col-md-2 bg-light" id="scale-weight2">Loading...</div>
             </div>
             <div class="row mb-3">
               <div class="col-md-4 bg-light">Pints left</div>
-              <div class="col-md-4 bg-light" id="pints">Loading...</div>
+              <div class="col-md-2 bg-light" id="pints1">Loading...</div> 
+              <div class="col-md-2 bg-light" id="pints2">Loading...</div>
             </div>
           </div>
         </div>
@@ -129,8 +131,11 @@
         $("#mdns").text(cfg["mdns"]);
         $("#id").text(cfg["id"]);
         $("#wifi-ssid").text(cfg["wifi-ssid"]); 
-        $("#scale-weight").text(cfg["scale-weight"] + " kg");
-        $("#pints").text(cfg["pints"]);
+
+        $("#scale-weight1").text(cfg["scale-weight1"] + " kg");
+        $("#scale-weight2").text(cfg["scale-weight2"] + " kg");
+        $("#pints1").text(cfg["pints1"]);
+        $("#pints2").text(cfg["pints2"]);
       })
       .fail(function () {
         showError('Unable to get data from the device.');

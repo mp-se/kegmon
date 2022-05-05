@@ -103,31 +103,11 @@
               <hr>
 
               <div class="row mb-3">
-                <label for="keg-weight" class="col-sm-2 col-form-label">Empty keg weight</label>
-                <div class="col-sm-3">
-                  <input type="number" step=".001" min="0" max="50" class="form-control" name="keg-weight" id="keg-weight" placeholder="1.00" data-bs-toggle="tooltip" title="The weight of an empty keg."> 
-                </div>
-              </div>
-
-              <div class="row mb-3">
-                <label for="pint-weight" class="col-sm-2 col-form-label">Pint of beer weight</label>
-                <div class="col-sm-3">
-                  <input type="number" step=".001" min="0" max="50" class="form-control" name="pint-weight" id="pint-weight" placeholder="0.10" data-bs-toggle="tooltip" title="The weight of a unit of beer."> 
-                </div>
-              </div>
-
-              <hr>
-
-              <div class="row mb-3">
                 <label for="brewfather-userkey" class="col-sm-2 col-form-label">Brewfather User Key</label>
                 <div class="col-sm-3">
                   <input type="text" maxlength="80" class="form-control" name="brewfather-userkey" id="brewfather-userkey" placeholder="" data-bs-toggle="tooltip" title="User key obtained from the control panel in brewfather. Need access to batches.">
                 </div>
-
-                <div class="col-sm-4">
-                  <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modal-brewfather" data-bs-toggle="tooltip" title="Select a brew from brewfather">Fetch beer from Brewfather</button>
-                </div>
-  
+ 
               </div>
               <div class="row mb-3">
                 <label for="brewfather-apikey" class="col-sm-2 col-form-label">Brewfather API Key</label>
@@ -139,27 +119,71 @@
               <hr>
 
               <div class="row mb-3">
-                <label for="beer-name" class="col-sm-2 col-form-label">Beer name</label>
+                <label for="keg-weight1" class="col-sm-2 col-form-label">Empty keg weight</label>
                 <div class="col-sm-3">
-                  <input type="text" maxlength="20" class="form-control" name="beer-name" id="beer-name" placeholder="" data-bs-toggle="tooltip" title="Name of the beer being served.">
+                  <input type="number" step=".001" min="0" max="50" class="form-control" name="keg-weight1" id="keg-weight1" placeholder="1.00" data-bs-toggle="tooltip" title="The weight of an empty keg."> 
+                </div>
+                <div class="col-sm-3">
+                  <input type="number" step=".001" min="0" max="50" class="form-control" name="keg-weight2" id="keg-weight2" placeholder="1.00" data-bs-toggle="tooltip" title="The weight of an empty keg."> 
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label for="pint-weight1" class="col-sm-2 col-form-label">Pint of beer weight</label>
+                <div class="col-sm-3">
+                  <input type="number" step=".001" min="0" max="50" class="form-control" name="pint-weight1" id="pint-weight1" placeholder="0.10" data-bs-toggle="tooltip" title="The weight of a unit of beer."> 
+                </div>
+                <div class="col-sm-3">
+                  <input type="number" step=".001" min="0" max="50" class="form-control" name="pint-weight2" id="pint-weight2" placeholder="0.10" data-bs-toggle="tooltip" title="The weight of a unit of beer."> 
+                </div>
+              </div>
+
+              <hr>
+
+              <div class="row mb-3">
+                <label for="keg-weight1" class="col-sm-2 col-form-label"></label>
+                <div class="col-sm-3">
+                  <button type="button" class="btn btn-secondary" data-field1="1" data-bs-toggle="modal" data-bs-target="#modal-brewfather" data-bs-toggle="tooltip" title="Select a brew from brewfather">Fetch from Brewfather (1)</button>
+                </div>
+                <div class="col-sm-3">
+                  <button type="button" class="btn btn-secondary" data-field1="2" data-bs-toggle="modal" data-bs-target="#modal-brewfather" data-bs-toggle="tooltip" title="Select a brew from brewfather">Fetch from Brewfather (2)</button>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label for="beer-name1" class="col-sm-2 col-form-label">Beer name</label>
+                <div class="col-sm-3">
+                  <input type="text" maxlength="20" class="form-control" name="beer-name1" id="beer-name1" placeholder="" data-bs-toggle="tooltip" title="Name of the beer being served.">
+                </div>
+                <div class="col-sm-3">
+                  <input type="text" maxlength="20" class="form-control" name="beer-name2" id="beer-name2" placeholder="" data-bs-toggle="tooltip" title="Name of the beer being served.">
                 </div>
               </div>
               <div class="row mb-3">
-                <label for="beer-abv" class="col-sm-2 col-form-label">Beer ABV</label>
+                <label for="beer-abv1" class="col-sm-2 col-form-label">Beer ABV</label>
                 <div class="col-sm-3">
-                  <input type="number" step=".01" min="0" max="20" class="form-control" name="beer-abv" id="beer-abv" placeholder="4.5" data-bs-toggle="tooltip" title="ABV of the beer being served."> 
+                  <input type="number" step=".01" min="0" max="20" class="form-control" name="beer-abv1" id="beer-abv1" placeholder="4.5" data-bs-toggle="tooltip" title="ABV of the beer being served."> 
+                </div>
+                <div class="col-sm-3">
+                  <input type="number" step=".01" min="0" max="20" class="form-control" name="beer-abv2" id="beer-abv2" placeholder="4.5" data-bs-toggle="tooltip" title="ABV of the beer being served."> 
                 </div>
               </div>
               <div class="row mb-3">
-                <label for="beer-abv" class="col-sm-2 col-form-label">Beer EBC</label>
+                <label for="beer-abv1" class="col-sm-2 col-form-label">Beer EBC (hide)</label>
                 <div class="col-sm-3">
-                  <input type="number" step="1" min="0" max="100" class="form-control" name="beer-ebc" id="beer-ebc"> 
+                  <input type="number" step="1" min="0" max="100" class="form-control" name="beer-ebc1" id="beer-ebc1"> 
+                </div>
+                <div class="col-sm-3">
+                  <input type="number" step="1" min="0" max="100" class="form-control" name="beer-ebc2" id="beer-ebc2"> 
                 </div>
               </div>
               <div class="row mb-3">
-                <label for="beer-abv" class="col-sm-2 col-form-label">Beer IBU</label>
+                <label for="beer-abv1" class="col-sm-2 col-form-label">Beer IBU (hide)</label>
                 <div class="col-sm-3">
-                  <input type="number" step="1" min="0" max="100" class="form-control" name="beer-ibu" id="beer-ibu"> 
+                  <input type="number" step="1" min="0" max="100" class="form-control" name="beer-ibu1" id="beer-ibu1"> 
+                </div>
+                <div class="col-sm-3">
+                  <input type="number" step="1" min="0" max="100" class="form-control" name="beer-ibu2" id="beer-ibu2"> 
                 </div>
               </div>
 
@@ -204,8 +228,10 @@
         </div>
         <div class="modal-body">
 
+          <input type="text" id="field1" hidden>
+
           <div class="row mb-3">
-            <label class="col-sm-4 col-form-label" for="ble">Select beer</label>
+            <label class="col-sm-4 col-form-label" for="brewfather-list">Select beer</label>
 
             <div class="col-sm-8">
               <select class="form-select" id="brewfather-list" name="brewfather-list" data-bs-toggle="tooltip" title="List of beers fetched from Brewfather">
@@ -213,15 +239,8 @@
               </select>
             </div>
           </div>
-<!--
-          <label for="http-header" class="col-form-label">Header 1 (Header: value)</label>
-          <input type="text" maxlength="100" class="form-control" id="header1" oninput="checkHeader(this)" placeholder="Content-Type: application/json" data-bs-toggle="tooltip" title="Set a http headers, empty string is skipped">
-          <label for="http-header" class="col-form-label">Header 2 (Header: value)</label>
-          <input type="text" maxlength="100" class="form-control" id="header2" oninput="checkHeader(this)" data-bs-toggle="tooltip" title="Set a http headers, empty string is skipped">
-          <input type="text" id="field1" hidden>
-          <input type="text" id="field2" hidden>
--->
-</div>
+        </div>
+
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" data-bs-dismiss="modal"  data-bs-toggle="tooltip" title="Close dialog, press the save button in the section to save data">Close</button>
         </div>
@@ -257,21 +276,32 @@
     }
 
     $('#modal-brewfather').on('show.bs.modal', function (event) {
-      $( "#brewfather-list" ).prop( "disabled", true );
+      var button = $(event.relatedTarget) 
+      var field1 = button.data('field1') 
+      var modal = $(this);
+      modal.find('.modal-body #field1').val(field1)
+
       getBrewfatherBatches();
       // parseBrewfatherBatches();
-      $( "#brewfather-list" ).prop( "disabled", false );
     })
 
     $('#modal-brewfather').on('hide.bs.modal', function (event) {
       var modal = $(this);
+
       beerId = modal.find('.modal-body #brewfather-list').val();   
       for(var i = 0; i < brewFatherBatches.length; i++) {
         if(beerId == brewFatherBatches[i]['_id']) {
-          $("#beer-name").val(brewFatherBatches[i]['recipe']['name']);
-          $("#beer-abv").val(brewFatherBatches[i]['recipe']['abv']);
-          $("#beer-ebc").val(Math.round(brewFatherBatches[i]['recipe']['color']));
-          $("#beer-ibu").val(Math.round(brewFatherBatches[i]['recipe']['ibu']));
+          if($("#field1").val() == "1") {
+            $("#beer-name1").val(brewFatherBatches[i]['recipe']['name']);
+            $("#beer-abv1").val(brewFatherBatches[i]['recipe']['abv']);
+            $("#beer-ebc1").val(Math.round(brewFatherBatches[i]['recipe']['color']));
+            $("#beer-ibu1").val(Math.round(brewFatherBatches[i]['recipe']['ibu']));
+          } else {
+            $("#beer-name2").val(brewFatherBatches[i]['recipe']['name']);
+            $("#beer-abv2").val(brewFatherBatches[i]['recipe']['abv']);
+            $("#beer-ebc2").val(Math.round(brewFatherBatches[i]['recipe']['color']));
+            $("#beer-ibu2").val(Math.round(brewFatherBatches[i]['recipe']['ibu']));
+          }
         }
       }
     })
@@ -291,6 +321,7 @@
         return;
       }
 
+      $( "#brewfather-list" ).prop( "disabled", true );
       var auth = userkey + ":" + apikey;
 
       $('#spinner').show(); 
@@ -303,6 +334,7 @@
           console.log(res);
           brewFatherBatches = res;
           parseBrewfatherBatches();
+          $( "#brewfather-list" ).prop( "disabled", false );
         },
         statusCode: {
           401:function() { 
@@ -343,14 +375,21 @@
 
         $("#mdns").val(cfg["mdns"]);
         $("#weight-precision").val(cfg["weight-precision"]);
-        $("#keg-weight").val(cfg["keg-weight"]);
-        $("#pint-weight").val(cfg["pint-weight"]);
         $("#brewfather-apikey").val(cfg["brewfather-apikey"]);
         $("#brewfather-userkey").val(cfg["brewfather-userkey"]);
-        $("#beer-name").val(cfg["beer-name"]);
-        $("#beer-abv").val(cfg["beer-abv"]);
-        $("#beer-ebc").val(cfg["beer-ebc"]);
-        $("#beer-ibu").val(cfg["beer-ibu"]);
+
+        $("#keg-weight1").val(cfg["keg-weight1"]);
+        $("#keg-weight2").val(cfg["keg-weight2"]);
+        $("#pint-weight1").val(cfg["pint-weight1"]);
+        $("#pint-weight2").val(cfg["pint-weight2"]);
+        $("#beer-name1").val(cfg["beer-name1"]);
+        $("#beer-name2").val(cfg["beer-name2"]);
+        $("#beer-abv1").val(cfg["beer-abv1"]);
+        $("#beer-abv2").val(cfg["beer-abv2"]);
+        $("#beer-ebc1").val(cfg["beer-ebc1"]);
+        $("#beer-ebc2").val(cfg["beer-ebc2"]);
+        $("#beer-ibu1").val(cfg["beer-ibu1"]);
+        $("#beer-ibu2").val(cfg["beer-ibu2"]);
       })
       .fail(function () {
         showError('Unable to get data from the device.');

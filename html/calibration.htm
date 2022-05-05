@@ -83,6 +83,20 @@
         </h2>
         <div id="collapseCalibration" class="accordion-collapse collapse show" aria-labelledby="headingCalibration" data-bs-parent="#accordion" >
           <div class="accordion-body">
+
+
+
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label" for="scale-index">Select scale</label>
+                <div class="col-sm-2">
+                  <select class="form-select" id="scale-index" name="scale-index" data-bs-toggle="tooltip" title="Select the scale to operate on">
+                    <option value="1">Scale 1</option>
+                    <option value="2">Scale 2</option>
+                  </select>
+                </div>
+
+            </div>
+
             <div class="row mb-3">
               <div class="col border bg-light">
                 <p class="h4">Step 1 - Reset scale</p>
@@ -139,12 +153,12 @@
     //window.onload = start;
 
     $("#tare-btn").click(function(e){
-      console.log( "Resetting scale..." );
+      console.log( "Resetting scale #" + $("#scale-index").val() );
       $.ajax( { 
         type: "GET",
         url: "/api/scale/tare", 
         //url: "../test/scale.json", 
-        data: { }, 
+        data: { "scale-index": $("#scale-index").val() }, 
         success: function(result) { 
           showSuccess('Scale is now reset to zero weight, procceed to step 2.');  
           showScaleJson(result);
@@ -154,12 +168,12 @@
     });
 
     $("#factor-btn").click(function(e){
-      console.log( "Creating factor with known weight..." );
+      console.log( "Creating factor with known weight #" + $("#scale-index").val());
       $.ajax( { 
         type: "GET",
         url: "/api/scale/factor", 
         //url: "../test/scale.json", 
-        data: { weight: $("#weight").val() }, 
+        data: { weight: $("#weight").val(), "scale-index": $("#scale-index").val() }, 
         success: function(result) { 
           showSuccess('Scale is now calibrated...');  
           showScaleJson(result);
@@ -169,7 +183,7 @@
     });
 
     $("#test-btn").click(function(e){
-      console.log( "Reading scale..." );
+      console.log( "Reading scale #" + $("#scale-index").val());
       $.ajax( { 
         type: "GET",
         url: "/api/scale", 
@@ -184,10 +198,17 @@
 
     function showScaleJson(result) {
       console.log(result);
-      $("#scale-offset").text("Offset: " + result["scale-offset"]);
-      $("#scale-factor").text("Factor: " + result["scale-factor"]);
-      $("#scale-raw").text("Raw: " + result["scale-raw"]);
-      $("#scale-weight").text("Weight: " + result["scale-weight"]);
+      if($("#scale-index").val()==1) {
+        $("#scale-offset").text("Offset: " + result["scale-offset1"]);
+        $("#scale-factor").text("Factor: " + result["scale-factor1"]);
+        $("#scale-raw").text("Raw: " + result["scale-raw1"]);
+        $("#scale-weight").text("Weight: " + result["scale-weight1"]);
+      } else {
+        $("#scale-offset").text("Offset: " + result["scale-offset2"]);
+        $("#scale-factor").text("Factor: " + result["scale-factor2"]);
+        $("#scale-raw").text("Raw: " + result["scale-raw2"]);
+        $("#scale-weight").text("Weight: " + result["scale-weight2"]);
+      }
     }
 
     /*function getScale() {

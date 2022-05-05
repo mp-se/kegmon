@@ -30,62 +30,79 @@ Scale::Scale() {
 }
 
 void Scale::setup() {
-  // Log.verbose(F("Scal: Initializing scale, using offset %l." CR), myConfig.getScaleOffset());
-  _scale = new HX711();
-  _scale->begin(PIN_SCALE_SDA, PIN_SCALE_SCL);
-  _scale->set_offset(myConfig.getScaleOffset());  
+  Log.verbose(F("Scal: Initializing scale, using offset %l." CR), myConfig.getScaleOffset(0));
+  _scale[0] = new HX711();
+  _scale[0]->begin(PIN_SCALE_SDA, PIN_SCALE_SCL);
+  _scale[0]->set_offset(myConfig.getScaleOffset(UnitIndex::UNIT_1));
+
+  // TODO: Add init code for second scale
 }
 
-float Scale::getValue() {
-  float fs = myConfig.getScaleFactor();
+float Scale::getValue(UnitIndex idx) {
+  if (!_scale[idx])
+    return 0;
+
+  float fs = myConfig.getScaleFactor(idx);
 
   if (fs == 0.0) 
     fs = 1.0;
 
-  _scale->set_scale(fs);
+  _scale[idx]->set_scale(fs);
 
-  float f = _scale->get_units();
-  // Log.verbose(F("Scal: Reading weight=%F (scale factor=%F)." CR), f, fs);
+  float f = _scale[idx]->get_units();
+  Log.verbose(F("Scal: Reading weight=%F (scale factor=%F) [%d]." CR), f, fs, idx);
   return reduceFloatPrecision(f, myConfig.getWeightPrecision());
 }
 
-void Scale::tare() {
-  // Log.verbose(F("Scal: Set scale to zero, prepare for calibration." CR));
+void Scale::tare(UnitIndex idx) {
+  if (!_scale[idx])
+    return;
 
-  _scale->set_scale();
-  _scale->tare();
+  Log.verbose(F("Scal: Set scale to zero, prepare for calibration [%d]." CR), idx);
 
-  long l = _scale->read_average();
+  _scale[idx]->set_scale();
+  _scale[idx]->tare();
+
+  long l = _scale[idx]->read_average();
   
-  // Log.verbose(F("Scal: New scale offset found %l." CR), l);
-  _scale->set_offset(l);  
+  Log.verbose(F("Scal: New scale offset found %l [%d]." CR), l, idx);
+  _scale[idx]->set_offset(l);  
 
-  myConfig.setScaleOffset(l);
+  myConfig.setScaleOffset(idx, l);
   myConfig.saveFile();
 }
 
-long Scale::getRawValue() {
-  return _scale->get_value(_readCount);
+long Scale::getRawValue(UnitIndex idx) {
+  if (!_scale[idx])
+    return 0;
+
+  return _scale[idx]->get_value(_readCount);
 }
 
-void Scale::findFactor(float weight) {
-  long l = getRawValue();
+void Scale::findFactor(UnitIndex idx, float weight) {
+  if (!_scale[idx])
+    return;
+
+  long l = getRawValue(idx);
 
   float f = l/weight;
-  // Log.verbose(F("Scal: Detecting factor for weight %F, raw %l %F." CR), weight, l, f);
+  Log.verbose(F("Scal: Detecting factor for weight %F, raw %l %F [%d]." CR), weight, l, f, idx);
 
-  myConfig.setScaleFactor(f);
+  myConfig.setScaleFactor(idx, f);
   myConfig.saveFile();
 }
 
-int Scale::calculateNoPints() {
-  float v = getValue();
-  float p = myConfig.getPintWeight();
+int Scale::calculateNoPints(UnitIndex idx) {
+  if (!_scale[idx])
+    return 0;
+
+  float v = getValue(idx);
+  float p = myConfig.getPintWeight(idx);
 
   if (p == 0.0) 
     p = 1;
 
-  int pints = (v - myConfig.getKegWeight()) / p;
+  int pints = (v - myConfig.getKegWeight(idx)) / p;
   return pints<0 ? 0 : pints;
 }
 

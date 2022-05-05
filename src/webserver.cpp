@@ -80,8 +80,13 @@ void WebServerHandler::webScale() {
 }
 
 void WebServerHandler::webScaleTare() {
+  int idx = _server->arg(PARAM_SCALE).toInt();
+
   Log.notice(F("WEB : webServer callback /api/scale/tare." CR));
-  myScale.tare();
+  if (idx == 1)
+    myScale.tare(UnitIndex::UNIT_1);
+  else
+    myScale.tare(UnitIndex::UNIT_2);
 
   DynamicJsonDocument doc(256);
   populateScaleJson(doc);
@@ -94,9 +99,13 @@ void WebServerHandler::webScaleTare() {
 
 void WebServerHandler::webScaleFactor() {
   float weight = _server->arg(PARAM_WEIGHT).toFloat();
-  Log.notice(F("WEB : webServer callback /api/scale/factor, weight=%F." CR), weight);
+  int idx = _server->arg(PARAM_SCALE).toInt();
+  Log.notice(F("WEB : webServer callback /api/scale/factor, weight=%F [%d]." CR), weight, idx);
 
-  myScale.findFactor(weight);
+  if (idx == 1)
+    myScale.findFactor(UnitIndex::UNIT_1, weight);
+  else
+    myScale.findFactor(UnitIndex::UNIT_2, weight);
 
   DynamicJsonDocument doc(256);
   populateScaleJson(doc);
@@ -108,10 +117,14 @@ void WebServerHandler::webScaleFactor() {
 }
 
 void WebServerHandler::populateScaleJson(DynamicJsonDocument& doc) {
-  doc[PARAM_SCALE_FACTOR] = myConfig.getScaleFactor();
-  doc[PARAM_SCALE_WEIGHT] = myScale.getValue();
-  doc[PARAM_SCALE_RAW] = myScale.getRawValue();
-  doc[PARAM_SCALE_OFFSET] = myConfig.getScaleOffset();
+  doc[PARAM_SCALE_FACTOR1] = myConfig.getScaleFactor(0);
+  doc[PARAM_SCALE_FACTOR2] = myConfig.getScaleFactor(1);
+  doc[PARAM_SCALE_WEIGHT1] = myScale.getValue(UnitIndex::UNIT_1);
+  doc[PARAM_SCALE_WEIGHT2] = myScale.getValue(UnitIndex::UNIT_2);
+  doc[PARAM_SCALE_RAW1] = myScale.getRawValue(UnitIndex::UNIT_1);
+  doc[PARAM_SCALE_RAW2] = myScale.getRawValue(UnitIndex::UNIT_2);
+  doc[PARAM_SCALE_OFFSET1] = myConfig.getScaleOffset(0);
+  doc[PARAM_SCALE_OFFSET2] = myConfig.getScaleOffset(1);
 
 #if LOG_LEVEL == 6
   serializeJson(doc, Serial);
@@ -144,16 +157,23 @@ void WebServerHandler::webConfigPost() {
   // if (_server->hasArg(PARAM_PASS2)) myConfig.setWifiPass(_server->arg(PARAM_PASS2), 1);
   if (_server->hasArg(PARAM_TEMPFORMAT)) myConfig.setTempFormat(_server->arg(PARAM_TEMPFORMAT).charAt(0));
   if (_server->hasArg(PARAM_WEIGHT_PRECISION)) myConfig.setWeightPrecision(_server->arg(PARAM_WEIGHT_PRECISION).toInt());
-  if (_server->hasArg(PARAM_KEG_WEIGHT)) myConfig.setKegWeight(_server->arg(PARAM_KEG_WEIGHT).toFloat());
-  if (_server->hasArg(PARAM_PINT_WEIGHT)) myConfig.setPintWeight(_server->arg(PARAM_PINT_WEIGHT).toFloat());
-
-  if (_server->hasArg(PARAM_BEER_NAME)) myConfig.setBeerName(_server->arg(PARAM_BEER_NAME));
-  if (_server->hasArg(PARAM_BEER_EBC)) myConfig.setBeerEBC(_server->arg(PARAM_BEER_EBC).toInt());
-  if (_server->hasArg(PARAM_BEER_ABV)) myConfig.setBeerABV(_server->arg(PARAM_BEER_ABV).toFloat());
-  if (_server->hasArg(PARAM_BEER_IBU)) myConfig.setBeerIBU(_server->arg(PARAM_BEER_IBU).toInt());
-
   if (_server->hasArg(PARAM_BREWFATHER_APIKEY)) myConfig.setBrewfatherApiKey(_server->arg(PARAM_BREWFATHER_APIKEY));
   if (_server->hasArg(PARAM_BREWFATHER_USERKEY)) myConfig.setBrewfatherUserKey(_server->arg(PARAM_BREWFATHER_USERKEY));
+
+  if (_server->hasArg(PARAM_KEG_WEIGHT1)) myConfig.setKegWeight(0, _server->arg(PARAM_KEG_WEIGHT1).toFloat());
+  if (_server->hasArg(PARAM_KEG_WEIGHT2)) myConfig.setKegWeight(1, _server->arg(PARAM_KEG_WEIGHT2).toFloat());
+  if (_server->hasArg(PARAM_PINT_WEIGHT1)) myConfig.setPintWeight(0, _server->arg(PARAM_PINT_WEIGHT1).toFloat());
+  if (_server->hasArg(PARAM_PINT_WEIGHT2)) myConfig.setPintWeight(1, _server->arg(PARAM_PINT_WEIGHT2).toFloat());
+
+  if (_server->hasArg(PARAM_BEER_NAME1)) myConfig.setBeerName(0, _server->arg(PARAM_BEER_NAME1));
+  if (_server->hasArg(PARAM_BEER_NAME2)) myConfig.setBeerName(1, _server->arg(PARAM_BEER_NAME2));
+  if (_server->hasArg(PARAM_BEER_EBC1)) myConfig.setBeerEBC(0, _server->arg(PARAM_BEER_EBC1).toInt());
+  if (_server->hasArg(PARAM_BEER_EBC2)) myConfig.setBeerEBC(1, _server->arg(PARAM_BEER_EBC2).toInt());
+  if (_server->hasArg(PARAM_BEER_ABV1)) myConfig.setBeerABV(0, _server->arg(PARAM_BEER_ABV1).toFloat());
+  if (_server->hasArg(PARAM_BEER_ABV2)) myConfig.setBeerABV(1, _server->arg(PARAM_BEER_ABV2).toFloat());
+  if (_server->hasArg(PARAM_BEER_IBU1)) myConfig.setBeerIBU(0, _server->arg(PARAM_BEER_IBU1).toInt());
+  if (_server->hasArg(PARAM_BEER_IBU2)) myConfig.setBeerIBU(1, _server->arg(PARAM_BEER_IBU2).toInt());
+
 
   myConfig.saveFile();
   _server->sendHeader("Location", "/config.htm", true);
@@ -171,7 +191,9 @@ void WebServerHandler::webStatus() {
   doc[PARAM_SSID] = myConfig.getWifiSSID(0);
   doc[PARAM_APP_VER] = CFG_APPVER;
   doc[PARAM_APP_BUILD] = CFG_GITREV;
-  doc[PARAM_PINTS] = myScale.calculateNoPints();
+
+  doc[PARAM_PINTS1] = myScale.calculateNoPints(UnitIndex::UNIT_1);
+  doc[PARAM_PINTS2] = myScale.calculateNoPints(UnitIndex::UNIT_2);
 
   String out;
   out.reserve(1024);

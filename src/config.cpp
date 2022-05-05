@@ -47,17 +47,26 @@ void Config::createJson(DynamicJsonDocument& doc) {
   doc[PARAM_SSID2] = getWifiSSID(1);
   doc[PARAM_PASS2] = getWifiPass(1);
   doc[PARAM_TEMPFORMAT] = String(getTempFormat());
-  doc[PARAM_SCALE_FACTOR] = getScaleFactor();
-  doc[PARAM_SCALE_OFFSET] = getScaleOffset();
   doc[PARAM_WEIGHT_PRECISION] = getWeightPrecision();
-  doc[PARAM_KEG_WEIGHT] = getKegWeight();
-  doc[PARAM_PINT_WEIGHT] = getPintWeight();
-  doc[PARAM_BEER_NAME] = getBeerName();
-  doc[PARAM_BEER_ABV] = getBeerABV();
-  doc[PARAM_BEER_EBC] = getBeerEBC();
-  doc[PARAM_BEER_IBU] = getBeerIBU();
   doc[PARAM_BREWFATHER_APIKEY] = getBrewfatherApiKey();
   doc[PARAM_BREWFATHER_USERKEY] = getBrewfatherUserKey();
+
+  doc[PARAM_SCALE_FACTOR1] = getScaleFactor(0);
+  doc[PARAM_SCALE_FACTOR2] = getScaleFactor(1);
+  doc[PARAM_SCALE_OFFSET1] = getScaleOffset(0);
+  doc[PARAM_SCALE_OFFSET2] = getScaleOffset(1);
+  doc[PARAM_KEG_WEIGHT1] = getKegWeight(0);
+  doc[PARAM_KEG_WEIGHT2] = getKegWeight(1);
+  doc[PARAM_PINT_WEIGHT1] = getPintWeight(0);
+  doc[PARAM_PINT_WEIGHT2] = getPintWeight(1);
+  doc[PARAM_BEER_NAME1] = getBeerName(0);
+  doc[PARAM_BEER_NAME2] = getBeerName(1);
+  doc[PARAM_BEER_ABV1] = getBeerABV(0);
+  doc[PARAM_BEER_ABV2] = getBeerABV(1);
+  doc[PARAM_BEER_EBC1] = getBeerEBC(0);
+  doc[PARAM_BEER_EBC2] = getBeerEBC(1);
+  doc[PARAM_BEER_IBU1] = getBeerIBU(0);
+  doc[PARAM_BEER_IBU2] = getBeerIBU(1);
 }
 
 bool Config::saveFile() {
@@ -133,20 +142,28 @@ bool Config::loadFile() {
     String s = doc[PARAM_TEMPFORMAT];
     setTempFormat(s.charAt(0));
   }
-  if (!doc[PARAM_SCALE_FACTOR].isNull()) setScaleFactor(doc[PARAM_SCALE_FACTOR].as<float>());
-  if (!doc[PARAM_SCALE_OFFSET].isNull()) setScaleOffset(doc[PARAM_SCALE_OFFSET].as<float>());
   if (!doc[PARAM_WEIGHT_PRECISION].isNull()) setWeightPrecision(doc[PARAM_WEIGHT_PRECISION].as<int>());
-
-  if (!doc[PARAM_KEG_WEIGHT].isNull()) setKegWeight(doc[PARAM_KEG_WEIGHT].as<float>());
-  if (!doc[PARAM_PINT_WEIGHT].isNull()) setPintWeight(doc[PARAM_PINT_WEIGHT].as<float>());
-
-  if (!doc[PARAM_BEER_NAME].isNull()) setBeerName(doc[PARAM_BEER_NAME]);
-  if (!doc[PARAM_BEER_EBC].isNull()) setBeerEBC(doc[PARAM_BEER_EBC].as<int>());
-  if (!doc[PARAM_BEER_ABV].isNull()) setBeerABV(doc[PARAM_BEER_ABV].as<float>());
-  if (!doc[PARAM_BEER_IBU].isNull()) setBeerIBU(doc[PARAM_BEER_IBU].as<int>());
-
   if (!doc[PARAM_BREWFATHER_APIKEY].isNull()) setBrewfatherApiKey(doc[PARAM_BREWFATHER_APIKEY]);
   if (!doc[PARAM_BREWFATHER_USERKEY].isNull()) setBrewfatherUserKey(doc[PARAM_BREWFATHER_USERKEY]);
+
+  if (!doc[PARAM_SCALE_FACTOR1].isNull()) setScaleFactor(0, doc[PARAM_SCALE_FACTOR1].as<float>());
+  if (!doc[PARAM_SCALE_FACTOR2].isNull()) setScaleFactor(1, doc[PARAM_SCALE_FACTOR2].as<float>());
+  if (!doc[PARAM_SCALE_OFFSET1].isNull()) setScaleOffset(0, doc[PARAM_SCALE_OFFSET1].as<float>());
+  if (!doc[PARAM_SCALE_OFFSET2].isNull()) setScaleOffset(1, doc[PARAM_SCALE_OFFSET2].as<float>());
+
+  if (!doc[PARAM_KEG_WEIGHT1].isNull()) setKegWeight(0, doc[PARAM_KEG_WEIGHT1].as<float>());
+  if (!doc[PARAM_KEG_WEIGHT2].isNull()) setKegWeight(1, doc[PARAM_KEG_WEIGHT2].as<float>());
+  if (!doc[PARAM_PINT_WEIGHT1].isNull()) setPintWeight(0, doc[PARAM_PINT_WEIGHT1].as<float>());
+  if (!doc[PARAM_PINT_WEIGHT2].isNull()) setPintWeight(1, doc[PARAM_PINT_WEIGHT2].as<float>());
+
+  if (!doc[PARAM_BEER_NAME1].isNull()) setBeerName(0, doc[PARAM_BEER_NAME1]);
+  if (!doc[PARAM_BEER_NAME2].isNull()) setBeerName(1, doc[PARAM_BEER_NAME2]);
+  if (!doc[PARAM_BEER_EBC1].isNull()) setBeerEBC(0, doc[PARAM_BEER_EBC1].as<int>());
+  if (!doc[PARAM_BEER_EBC2].isNull()) setBeerEBC(1, doc[PARAM_BEER_EBC2].as<int>());
+  if (!doc[PARAM_BEER_ABV1].isNull()) setBeerABV(0, doc[PARAM_BEER_ABV1].as<float>());
+  if (!doc[PARAM_BEER_ABV2].isNull()) setBeerABV(1, doc[PARAM_BEER_ABV2].as<float>());
+  if (!doc[PARAM_BEER_IBU1].isNull()) setBeerIBU(0, doc[PARAM_BEER_IBU1].as<int>());
+  if (!doc[PARAM_BEER_IBU2].isNull()) setBeerIBU(1, doc[PARAM_BEER_IBU2].as<int>());
 
   _saveNeeded = false;
   Log.notice(F("Cfg : Configuration file " CFG_FILENAME " loaded." CR));
