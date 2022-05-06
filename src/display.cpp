@@ -74,9 +74,13 @@ void Display::setup(UnitIndex idx) {
   _width[idx] = _display[idx]->width();
 
   clear(idx);
-  setFont(idx, FontSize::FONT_16 );
-  printLineCentered(idx, 0, CFG_APPNAME);  
-  printLineCentered(idx, 2, "Loading");
+
+  if (idx==0) { // Show on primary screen
+    setFont(idx, FontSize::FONT_16 );
+    printLineCentered(idx, 0, CFG_APPNAME);  
+    printLineCentered(idx, 2, "Loading");
+  }
+   
   show(idx);
 }
 

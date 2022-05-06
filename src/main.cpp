@@ -33,6 +33,7 @@ const int loopInterval = 1000;
 int loopCounter = 0;
 uint32_t loopMillis = 0;
 
+
 void printTimestamp(Print* _logOutput, int _logLevel) {
   char c[12];
   snprintf(c, sizeof(c), "%10lu ", millis());
@@ -99,6 +100,8 @@ void setup() {
   Log.notice(F("Main: Setup completed." CR));
 }
 
+bool showPints = false;
+
 void drawScreen(UnitIndex idx) {
   myDisplay.clear(idx);
   myDisplay.setFont(idx, FontSize::FONT_16);
@@ -112,19 +115,25 @@ void drawScreen(UnitIndex idx) {
   snprintf(&buf[0], sizeof(buf), "%.1f%%", myConfig.getBeerABV(idx));
   myDisplay.printPosition(idx, -1, 16, &buf[0]);
 
-  snprintf(&buf[0], sizeof(buf), "%d pints", pint);
-  myDisplay.printPosition(idx, -1, 32, &buf[0]);
+  if (!(loopCounter % 10))
+    showPints = !showPints;
 
-  convertFloatToString(myScale.getValue(idx), &buf[0], myConfig.getWeightPrecision());
+  if (!showPints) {
+    snprintf(&buf[0], sizeof(buf), "%d pints", pint);
+    myDisplay.printPosition(idx, -1, 32, &buf[0]);
+  } else {
+    convertFloatToString(myScale.getValue(idx), &buf[0], myConfig.getWeightPrecision());
+    String s(&buf[0]);
+    s += " kg";
+    myDisplay.printPosition(idx, -1, 32, s.c_str());
+  }
 
   // Lets draw the footer here (only on display 1).
   if (idx == UnitIndex::UNIT_1) {
     myDisplay.setFont(idx, FontSize::FONT_10);
-    if (!(loopCounter % 6))
-      myDisplay.printPosition(idx, -1, myDisplay.getHeight(idx) - myDisplay.getCurrentFontSize(idx) - 1, &buf[0]);
-    else if (!(loopCounter % 4))
+    if (!showPints)
       myDisplay.printPosition(idx, -1, myDisplay.getHeight(idx) - myDisplay.getCurrentFontSize(idx) - 1, myWifi.getIPAddress());
-    else if (!(loopCounter % 2))
+    else
       myDisplay.printPosition(idx, -1, myDisplay.getHeight(idx) - myDisplay.getCurrentFontSize(idx) - 1, WiFi.SSID());  
   }
 
