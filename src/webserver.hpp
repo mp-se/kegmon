@@ -33,10 +33,12 @@ INCBIN_EXTERN(IndexHtm);
 INCBIN_EXTERN(ConfigHtm);
 INCBIN_EXTERN(CalibrateHtm);
 INCBIN_EXTERN(AboutHtm);
+INCBIN_EXTERN(UploadHtm);
 
 class WebServerHandler {
  private:
   ESP8266WebServer* _server = 0;
+  File _uploadFile;
 
   void populateScaleJson(DynamicJsonDocument& doc);
 
@@ -46,11 +48,14 @@ class WebServerHandler {
   void webConfigGet();
   void webConfigPost();
   void webStatus();
+  void webUpload();
 
   void webIndexHtm() { _server->send_P(200, "text/html", (const char*)gIndexHtmData, gIndexHtmSize); }
   void webConfigHtm() { _server->send_P(200, "text/html", (const char*)gConfigHtmData, gConfigHtmSize); }
   void webCalibrateHtm() { _server->send_P(200, "text/html", (const char*)gCalibrateHtmData, gCalibrateHtmSize); }
   void webAboutHtm() { _server->send_P(200, "text/html", (const char*)gAboutHtmData, gAboutHtmSize); }
+  void webUploadHtm() { _server->send_P(200, "text/html", (const char*)gUploadHtmData, gUploadHtmSize); }
+  void webReturnOK() { _server->send(200); }
 
  public:
   bool setupWebServer();

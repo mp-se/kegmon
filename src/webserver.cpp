@@ -56,6 +56,9 @@ bool WebServerHandler::setupWebServer() {
   _server->on("/config.htm", HTTP_GET, std::bind(&WebServerHandler::webConfigHtm, this));
   _server->on("/calibration.htm", HTTP_GET, std::bind(&WebServerHandler::webCalibrateHtm, this));
   _server->on("/about.htm", HTTP_GET, std::bind(&WebServerHandler::webAboutHtm, this));
+  _server->on("/upload.htm", HTTP_GET, std::bind(&WebServerHandler::webUploadHtm, this));
+
+  _server->on("/api/upload", HTTP_POST, std::bind(&WebServerHandler::webReturnOK, this), std::bind(&WebServerHandler::webUpload,this));
 
   _server->begin();
   Log.notice(F("WEB : Web server started." CR));
@@ -199,6 +202,51 @@ void WebServerHandler::webStatus() {
   out.reserve(1024);
   serializeJson(doc, out);
   _server->send(200, "application/json", out.c_str());
+}
+
+void WebServerHandler::webUpload() {
+  Log.verbose(F("WEB : webServer callback for /api/upload." CR));
+  HTTPUpload& upload = _server->upload();
+  String f = upload.filename;
+  bool validFilename = false;
+
+  Log.verbose(F("WEB : webServer callback for /api/upload, receiving file %s, %d(%d)." CR), f.c_str(), upload.currentSize, upload.totalSize);
+
+  #define MAX_SKETCH_SPACE 1044464  
+
+  // Handle firmware update, hardcode since function return wrong value.
+  // (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
+  uint32_t maxSketchSpace = MAX_SKETCH_SPACE;
+
+  if (upload.status == UPLOAD_FILE_START) {
+    Log.notice(F("WEB : Start firmware upload, max sketch size %d kb." CR), maxSketchSpace / 1024);
+
+    if (!Update.begin(maxSketchSpace, U_FLASH, PIN_LED)) {
+        Log.error(F("WEB : Not enough space to store for this firmware." CR));
+      }
+    } else if (upload.status == UPLOAD_FILE_WRITE) {
+      Log.notice(F("WEB : Writing firmware upload %d (%d)." CR), upload.totalSize, maxSketchSpace);
+
+      if (upload.totalSize > maxSketchSpace) {
+        Log.error(F("WEB : Firmware file is to large." CR));
+      } else if (Update.write(upload.buf, upload.currentSize) != upload.currentSize) {
+        Log.warning(F("WEB : Firmware write was unsuccessful." CR));
+      }
+    } else if (upload.status == UPLOAD_FILE_END) {
+      Log.notice(F("WEB : Finish firmware upload." CR));
+      if (Update.end(true)) {
+        _server->send(200);
+        delay(500);
+        ESP_RESET();
+      } else {
+        Log.error(F("WEB : Failed to finish firmware flashing error=%d" CR), Update.getError());
+      }
+    } else {
+      Update.end();
+      Log.notice(F("WEB : Firmware flashing aborted." CR));
+    }
+
+    delay(0);
 }
 
 // EOF
