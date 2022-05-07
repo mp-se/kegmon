@@ -30,12 +30,15 @@ Scale::Scale() {
 }
 
 void Scale::setup() {
-  Log.verbose(F("Scal: Initializing scale, using offset %l." CR), myConfig.getScaleOffset(0));
+  Log.verbose(F("Scal: Initializing scale [0], using offset %l." CR), myConfig.getScaleOffset(0));
   _scale[0] = new HX711();
-  _scale[0]->begin(PIN_SCALE_SDA, PIN_SCALE_SCL);
+  _scale[0]->begin(PIN_SCALE1_SDA, PIN_SCALE1_SCL);
   _scale[0]->set_offset(myConfig.getScaleOffset(UnitIndex::UNIT_1));
 
-  // TODO: Add init code for second scale
+  Log.verbose(F("Scal: Initializing scale [1], using offset %l." CR), myConfig.getScaleOffset(1));
+  _scale[1] = new HX711();
+  _scale[1]->begin(PIN_SCALE2_SDA, PIN_SCALE2_SCL);
+  _scale[1]->set_offset(myConfig.getScaleOffset(UnitIndex::UNIT_2));
 }
 
 float Scale::getValue(UnitIndex idx) {
