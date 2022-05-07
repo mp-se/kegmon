@@ -102,6 +102,20 @@
               <div class="col-md-4 bg-light">SSID</div>
               <div class="col-md-4 bg-light" id="wifi-ssid">Loading...</div>
             </div>
+
+            <hr>
+
+            <div class="row mb-3">
+              <div class="col-md-4 bg-light">Temperature</div>
+              <div class="col-md-4 bg-light" id="temperature">Loading...</div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-4 bg-light">Humidity</div>
+              <div class="col-md-4 bg-light" id="humidity">Loading...</div>
+            </div>
+
+            <hr>
+
             <div class="row mb-3">
               <div class="col-md-4 bg-light">Weight</div>
               <div class="col-md-2 bg-light" id="scale-weight1">Loading...</div> 
@@ -134,6 +148,8 @@
         $("#mdns").text(cfg["mdns"]);
         $("#id").text(cfg["id"]);
         $("#wifi-ssid").text(cfg["wifi-ssid"]); 
+        $("#temperature").text(cfg["temperature"] + " C"); 
+        $("#humidity").text(cfg["humidity"] + " %"); 
 
         $("#scale-weight1").text(cfg["scale-weight1"] + " kg");
         $("#scale-weight2").text(cfg["scale-weight2"] + " kg");

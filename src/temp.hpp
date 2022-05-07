@@ -21,15 +21,26 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#define INCBIN_OUTPUT_SECTION ".irom.text"
-#include <incbin.h>
-#include <resources.hpp>
+#ifndef SRC_TEMP_HPP_
+#define SRC_TEMP_HPP_
 
-INCBIN(IndexHtm, "html/index.min.htm");
-INCBIN(ConfigHtm, "html/config.min.htm");
-INCBIN(CalibrateHtm, "html/calibration.min.htm");
-INCBIN(AboutHtm, "html/about.min.htm");
-INCBIN(UploadHtm, "html/upload.min.htm");
+#include <main.hpp>
+#include <DHT.h>
 
+class TempHumidity {
+ private:
+  DHT *_temp = 0;
+
+ public:
+  TempHumidity();
+  void setup();
+  float getTempValueC();
+  float getTempValueF();
+  float getHumidityValue();
+};
+
+extern TempHumidity myTemp;
+
+#endif  // SRC_TEMP_HPP_
 
 // EOF

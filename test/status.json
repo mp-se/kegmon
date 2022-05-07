@@ -9,6 +9,8 @@
   "scale-offset2": -286557,
   "pints1": 22,
   "pints2": 2,
+  "temperature": 22.4,
+  "humidity": 45.6,
   "app-ver": "0.0.1",
   "app-build": "build",
   "mdns": "hostname",

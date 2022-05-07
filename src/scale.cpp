@@ -39,7 +39,7 @@ void Scale::setup() {
     long l = _scale[0]->get_units(1);
     Log.notice(F("Scal: Verified connection to scale [0] got %l." CR), l);
   } else {
-    Log.error(F("Scal: Scale [0] not responding, disable interface." CR));
+    Log.error(F("Scal: Scale [0] not responding, disabling interface." CR));
     delete _scale[0];
     _scale[0] = 0;
   }
@@ -53,7 +53,7 @@ void Scale::setup() {
     long l = _scale[1]->get_units(1);
     Log.notice(F("Scal: Verified connection to scale [1] got %l." CR), l);
   } else {
-    Log.error(F("Scal: Scale [1] not responding, disable interface." CR));
+    Log.error(F("Scal: Scale [1] not responding, disabling interface." CR));
     delete _scale[1];
     _scale[1] = 0;
   }

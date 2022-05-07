@@ -26,6 +26,7 @@ SOFTWARE.
 #include <resources.hpp>
 #include <webserver.hpp>
 #include <wifi.hpp>
+#include <temp.hpp>
 #include <scale.hpp>
 
 WebServerHandler myWebServerHandler; 
@@ -197,6 +198,9 @@ void WebServerHandler::webStatus() {
 
   doc[PARAM_PINTS1] = myScale.calculateNoPints(UnitIndex::UNIT_1);
   doc[PARAM_PINTS2] = myScale.calculateNoPints(UnitIndex::UNIT_2);
+
+  doc[PARAM_TEMP] = myTemp.getTempValueC();
+  doc[PARAM_HUMIDITY] = myTemp.getHumidityValue();
 
   String out;
   out.reserve(1024);

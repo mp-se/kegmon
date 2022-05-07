@@ -61,6 +61,9 @@ SOFTWARE.
 #define PARAM_BEER_EBC1 "beer-ebc1"
 #define PARAM_BEER_EBC2 "beer-ebc2"
 
+#define PARAM_TEMP "temperature"
+#define PARAM_HUMIDITY "humidity"
+
 // Calibration input
 #define PARAM_WEIGHT "weight"
 #define PARAM_SCALE "scale-index"

@@ -21,15 +21,60 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#define INCBIN_OUTPUT_SECTION ".irom.text"
-#include <incbin.h>
-#include <resources.hpp>
+#include <temp.hpp>
+#include <config.hpp>
 
-INCBIN(IndexHtm, "html/index.min.htm");
-INCBIN(ConfigHtm, "html/config.min.htm");
-INCBIN(CalibrateHtm, "html/calibration.min.htm");
-INCBIN(AboutHtm, "html/about.min.htm");
-INCBIN(UploadHtm, "html/upload.min.htm");
+TempHumidity myTemp;
 
+TempHumidity::TempHumidity() {
+  Log.verbose(F("Temp: Initializing humidity sensor." CR));
+  _temp = new DHT(PIN_DH2, DHT22, 1);
+  _temp->begin();
+}
+
+float TempHumidity::getTempValueC() {
+  if (!_temp)
+    return 0;
+
+  float f = _temp->readTemperature();
+  Log.verbose(F("Temp: Reading temp %F C." CR), f);
+
+  if(isnan(f)) {
+    Log.error(F("Temp: Error reading temperature." CR));
+    return 0;
+  }
+
+  return f;
+}
+
+float TempHumidity::getTempValueF() {
+  if (!_temp)
+    return 0;
+
+  float f = _temp->readTemperature(true);
+  Log.verbose(F("Temp: Reading temp %F F." CR), f);
+
+  if(isnan(f)) {
+    Log.error(F("Temp: Error reading temperature." CR));
+    return 0;
+  }
+
+  return f;
+}
+
+float TempHumidity::getHumidityValue() {
+  if (!_temp)
+    return 0;
+
+  float h = _temp->readHumidity();
+  Log.verbose(F("Temp: Reading humidity %F." CR), h);
+
+  if(isnan(h)) {
+    Log.error(F("Temp: Error reading humidity." CR));
+    return 0;
+  }
+
+  return h;
+}
 
 // EOF

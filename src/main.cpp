@@ -26,6 +26,7 @@ SOFTWARE.
 #include <wifi.hpp>
 #include <display.hpp>
 #include <scale.hpp>
+#include <temp.hpp>
 #include <webserver.hpp>
 
 SerialDebug mySerial;
@@ -98,6 +99,10 @@ void setup() {
   myWifi.connect();
   myWebServerHandler.setupWebServer();
   Log.notice(F("Main: Setup completed." CR));
+
+  myTemp.getTempValueC();
+  myTemp.getTempValueF();
+  myTemp.getHumidityValue();
 }
 
 bool showPints = false;
