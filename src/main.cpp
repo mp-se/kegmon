@@ -107,25 +107,31 @@ void drawScreen(UnitIndex idx) {
   myDisplay.setFont(idx, FontSize::FONT_16);
 
   char buf[20];
-  int pint = myScale.calculateNoPints(idx);
 
   snprintf(&buf[0], sizeof(buf), "%s", myConfig.getBeerName(idx));
   myDisplay.printPosition(idx, -1, 0, &buf[0]);
 
-  snprintf(&buf[0], sizeof(buf), "%.1f%%", myConfig.getBeerABV(idx));
-  myDisplay.printPosition(idx, -1, 16, &buf[0]);
-
   if (!(loopCounter % 10))
     showPints = !showPints;
 
-  if (!showPints) {
-    snprintf(&buf[0], sizeof(buf), "%d pints", pint);
-    myDisplay.printPosition(idx, -1, 32, &buf[0]);
+
+  if (myScale.isConnected(idx)) {
+    int pint = myScale.calculateNoPints(idx);
+
+    snprintf(&buf[0], sizeof(buf), "%.1f%%", myConfig.getBeerABV(idx));
+    myDisplay.printPosition(idx, -1, 16, &buf[0]);
+
+    if (!showPints) {
+      snprintf(&buf[0], sizeof(buf), "%d pints", pint);
+      myDisplay.printPosition(idx, -1, 32, &buf[0]);
+    } else {
+      convertFloatToString(myScale.getValue(idx), &buf[0], myConfig.getWeightPrecision());
+      String s(&buf[0]);
+      s += " kg";
+      myDisplay.printPosition(idx, -1, 32, s.c_str());
+    }
   } else {
-    convertFloatToString(myScale.getValue(idx), &buf[0], myConfig.getWeightPrecision());
-    String s(&buf[0]);
-    s += " kg";
-    myDisplay.printPosition(idx, -1, 32, s.c_str());
+    myDisplay.printPosition(idx, -1, 32, "No scale");
   }
 
   // Lets draw the footer here (only on display 1).

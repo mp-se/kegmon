@@ -40,6 +40,7 @@ class Scale {
   long getRawValue(UnitIndex idx);
   void findFactor(UnitIndex idx, float weight);
   int calculateNoPints(UnitIndex idx);
+  bool isConnected(UnitIndex idx) { return _scale[idx] != 0 ? true : false; };
 };
 
 extern Scale myScale;
