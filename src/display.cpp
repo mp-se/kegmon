@@ -128,6 +128,14 @@ void Display::printPosition(UnitIndex idx, int x, int y, const String& text) {
   _display[idx]->drawString(x, y, text);
 }
 
+void Display::printLine(UnitIndex idx, int l, const String& text) {
+  if (!_display[idx])
+    return;
+
+  // Log.verbose(F("Disp: Printing text %s @ line %d [%d]." CR), text.c_str(), l, idx);
+  printPosition(idx, 0, _fontSize[idx]*l, text );
+}
+
 void Display::printLineCentered(UnitIndex idx, int l, const String& text) {
   if (!_display[idx])
     return;

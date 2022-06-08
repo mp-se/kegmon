@@ -34,7 +34,7 @@ class Scale {
 
  public:
   Scale();
-  void setup();
+  void setup(bool force = false);
   void tare(UnitIndex idx);
   float getValue(UnitIndex idx);
   long getRawValue(UnitIndex idx);

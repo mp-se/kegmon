@@ -123,12 +123,18 @@ void WebServerHandler::webScaleFactor() {
 void WebServerHandler::populateScaleJson(DynamicJsonDocument& doc) {
   doc[PARAM_SCALE_FACTOR1] = myConfig.getScaleFactor(0);
   doc[PARAM_SCALE_FACTOR2] = myConfig.getScaleFactor(1);
-  doc[PARAM_SCALE_WEIGHT1] = myScale.getValue(UnitIndex::UNIT_1);
-  doc[PARAM_SCALE_WEIGHT2] = myScale.getValue(UnitIndex::UNIT_2);
-  doc[PARAM_SCALE_RAW1] = myScale.getRawValue(UnitIndex::UNIT_1);
-  doc[PARAM_SCALE_RAW2] = myScale.getRawValue(UnitIndex::UNIT_2);
-  doc[PARAM_SCALE_OFFSET1] = myConfig.getScaleOffset(0);
-  doc[PARAM_SCALE_OFFSET2] = myConfig.getScaleOffset(1);
+
+  if (myScale.isConnected(UnitIndex::UNIT_1)) {
+    doc[PARAM_SCALE_WEIGHT1] = myScale.getValue(UnitIndex::UNIT_1);
+    doc[PARAM_SCALE_RAW1] = myScale.getRawValue(UnitIndex::UNIT_1);
+    doc[PARAM_SCALE_OFFSET1] = myConfig.getScaleOffset(0);  
+  }
+
+  if (myScale.isConnected(UnitIndex::UNIT_2)) {
+    doc[PARAM_SCALE_WEIGHT2] = myScale.getValue(UnitIndex::UNIT_2);
+    doc[PARAM_SCALE_RAW2] = myScale.getRawValue(UnitIndex::UNIT_2);
+    doc[PARAM_SCALE_OFFSET2] = myConfig.getScaleOffset(1);
+  }
 
 #if LOG_LEVEL == 6
   serializeJson(doc, Serial);
@@ -199,8 +205,12 @@ void WebServerHandler::webStatus() {
   doc[PARAM_PINTS1] = myScale.calculateNoPints(UnitIndex::UNIT_1);
   doc[PARAM_PINTS2] = myScale.calculateNoPints(UnitIndex::UNIT_2);
 
-  doc[PARAM_TEMP] = myTemp.getTempValueC();
-  doc[PARAM_HUMIDITY] = myTemp.getHumidityValue();
+  float f = myTemp.getTempValueC();
+
+  if (!isnan(f)) {
+    doc[PARAM_TEMP] = f;
+    doc[PARAM_HUMIDITY] = myTemp.getHumidityValue();
+  }
 
   String out;
   out.reserve(1024);

@@ -30,7 +30,7 @@ SOFTWARE.
 #include <webserver.hpp>
 
 SerialDebug mySerial;
-const int loopInterval = 1000; 
+const int loopInterval = 1000;
 int loopCounter = 0;
 uint32_t loopMillis = 0;
 
@@ -100,9 +100,21 @@ void setup() {
   myWebServerHandler.setupWebServer();
   Log.notice(F("Main: Setup completed." CR));
 
-  myTemp.getTempValueC();
-  myTemp.getTempValueF();
-  myTemp.getHumidityValue();
+  // Show what sensors has been detected on display 1
+  char buf[30];
+
+  myDisplay.clear(UnitIndex::UNIT_1);
+  myDisplay.setFont(UnitIndex::UNIT_1, FontSize::FONT_16);
+  snprintf(&buf[0], sizeof(buf), "Scale 1: %s", myScale.isConnected(UnitIndex::UNIT_1) ? "Yes" : "No");
+  myDisplay.printLine(UnitIndex::UNIT_1, 0, &buf[0]);
+  snprintf(&buf[0], sizeof(buf), "Scale 2: %s", myScale.isConnected(UnitIndex::UNIT_2) ? "Yes" : "No");
+  myDisplay.printLine(UnitIndex::UNIT_1, 1, &buf[0]);
+  snprintf(&buf[0], sizeof(buf), "Temp   : %s", !isnan(myTemp.getTempValueC()) ? "Yes" : "No");
+  myDisplay.printLine(UnitIndex::UNIT_1, 2, &buf[0]);
+  snprintf(&buf[0], sizeof(buf), "Version: %s", CFG_APPVER);
+  myDisplay.printLine(UnitIndex::UNIT_1, 3, &buf[0]);
+  myDisplay.show(UnitIndex::UNIT_1);  
+  delay(3000);
 }
 
 bool showPints = false;
@@ -118,7 +130,6 @@ void drawScreen(UnitIndex idx) {
 
   if (!(loopCounter % 10))
     showPints = !showPints;
-
 
   if (myScale.isConnected(idx)) {
     int pint = myScale.calculateNoPints(idx);
@@ -161,6 +172,10 @@ void loop() {
   if (abs((int32_t)(millis() - loopMillis)) > loopInterval) {
     loopMillis = millis();
     loopCounter++;
+
+    if (!(loopCounter % 30))
+      if (!myScale.isConnected(UnitIndex::UNIT_1) || !myScale.isConnected(UnitIndex::UNIT_2))
+        myScale.setup(); // Try to reconnect to scale
 
     drawScreen(UnitIndex::UNIT_1);
     drawScreen(UnitIndex::UNIT_2);

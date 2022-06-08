@@ -29,35 +29,45 @@ Scale myScale;
 Scale::Scale() {
 }
 
-void Scale::setup() {
-  Log.verbose(F("Scal: Initializing scale [0], using offset %l." CR), myConfig.getScaleOffset(0));
-  _scale[0] = new HX711();
-  _scale[0]->begin(PIN_SCALE1_SDA, PIN_SCALE1_SCL);
-  _scale[0]->set_offset(myConfig.getScaleOffset(UnitIndex::UNIT_1));
+void Scale::setup(bool force) {
 
-  if (_scale[0]->wait_ready_timeout(500)) {
-    long l = _scale[0]->get_units(1);
-    Log.notice(F("Scal: Verified connection to scale [0] got %l." CR), l);
-  } else {
-    Log.error(F("Scal: Scale [0] not responding, disabling interface." CR));
-    delete _scale[0];
-    _scale[0] = 0;
+  if (!_scale[0] || force) {
+    if (_scale[0])
+      delete _scale[0];
+
+    Log.verbose(F("Scal: Initializing scale [0], using offset %l." CR), myConfig.getScaleOffset(0));
+    _scale[0] = new HX711();
+    _scale[0]->begin(PIN_SCALE1_SDA, PIN_SCALE1_SCL);
+    _scale[0]->set_offset(myConfig.getScaleOffset(UnitIndex::UNIT_1));
+
+    if (_scale[0]->wait_ready_timeout(500)) {
+      long l = _scale[0]->get_units(1);
+      Log.notice(F("Scal: Verified connection to scale [0] got %l." CR), l);
+    } else {
+      Log.error(F("Scal: Scale [0] not responding, disabling interface." CR));
+      delete _scale[0];
+      _scale[0] = 0;
+    }
   }
 
-  Log.verbose(F("Scal: Initializing scale [1], using offset %l." CR), myConfig.getScaleOffset(1));
-  _scale[1] = new HX711();
-  _scale[1]->begin(PIN_SCALE2_SDA, PIN_SCALE2_SCL);
-  _scale[1]->set_offset(myConfig.getScaleOffset(UnitIndex::UNIT_2));
+  if (!_scale[1] || force) {
+    if (_scale[1])
+      delete _scale[1];
 
-  if (_scale[1]->wait_ready_timeout(500)) {
-    long l = _scale[1]->get_units(1);
-    Log.notice(F("Scal: Verified connection to scale [1] got %l." CR), l);
-  } else {
-    Log.error(F("Scal: Scale [1] not responding, disabling interface." CR));
-    delete _scale[1];
-    _scale[1] = 0;
+    Log.verbose(F("Scal: Initializing scale [1], using offset %l." CR), myConfig.getScaleOffset(1));
+    _scale[1] = new HX711();
+    _scale[1]->begin(PIN_SCALE2_SDA, PIN_SCALE2_SCL);
+    _scale[1]->set_offset(myConfig.getScaleOffset(UnitIndex::UNIT_2));
+
+    if (_scale[1]->wait_ready_timeout(500)) {
+      long l = _scale[1]->get_units(1);
+      Log.notice(F("Scal: Verified connection to scale [1] got %l." CR), l);
+    } else {
+      Log.error(F("Scal: Scale [1] not responding, disabling interface." CR));
+      delete _scale[1];
+      _scale[1] = 0;
+    }
   }
-
 }
 
 float Scale::getValue(UnitIndex idx) {

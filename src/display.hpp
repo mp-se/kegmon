@@ -54,6 +54,7 @@ class Display {
   int getHeight(UnitIndex idx) { return _height[idx]; }
 
   void printPosition(UnitIndex index, int x, int y, const String& text);
+  void printLine(UnitIndex index, int l, const String& text);
   void printLineCentered(UnitIndex index, int l, const String& text);
 
   void drawRect(UnitIndex idx, int x, int y, int w, int h) { _display[idx]->drawRect(x,y,w,h); }

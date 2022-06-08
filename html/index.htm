@@ -105,16 +105,16 @@
 
             <hr>
 
-            <div class="row mb-3">
+            <div class="row mb-3" id="toggle1">
               <div class="col-md-4 bg-light">Temperature</div>
               <div class="col-md-4 bg-light" id="temperature">Loading...</div>
             </div>
-            <div class="row mb-3">
+            <div class="row mb-3" id="toggle2">
               <div class="col-md-4 bg-light">Humidity</div>
               <div class="col-md-4 bg-light" id="humidity">Loading...</div>
             </div>
 
-            <hr>
+            <hr id="toggle3">
 
             <div class="row mb-3">
               <div class="col-md-4 bg-light">Weight</div>
@@ -148,13 +148,32 @@
         $("#mdns").text(cfg["mdns"]);
         $("#id").text(cfg["id"]);
         $("#wifi-ssid").text(cfg["wifi-ssid"]); 
-        $("#temperature").text(cfg["temperature"] + " C"); 
-        $("#humidity").text(cfg["humidity"] + " %"); 
 
-        $("#scale-weight1").text(cfg["scale-weight1"] + " kg");
-        $("#scale-weight2").text(cfg["scale-weight2"] + " kg");
-        $("#pints1").text(cfg["pints1"]);
-        $("#pints2").text(cfg["pints2"]);
+        if( cfg["temperature"] === undefined ) {
+          $('#toggle1').addClass('hide').removeClass('show').addClass('d-none');
+          $('#toggle2').addClass('hide').removeClass('show').addClass('d-none');
+          $('#toggle3').addClass('hide').removeClass('show').addClass('d-none');
+        } else {
+          $("#temperature").text(cfg["temperature"] + " C"); 
+          $("#humidity").text(cfg["humidity"] + " %"); 
+        }
+
+        if( cfg["scale-weight1"] === undefined ) {
+          $("#scale-weight1").text("");
+          $("#pints1").text("");
+        } else {
+          $("#scale-weight1").text(cfg["scale-weight1"] + " kg");
+          $("#pints1").text(cfg["pints1"]);
+        }
+
+        if( cfg["scale-weight2"] === undefined ) {
+          $("#scale-weight2").text("");
+          $("#pints2").text("");
+        } else {
+          $("#scale-weight2").text(cfg["scale-weight2"] + " kg");
+          $("#pints2").text(cfg["pints2"]);
+        }
+
       })
       .fail(function () {
         showError('Unable to get data from the device.');

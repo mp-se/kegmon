@@ -34,14 +34,14 @@ TempHumidity::TempHumidity() {
 
 float TempHumidity::getTempValueC() {
   if (!_temp)
-    return 0;
+    return NAN;
 
   float f = _temp->readTemperature();
   Log.verbose(F("Temp: Reading temp %F C." CR), f);
 
   if(isnan(f)) {
     Log.error(F("Temp: Error reading temperature." CR));
-    return 0;
+    return NAN;
   }
 
   return f;
@@ -49,14 +49,14 @@ float TempHumidity::getTempValueC() {
 
 float TempHumidity::getTempValueF() {
   if (!_temp)
-    return 0;
+    return NAN;
 
   float f = _temp->readTemperature(true);
   Log.verbose(F("Temp: Reading temp %F F." CR), f);
 
   if(isnan(f)) {
     Log.error(F("Temp: Error reading temperature." CR));
-    return 0;
+    return NAN;
   }
 
   return f;
@@ -64,14 +64,14 @@ float TempHumidity::getTempValueF() {
 
 float TempHumidity::getHumidityValue() {
   if (!_temp)
-    return 0;
+    return NAN;
 
   float h = _temp->readHumidity();
   Log.verbose(F("Temp: Reading humidity %F." CR), h);
 
   if(isnan(h)) {
     Log.error(F("Temp: Error reading humidity." CR));
-    return 0;
+    return NAN;
   }
 
   return h;
