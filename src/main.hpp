@@ -27,22 +27,19 @@ SOFTWARE.
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <ArduinoLog.h>
-#include <stdlib.h>
 #include <LittleFS.h>
+#include <stdlib.h>
 #define ESP_RESET ESP.reset
 #define PIN_LED 2
 #define PIN_OLED_SDA D2
 #define PIN_OLED_SCL D1
 #define PIN_SCALE1_SDA D5
-#define PIN_SCALE1_SCL D6
+#define PIN_SCALE1_SCL D4
 #define PIN_SCALE2_SDA D3
 #define PIN_SCALE2_SCL D4
 #define PIN_DH2 D7
 
-enum UnitIndex {
-  UNIT_1 = 0, 
-  UNIT_2 = 1
-};
+enum UnitIndex { UNIT_1 = 0, UNIT_2 = 1 };
 
 class SerialDebug {
  public:

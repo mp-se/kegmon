@@ -63,10 +63,8 @@ void WifiConnection::init() {
 // Check if we have a valid wifi configuration
 //
 bool WifiConnection::hasConfig() {
-  if (strlen(myConfig.getWifiSSID(0))) 
-    return true;
-  if (strlen(userSSID)) 
-    return true;
+  if (strlen(myConfig.getWifiSSID(0))) return true;
+  if (strlen(userSSID)) return true;
 
   // Check if there are stored WIFI Settings we can use.
   String ssid = WiFi.SSID();
@@ -74,8 +72,7 @@ bool WifiConnection::hasConfig() {
     Log.notice(F("WIFI: Found credentials in EEPORM." CR));
     myConfig.setWifiSSID(ssid, 0);
 
-    if (WiFi.psk().length()) 
-      myConfig.setWifiPass(WiFi.psk(), 0);
+    if (WiFi.psk().length()) myConfig.setWifiPass(WiFi.psk(), 0);
 
     myConfig.saveFile();
     return true;
@@ -141,10 +138,12 @@ void WifiConnection::startPortal() {
       myConfig.setWifiPass("", 1);
     }
 
-    Log.notice(F("WIFI: Stored SSID1:'%s' SSID2:'%s'" CR), myConfig.getWifiSSID(0), myConfig.getWifiSSID(1));
+    Log.notice(F("WIFI: Stored SSID1:'%s' SSID2:'%s'" CR),
+               myConfig.getWifiSSID(0), myConfig.getWifiSSID(1));
     myConfig.saveFile();
   } else {
-    Log.notice(F("WIFI: Could not find first SSID so assuming we got a timeout." CR));
+    Log.notice(
+        F("WIFI: Could not find first SSID so assuming we got a timeout." CR));
   }
 
   Log.notice(F("WIFI: Exited wifi config portal. Rebooting..." CR));
@@ -165,11 +164,14 @@ void WifiConnection::connectAsync(int wifiIndex) {
   WiFi.persistent(true);
   WiFi.mode(WIFI_STA);
   if (strlen(userSSID)) {
-    Log.notice(F("WIFI: Connecting to wifi using hardcoded settings %s." CR), userSSID);
+    Log.notice(F("WIFI: Connecting to wifi using hardcoded settings %s." CR),
+               userSSID);
     WiFi.begin(userSSID, userPWD);
   } else {
-    Log.notice(F("WIFI: Connecting to wifi (%d) using stored settings %s." CR), wifiIndex, myConfig.getWifiSSID(wifiIndex));
-    WiFi.begin(myConfig.getWifiSSID(wifiIndex), myConfig.getWifiPass(wifiIndex));
+    Log.notice(F("WIFI: Connecting to wifi (%d) using stored settings %s." CR),
+               wifiIndex, myConfig.getWifiSSID(wifiIndex));
+    WiFi.begin(myConfig.getWifiSSID(wifiIndex),
+               myConfig.getWifiPass(wifiIndex));
   }
 }
 
@@ -184,10 +186,9 @@ bool WifiConnection::waitForConnection(int maxTime) {
   while (WiFi.status() != WL_CONNECTED) {
     delay(100);
 
-    if (i % 10) 
-      Serial.print(".");
+    if (i % 10) Serial.print(".");
 
-    if (i++ > (maxTime * 10)) { 
+    if (i++ > (maxTime * 10)) {
       Log.error(F("WIFI: Failed to connect to wifi %d" CR), WiFi.status());
       WiFi.disconnect();
       Serial.print(CR);
@@ -195,7 +196,8 @@ bool WifiConnection::waitForConnection(int maxTime) {
     }
   }
   Serial.print(CR);
-  Log.notice(F("WIFI: Connected to wifi %s ip=%s." CR), WiFi.SSID().c_str(), getIPAddress().c_str());
+  Log.notice(F("WIFI: Connected to wifi %s ip=%s." CR), WiFi.SSID().c_str(),
+             getIPAddress().c_str());
   Log.notice(F("WIFI: Using mDNS name %s." CR), myConfig.getMDNS());
   return true;
 }
@@ -209,13 +211,15 @@ bool WifiConnection::connect() {
 
   connectAsync(0);
   if (!waitForConnection(timeout)) {
-    Log.warning(F("WIFI: Failed to connect to first SSID %s." CR), myConfig.getWifiSSID(0));
+    Log.warning(F("WIFI: Failed to connect to first SSID %s." CR),
+                myConfig.getWifiSSID(0));
 
     if (strlen(myConfig.getWifiSSID(1))) {
       connectAsync(1);
 
       if (waitForConnection(timeout)) {
-        Log.notice(F("WIFI: Connected to second SSID %s." CR), myConfig.getWifiSSID(1));
+        Log.notice(F("WIFI: Connected to second SSID %s." CR),
+                   myConfig.getWifiSSID(1));
         return true;
       }
     }
@@ -228,7 +232,8 @@ bool WifiConnection::connect() {
 }
 
 //
-// This will erase the stored credentials and forcing the WIFI manager to AP mode.
+// This will erase the stored credentials and forcing the WIFI manager to AP
+// mode.
 //
 bool WifiConnection::disconnect() {
   Log.notice(F("WIFI: Erasing stored WIFI credentials." CR));

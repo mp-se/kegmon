@@ -26,14 +26,14 @@ SOFTWARE.
 
 #include <main.hpp>
 
-#define CFG_APPNAME "KegScale"          // Name of firmware
-#define CFG_FILENAME "/kegscale.json"   // Name of config file
+#define CFG_APPNAME "KegScale"         // Name of firmware
+#define CFG_FILENAME "/kegscale.json"  // Name of config file
 
 struct BeerInfo {
-    String _name = "";
-    float _abv = 0.0;
-    int _ebc = 0;
-    int _ibu = 0;
+  String _name = "";
+  float _abv = 0.0;
+  int _ebc = 0;
+  int _ibu = 0;
 };
 
 class Config {
@@ -44,15 +44,15 @@ class Config {
   String _mDNS = "";
   char _tempFormat = 'C';
   int _weightPrecision = 2;
-  String _wifiSSID[2] = { "", "" };
-  String _wifiPASS[2] = { "", "" };
+  String _wifiSSID[2] = {"", ""};
+  String _wifiPASS[2] = {"", ""};
   String _brewfatherUserKey = "";
   String _brewfatherApiKey = "";
 
-  float _scaleFactor[2] = { 0, 0 };
-  long _scaleOffset[2] = { 0, 0 };
-  float _kegWeight[2] = { 0, 0 };
-  float _pintWeight[2] = { 0, 0 };
+  float _scaleFactor[2] = {0, 0};
+  int32_t _scaleOffset[2] = {0, 0};
+  float _kegWeight[2] = {0, 0};
+  float _pintWeight[2] = {0, 0};
   BeerInfo _beer[2];
 
   void formatFileSystem();
@@ -64,34 +64,34 @@ class Config {
   int getWifiPortalTimeout() { return 120; }
 
   const char* getBrewfatherUserKey() { return _brewfatherUserKey.c_str(); }
-  void setBrewfatherUserKey(String s) { 
-    _brewfatherUserKey = s; 
+  void setBrewfatherUserKey(String s) {
+    _brewfatherUserKey = s;
     _saveNeeded = true;
   }
   const char* getBrewfatherApiKey() { return _brewfatherApiKey.c_str(); }
-  void setBrewfatherApiKey(String s) { 
-    _brewfatherApiKey = s; 
+  void setBrewfatherApiKey(String s) {
+    _brewfatherApiKey = s;
     _saveNeeded = true;
   }
 
   const char* getBeerName(int idx) { return _beer[idx]._name.c_str(); }
-  void setBeerName(int idx, String s) { 
-    _beer[idx]._name = s; 
+  void setBeerName(int idx, String s) {
+    _beer[idx]._name = s;
     _saveNeeded = true;
   }
   float getBeerABV(int idx) { return _beer[idx]._abv; }
-  void setBeerABV(int idx, float f) { 
-    _beer[idx]._abv = f; 
+  void setBeerABV(int idx, float f) {
+    _beer[idx]._abv = f;
     _saveNeeded = true;
   }
   int getBeerEBC(int idx) { return _beer[idx]._ebc; }
-  void setBeerEBC(int idx, int i) { 
-    _beer[idx]._ebc = i; 
+  void setBeerEBC(int idx, int i) {
+    _beer[idx]._ebc = i;
     _saveNeeded = true;
   }
   int getBeerIBU(int idx) { return _beer[idx]._ibu; }
-  void setBeerIBU(int idx, int i) { 
-    _beer[idx]._ibu = i; 
+  void setBeerIBU(int idx, int i) {
+    _beer[idx]._ibu = i;
     _saveNeeded = true;
   }
 
@@ -108,13 +108,13 @@ class Config {
   }
 
   int getWeightPrecision() { return _weightPrecision; }
-  void setWeightPrecision(int i) { 
+  void setWeightPrecision(int i) {
     _weightPrecision = i;
     _saveNeeded = true;
   }
 
-  long getScaleOffset(int idx) { return _scaleOffset[idx]; }
-  void setScaleOffset(int idx, long l) {
+  int32_t getScaleOffset(int idx) { return _scaleOffset[idx]; }
+  void setScaleOffset(int idx, int32_t l) {
     _scaleOffset[idx] = l;
     _saveNeeded = true;
   }

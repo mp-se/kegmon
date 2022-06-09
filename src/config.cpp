@@ -23,8 +23,8 @@ SOFTWARE.
  */
 #include <config.hpp>
 #include <main.hpp>
-#include <wifi.hpp>
 #include <resources.hpp>
+#include <wifi.hpp>
 
 Config myConfig;
 
@@ -36,7 +36,8 @@ Config::Config() {
   snprintf(&buf[0], sizeof(buf), "" WIFI_MDNS "%s", getID());
   _mDNS = String(&buf[0]);
 
-  // Log.verbose(F("Cfg : Created config for %s (%s)." CR), _id.c_str(), _mDNS.c_str());
+  // Log.verbose(F("Cfg : Created config for %s (%s)." CR), _id.c_str(),
+  // _mDNS.c_str());
 }
 
 void Config::createJson(DynamicJsonDocument& doc) {
@@ -114,7 +115,8 @@ bool Config::loadFile() {
     return false;
   }
 
-  Log.verbose(F("Cfg : Size of configuration file=%d bytes." CR), configFile.size());
+  Log.verbose(F("Cfg : Size of configuration file=%d bytes." CR),
+              configFile.size());
 
   DynamicJsonDocument doc(2048);
   DeserializationError err = deserializeJson(doc, configFile);
@@ -142,28 +144,45 @@ bool Config::loadFile() {
     String s = doc[PARAM_TEMPFORMAT];
     setTempFormat(s.charAt(0));
   }
-  if (!doc[PARAM_WEIGHT_PRECISION].isNull()) setWeightPrecision(doc[PARAM_WEIGHT_PRECISION].as<int>());
-  if (!doc[PARAM_BREWFATHER_APIKEY].isNull()) setBrewfatherApiKey(doc[PARAM_BREWFATHER_APIKEY]);
-  if (!doc[PARAM_BREWFATHER_USERKEY].isNull()) setBrewfatherUserKey(doc[PARAM_BREWFATHER_USERKEY]);
+  if (!doc[PARAM_WEIGHT_PRECISION].isNull())
+    setWeightPrecision(doc[PARAM_WEIGHT_PRECISION].as<int>());
+  if (!doc[PARAM_BREWFATHER_APIKEY].isNull())
+    setBrewfatherApiKey(doc[PARAM_BREWFATHER_APIKEY]);
+  if (!doc[PARAM_BREWFATHER_USERKEY].isNull())
+    setBrewfatherUserKey(doc[PARAM_BREWFATHER_USERKEY]);
 
-  if (!doc[PARAM_SCALE_FACTOR1].isNull()) setScaleFactor(0, doc[PARAM_SCALE_FACTOR1].as<float>());
-  if (!doc[PARAM_SCALE_FACTOR2].isNull()) setScaleFactor(1, doc[PARAM_SCALE_FACTOR2].as<float>());
-  if (!doc[PARAM_SCALE_OFFSET1].isNull()) setScaleOffset(0, doc[PARAM_SCALE_OFFSET1].as<float>());
-  if (!doc[PARAM_SCALE_OFFSET2].isNull()) setScaleOffset(1, doc[PARAM_SCALE_OFFSET2].as<float>());
+  if (!doc[PARAM_SCALE_FACTOR1].isNull())
+    setScaleFactor(0, doc[PARAM_SCALE_FACTOR1].as<float>());
+  if (!doc[PARAM_SCALE_FACTOR2].isNull())
+    setScaleFactor(1, doc[PARAM_SCALE_FACTOR2].as<float>());
+  if (!doc[PARAM_SCALE_OFFSET1].isNull())
+    setScaleOffset(0, doc[PARAM_SCALE_OFFSET1].as<float>());
+  if (!doc[PARAM_SCALE_OFFSET2].isNull())
+    setScaleOffset(1, doc[PARAM_SCALE_OFFSET2].as<float>());
 
-  if (!doc[PARAM_KEG_WEIGHT1].isNull()) setKegWeight(0, doc[PARAM_KEG_WEIGHT1].as<float>());
-  if (!doc[PARAM_KEG_WEIGHT2].isNull()) setKegWeight(1, doc[PARAM_KEG_WEIGHT2].as<float>());
-  if (!doc[PARAM_PINT_WEIGHT1].isNull()) setPintWeight(0, doc[PARAM_PINT_WEIGHT1].as<float>());
-  if (!doc[PARAM_PINT_WEIGHT2].isNull()) setPintWeight(1, doc[PARAM_PINT_WEIGHT2].as<float>());
+  if (!doc[PARAM_KEG_WEIGHT1].isNull())
+    setKegWeight(0, doc[PARAM_KEG_WEIGHT1].as<float>());
+  if (!doc[PARAM_KEG_WEIGHT2].isNull())
+    setKegWeight(1, doc[PARAM_KEG_WEIGHT2].as<float>());
+  if (!doc[PARAM_PINT_WEIGHT1].isNull())
+    setPintWeight(0, doc[PARAM_PINT_WEIGHT1].as<float>());
+  if (!doc[PARAM_PINT_WEIGHT2].isNull())
+    setPintWeight(1, doc[PARAM_PINT_WEIGHT2].as<float>());
 
   if (!doc[PARAM_BEER_NAME1].isNull()) setBeerName(0, doc[PARAM_BEER_NAME1]);
   if (!doc[PARAM_BEER_NAME2].isNull()) setBeerName(1, doc[PARAM_BEER_NAME2]);
-  if (!doc[PARAM_BEER_EBC1].isNull()) setBeerEBC(0, doc[PARAM_BEER_EBC1].as<int>());
-  if (!doc[PARAM_BEER_EBC2].isNull()) setBeerEBC(1, doc[PARAM_BEER_EBC2].as<int>());
-  if (!doc[PARAM_BEER_ABV1].isNull()) setBeerABV(0, doc[PARAM_BEER_ABV1].as<float>());
-  if (!doc[PARAM_BEER_ABV2].isNull()) setBeerABV(1, doc[PARAM_BEER_ABV2].as<float>());
-  if (!doc[PARAM_BEER_IBU1].isNull()) setBeerIBU(0, doc[PARAM_BEER_IBU1].as<int>());
-  if (!doc[PARAM_BEER_IBU2].isNull()) setBeerIBU(1, doc[PARAM_BEER_IBU2].as<int>());
+  if (!doc[PARAM_BEER_EBC1].isNull())
+    setBeerEBC(0, doc[PARAM_BEER_EBC1].as<int>());
+  if (!doc[PARAM_BEER_EBC2].isNull())
+    setBeerEBC(1, doc[PARAM_BEER_EBC2].as<int>());
+  if (!doc[PARAM_BEER_ABV1].isNull())
+    setBeerABV(0, doc[PARAM_BEER_ABV1].as<float>());
+  if (!doc[PARAM_BEER_ABV2].isNull())
+    setBeerABV(1, doc[PARAM_BEER_ABV2].as<float>());
+  if (!doc[PARAM_BEER_IBU1].isNull())
+    setBeerIBU(0, doc[PARAM_BEER_IBU1].as<int>());
+  if (!doc[PARAM_BEER_IBU2].isNull())
+    setBeerIBU(1, doc[PARAM_BEER_IBU2].as<int>());
 
   _saveNeeded = false;
   Log.notice(F("Cfg : Configuration file " CFG_FILENAME " loaded." CR));

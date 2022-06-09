@@ -1,0 +1,58 @@
+.. KegScale documentation master file, created by
+   sphinx-quickstart on Tue Jun  7 09:29:30 2022.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Welcome to KegScale's documentation!
+====================================
+
+.. note::
+  Last updated 2022-06-07
+
+This project is intended for my own use, I've have not really focused on making this reusable for others. 
+
+However I have documented my build process and share it here. The design is created for 2 kegs but it 
+will work if you only use one (make sure to use the pins for scale 1 in that case)
+
+Im still building my own so the project is regarded as work in progress.
+
+The project contains the following parts:
+
+* Software that manage the scale and present the readings.
+* Hardware design based on standard HX711 AD converter with load cells.
+* 3D models for the base and display case.
+
+
+Credits to
+----------
+Thanks to the following projects.
+
+* https://github.com/mp-se/gravitymon
+* https://github.com/graphitemaster/incbin
+* https://github.com/khoih-prog/ESP_DoubleResetDetector
+* https://github.com/khoih-prog/ESP_WiFiManager
+* https://github.com/thijse/Arduino-Log
+* https://github.com/bblanchon/ArduinoJson
+* https://getbootstrap.com
+* https://github.com/lorol/LITTLEFS
+* https://github.com/bogde/HX711
+* https://github.com/ThingPulse/esp8266-oled-ssd1306
+* https://modelviewer.dev/
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   hardware
+   software
+   3d
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+

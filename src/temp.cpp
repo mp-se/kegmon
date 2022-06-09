@@ -21,57 +21,57 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#include <temp.hpp>
 #include <config.hpp>
+#include <temp.hpp>
 
 TempHumidity myTemp;
 
 TempHumidity::TempHumidity() {
+}
+
+void TempHumidity::setup() {
   Log.verbose(F("Temp: Initializing humidity sensor." CR));
   _temp = new DHT(PIN_DH2, DHT22, 1);
   _temp->begin();
 }
 
 float TempHumidity::getTempValueC() {
-  if (!_temp)
-    return 0;
+  if (!_temp) return NAN;
 
   float f = _temp->readTemperature();
   Log.verbose(F("Temp: Reading temp %F C." CR), f);
 
-  if(isnan(f)) {
+  if (isnan(f)) {
     Log.error(F("Temp: Error reading temperature." CR));
-    return 0;
+    return NAN;
   }
 
   return f;
 }
 
 float TempHumidity::getTempValueF() {
-  if (!_temp)
-    return 0;
+  if (!_temp) return NAN;
 
   float f = _temp->readTemperature(true);
   Log.verbose(F("Temp: Reading temp %F F." CR), f);
 
-  if(isnan(f)) {
+  if (isnan(f)) {
     Log.error(F("Temp: Error reading temperature." CR));
-    return 0;
+    return NAN;
   }
 
   return f;
 }
 
 float TempHumidity::getHumidityValue() {
-  if (!_temp)
-    return 0;
+  if (!_temp) return NAN;
 
   float h = _temp->readHumidity();
   Log.verbose(F("Temp: Reading humidity %F." CR), h);
 
-  if(isnan(h)) {
+  if (isnan(h)) {
     Log.error(F("Temp: Error reading humidity." CR));
-    return 0;
+    return NAN;
   }
 
   return h;

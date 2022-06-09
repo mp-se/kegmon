@@ -50,11 +50,26 @@ class WebServerHandler {
   void webStatus();
   void webUpload();
 
-  void webIndexHtm() { _server->send_P(200, "text/html", (const char*)gIndexHtmData, gIndexHtmSize); }
-  void webConfigHtm() { _server->send_P(200, "text/html", (const char*)gConfigHtmData, gConfigHtmSize); }
-  void webCalibrateHtm() { _server->send_P(200, "text/html", (const char*)gCalibrateHtmData, gCalibrateHtmSize); }
-  void webAboutHtm() { _server->send_P(200, "text/html", (const char*)gAboutHtmData, gAboutHtmSize); }
-  void webUploadHtm() { _server->send_P(200, "text/html", (const char*)gUploadHtmData, gUploadHtmSize); }
+  void webIndexHtm() {
+    _server->send_P(200, "text/html", (const char*)gIndexHtmData,
+                    gIndexHtmSize);
+  }
+  void webConfigHtm() {
+    _server->send_P(200, "text/html", (const char*)gConfigHtmData,
+                    gConfigHtmSize);
+  }
+  void webCalibrateHtm() {
+    _server->send_P(200, "text/html", (const char*)gCalibrateHtmData,
+                    gCalibrateHtmSize);
+  }
+  void webAboutHtm() {
+    _server->send_P(200, "text/html", (const char*)gAboutHtmData,
+                    gAboutHtmSize);
+  }
+  void webUploadHtm() {
+    _server->send_P(200, "text/html", (const char*)gUploadHtmData,
+                    gUploadHtmSize);
+  }
   void webReturnOK() { _server->send(200); }
 
  public:
