@@ -3,14 +3,18 @@
 3D Models
 =========
 
+These models fit a cornelius keg of 18, 19 or 9 liters. Will fit smaller kegs as well. 
+
 Base 1
 ******
+
+This is a base for the last scale on the cable.
 
 .. raw:: html
 
    <style>
    model-viewer { 
-      width: 800px; 
+      width: 600px; 
       height: 600px; 
    }
    </style>
@@ -24,11 +28,13 @@ Base 1
 Base 2
 ******
 
+This is a base for the first scale with passthrough cable to the last scale.
+
 .. raw:: html
 
    <style>
    model-viewer { 
-      width: 800px; 
+      width: 600px; 
       height: 600px; 
    }
    </style>
@@ -42,11 +48,13 @@ Base 2
 Base Cover
 **********
 
+This is a model for the cover that is placed on top of the wires to protect them.
+
 .. raw:: html
 
    <style>
    model-viewer { 
-      width: 800px; 
+      width: 600px; 
       height: 600px; 
    }
    </style>
