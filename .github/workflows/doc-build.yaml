@@ -16,7 +16,7 @@ jobs:
         with:
           docs-folder: "src_docs/"
           pre-build-command: |
-            pip install furo
+            pip install sphinx_rtd_theme
           build-command: "sphinx-build -b html ./source ../docs"
 
       - name: Commit documentation changes
