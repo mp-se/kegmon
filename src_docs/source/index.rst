@@ -22,6 +22,15 @@ The project contains the following parts:
 * Hardware design based on standard HX711 AD converter with load cells.
 * 3D models for the base and display case.
 
+Features
+++++++++
+
+* Measure the weight of up to two kegs and estimate the number of pints (or pours) left in the keg. This 
+  is done using the weight of a keg and the weight of a pint of beer. 
+* Import beer information from brewfather (name, abv, ebc and ibu)
+* Show the remaning pints (or pours) on OLED displays, one per keg
+* Configuration is done via web interface
+* Calibration of scales are done via web interface
 
 Credits to
 ----------
