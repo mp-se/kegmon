@@ -1,8 +1,8 @@
 # KegScale
 
-This is a project that I have done for my own Keezer and i have no plans to make this an officially supported software. Feel free to use the code according to the licence agreement. 
+This is a project that I have done for my own Keezer, if you like it please feel free to suggest improvements. Feel free to use the code according to the licence agreement. 
 
-Based on the ideas of these projects; 
+Based on the ideas of these projects (there are many that have implemented the same idea);
 
 * https://www.hackster.io/davidtilley/iot-home-beer-keg-scale-b603db
 * https://www.instructables.com/Beer-Keg-Scales/
@@ -10,13 +10,9 @@ Based on the ideas of these projects;
 * https://github.com/Callwater/Beerkeg-load-cell
 * https://github.com/nanab/BeerScale
 
+For docs see: https://mp-se.github.io/kegscale/index.html
 
-For docus see: https://mp-se.github.io/kegscale/3d.html
+# What ongoing
 
-# Todo
-
-* Create 3d model for the display case
-* Allow user to select weight unit to show (does not really matter for the functionallity), now defaults to kg.
-* Implement screen saver for OLED
-* Write API tests
+* Create 3d model for the display case and complete the build.
 * Complete documentation

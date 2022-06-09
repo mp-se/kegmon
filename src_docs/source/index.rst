@@ -11,8 +11,10 @@ Welcome to KegScale's documentation!
 
 This project is intended for my own use, I've have not really focused on making this reusable for others. 
 
-However I have documented my build process and share it here. The design is creted for 2 scales and 2 
-displays but it will work if you only use one. 
+However I have documented my build process and share it here. The design is created for 2 kegs but it 
+will work if you only use one (make sure to use the pins for scale 1 in that case)
+
+Im still building my own so the project is regarded as work in progress.
 
 The project contains the following parts:
 

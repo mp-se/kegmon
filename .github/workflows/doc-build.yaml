@@ -3,7 +3,7 @@ name: Sphinx Build
 on: 
   push:
     branches: 
-      - dev
+      - master
 
 jobs:
   build:
@@ -24,8 +24,8 @@ jobs:
           pwd
           ls -al
           ls -al docs 
-          #git clone https://github.com/mp-se/kegscale.git --branch ghpages --single-branch ghpages
-          git clone -b dev https://github.com/mp-se/kegscale.git --branch ghpages --single-branch ghpages
+          git clone https://github.com/mp-se/kegscale.git --branch ghpages --single-branch ghpages
+          #git clone -b dev https://github.com/mp-se/kegscale.git --branch ghpages --single-branch ghpages
           mkdir -p ghpages/docs
           cp -r docs/* ghpages/docs
           cd ghpages
