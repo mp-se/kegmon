@@ -81,6 +81,7 @@ void setup() {
   myConfig.loadFile();
   myWifi.init();
   myScale.setup();
+  myTemp.setup();
 
   ESP.wdtDisable();
   ESP.wdtEnable(5000);

@@ -27,17 +27,12 @@ SOFTWARE.
 TempHumidity myTemp;
 
 TempHumidity::TempHumidity() {
+}
+
+void TempHumidity::setup() {
   Log.verbose(F("Temp: Initializing humidity sensor." CR));
   _temp = new DHT(PIN_DH2, DHT22, 1);
   _temp->begin();
-}
-
-TempHumidity::TempHumidity(const TempHumidity&) {
-  // should not be used, just here to fix warning from pre-commit
-}
-
-TempHumidity& TempHumidity::operator=(const TempHumidity&) {
-  // should not be used, just here to fix warning from pre-commit
 }
 
 float TempHumidity::getTempValueC() {
