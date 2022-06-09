@@ -23,8 +23,18 @@ The project contains the following parts:
 
 Credits to
 ----------
-This section is under construction.
+Thanks to the following projects.
 
+* https://github.com/mp-se/gravitymon
+* https://github.com/graphitemaster/incbin
+* https://github.com/khoih-prog/ESP_DoubleResetDetector
+* https://github.com/khoih-prog/ESP_WiFiManager
+* https://github.com/thijse/Arduino-Log
+* https://github.com/bblanchon/ArduinoJson
+* https://getbootstrap.com
+* https://github.com/lorol/LITTLEFS
+* https://github.com/bogde/HX711
+* https://github.com/ThingPulse/esp8266-oled-ssd1306
 * https://modelviewer.dev/
 
 

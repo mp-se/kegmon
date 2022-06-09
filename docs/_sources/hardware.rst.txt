@@ -115,10 +115,4 @@ wires both connected to D4 by design.
 Building the display case
 *************************
 
-to be defined
-
-* Picture of ESP
-* Picture of Case with ESP
-* Picture of Case with display
-* Picture of connection board
-* Picture of complete 
+to be defined, add Picture of ESP, Case with ESP, Case with display, connection board, complete build
