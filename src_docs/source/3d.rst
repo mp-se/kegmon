@@ -1,0 +1,68 @@
+.. _3d:
+
+3D Models
+=========
+
+Base 1
+******
+
+.. raw:: html
+
+   <style>
+   model-viewer { 
+      width: 800px; 
+      height: 600px; 
+   }
+   </style>
+   <div>
+   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+   <script nomodule src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>
+   <model-viewer height=400 width=400 id="mv-demo" shadow-intensity="1" src="./_static/3d/base1.glb" alt="Base 1" auto-rotate camera-controls poster=""></model-viewer>
+   </div>
+
+
+Base 2
+******
+
+.. raw:: html
+
+   <style>
+   model-viewer { 
+      width: 800px; 
+      height: 600px; 
+   }
+   </style>
+   <div>
+   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+   <script nomodule src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>
+   <model-viewer height=400 width=400 id="mv-demo" shadow-intensity="1" src="./_static/3d/base2.glb" alt="Base 2" auto-rotate camera-controls poster=""></model-viewer>
+   </div>
+
+
+Base Cover
+**********
+
+.. raw:: html
+
+   <style>
+   model-viewer { 
+      width: 800px; 
+      height: 600px; 
+   }
+   </style>
+   <div>
+   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+   <script nomodule src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>
+   <model-viewer height=400 width=400 id="mv-demo" shadow-intensity="1" src="./_static/3d/cover.glb" alt="Base Cover" auto-rotate camera-controls poster=""></model-viewer>
+   </div>
+
+
+Display Base
+************
+
+To be defined.
+
+Display Top
+***********
+
+To be defined.
