@@ -18,10 +18,13 @@ WIFI
 
 To be defined.
 
+
 OLED Screens
 ************
 
-To be defined.
+The OLD screens will show the name of the beer, abv and alternate between kg and pints. The first 
+screen will display values for keg 1 and the second for keg 2.
+
 
 Index
 *****

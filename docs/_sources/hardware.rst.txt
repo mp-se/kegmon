@@ -3,7 +3,7 @@
 Hardware 
 --------
 
-This is the hardware schema overview that I have used i my build. 
+This is the hardware schema that I have used in my build. 
 
 .. note::
   The software will adopt to what devices are connected and will work with 
@@ -115,4 +115,4 @@ wires both connected to D4 by design.
 Building the display case
 *************************
 
-to be defined, add Picture of ESP, Case with ESP, Case with display, connection board, complete build
+This section will be written once I have completed my 3d model for the case.
