@@ -18,6 +18,7 @@ jobs:
           pre-build-command: |
             pip install sphinx_rtd_theme
             pip install furo
+            pip install pygments
           build-command: "sphinx-build -b html ./source ../docs"
 
       - name: Commit documentation changes
