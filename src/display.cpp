@@ -21,9 +21,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#include <display.hpp>
-#include <config.hpp>
 #include <Wire.h>
+
+#include <config.hpp>
+#include <display.hpp>
 
 Display myDisplay;
 
@@ -49,17 +50,17 @@ void Display::scanI2C() {
     // The i2c_scanner uses the return value of
     // the Write.endTransmisstion to see if
     // a device did acknowledge to the address.
-    
+
     Wire.beginTransmission(address);
     error = Wire.endTransmission();
 
     if (error == 0) {
       Serial.print(address, HEX);
-      Serial.print("\t");   
+      Serial.print("\t");
       n++;
-    }    
+    }
   }
-  Serial.print("\n");   
+  Serial.print("\n");
 #endif
 }
 
@@ -75,74 +76,73 @@ void Display::setup(UnitIndex idx) {
 
   clear(idx);
 
-  if (idx==0) { // Show on primary screen
-    setFont(idx, FontSize::FONT_16 );
-    printLineCentered(idx, 0, CFG_APPNAME);  
+  if (idx == 0) {  // Show on primary screen
+    setFont(idx, FontSize::FONT_16);
+    printLineCentered(idx, 0, CFG_APPNAME);
     printLineCentered(idx, 2, "Loading");
   }
-   
+
   show(idx);
 }
 
 void Display::setFont(UnitIndex idx, FontSize fs) {
-  if (!_display[idx])
-    return;
+  if (!_display[idx]) return;
 
   // Log.verbose(F("Disp: Setting font size %d [%d]." CR), fs, idx);
   _fontSize[idx] = fs;
 
   switch (fs) {
     case FontSize::FONT_10:
-      _display[idx]->setFont(ArialMT_Plain_10);  
-    return;
+      _display[idx]->setFont(ArialMT_Plain_10);
+      return;
 
     case FontSize::FONT_16:
-      _display[idx]->setFont(ArialMT_Plain_16);  
-    return;
+      _display[idx]->setFont(ArialMT_Plain_16);
+      return;
 
-    case FontSize::FONT_24:    
-      _display[idx]->setFont(ArialMT_Plain_24);  
-    return;
+    case FontSize::FONT_24:
+      _display[idx]->setFont(ArialMT_Plain_24);
+      return;
   }
 }
 
 int Display::getTextWidth(UnitIndex idx, const String& text) {
-  if (!_display[idx])
-    return -1;
+  if (!_display[idx]) return -1;
 
-  int w = _display[idx]->getStringWidth(text); 
-  // Log.verbose(F("Disp: Width of string %s is %d [%d]." CR), text.c_str(), w, idx);
+  int w = _display[idx]->getStringWidth(text);
+  // Log.verbose(F("Disp: Width of string %s is %d [%d]." CR), text.c_str(), w,
+  // idx);
   return w;
 }
 
 void Display::printPosition(UnitIndex idx, int x, int y, const String& text) {
-  if (!_display[idx])
-    return;
+  if (!_display[idx]) return;
 
-  // Log.verbose(F("Disp: Printing text %s @ %d,%d [%d]." CR), text.c_str(), x, y, idx);
-  if (x<0) {
-    int w = getTextWidth(idx, text);    
-    x = (_width[idx]-w)/2;
+  // Log.verbose(F("Disp: Printing text %s @ %d,%d [%d]." CR), text.c_str(), x,
+  // y, idx);
+  if (x < 0) {
+    int w = getTextWidth(idx, text);
+    x = (_width[idx] - w) / 2;
   }
 
   _display[idx]->drawString(x, y, text);
 }
 
 void Display::printLine(UnitIndex idx, int l, const String& text) {
-  if (!_display[idx])
-    return;
+  if (!_display[idx]) return;
 
-  // Log.verbose(F("Disp: Printing text %s @ line %d [%d]." CR), text.c_str(), l, idx);
-  printPosition(idx, 0, _fontSize[idx]*l, text );
+  // Log.verbose(F("Disp: Printing text %s @ line %d [%d]." CR), text.c_str(),
+  // l, idx);
+  printPosition(idx, 0, _fontSize[idx] * l, text);
 }
 
 void Display::printLineCentered(UnitIndex idx, int l, const String& text) {
-  if (!_display[idx])
-    return;
+  if (!_display[idx]) return;
 
-  // Log.verbose(F("Disp: Printing text %s @ line %d [%d]." CR), text.c_str(), l, idx);
+  // Log.verbose(F("Disp: Printing text %s @ line %d [%d]." CR), text.c_str(),
+  // l, idx);
   int w = getTextWidth(idx, text);
-  printPosition(idx, (_width[idx]-w)/2, _fontSize[idx]*l, text );
+  printPosition(idx, (_width[idx] - w) / 2, _fontSize[idx] * l, text);
 }
 
 // EOF

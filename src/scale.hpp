@@ -24,23 +24,28 @@ SOFTWARE.
 #ifndef SRC_SCALE_HPP_
 #define SRC_SCALE_HPP_
 
-#include <main.hpp>
 #include <HX711.h>
+
+#include <main.hpp>
 
 class Scale {
  private:
-  HX711 *_scale[2] = { 0, 0 };
+  HX711 *_scale[2] = {0, 0};
   int _readCount = 10;
+  float _lastValue[2] = {0, 0};
+
+  void setScaleFactor(UnitIndex idx);
 
  public:
   Scale();
   void setup(bool force = false);
   void tare(UnitIndex idx);
   float getValue(UnitIndex idx);
-  long getRawValue(UnitIndex idx);
+  float getLastValue(UnitIndex idx) { return _lastValue[idx]; }
+  int32_t getRawValue(UnitIndex idx);
   void findFactor(UnitIndex idx, float weight);
-  int calculateNoPints(UnitIndex idx);
-  bool isConnected(UnitIndex idx) { return _scale[idx] != 0 ? true : false; };
+  int calculateNoPints(UnitIndex idx, float weight);
+  bool isConnected(UnitIndex idx) { return _scale[idx] != 0 ? true : false; }
 };
 
 extern Scale myScale;

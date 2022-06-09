@@ -24,21 +24,22 @@ SOFTWARE.
 #ifndef SRC_DISPLAY_HPP_
 #define SRC_DISPLAY_HPP_
 
-#include <main.hpp>
-#include <SSD1306Wire.h> 
+#include <SSD1306Wire.h>
 
-enum FontSize { // OLED Size - 128x64
-  FONT_10 = 10, // Support 6 lines 
-  FONT_16 = 16, // Support 5 lines
-  FONT_24 = 24  // Support 3 lines
+#include <main.hpp>
+
+enum FontSize {  // OLED Size - 128x64
+  FONT_10 = 10,  // Support 6 lines
+  FONT_16 = 16,  // Support 5 lines
+  FONT_24 = 24   // Support 3 lines
 };
 
 class Display {
  private:
-  SSD1306Wire *_display[2] = { 0, 0 };
-  int _width[2] = { 128, 128 };
-  int _height[2] = { 64, 64 };
-  FontSize _fontSize[2] = { FontSize::FONT_10, FontSize::FONT_10 };
+  SSD1306Wire* _display[2] = {0, 0};
+  int _width[2] = {128, 128};
+  int _height[2] = {64, 64};
+  FontSize _fontSize[2] = {FontSize::FONT_10, FontSize::FONT_10};
 
   void scanI2C();
 
@@ -48,7 +49,7 @@ class Display {
   void clear(UnitIndex idx) { _display[idx]->clear(); }
   void show(UnitIndex idx) { _display[idx]->display(); }
   void setFont(UnitIndex idx, FontSize fs);
-  int  getTextWidth(UnitIndex idx, const String& text);
+  int getTextWidth(UnitIndex idx, const String& text);
 
   int getWidth(UnitIndex idx) { return _width[idx]; }
   int getHeight(UnitIndex idx) { return _height[idx]; }
@@ -57,7 +58,9 @@ class Display {
   void printLine(UnitIndex index, int l, const String& text);
   void printLineCentered(UnitIndex index, int l, const String& text);
 
-  void drawRect(UnitIndex idx, int x, int y, int w, int h) { _display[idx]->drawRect(x,y,w,h); }
+  void drawRect(UnitIndex idx, int x, int y, int w, int h) {
+    _display[idx]->drawRect(x, y, w, h);
+  }
   int getCurrentFontSize(UnitIndex idx) { return _fontSize[idx]; }
 };
 

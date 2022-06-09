@@ -24,15 +24,18 @@ SOFTWARE.
 #ifndef SRC_TEMP_HPP_
 #define SRC_TEMP_HPP_
 
-#include <main.hpp>
 #include <DHT.h>
+
+#include <main.hpp>
 
 class TempHumidity {
  private:
-  DHT *_temp = 0;
+  DHT* _temp = 0;
 
  public:
   TempHumidity();
+  TempHumidity(const TempHumidity&);
+  TempHumidity& operator=(const TempHumidity&);
   void setup();
   float getTempValueC();
   float getTempValueF();

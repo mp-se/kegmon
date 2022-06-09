@@ -22,18 +22,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 #include <config.hpp>
-#include <main.hpp>
-#include <wifi.hpp>
 #include <display.hpp>
+#include <main.hpp>
 #include <scale.hpp>
 #include <temp.hpp>
 #include <webserver.hpp>
+#include <wifi.hpp>
 
 SerialDebug mySerial;
-const int loopInterval = 1000;
+const int loopInterval = 2000;
 int loopCounter = 0;
 uint32_t loopMillis = 0;
-
 
 void printTimestamp(Print* _logOutput, int _logLevel) {
   char c[12];
@@ -51,7 +50,8 @@ SerialDebug::SerialDebug(const uint32_t serialSpeed) {
 }
 
 void printHeap(String prefix = "Main") {
-  Log.notice(F("%s: Free-heap %d kb, Heap-rag %d %%, Max-block %d kb Stack=%d b." CR),
+  Log.notice(
+      F("%s: Free-heap %d kb, Heap-rag %d %%, Max-block %d kb Stack=%d b." CR),
       prefix.c_str(), ESP.getFreeHeap() / 1024, ESP.getHeapFragmentation(),
       ESP.getMaxFreeBlockSize() / 1024, ESP.getFreeContStack());
 }
@@ -70,8 +70,10 @@ float reduceFloatPrecision(float f, int dec) {
 void setup() {
   // Log.verbose(F("Main: Reset reason %s." CR), ESP.getResetInfo().c_str());
 
-  Log.notice(F("Main: Started setup for %s." CR), String(ESP.getChipId(), HEX).c_str());
-  Log.notice(F("Main: Build options: %s (%s) LOGLEVEL %d "CR), CFG_APPVER, CFG_GITREV, LOG_LEVEL);
+  Log.notice(F("Main: Started setup for %s." CR),
+             String(ESP.getChipId(), HEX).c_str());
+  Log.notice(F("Main: Build options: %s (%s) LOGLEVEL %d " CR), CFG_APPVER,
+             CFG_GITREV, LOG_LEVEL);
 
   myDisplay.setup(UnitIndex::UNIT_1);
   myDisplay.setup(UnitIndex::UNIT_2);
@@ -85,7 +87,9 @@ void setup() {
 
   // No stored config, move to portal
   if (!myWifi.hasConfig() || myWifi.isDoubleResetDetected()) {
-    Log.notice(F("Main: Missing wifi config or double reset detected, entering wifi setup." CR));
+    Log.notice(
+        F("Main: Missing wifi config or double reset detected, entering wifi "
+          "setup." CR));
 
     myDisplay.clear(UnitIndex::UNIT_1);
     myDisplay.setFont(UnitIndex::UNIT_1, FontSize::FONT_16);
@@ -105,15 +109,18 @@ void setup() {
 
   myDisplay.clear(UnitIndex::UNIT_1);
   myDisplay.setFont(UnitIndex::UNIT_1, FontSize::FONT_16);
-  snprintf(&buf[0], sizeof(buf), "Scale 1: %s", myScale.isConnected(UnitIndex::UNIT_1) ? "Yes" : "No");
+  snprintf(&buf[0], sizeof(buf), "Scale 1: %s",
+           myScale.isConnected(UnitIndex::UNIT_1) ? "Yes" : "No");
   myDisplay.printLine(UnitIndex::UNIT_1, 0, &buf[0]);
-  snprintf(&buf[0], sizeof(buf), "Scale 2: %s", myScale.isConnected(UnitIndex::UNIT_2) ? "Yes" : "No");
+  snprintf(&buf[0], sizeof(buf), "Scale 2: %s",
+           myScale.isConnected(UnitIndex::UNIT_2) ? "Yes" : "No");
   myDisplay.printLine(UnitIndex::UNIT_1, 1, &buf[0]);
-  snprintf(&buf[0], sizeof(buf), "Temp   : %s", !isnan(myTemp.getTempValueC()) ? "Yes" : "No");
+  snprintf(&buf[0], sizeof(buf), "Temp   : %s",
+           !isnan(myTemp.getTempValueC()) ? "Yes" : "No");
   myDisplay.printLine(UnitIndex::UNIT_1, 2, &buf[0]);
   snprintf(&buf[0], sizeof(buf), "Version: %s", CFG_APPVER);
   myDisplay.printLine(UnitIndex::UNIT_1, 3, &buf[0]);
-  myDisplay.show(UnitIndex::UNIT_1);  
+  myDisplay.show(UnitIndex::UNIT_1);
   delay(3000);
 }
 
@@ -128,11 +135,13 @@ void drawScreen(UnitIndex idx) {
   snprintf(&buf[0], sizeof(buf), "%s", myConfig.getBeerName(idx));
   myDisplay.printPosition(idx, -1, 0, &buf[0]);
 
-  if (!(loopCounter % 10))
-    showPints = !showPints;
+  if (!(loopCounter % 10)) showPints = !showPints;
 
   if (myScale.isConnected(idx)) {
-    int pint = myScale.calculateNoPints(idx);
+    float weight = myScale.getValue(idx);  // Just read the scale once per loop.
+    int pint = myScale.calculateNoPints(idx, weight);
+
+    Log.notice(F("Loop: Weight=%F kg Pints=%d [%d]." CR), weight, pint, idx);
 
     snprintf(&buf[0], sizeof(buf), "%.1f%%", myConfig.getBeerABV(idx));
     myDisplay.printPosition(idx, -1, 16, &buf[0]);
@@ -141,7 +150,7 @@ void drawScreen(UnitIndex idx) {
       snprintf(&buf[0], sizeof(buf), "%d pints", pint);
       myDisplay.printPosition(idx, -1, 32, &buf[0]);
     } else {
-      convertFloatToString(myScale.getValue(idx), &buf[0], myConfig.getWeightPrecision());
+      convertFloatToString(weight, &buf[0], myConfig.getWeightPrecision());
       String s(&buf[0]);
       s += " kg";
       myDisplay.printPosition(idx, -1, 32, s.c_str());
@@ -154,17 +163,22 @@ void drawScreen(UnitIndex idx) {
   if (idx == UnitIndex::UNIT_1) {
     myDisplay.setFont(idx, FontSize::FONT_10);
     if (!showPints)
-      myDisplay.printPosition(idx, -1, myDisplay.getHeight(idx) - myDisplay.getCurrentFontSize(idx) - 1, myWifi.getIPAddress());
+      myDisplay.printPosition(
+          idx, -1,
+          myDisplay.getHeight(idx) - myDisplay.getCurrentFontSize(idx) - 1,
+          myWifi.getIPAddress());
     else
-      myDisplay.printPosition(idx, -1, myDisplay.getHeight(idx) - myDisplay.getCurrentFontSize(idx) - 1, WiFi.SSID());  
+      myDisplay.printPosition(
+          idx, -1,
+          myDisplay.getHeight(idx) - myDisplay.getCurrentFontSize(idx) - 1,
+          WiFi.SSID());
   }
 
   myDisplay.show(idx);
 }
 
 void loop() {
-  if (!myWifi.isConnected())
-    myWifi.connect();
+  if (!myWifi.isConnected()) myWifi.connect();
 
   myWebServerHandler.loop();
   myWifi.loop();
@@ -174,8 +188,9 @@ void loop() {
     loopCounter++;
 
     if (!(loopCounter % 30))
-      if (!myScale.isConnected(UnitIndex::UNIT_1) || !myScale.isConnected(UnitIndex::UNIT_2))
-        myScale.setup(); // Try to reconnect to scale
+      if (!myScale.isConnected(UnitIndex::UNIT_1) ||
+          !myScale.isConnected(UnitIndex::UNIT_2))
+        myScale.setup();  // Try to reconnect to scale
 
     drawScreen(UnitIndex::UNIT_1);
     drawScreen(UnitIndex::UNIT_2);

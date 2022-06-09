@@ -21,8 +21,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#include <temp.hpp>
 #include <config.hpp>
+#include <temp.hpp>
 
 TempHumidity myTemp;
 
@@ -32,14 +32,21 @@ TempHumidity::TempHumidity() {
   _temp->begin();
 }
 
+TempHumidity::TempHumidity(const TempHumidity&) {
+  // should not be used, just here to fix warning from pre-commit
+}
+
+TempHumidity& TempHumidity::operator=(const TempHumidity&) {
+  // should not be used, just here to fix warning from pre-commit
+}
+
 float TempHumidity::getTempValueC() {
-  if (!_temp)
-    return NAN;
+  if (!_temp) return NAN;
 
   float f = _temp->readTemperature();
   Log.verbose(F("Temp: Reading temp %F C." CR), f);
 
-  if(isnan(f)) {
+  if (isnan(f)) {
     Log.error(F("Temp: Error reading temperature." CR));
     return NAN;
   }
@@ -48,13 +55,12 @@ float TempHumidity::getTempValueC() {
 }
 
 float TempHumidity::getTempValueF() {
-  if (!_temp)
-    return NAN;
+  if (!_temp) return NAN;
 
   float f = _temp->readTemperature(true);
   Log.verbose(F("Temp: Reading temp %F F." CR), f);
 
-  if(isnan(f)) {
+  if (isnan(f)) {
     Log.error(F("Temp: Error reading temperature." CR));
     return NAN;
   }
@@ -63,13 +69,12 @@ float TempHumidity::getTempValueF() {
 }
 
 float TempHumidity::getHumidityValue() {
-  if (!_temp)
-    return NAN;
+  if (!_temp) return NAN;
 
   float h = _temp->readHumidity();
   Log.verbose(F("Temp: Reading humidity %F." CR), h);
 
-  if(isnan(h)) {
+  if (isnan(h)) {
     Log.error(F("Temp: Error reading humidity." CR));
     return NAN;
   }
