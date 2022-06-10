@@ -97,13 +97,13 @@ wires both connected to D4 by design.
      - D4
    * - Blue-White
      - DATA - Scale 1
-     - D5  
+     - D3  
    * - Green
      - CLK - Scale 2
      - D4
    * - Green-White
      - DATA - Scale 2
-     - D3  
+     - D5
    * - Brown
      - Tempsensor
      - D7  

@@ -33,9 +33,9 @@ SOFTWARE.
 #define PIN_LED 2
 #define PIN_OLED_SDA D2
 #define PIN_OLED_SCL D1
-#define PIN_SCALE1_SDA D5
+#define PIN_SCALE1_SDA D3
 #define PIN_SCALE1_SCL D4
-#define PIN_SCALE2_SDA D3
+#define PIN_SCALE2_SDA D5
 #define PIN_SCALE2_SCL D4
 #define PIN_DH2 D7
 
