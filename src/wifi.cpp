@@ -60,7 +60,7 @@ bool WifiConnection::hasConfig() {
   if (strlen(myConfig.getWifiSSID(0))) return true;
   if (strlen(userSSID)) return true;
 
-  // Check if there are stored WIFI Settings we can use.
+  // Check if there are stored WIFI Settings we can use (only works for esp8266).
   String ssid = WiFi.SSID();
   if (ssid.length()) {
     Log.notice(F("WIFI: Found credentials in EEPORM." CR));
@@ -111,7 +111,7 @@ void WifiConnection::startPortal() {
     myConfig.setWifiSSID(myWifiManager->getSSID(1), 1);
     myConfig.setWifiPass(myWifiManager->getPW(1), 1);
 
-    // If the same SSID has been used, lets delete the second
+    // If the same SSID has been used for both entire, lets delete the second
     if (!strcmp(myConfig.getWifiSSID(0), myConfig.getWifiSSID(1))) {
       myConfig.setWifiSSID("", 1);
       myConfig.setWifiPass("", 1);
@@ -173,7 +173,6 @@ bool WifiConnection::waitForConnection(int maxTime) {
 }
 
 bool WifiConnection::connect() {
-  // If successful connection to seconday is successful then used that as standard
   int timeout = myConfig.getWifiConnectionTimeout();
 
   connectAsync(0);

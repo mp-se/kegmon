@@ -77,7 +77,6 @@ class WebServerHandler {
   void loop();
 };
 
-// Global instance created
 extern WebServerHandler myWebServerHandler;
 
 #endif  // SRC_WEBSERVER_HPP_

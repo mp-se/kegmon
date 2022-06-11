@@ -36,8 +36,6 @@ Config::Config() {
   snprintf(&buf[0], sizeof(buf), "" WIFI_MDNS "%s", getID());
   _mDNS = String(&buf[0]);
 
-  // Log.verbose(F("Cfg : Created config for %s (%s)." CR), _id.c_str(),
-  // _mDNS.c_str());
 }
 
 void Config::createJson(DynamicJsonDocument& doc) {

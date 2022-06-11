@@ -101,7 +101,8 @@ void WebServerHandler::webScale() {
 void WebServerHandler::webScaleTare() {
   UnitIndex idx;
 
-  if (_server->arg(PARAM_SCALE).toInt() == 1) // Will contain 1 or 2
+  // Request will contain 1 or 2, but we need 0 or 1 for indexing.
+  if (_server->arg(PARAM_SCALE).toInt() == 1)
     idx = UnitIndex::UNIT_1;
   else  
     idx = UnitIndex::UNIT_2;
@@ -126,7 +127,8 @@ void WebServerHandler::webScaleFactor() {
   float weight = _server->arg(PARAM_WEIGHT).toFloat();
   UnitIndex idx;
 
-  if (_server->arg(PARAM_SCALE).toInt() == 1) // Will contain 1 or 2
+  // Request will contain 1 or 2, but we need 0 or 1 for indexing.
+  if (_server->arg(PARAM_SCALE).toInt() == 1)
     idx = UnitIndex::UNIT_1;
   else  
     idx = UnitIndex::UNIT_2;
@@ -254,7 +256,7 @@ void WebServerHandler::webStatus() {
   doc[PARAM_APP_BUILD] = CFG_GITREV;
 
   // For this we use the last value read from the scale to avoid having to much
-  // communication. The value will be updated every second in the main loop.
+  // communication. The value will be updated regulary second in the main loop.
   doc[PARAM_PINTS1] = myScale.calculateNoPints(
       UnitIndex::UNIT_1, myScale.getLastValue(UnitIndex::UNIT_1));
   doc[PARAM_PINTS2] = myScale.calculateNoPints(

@@ -26,11 +26,9 @@ SOFTWARE.
 
 #include <ESP8266HTTPClient.h>
 
-#define WIFI_DEFAULT_SSID "KegScale"  // Name of created SSID
-#define WIFI_DEFAULT_PWD "password"   // Password for created SSID
-#define WIFI_MDNS "kegscale"          // Prefix for MDNS name
-
-// tcp cleanup, to avoid memory crash.
+#define WIFI_DEFAULT_SSID "KegScale" // Name of created SSID
+#define WIFI_DEFAULT_PWD "password" // Password for created SSID
+#define WIFI_MDNS "kegscale" // Prefix for MDNS name
 
 class WifiConnection {
  private:
@@ -51,7 +49,6 @@ class WifiConnection {
   void loop();
 };
 
-// Global instance created
 extern WifiConnection myWifi;
 
 #endif  // SRC_WIFI_HPP_

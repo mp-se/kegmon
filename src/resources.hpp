@@ -24,7 +24,7 @@ SOFTWARE.
 #ifndef SRC_RESOURCES_HPP_
 #define SRC_RESOURCES_HPP_
 
-// Configuration
+// Configuration or api params
 #define PARAM_ID "id"
 #define PARAM_MDNS "mdns"
 #define PARAM_SSID "wifi-ssid"

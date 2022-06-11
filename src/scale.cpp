@@ -99,7 +99,7 @@ void Scale::tare(UnitIndex idx) {
   Log.verbose(F("Scal: Set scale to zero, prepare for calibration [%d]." CR),
               idx);
 
-  _scale[idx]->set_scale();  // set scale to 1
+  _scale[idx]->set_scale();  // set scale factor to 1
   _scale[idx]->tare();       // zero weight
   int32_t l = _scale[idx]->get_offset();
   Log.verbose(F("Scal: New scale offset found %l [%d]." CR), l, idx);
@@ -125,7 +125,7 @@ void Scale::findFactor(UnitIndex idx, float weight) {
               weight, l, f, idx);
 
   myConfig.setScaleFactor(idx, f);
-  myConfig.saveFile();  // save the factor
+  myConfig.saveFile();  // save the factor to file
 
   setScaleFactor(idx);  // apply the factor after it has been saved
   getValue(idx);  // read the value again to update the cached value based on
