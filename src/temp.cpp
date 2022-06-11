@@ -42,7 +42,9 @@ float TempHumidity::getTempValueC() {
   Log.verbose(F("Temp: Reading temp %F C." CR), f);
 
   if (isnan(f)) {
-    Log.error(F("Temp: Error reading temperature." CR));
+    Log.error(F("Temp: Error reading temperature, disable sensor." CR));
+    delete _temp;
+    _temp = 0;
     return NAN;
   }
 
@@ -56,7 +58,9 @@ float TempHumidity::getTempValueF() {
   Log.verbose(F("Temp: Reading temp %F F." CR), f);
 
   if (isnan(f)) {
-    Log.error(F("Temp: Error reading temperature." CR));
+    Log.error(F("Temp: Error reading temperature, disable sensor." CR));
+    delete _temp;
+    _temp = 0;
     return NAN;
   }
 
@@ -70,7 +74,9 @@ float TempHumidity::getHumidityValue() {
   Log.verbose(F("Temp: Reading humidity %F." CR), h);
 
   if (isnan(h)) {
-    Log.error(F("Temp: Error reading humidity." CR));
+    Log.error(F("Temp: Error reading humidity, disable sensor." CR));
+    delete _temp;
+    _temp = 0;
     return NAN;
   }
 

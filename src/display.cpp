@@ -88,7 +88,7 @@ void Display::setup(UnitIndex idx) {
 void Display::setFont(UnitIndex idx, FontSize fs) {
   if (!_display[idx]) return;
 
-  // Log.verbose(F("Disp: Setting font size %d [%d]." CR), fs, idx);
+  Log.verbose(F("Disp: Setting font size %d [%d]." CR), fs, idx);
   _fontSize[idx] = fs;
 
   switch (fs) {
@@ -110,16 +110,12 @@ int Display::getTextWidth(UnitIndex idx, const String& text) {
   if (!_display[idx]) return -1;
 
   int w = _display[idx]->getStringWidth(text);
-  // Log.verbose(F("Disp: Width of string %s is %d [%d]." CR), text.c_str(), w,
-  // idx);
   return w;
 }
 
 void Display::printPosition(UnitIndex idx, int x, int y, const String& text) {
   if (!_display[idx]) return;
 
-  // Log.verbose(F("Disp: Printing text %s @ %d,%d [%d]." CR), text.c_str(), x,
-  // y, idx);
   if (x < 0) {
     int w = getTextWidth(idx, text);
     x = (_width[idx] - w) / 2;
@@ -131,16 +127,12 @@ void Display::printPosition(UnitIndex idx, int x, int y, const String& text) {
 void Display::printLine(UnitIndex idx, int l, const String& text) {
   if (!_display[idx]) return;
 
-  // Log.verbose(F("Disp: Printing text %s @ line %d [%d]." CR), text.c_str(),
-  // l, idx);
   printPosition(idx, 0, _fontSize[idx] * l, text);
 }
 
 void Display::printLineCentered(UnitIndex idx, int l, const String& text) {
   if (!_display[idx]) return;
 
-  // Log.verbose(F("Disp: Printing text %s @ line %d [%d]." CR), text.c_str(),
-  // l, idx);
   int w = getTextWidth(idx, text);
   printPosition(idx, (_width[idx] - w) / 2, _fontSize[idx] * l, text);
 }

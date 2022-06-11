@@ -43,30 +43,35 @@ Config::Config() {
 void Config::createJson(DynamicJsonDocument& doc) {
   doc[PARAM_MDNS] = getMDNS();
   doc[PARAM_ID] = getID();
+
   doc[PARAM_SSID] = getWifiSSID(0);
   doc[PARAM_PASS] = getWifiPass(0);
+
   doc[PARAM_SSID2] = getWifiSSID(1);
   doc[PARAM_PASS2] = getWifiPass(1);
+
   doc[PARAM_TEMPFORMAT] = String(getTempFormat());
   doc[PARAM_WEIGHT_PRECISION] = getWeightPrecision();
+
   doc[PARAM_BREWFATHER_APIKEY] = getBrewfatherApiKey();
   doc[PARAM_BREWFATHER_USERKEY] = getBrewfatherUserKey();
 
   doc[PARAM_SCALE_FACTOR1] = getScaleFactor(0);
-  doc[PARAM_SCALE_FACTOR2] = getScaleFactor(1);
   doc[PARAM_SCALE_OFFSET1] = getScaleOffset(0);
-  doc[PARAM_SCALE_OFFSET2] = getScaleOffset(1);
   doc[PARAM_KEG_WEIGHT1] = getKegWeight(0);
-  doc[PARAM_KEG_WEIGHT2] = getKegWeight(1);
   doc[PARAM_PINT_WEIGHT1] = getPintWeight(0);
-  doc[PARAM_PINT_WEIGHT2] = getPintWeight(1);
   doc[PARAM_BEER_NAME1] = getBeerName(0);
-  doc[PARAM_BEER_NAME2] = getBeerName(1);
   doc[PARAM_BEER_ABV1] = getBeerABV(0);
-  doc[PARAM_BEER_ABV2] = getBeerABV(1);
   doc[PARAM_BEER_EBC1] = getBeerEBC(0);
-  doc[PARAM_BEER_EBC2] = getBeerEBC(1);
   doc[PARAM_BEER_IBU1] = getBeerIBU(0);
+
+  doc[PARAM_SCALE_FACTOR2] = getScaleFactor(1);
+  doc[PARAM_SCALE_OFFSET2] = getScaleOffset(1);
+  doc[PARAM_KEG_WEIGHT2] = getKegWeight(1);
+  doc[PARAM_PINT_WEIGHT2] = getPintWeight(1);
+  doc[PARAM_BEER_NAME2] = getBeerName(1);
+  doc[PARAM_BEER_ABV2] = getBeerABV(1);
+  doc[PARAM_BEER_EBC2] = getBeerEBC(1);
   doc[PARAM_BEER_IBU2] = getBeerIBU(1);
 }
 
@@ -101,7 +106,7 @@ bool Config::saveFile() {
 }
 
 bool Config::loadFile() {
-  // Log.verbose(F("Cfg : Loading configuration from file." CR));
+  Log.verbose(F("Cfg : Loading configuration from file." CR));
 
   if (!LittleFS.exists(CFG_FILENAME)) {
     Log.error(F("Cfg : Configuration file does not exist."));
@@ -133,19 +138,23 @@ bool Config::loadFile() {
     return false;
   }
 
-  // Log.verbose(F("Cfg : Parsed configuration file." CR));
+  Log.verbose(F("Cfg : Parsed configuration file." CR));
 
   if (!doc[PARAM_MDNS].isNull()) setMDNS(doc[PARAM_MDNS]);
+
   if (!doc[PARAM_SSID].isNull()) setWifiSSID(doc[PARAM_SSID], 0);
   if (!doc[PARAM_PASS].isNull()) setWifiPass(doc[PARAM_PASS], 0);
+
   if (!doc[PARAM_SSID2].isNull()) setWifiSSID(doc[PARAM_SSID2], 1);
   if (!doc[PARAM_PASS2].isNull()) setWifiPass(doc[PARAM_PASS2], 1);
+
   if (!doc[PARAM_TEMPFORMAT].isNull()) {
     String s = doc[PARAM_TEMPFORMAT];
     setTempFormat(s.charAt(0));
   }
   if (!doc[PARAM_WEIGHT_PRECISION].isNull())
     setWeightPrecision(doc[PARAM_WEIGHT_PRECISION].as<int>());
+
   if (!doc[PARAM_BREWFATHER_APIKEY].isNull())
     setBrewfatherApiKey(doc[PARAM_BREWFATHER_APIKEY]);
   if (!doc[PARAM_BREWFATHER_USERKEY].isNull())
@@ -153,34 +162,33 @@ bool Config::loadFile() {
 
   if (!doc[PARAM_SCALE_FACTOR1].isNull())
     setScaleFactor(0, doc[PARAM_SCALE_FACTOR1].as<float>());
-  if (!doc[PARAM_SCALE_FACTOR2].isNull())
-    setScaleFactor(1, doc[PARAM_SCALE_FACTOR2].as<float>());
   if (!doc[PARAM_SCALE_OFFSET1].isNull())
     setScaleOffset(0, doc[PARAM_SCALE_OFFSET1].as<float>());
-  if (!doc[PARAM_SCALE_OFFSET2].isNull())
-    setScaleOffset(1, doc[PARAM_SCALE_OFFSET2].as<float>());
-
   if (!doc[PARAM_KEG_WEIGHT1].isNull())
     setKegWeight(0, doc[PARAM_KEG_WEIGHT1].as<float>());
-  if (!doc[PARAM_KEG_WEIGHT2].isNull())
-    setKegWeight(1, doc[PARAM_KEG_WEIGHT2].as<float>());
   if (!doc[PARAM_PINT_WEIGHT1].isNull())
     setPintWeight(0, doc[PARAM_PINT_WEIGHT1].as<float>());
-  if (!doc[PARAM_PINT_WEIGHT2].isNull())
-    setPintWeight(1, doc[PARAM_PINT_WEIGHT2].as<float>());
-
   if (!doc[PARAM_BEER_NAME1].isNull()) setBeerName(0, doc[PARAM_BEER_NAME1]);
-  if (!doc[PARAM_BEER_NAME2].isNull()) setBeerName(1, doc[PARAM_BEER_NAME2]);
   if (!doc[PARAM_BEER_EBC1].isNull())
     setBeerEBC(0, doc[PARAM_BEER_EBC1].as<int>());
-  if (!doc[PARAM_BEER_EBC2].isNull())
-    setBeerEBC(1, doc[PARAM_BEER_EBC2].as<int>());
   if (!doc[PARAM_BEER_ABV1].isNull())
     setBeerABV(0, doc[PARAM_BEER_ABV1].as<float>());
-  if (!doc[PARAM_BEER_ABV2].isNull())
-    setBeerABV(1, doc[PARAM_BEER_ABV2].as<float>());
   if (!doc[PARAM_BEER_IBU1].isNull())
     setBeerIBU(0, doc[PARAM_BEER_IBU1].as<int>());
+
+  if (!doc[PARAM_SCALE_FACTOR2].isNull())
+    setScaleFactor(1, doc[PARAM_SCALE_FACTOR2].as<float>());
+  if (!doc[PARAM_SCALE_OFFSET2].isNull())
+    setScaleOffset(1, doc[PARAM_SCALE_OFFSET2].as<float>());
+  if (!doc[PARAM_KEG_WEIGHT2].isNull())
+    setKegWeight(1, doc[PARAM_KEG_WEIGHT2].as<float>());
+  if (!doc[PARAM_PINT_WEIGHT2].isNull())
+    setPintWeight(1, doc[PARAM_PINT_WEIGHT2].as<float>());
+  if (!doc[PARAM_BEER_NAME2].isNull()) setBeerName(1, doc[PARAM_BEER_NAME2]);
+  if (!doc[PARAM_BEER_EBC2].isNull())
+    setBeerEBC(1, doc[PARAM_BEER_EBC2].as<int>());
+  if (!doc[PARAM_BEER_ABV2].isNull())
+    setBeerABV(1, doc[PARAM_BEER_ABV2].as<float>());
   if (!doc[PARAM_BEER_IBU2].isNull())
     setBeerIBU(1, doc[PARAM_BEER_IBU2].as<int>());
 
@@ -195,7 +203,7 @@ void Config::formatFileSystem() {
 }
 
 void Config::checkFileSystem() {
-  // Log.verbose(F("Cfg : Checking if filesystem is valid." CR));
+  Log.verbose(F("Cfg : Checking if filesystem is valid." CR));
 
   if (LittleFS.begin()) {
     Log.notice(F("Cfg : Filesystem mounted." CR));

@@ -99,13 +99,15 @@ void WebServerHandler::webScale() {
 }
 
 void WebServerHandler::webScaleTare() {
-  int idx = _server->arg(PARAM_SCALE).toInt();
+  UnitIndex idx;
+
+  if (_server->arg(PARAM_SCALE).toInt() == 1) // Will contain 1 or 2
+    idx = UnitIndex::UNIT_1;
+  else  
+    idx = UnitIndex::UNIT_2;
 
   Log.notice(F("WEB : webServer callback /api/scale/tare." CR));
-  if (idx == 1)
-    myScale.tare(UnitIndex::UNIT_1);
-  else
-    myScale.tare(UnitIndex::UNIT_2);
+  myScale.tare(idx);
 
   Log.notice(
       F("WEB : webServer callback /api/scale/factor, offset=%d [%d]." CR),
@@ -122,15 +124,18 @@ void WebServerHandler::webScaleTare() {
 
 void WebServerHandler::webScaleFactor() {
   float weight = _server->arg(PARAM_WEIGHT).toFloat();
-  int idx = _server->arg(PARAM_SCALE).toInt();
+  UnitIndex idx;
+
+  if (_server->arg(PARAM_SCALE).toInt() == 1) // Will contain 1 or 2
+    idx = UnitIndex::UNIT_1;
+  else  
+    idx = UnitIndex::UNIT_2;
+
   Log.notice(
       F("WEB : webServer callback /api/scale/factor, weight=%F [%d]." CR),
       weight, idx);
 
-  if (idx == 1)
-    myScale.findFactor(UnitIndex::UNIT_1, weight);
-  else
-    myScale.findFactor(UnitIndex::UNIT_2, weight);
+  myScale.findFactor(idx, weight);
 
   Log.notice(
       F("WEB : webServer callback /api/scale/factor, factor=%F [%d]." CR),

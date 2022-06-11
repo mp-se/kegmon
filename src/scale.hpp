@@ -31,7 +31,7 @@ SOFTWARE.
 class Scale {
  private:
   HX711 *_scale[2] = {0, 0};
-  int _readCount = 10;
+  int _readCount = 5;
   float _lastValue[2] = {0, 0};
 
   void setScaleFactor(UnitIndex idx);

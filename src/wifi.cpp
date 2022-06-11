@@ -52,16 +52,10 @@ WifiConnection myWifi;
 const char *userSSID = USER_SSID;
 const char *userPWD = USER_SSID_PWD;
 
-//
-// Initialize
-//
 void WifiConnection::init() {
   myDRD = new DoubleResetDetector(DRD_TIMEOUT, DRD_ADDRESS);
 }
 
-//
-// Check if we have a valid wifi configuration
-//
 bool WifiConnection::hasConfig() {
   if (strlen(myConfig.getWifiSSID(0))) return true;
   if (strlen(userSSID)) return true;
@@ -80,33 +74,18 @@ bool WifiConnection::hasConfig() {
   return false;
 }
 
-//
-// Check if the wifi is connected
-//
 bool WifiConnection::isConnected() { return WiFi.status() == WL_CONNECTED; }
 
-//
-// Get the IP adress
-//
 String WifiConnection::getIPAddress() { return WiFi.localIP().toString(); }
 
-//
-// Additional method to detect double reset.
-//
 bool WifiConnection::isDoubleResetDetected() {
   if (strlen(userSSID))
     return false;  // Ignore this if we have hardcoded settings.
   return myDRD->detectDoubleReset();
 }
 
-//
-// Stop double reset detection
-//
 void WifiConnection::stopDoubleReset() { myDRD->stop(); }
 
-//
-// Start the wifi manager
-//
 void WifiConnection::startPortal() {
   Log.notice(F("WIFI: Starting Wifi config portal." CR));
 
@@ -152,14 +131,8 @@ void WifiConnection::startPortal() {
   ESP_RESET();
 }
 
-//
-// Call the wifi manager in loop
-//
 void WifiConnection::loop() { myDRD->loop(); }
 
-//
-// Connect to last known access point, non blocking mode.
-//
 void WifiConnection::connectAsync(int wifiIndex) {
   WiFi.persistent(true);
   WiFi.mode(WIFI_STA);
@@ -175,9 +148,6 @@ void WifiConnection::connectAsync(int wifiIndex) {
   }
 }
 
-//
-// Blocks until wifi connection has been found
-//
 bool WifiConnection::waitForConnection(int maxTime) {
 #if DEBUG_LEVEL == 6
   WiFi.printDiag(Serial);
@@ -202,11 +172,8 @@ bool WifiConnection::waitForConnection(int maxTime) {
   return true;
 }
 
-//
-// Connect to last known access point, blocking mode.
-//
 bool WifiConnection::connect() {
-  // If success to seconday is successful this is used as standard
+  // If successful connection to seconday is successful then used that as standard
   int timeout = myConfig.getWifiConnectionTimeout();
 
   connectAsync(0);
@@ -231,14 +198,9 @@ bool WifiConnection::connect() {
   return true;
 }
 
-//
-// This will erase the stored credentials and forcing the WIFI manager to AP
-// mode.
-//
 bool WifiConnection::disconnect() {
   Log.notice(F("WIFI: Erasing stored WIFI credentials." CR));
-  // Erase WIFI credentials
-  return WiFi.disconnect(true);
+  return WiFi.disconnect(true); // Erase WIFI credentials
 }
 
 // EOF
