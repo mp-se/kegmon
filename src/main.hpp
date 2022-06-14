@@ -24,11 +24,14 @@ SOFTWARE.
 #ifndef SRC_MAIN_HPP_
 #define SRC_MAIN_HPP_
 
-#include <Arduino.h>
-#include <ArduinoJson.h>
-#include <ArduinoLog.h>
+#include <log.hpp>
 #include <LittleFS.h>
 #include <stdlib.h>
+
+#define CFG_APPNAME "KegScale"         // Name of firmware
+#define CFG_MDNSNAME "kegscale"        // Network name
+#define CFG_FILENAME "/kegscale.json"  // Name of config file
+
 #define ESP_RESET ESP.reset
 #define PIN_LED 2
 #define PIN_OLED_SDA D2
@@ -40,14 +43,5 @@ SOFTWARE.
 #define PIN_DH2 D7
 
 enum UnitIndex { UNIT_1 = 0, UNIT_2 = 1 };
-
-class SerialDebug {
- public:
-  explicit SerialDebug(const uint32_t serialSpeed = 115200L);
-  static Logging* getLog() { return &Log; }
-};
-
-char* convertFloatToString(float f, char* buffer, int dec);
-float reduceFloatPrecision(float f, int dec);
 
 #endif  // SRC_MAIN_HPP_

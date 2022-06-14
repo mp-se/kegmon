@@ -24,60 +24,36 @@ SOFTWARE.
 #ifndef SRC_WEBSERVER_HPP_
 #define SRC_WEBSERVER_HPP_
 
+#include <basewebhandler.hpp>
+#include <kegconfig.hpp>
 #include <ESP8266WebServer.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
 #include <incbin.h>
 
-INCBIN_EXTERN(IndexHtm);
-INCBIN_EXTERN(ConfigHtm);
 INCBIN_EXTERN(CalibrateHtm);
-INCBIN_EXTERN(AboutHtm);
-INCBIN_EXTERN(UploadHtm);
 
-class WebServerHandler {
+class KegWebHandler : public BaseWebHandler {
  private:
-  ESP8266WebServer* _server = 0;
-  File _uploadFile;
+  KegConfig* _config;
 
+  void setupWebHandlers();
   void populateScaleJson(DynamicJsonDocument& doc);
-
   void webScale();
   void webScaleTare();
   void webScaleFactor();
   void webConfigGet();
   void webConfigPost();
   void webStatus();
-  void webUpload();
 
-  void webIndexHtm() {
-    _server->send_P(200, "text/html", (const char*)gIndexHtmData,
-                    gIndexHtmSize);
-  }
-  void webConfigHtm() {
-    _server->send_P(200, "text/html", (const char*)gConfigHtmData,
-                    gConfigHtmSize);
-  }
   void webCalibrateHtm() {
     _server->send_P(200, "text/html", (const char*)gCalibrateHtmData,
                     gCalibrateHtmSize);
   }
-  void webAboutHtm() {
-    _server->send_P(200, "text/html", (const char*)gAboutHtmData,
-                    gAboutHtmSize);
-  }
-  void webUploadHtm() {
-    _server->send_P(200, "text/html", (const char*)gUploadHtmData,
-                    gUploadHtmSize);
-  }
-  void webReturnOK() { _server->send(200); }
 
  public:
-  bool setupWebServer();
-  void loop();
+  explicit KegWebHandler(KegConfig* config);
 };
-
-extern WebServerHandler myWebServerHandler;
 
 #endif  // SRC_WEBSERVER_HPP_
 

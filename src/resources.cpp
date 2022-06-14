@@ -24,8 +24,6 @@ SOFTWARE.
 #define INCBIN_OUTPUT_SECTION ".irom.text"
 #include <incbin.h>
 
-#include <resources.hpp>
-
 INCBIN(IndexHtm, "html/index.min.htm");
 INCBIN(ConfigHtm, "html/config.min.htm");
 INCBIN(CalibrateHtm, "html/calibration.min.htm");

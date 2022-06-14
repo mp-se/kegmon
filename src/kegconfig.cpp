@@ -21,34 +21,20 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#include <config.hpp>
+#include <kegconfig.hpp>
 #include <main.hpp>
-#include <resources.hpp>
-#include <wifi.hpp>
+#include <log.hpp>
 
-Config myConfig;
-
-Config::Config() {
-  char buf[30];
-
-  snprintf(&buf[0], sizeof(buf), "%06x", (unsigned int)ESP.getChipId());
-  _id = String(&buf[0]);
-  snprintf(&buf[0], sizeof(buf), "" WIFI_MDNS "%s", getID());
-  _mDNS = String(&buf[0]);
-
+KegConfig::KegConfig(String baseMDNS, String fileName) : BaseConfig(baseMDNS, fileName) {
 }
 
-void Config::createJson(DynamicJsonDocument& doc) {
-  doc[PARAM_MDNS] = getMDNS();
-  doc[PARAM_ID] = getID();
+void KegConfig::createJson(DynamicJsonDocument& doc) {
+  // Call base class functions
+  createJsonBase(doc);
+  createJsonWifi(doc);
+  createJsonOta(doc);
 
-  doc[PARAM_SSID] = getWifiSSID(0);
-  doc[PARAM_PASS] = getWifiPass(0);
-
-  doc[PARAM_SSID2] = getWifiSSID(1);
-  doc[PARAM_PASS2] = getWifiPass(1);
-
-  doc[PARAM_TEMPFORMAT] = String(getTempFormat());
+  // Handle project specific config
   doc[PARAM_WEIGHT_PRECISION] = getWeightPrecision();
 
   doc[PARAM_BREWFATHER_APIKEY] = getBrewfatherApiKey();
@@ -73,83 +59,13 @@ void Config::createJson(DynamicJsonDocument& doc) {
   doc[PARAM_BEER_IBU2] = getBeerIBU(1);
 }
 
-bool Config::saveFile() {
-  if (!_saveNeeded) {
-    Log.verbose(F("Cfg : Skipping save, not needed." CR));
-    return true;
-  }
+void KegConfig::parseJson(DynamicJsonDocument& doc) {
+  // Call base class functions
+  parseJsonBase(doc);
+  parseJsonWifi(doc);
+  parseJsonOta(doc);
 
-  File configFile = LittleFS.open(CFG_FILENAME, "w");
-
-  if (!configFile) {
-    Log.error(F("Cfg : Failed to save configuration."));
-    return false;
-  }
-
-  DynamicJsonDocument doc(2048);
-  createJson(doc);
-
-#if LOG_LEVEL == 6
-  serializeJson(doc, Serial);
-  Serial.print(CR);
-#endif
-
-  serializeJson(doc, configFile);
-  configFile.flush();
-  configFile.close();
-
-  _saveNeeded = false;
-  Log.notice(F("Cfg : Configuration saved to " CFG_FILENAME "." CR));
-  return true;
-}
-
-bool Config::loadFile() {
-  Log.verbose(F("Cfg : Loading configuration from file." CR));
-
-  if (!LittleFS.exists(CFG_FILENAME)) {
-    Log.error(F("Cfg : Configuration file does not exist."));
-    return false;
-  }
-
-  File configFile = LittleFS.open(CFG_FILENAME, "r");
-
-  if (!configFile) {
-    Log.error(F("Cfg : Failed to load configuration."));
-    return false;
-  }
-
-  Log.verbose(F("Cfg : Size of configuration file=%d bytes." CR),
-              configFile.size());
-
-  DynamicJsonDocument doc(2048);
-  DeserializationError err = deserializeJson(doc, configFile);
-
-#if LOG_LEVEL == 6
-  serializeJson(doc, Serial);
-  Serial.print(CR);
-#endif
-
-  configFile.close();
-
-  if (err) {
-    Log.error(F("Cfg : Failed to parse configuration (json)"));
-    return false;
-  }
-
-  Log.verbose(F("Cfg : Parsed configuration file." CR));
-
-  if (!doc[PARAM_MDNS].isNull()) setMDNS(doc[PARAM_MDNS]);
-
-  if (!doc[PARAM_SSID].isNull()) setWifiSSID(doc[PARAM_SSID], 0);
-  if (!doc[PARAM_PASS].isNull()) setWifiPass(doc[PARAM_PASS], 0);
-
-  if (!doc[PARAM_SSID2].isNull()) setWifiSSID(doc[PARAM_SSID2], 1);
-  if (!doc[PARAM_PASS2].isNull()) setWifiPass(doc[PARAM_PASS2], 1);
-
-  if (!doc[PARAM_TEMPFORMAT].isNull()) {
-    String s = doc[PARAM_TEMPFORMAT];
-    setTempFormat(s.charAt(0));
-  }
+  // Handle project specific config
   if (!doc[PARAM_WEIGHT_PRECISION].isNull())
     setWeightPrecision(doc[PARAM_WEIGHT_PRECISION].as<int>());
 
@@ -189,26 +105,6 @@ bool Config::loadFile() {
     setBeerABV(1, doc[PARAM_BEER_ABV2].as<float>());
   if (!doc[PARAM_BEER_IBU2].isNull())
     setBeerIBU(1, doc[PARAM_BEER_IBU2].as<int>());
-
-  _saveNeeded = false;
-  Log.notice(F("Cfg : Configuration file " CFG_FILENAME " loaded." CR));
-  return true;
-}
-
-void Config::formatFileSystem() {
-  Log.notice(F("Cfg : Formating filesystem." CR));
-  LittleFS.format();
-}
-
-void Config::checkFileSystem() {
-  Log.verbose(F("Cfg : Checking if filesystem is valid." CR));
-
-  if (LittleFS.begin()) {
-    Log.notice(F("Cfg : Filesystem mounted." CR));
-  } else {
-    Log.error(F("Cfg : Unable to mount file system, formatting..." CR));
-    LittleFS.format();
-  }
 }
 
 // EOF

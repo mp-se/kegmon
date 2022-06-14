@@ -21,33 +21,27 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#include <config.hpp>
-#include <display.hpp>
 #include <main.hpp>
+#include <kegconfig.hpp>
+#include <kegwebhandler.hpp>
+#include <wificonnection.hpp>
+#include <ota.hpp>
+#include <display.hpp>
 #include <scale.hpp>
 #include <temp.hpp>
-#include <webserver.hpp>
-#include <wifi.hpp>
 
-SerialDebug mySerial;
+SerialDebug mySerial(115200L);
+KegConfig myConfig(CFG_MDNSNAME, CFG_FILENAME);
+WifiConnection myWifi(&myConfig, CFG_APPNAME, "password", CFG_MDNSNAME);
+OtaUpdate myOta(&myConfig, CFG_APPVER);
+KegWebHandler myWebHandler(&myConfig);
+Display myDisplay;
+Scale myScale;
+TempHumidity myTemp;
+
 const int loopInterval = 2000;
 int loopCounter = 0;
 uint32_t loopMillis = 0;
-
-void printTimestamp(Print* _logOutput, int _logLevel) {
-  char c[12];
-  snprintf(c, sizeof(c), "%10lu ", millis());
-  _logOutput->print(c);
-}
-
-SerialDebug::SerialDebug(const uint32_t serialSpeed) {
-  Serial.flush();
-  Serial.begin(serialSpeed);
-
-  getLog()->begin(LOG_LEVEL, &Serial, true);
-  getLog()->setPrefix(printTimestamp);
-  getLog()->notice(F("SDBG: Serial logging started at %u." CR), serialSpeed);
-}
 
 void printHeap(String prefix = "Main") {
   Log.notice(
@@ -61,15 +55,8 @@ char* convertFloatToString(float f, char* buffer, int dec) {
   return buffer;
 }
 
-float reduceFloatPrecision(float f, int dec) {
-  char buffer[5];
-  dtostrf(f, 6, dec, &buffer[0]);
-  return atof(&buffer[0]);
-}
-
 void setup() {
-  // Log.verbose(F("Main: Reset reason %s." CR), ESP.getResetInfo().c_str());
-
+  Log.notice(F("Main: Reset reason %s." CR), ESP.getResetInfo().c_str());
   Log.notice(F("Main: Started setup for %s." CR),
              String(ESP.getChipId(), HEX).c_str());
   Log.notice(F("Main: Build options: %s (%s) LOGLEVEL %d " CR), CFG_APPVER,
@@ -102,8 +89,14 @@ void setup() {
   }
 
   myWifi.connect();
-  myWebServerHandler.setupWebServer();
+
+  if (myWifi.isConnected()) {
+    myWebHandler.setupWebServer();
+  }
+
   Log.notice(F("Main: Setup completed." CR));
+
+  return;
 
   // Show what sensors has been detected on display 1
   char buf[30];
@@ -181,7 +174,7 @@ void drawScreen(UnitIndex idx) {
 void loop() {
   if (!myWifi.isConnected()) myWifi.connect();
 
-  myWebServerHandler.loop();
+  myWebHandler.loop();
   myWifi.loop();
 
   if (abs((int32_t)(millis() - loopMillis)) > loopInterval) {

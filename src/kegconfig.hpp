@@ -25,9 +25,33 @@ SOFTWARE.
 #define SRC_CONFIG_HPP_
 
 #include <main.hpp>
+#include <baseconfig.hpp>
 
-#define CFG_APPNAME "KegScale"         // Name of firmware
-#define CFG_FILENAME "/kegscale.json"  // Name of config file
+#define PARAM_WEIGHT_PRECISION "weight-precision"
+#define PARAM_BREWFATHER_USERKEY "brewfather-userkey"
+#define PARAM_BREWFATHER_APIKEY "brewfather-apikey"
+#define PARAM_KEG_WEIGHT1 "keg-weight1"
+#define PARAM_KEG_WEIGHT2 "keg-weight2"
+#define PARAM_PINT_WEIGHT1 "pint-weight1"
+#define PARAM_PINT_WEIGHT2 "pint-weight2"
+#define PARAM_SCALE_FACTOR1 "scale-factor1"
+#define PARAM_SCALE_FACTOR2 "scale-factor2"
+#define PARAM_SCALE_WEIGHT1 "scale-weight1"
+#define PARAM_SCALE_WEIGHT2 "scale-weight2"
+#define PARAM_SCALE_RAW1 "scale-raw1"
+#define PARAM_SCALE_RAW2 "scale-raw2"
+#define PARAM_SCALE_OFFSET1 "scale-offset1"
+#define PARAM_SCALE_OFFSET2 "scale-offset2"
+#define PARAM_PINTS1 "pints1"
+#define PARAM_PINTS2 "pints2"
+#define PARAM_BEER_NAME1 "beer-name1"
+#define PARAM_BEER_NAME2 "beer-name2"
+#define PARAM_BEER_ABV1 "beer-abv1"
+#define PARAM_BEER_ABV2 "beer-abv2"
+#define PARAM_BEER_IBU1 "beer-ibu1"
+#define PARAM_BEER_IBU2 "beer-ibu2"
+#define PARAM_BEER_EBC1 "beer-ebc1"
+#define PARAM_BEER_EBC2 "beer-ebc2"
 
 struct BeerInfo {
   String _name = "";
@@ -36,16 +60,9 @@ struct BeerInfo {
   int _ibu = 0;
 };
 
-class Config {
+class KegConfig : public BaseConfig {
  private:
-  bool _saveNeeded = false;
-
-  String _id = "";
-  String _mDNS = "";
-  char _tempFormat = 'C';
   int _weightPrecision = 2;
-  String _wifiSSID[2] = {"", ""};
-  String _wifiPASS[2] = {"", ""};
   String _brewfatherUserKey = "";
   String _brewfatherApiKey = "";
 
@@ -55,13 +72,11 @@ class Config {
   float _pintWeight[2] = {0, 0};
   BeerInfo _beer[2];
 
-  void formatFileSystem();
-
  public:
-  Config();
-  const char* getID() { return _id.c_str(); }
-  int getWifiConnectionTimeout() { return 30; }
-  int getWifiPortalTimeout() { return 120; }
+  KegConfig(String baseMDNS, String fileName);
+
+  void createJson(DynamicJsonDocument& doc);
+  void parseJson(DynamicJsonDocument& doc);
 
   const char* getBrewfatherUserKey() { return _brewfatherUserKey.c_str(); }
   void setBrewfatherUserKey(String s) {
@@ -124,43 +139,9 @@ class Config {
     _scaleFactor[idx] = f;
     _saveNeeded = true;
   }
-
-  const char* getMDNS() { return _mDNS.c_str(); }
-  void setMDNS(String s) {
-    _mDNS = s;
-    _saveNeeded = true;
-  }
-
-  const char* getWifiSSID(int idx) { return _wifiSSID[idx].c_str(); }
-  void setWifiSSID(String s, int idx) {
-    _wifiSSID[idx] = s;
-    _saveNeeded = true;
-  }
-  const char* getWifiPass(int idx) { return _wifiPASS[idx].c_str(); }
-  void setWifiPass(String s, int idx) {
-    _wifiPASS[idx] = s;
-    _saveNeeded = true;
-  }
-
-  char getTempFormat() { return _tempFormat; }
-  void setTempFormat(char c) {
-    if (c == 'C' || c == 'F') {
-      _tempFormat = c;
-      _saveNeeded = true;
-    }
-  }
-  bool isTempC() { return _tempFormat == 'C'; }
-  bool isTempF() { return _tempFormat == 'F'; }
-
-  void createJson(DynamicJsonDocument& doc);
-  bool saveFile();
-  bool loadFile();
-  void checkFileSystem();
-  bool isSaveNeeded() { return _saveNeeded; }
-  void setSaveNeeded() { _saveNeeded = true; }
 };
 
-extern Config myConfig;
+extern KegConfig myConfig;
 
 #endif  // SRC_CONFIG_HPP_
 
