@@ -89,14 +89,8 @@ void setup() {
   }
 
   myWifi.connect();
-
-  if (myWifi.isConnected()) {
-    myWebHandler.setupWebServer();
-  }
-
+  myWebHandler.setupWebServer();
   Log.notice(F("Main: Setup completed." CR));
-
-  return;
 
   // Show what sensors has been detected on display 1
   char buf[30];
