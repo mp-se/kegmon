@@ -80,15 +80,17 @@
     <div class="accordion" id="accordion">
       <div class="accordion-item">
         <h2 class="accordion-header" id="headingDevice">
-          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDevice" aria-expanded="true" aria-controls="collapseDevice" >
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDevice" aria-expanded="true" aria-controls="collapseDevice" >
             <b>Device</b>
           </button>
         </h2>
-        <div id="collapseDevice" class="accordion-collapse collapse show" aria-labelledby="headingDevice" data-bs-parent="#accordion" >
+        <div id="collapseDevice" class="accordion-collapse collapse" aria-labelledby="headingDevice" data-bs-parent="#accordion" >
           <div class="accordion-body">
-
+      
             <form action="/api/config" method="post">
-  
+              <input type="text" name="id" id="id1" hidden>
+              <input type="text" name="section" value="#collapseDevice" hidden>  
+    
               <div class="row mb-3">
                 <label for="mdns" class="col-sm-2 col-form-label">Device name</label>
                 <div class="col-sm-3">
@@ -119,79 +121,6 @@
                 </div>
               </div>
 
-              <hr>
-
-              <div class="row mb-3">
-                <label for="keg-weight1" class="col-sm-2 col-form-label">Empty keg weight</label>
-                <div class="col-sm-3">
-                  <input type="number" step=".001" min="0" max="50" class="form-control" name="keg-weight1" id="keg-weight1" placeholder="1.00" data-bs-toggle="tooltip" title="The weight of an empty keg."> 
-                </div>
-                <div class="col-sm-3">
-                  <input type="number" step=".001" min="0" max="50" class="form-control" name="keg-weight2" id="keg-weight2" placeholder="1.00" data-bs-toggle="tooltip" title="The weight of an empty keg."> 
-                </div>
-              </div>
-
-              <div class="row mb-3">
-                <label for="pint-weight1" class="col-sm-2 col-form-label">Pint of beer weight</label>
-                <div class="col-sm-3">
-                  <input type="number" step=".001" min="0" max="50" class="form-control" name="pint-weight1" id="pint-weight1" placeholder="0.10" data-bs-toggle="tooltip" title="The weight of a unit of beer."> 
-                </div>
-                <div class="col-sm-3">
-                  <input type="number" step=".001" min="0" max="50" class="form-control" name="pint-weight2" id="pint-weight2" placeholder="0.10" data-bs-toggle="tooltip" title="The weight of a unit of beer."> 
-                </div>
-              </div>
-
-              <hr>
-
-              <div class="row mb-3">
-                <label for="keg-weight1" class="col-sm-2 col-form-label"></label>
-                <div class="col-sm-3">
-                  <button type="button" class="btn btn-secondary" data-field1="1" data-bs-toggle="modal" data-bs-target="#modal-brewfather" data-bs-toggle="tooltip" title="Select a brew from brewfather">Fetch from Brewfather</button>
-                </div>
-                <div class="col-sm-3">
-                  <button type="button" class="btn btn-secondary" data-field1="2" data-bs-toggle="modal" data-bs-target="#modal-brewfather" data-bs-toggle="tooltip" title="Select a brew from brewfather">Fetch from Brewfather</button>
-                </div>
-              </div>
-
-              <div class="row mb-3">
-                <label for="beer-name1" class="col-sm-2 col-form-label">Beer name</label>
-                <div class="col-sm-3">
-                  <input type="text" maxlength="20" class="form-control" name="beer-name1" id="beer-name1" placeholder="" data-bs-toggle="tooltip" title="Name of the beer being served.">
-                </div>
-                <div class="col-sm-3">
-                  <input type="text" maxlength="20" class="form-control" name="beer-name2" id="beer-name2" placeholder="" data-bs-toggle="tooltip" title="Name of the beer being served.">
-                </div>
-              </div>
-              <div class="row mb-3">
-                <label for="beer-abv1" class="col-sm-2 col-form-label">Beer ABV</label>
-                <div class="col-sm-3">
-                  <input type="number" step=".01" min="0" max="20" class="form-control" name="beer-abv1" id="beer-abv1" placeholder="4.5" data-bs-toggle="tooltip" title="ABV of the beer being served."> 
-                </div>
-                <div class="col-sm-3">
-                  <input type="number" step=".01" min="0" max="20" class="form-control" name="beer-abv2" id="beer-abv2" placeholder="4.5" data-bs-toggle="tooltip" title="ABV of the beer being served."> 
-                </div>
-              </div>
-              <div class="row mb-3" hidden>
-                <label for="beer-abv1" class="col-sm-2 col-form-label">Beer EBC (hide)</label>
-                <div class="col-sm-3">
-                  <input type="number" step="1" min="0" max="100" class="form-control" name="beer-ebc1" id="beer-ebc1"> 
-                </div>
-                <div class="col-sm-3">
-                  <input type="number" step="1" min="0" max="100" class="form-control" name="beer-ebc2" id="beer-ebc2"> 
-                </div>
-              </div>
-              <div class="row mb-3" hidden>
-                <label for="beer-abv1" class="col-sm-2 col-form-label">Beer IBU (hide)</label>
-                <div class="col-sm-3">
-                  <input type="number" step="1" min="0" max="100" class="form-control" name="beer-ibu1" id="beer-ibu1"> 
-                </div>
-                <div class="col-sm-3">
-                  <input type="number" step="1" min="0" max="100" class="form-control" name="beer-ibu2" id="beer-ibu2"> 
-                </div>
-              </div>
-
-
-              <!--
               <div class="row mb-3">
                 <fieldset class="form-group row">
                   <legend class="col-form-label col-sm-2 float-sm-left pt-0">Temperature Format</legend>
@@ -207,7 +136,6 @@
                   </div>
                 </fieldset>
               </div>
-              -->
  
               <div class="row mb-3">
                 <div class="col-sm-4 offset-sm-2">
@@ -220,7 +148,101 @@
       </div>
 
     </div>
+
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingBeer">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseBeer" aria-expanded="false" aria-controls="collapseBeer" >
+          <b>Beer</b>
+        </button>
+      </h2>
+      <div id="collapseBeer" class="accordion-collapse collapse show" aria-labelledby="headingBeer" data-bs-parent="#accordion" >
+        <div class="accordion-body">
+
+          <form action="/api/config" method="post">
+            <input type="text" name="id" id="id2" hidden>
+            <input type="text" name="section" value="#collapseBeer" hidden>  
+
+            <div class="row mb-3">
+              <label for="keg-weight1" class="col-sm-2 col-form-label">Empty keg weight</label>
+              <div class="col-sm-3">
+                <input type="number" step=".001" min="0" max="50" class="form-control" name="keg-weight1" id="keg-weight1" placeholder="1.00" data-bs-toggle="tooltip" title="The weight of an empty keg."> 
+              </div>
+              <div class="col-sm-3">
+                <input type="number" step=".001" min="0" max="50" class="form-control" name="keg-weight2" id="keg-weight2" placeholder="1.00" data-bs-toggle="tooltip" title="The weight of an empty keg."> 
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <label for="pint-weight1" class="col-sm-2 col-form-label">Pint of beer weight</label>
+              <div class="col-sm-3">
+                <input type="number" step=".001" min="0" max="50" class="form-control" name="pint-weight1" id="pint-weight1" placeholder="0.10" data-bs-toggle="tooltip" title="The weight of a unit of beer."> 
+              </div>
+              <div class="col-sm-3">
+                <input type="number" step=".001" min="0" max="50" class="form-control" name="pint-weight2" id="pint-weight2" placeholder="0.10" data-bs-toggle="tooltip" title="The weight of a unit of beer."> 
+              </div>
+            </div>
+
+            <hr>
+
+            <div class="row mb-3">
+              <label for="keg-weight1" class="col-sm-2 col-form-label"></label>
+              <div class="col-sm-3">
+                <button type="button" class="btn btn-secondary" data-field1="1" data-bs-toggle="modal" data-bs-target="#modal-brewfather" data-bs-toggle="tooltip" title="Select a brew from brewfather">Fetch from Brewfather</button>
+              </div>
+              <div class="col-sm-3">
+                <button type="button" class="btn btn-secondary" data-field1="2" data-bs-toggle="modal" data-bs-target="#modal-brewfather" data-bs-toggle="tooltip" title="Select a brew from brewfather">Fetch from Brewfather</button>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <label for="beer-name1" class="col-sm-2 col-form-label">Beer name</label>
+              <div class="col-sm-3">
+                <input type="text" maxlength="20" class="form-control" name="beer-name1" id="beer-name1" placeholder="" data-bs-toggle="tooltip" title="Name of the beer being served.">
+              </div>
+              <div class="col-sm-3">
+                <input type="text" maxlength="20" class="form-control" name="beer-name2" id="beer-name2" placeholder="" data-bs-toggle="tooltip" title="Name of the beer being served.">
+              </div>
+            </div>
+            <div class="row mb-3">
+              <label for="beer-abv1" class="col-sm-2 col-form-label">Beer ABV</label>
+              <div class="col-sm-3">
+                <input type="number" step=".01" min="0" max="20" class="form-control" name="beer-abv1" id="beer-abv1" placeholder="4.5" data-bs-toggle="tooltip" title="ABV of the beer being served."> 
+              </div>
+              <div class="col-sm-3">
+                <input type="number" step=".01" min="0" max="20" class="form-control" name="beer-abv2" id="beer-abv2" placeholder="4.5" data-bs-toggle="tooltip" title="ABV of the beer being served."> 
+              </div>
+            </div>
+            <div class="row mb-3" hidden>
+              <label for="beer-abv1" class="col-sm-2 col-form-label">Beer EBC (hide)</label>
+              <div class="col-sm-3">
+                <input type="number" step="1" min="0" max="100" class="form-control" name="beer-ebc1" id="beer-ebc1"> 
+              </div>
+              <div class="col-sm-3">
+                <input type="number" step="1" min="0" max="100" class="form-control" name="beer-ebc2" id="beer-ebc2"> 
+              </div>
+            </div>
+            <div class="row mb-3" hidden>
+              <label for="beer-abv1" class="col-sm-2 col-form-label">Beer IBU (hide)</label>
+              <div class="col-sm-3">
+                <input type="number" step="1" min="0" max="100" class="form-control" name="beer-ibu1" id="beer-ibu1"> 
+              </div>
+              <div class="col-sm-3">
+                <input type="number" step="1" min="0" max="100" class="form-control" name="beer-ibu2" id="beer-ibu2"> 
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-sm-4 offset-sm-2">
+                <button type="submit" class="btn btn-primary" id="config-btn" data-bs-toggle="tooltip" title="Save changes in this section">Save</button>
+              </div>
+            </div>
+          </form>
+
+      </div>
+    </div>
+
   </div>
+</div>
 
   <div class="modal fade" id="modal-brewfather" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modal-header" aria-hidden="true">
     <div class="modal-dialog">
@@ -376,6 +398,9 @@
       $.getJSON(url, function (cfg) {
         console.log( cfg );
 
+        $("#id1").val(cfg["id"]);
+        $("#id2").val(cfg["id"]);
+ 
         $("#mdns").val(cfg["mdns"]);
         $("#weight-precision").val(cfg["weight-precision"]);
         $("#brewfather-apikey").val(cfg["brewfather-apikey"]);
