@@ -75,7 +75,7 @@ class KegConfig : public BaseConfig {
  public:
   KegConfig(String baseMDNS, String fileName);
 
-  void createJson(DynamicJsonDocument& doc);
+  void createJson(DynamicJsonDocument& doc, bool skipSecrets = true);
   void parseJson(DynamicJsonDocument& doc);
 
   const char* getBrewfatherUserKey() { return _brewfatherUserKey.c_str(); }

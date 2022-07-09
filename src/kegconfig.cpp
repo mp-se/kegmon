@@ -28,11 +28,11 @@ SOFTWARE.
 KegConfig::KegConfig(String baseMDNS, String fileName) : BaseConfig(baseMDNS, fileName) {
 }
 
-void KegConfig::createJson(DynamicJsonDocument& doc) {
+void KegConfig::createJson(DynamicJsonDocument& doc, bool skipSecrets) {
   // Call base class functions
-  createJsonBase(doc);
-  createJsonWifi(doc);
-  createJsonOta(doc);
+  createJsonBase(doc, skipSecrets);
+  createJsonWifi(doc, skipSecrets);
+  createJsonOta(doc, skipSecrets);
 
   // Handle project specific config
   doc[PARAM_WEIGHT_PRECISION] = getWeightPrecision();

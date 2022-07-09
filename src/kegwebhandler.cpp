@@ -60,12 +60,13 @@ void KegWebHandler::setupWebHandlers() {
 void KegWebHandler::webScale() {
   Log.notice(F("WEB : webServer callback /api/scale." CR));
 
-  DynamicJsonDocument doc(256);
+  DynamicJsonDocument doc(300);
   populateScaleJson(doc);
 
   String out;
-  out.reserve(256);
+  out.reserve(300);
   serializeJson(doc, out);
+  doc.clear();
   _server->send(200, "application/json", out.c_str());
 }
 
@@ -85,12 +86,13 @@ void KegWebHandler::webScaleTare() {
       F("WEB : webServer callback /api/scale/factor, offset=%d [%d]." CR),
       myConfig.getScaleOffset(idx), idx);
 
-  DynamicJsonDocument doc(256);
+  DynamicJsonDocument doc(300);
   populateScaleJson(doc);
 
   String out;
-  out.reserve(256);
+  out.reserve(300);
   serializeJson(doc, out);
+  doc.clear();
   _server->send(200, "application/json", out.c_str());
 }
 
@@ -114,12 +116,13 @@ void KegWebHandler::webScaleFactor() {
       F("WEB : webServer callback /api/scale/factor, factor=%F [%d]." CR),
       myConfig.getScaleFactor(idx), idx);
 
-  DynamicJsonDocument doc(256);
+  DynamicJsonDocument doc(300);
   populateScaleJson(doc);
 
   String out;
-  out.reserve(256);
+  out.reserve(300);
   serializeJson(doc, out);
+  doc.clear();
   _server->send(200, "application/json", out.c_str());
 }
 
@@ -150,7 +153,7 @@ void KegWebHandler::populateScaleJson(DynamicJsonDocument& doc) {
 void KegWebHandler::webStatus() {
   Log.notice(F("WEB : webServer callback /api/status." CR));
 
-  DynamicJsonDocument doc(1024);
+  DynamicJsonDocument doc(1000);
   populateScaleJson(doc);
 
   doc[PARAM_MDNS] = myConfig.getMDNS();
@@ -174,8 +177,9 @@ void KegWebHandler::webStatus() {
   }
 
   String out;
-  out.reserve(1024);
+  out.reserve(1000);
   serializeJson(doc, out);
+  doc.clear();
   _server->send(200, "application/json", out.c_str());
 }
 

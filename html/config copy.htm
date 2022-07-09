@@ -38,13 +38,13 @@
             <a class="nav-link" href="/index.htm">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" href="#"><b>Configuration</b></a>
+            <a class="nav-link active" href="/config.htm">Configuration</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/calibration.htm">Calibration</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/upload.htm">Update Firmware</a>
+            <a class="nav-link" href="/upload.htm">Update firmware</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/about.htm">About</a>
@@ -59,123 +59,42 @@
 
   <div class="container row-margin-10">
 
-    <div class="alert alert-success alert-dismissible hide fade d-none" role="alert" id="alert">
-      <div id="alert-msg"></div>
+    <div class="alert alert-success alert-dismissible hide fade d-none" role="alert">
+      <div id="alert"></div>
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
     <script type="text/javascript">
       function showError(msg) {
-        $('#alert').removeClass('alert-success').addClass('alert-danger').removeClass('hide').addClass('show').removeClass('d-none');
-        $('#alert-msg').text(msg);
+        console.log("Error:" + msg);
+        $('.alert').removeClass('alert-success').addClass('alert-danger').removeClass('hide').addClass('show').removeClass('d-none');
+        $('#alert').text(msg);
       }
 
       function showSuccess(msg) {
-        $('#alert').addClass('alert-success').removeClass('alert-danger').removeClass('hide').addClass('show').removeClass('d-none');
-        $('#alert-msg').text(msg);
+        console.log("Success:" + msg);
+        $('.alert').addClass('alert-success').removeClass('alert-danger').removeClass('hide').addClass('show').removeClass('d-none');
+        $('#alert').text(msg);
       }
 
       $("#alert-btn").click(function (e) {
-        $('#alert').addClass('hide').removeClass('show').addClass('d-none');
+        console.log("Disable");
+        $('.alert').addClass('hide').removeClass('show').addClass('d-none');
       });    
     </script>
 
     <div class="accordion" id="accordion">
       <div class="accordion-item">
-        <h2 class="accordion-header" id="headingDevice">
-          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDevice"
-            aria-expanded="true" aria-controls="collapseDevice">
-            <b>Device settings</b>
-          </button>
-        </h2>
-        <div id="collapseDevice" class="accordion-collapse collapse show" aria-labelledby="headingDevice"
-          data-bs-parent="#accordion">
-          <div class="accordion-body">
-
-            <form action="/api/config" method="post">
-              <input type="text" name="id" id="id1" hidden>
-              <input type="text" name="section" value="#collapseDevice" hidden>
-
-              <div class="row mb-3">
-                <label for="mdns" class="col-sm-2 col-form-label">Device name</label>
-                <div class="col-sm-3">
-                  <input type="text" maxlength="12" class="form-control" name="mdns" id="mdns" placeholder="kegscale"
-                    data-bs-toggle="tooltip"
-                    title="Name of the device. Will be used for identifying the device on your local network.">
-                </div>
-              </div>
-
-              <div class="row mb-3">
-                <label for="weight-precision" class="col-sm-2 col-form-label">Weight precision</label>
-                <div class="col-sm-3">
-                  <input type="number" step="1" min="0" max="4" class="form-control" name="weight-precision"
-                    id="weight-precision" placeholder="2" data-bs-toggle="tooltip"
-                    title="The number of decimals to show for the weight.">
-                </div>
-              </div>
-
-              <hr>
-
-              <div class="row mb-3">
-                <label for="brewfather-userkey" class="col-sm-2 col-form-label">Brewfather User Key</label>
-                <div class="col-sm-3">
-                  <input type="text" maxlength="80" class="form-control" name="brewfather-userkey"
-                    id="brewfather-userkey" placeholder="" data-bs-toggle="tooltip"
-                    title="User key obtained from the control panel in brewfather. Need access to batches.">
-                </div>
-
-              </div>
-              <div class="row mb-3">
-                <label for="brewfather-apikey" class="col-sm-2 col-form-label">Brewfather API Key</label>
-                <div class="col-sm-3">
-                  <input type="text" maxlength="80" class="form-control" name="brewfather-apikey" id="brewfather-apikey"
-                    placeholder="" data-bs-toggle="tooltip"
-                    title="API key obtained from the control panel in brewfather. Need access to batches.">
-                </div>
-              </div>
-
-              <hr>
-
-              <div class="row mb-3">
-                <fieldset class="form-group row">
-                  <legend class="col-form-label col-sm-2 float-sm-left pt-0">Temperature Format</legend>
-                  <div class="col-sm-4">
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="temp-format" id="temp-format-c" value="C"
-                        checked data-bs-toggle="tooltip" title="Temperature format used with displaying data">
-                      <label class="form-check-label" for="temp-format-c">Celsius</label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="temp-format" id="temp-format-f" value="F"
-                        data-bs-toggle="tooltip" title="Temperature format used with displaying data">
-                      <label class="form-check-label" for="temp-format-f">Fahrenheit</label>
-                    </div>
-                  </div>
-                </fieldset>
-              </div>
-
-              <div class="row mb-3">
-                <div class="col-sm-4 offset-sm-2">
-                  <button type="submit" class="btn btn-primary" id="device-btn" data-bs-toggle="tooltip"
-                    title="Save changes in this section">Save</button>
-                </div>
-              </div>
-            </form>
-
-          </div>
-        </div>
-      </div>
-
-      <div class="accordion-item">
         <h2 class="accordion-header" id="headingBeer">
-          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-            data-bs-target="#collapseBeer" aria-expanded="false" aria-controls="collapseBeer">
-            <b>Beer settings</b>
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseBeer"
+            aria-expanded="true" aria-controls="collapseBeer">
+            <b>Beer</b>
           </button>
         </h2>
-        <div id="collapseBeer" class="accordion-collapse collapse" aria-labelledby="headingBeer"
+        <div id="collapseBeer" class="accordion-collapse collapse show" aria-labelledby="headingBeer"
           data-bs-parent="#accordion">
           <div class="accordion-body">
+
             <form action="/api/config" method="post">
               <input type="text" name="id" id="id2" hidden>
               <input type="text" name="section" value="#collapseBeer" hidden>
@@ -193,7 +112,7 @@
               </div>
 
               <div class="row mb-3">
-                <label for="pint-weight1" class="col-sm-2 col-form-label">Pint weight</label>
+                <label for="pint-weight1" class="col-sm-2 col-form-label">Pint of beer weight</label>
                 <div class="col-sm-3">
                   <input type="number" step=".001" min="0" max="50" class="form-control" name="pint-weight1"
                     id="pint-weight1" placeholder="0.10" data-bs-toggle="tooltip" title="The weight of a unit of beer.">
@@ -262,8 +181,91 @@
               </div>
 
               <div class="row mb-3">
-                <div class="col-sm-8 offset-sm-2">
-                  <button type="submit" class="btn btn-primary" id="push-btn">Save</button>
+                <div class="col-sm-4 offset-sm-2">
+                  <button type="submit" class="btn btn-primary" id="config-btn" data-bs-toggle="tooltip"
+                    title="Save changes in this section">Save</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingDevice">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+            data-bs-target="#collapseDevice" aria-expanded="false" aria-controls="collapseDevice">
+            <b>Device</b>
+          </button>
+        </h2>
+        <div id="collapseDevice" class="accordion-collapse collapse" aria-labelledby="headingDevice"
+          data-bs-parent="#accordion">
+          <div class="accordion-body">
+
+            <form action="/api/config" method="post">
+              <input type="text" name="id" id="id1" hidden>
+              <input type="text" name="section" value="#collapseDevice" hidden>
+
+              <div class="row mb-3">
+                <label for="mdns" class="col-sm-2 col-form-label">Device name</label>
+                <div class="col-sm-3">
+                  <input type="text" maxlength="12" class="form-control" name="mdns" id="mdns" placeholder="kegscale"
+                    data-bs-toggle="tooltip"
+                    title="Name of the device. Will be used for identifying the device on your local network.">
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label for="weight-precision" class="col-sm-2 col-form-label">Weight precision</label>
+                <div class="col-sm-3">
+                  <input type="number" step="1" min="0" max="4" class="form-control" name="weight-precision"
+                    id="weight-precision" placeholder="2" data-bs-toggle="tooltip"
+                    title="The number of decimals to show for the weight.">
+                </div>
+              </div>
+
+              <hr>
+
+              <div class="row mb-3">
+                <label for="brewfather-userkey" class="col-sm-2 col-form-label">Brewfather User Key</label>
+                <div class="col-sm-3">
+                  <input type="text" maxlength="80" class="form-control" name="brewfather-userkey"
+                    id="brewfather-userkey" placeholder="" data-bs-toggle="tooltip"
+                    title="User key obtained from the control panel in brewfather. Need access to batches.">
+                </div>
+
+              </div>
+              <div class="row mb-3">
+                <label for="brewfather-apikey" class="col-sm-2 col-form-label">Brewfather API Key</label>
+                <div class="col-sm-3">
+                  <input type="text" maxlength="80" class="form-control" name="brewfather-apikey" id="brewfather-apikey"
+                    placeholder="" data-bs-toggle="tooltip"
+                    title="API key obtained from the control panel in brewfather. Need access to batches.">
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <fieldset class="form-group row">
+                  <legend class="col-form-label col-sm-2 float-sm-left pt-0">Temperature Format</legend>
+                  <div class="col-sm-4">
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="temp-format" id="temp-format-c" value="C"
+                        checked data-bs-toggle="tooltip" title="Temperature format used with displaying data">
+                      <label class="form-check-label" for="temp-format-c">Celsius</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="temp-format" id="temp-format-f" value="F"
+                        data-bs-toggle="tooltip" title="Temperature format used with displaying data">
+                      <label class="form-check-label" for="temp-format-f">Fahrenheit</label>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+
+              <div class="row mb-3">
+                <div class="col-sm-4 offset-sm-2">
+                  <button type="submit" class="btn btn-primary" id="config-btn" data-bs-toggle="tooltip"
+                    title="Save changes in this section">Save</button>
                 </div>
               </div>
             </form>
@@ -271,7 +273,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </div>
 
@@ -325,19 +326,13 @@
 
     function parseBrewfatherBatches() {
       console.log("Parsing brewfather batches");
-      var count = 0;
-
       var list = document.getElementById("brewfather-list");
       for (var i = 0; i < brewFatherBatches.length; i++) {
         var opt = document.createElement("option");
         opt.textContent = brewFatherBatches[i]['recipe']['name'];
         opt.value = brewFatherBatches[i]['_id'];
         list.appendChild(opt);
-        count++;
       }
-
-      console.log("Found " + str(count) + " batches");
-      return count;
     }
 
     $('#modal-brewfather').on('show.bs.modal', function (event) {
@@ -380,14 +375,13 @@
       var userkey = $("#brewfather-userkey").val();
       var apikey = $("#brewfather-apikey").val();
 
-      $("#brewfather-list").prop("disabled", true);
-
       if (userkey == "" || apikey == "") {
         showError('No user and api key is defined for brewfather.');
         hideModal();
         return;
       }
 
+      $("#brewfather-list").prop("disabled", true);
       var auth = userkey + ":" + apikey;
 
       $('#spinner').show();
@@ -399,10 +393,8 @@
         success: function (res) {
           console.log(res);
           brewFatherBatches = res;
-
-          if (parseBrewfatherBatches() > 0) {
-            $("#brewfather-list").prop("disabled", false);
-          }
+          parseBrewfatherBatches();
+          $("#brewfather-list").prop("disabled", false);
         },
         statusCode: {
           401: function () {
@@ -419,6 +411,7 @@
         }
       });
     }
+
   </script>
 
   <script type="text/javascript">
@@ -473,7 +466,8 @@
 
   <!-- START FOOTER -->
 
-  <div class="container themed-container bg-primary text-light row-margin-10">(C) Copyright 2021-22 Magnus Persson</div>
+  <div class="container themed-container bg-primary text-light row-margin-10">(C) Copyright 2021-22 Magnus Persson
+  </div>
 </body>
 
 </html>
