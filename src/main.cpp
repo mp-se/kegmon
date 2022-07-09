@@ -21,14 +21,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#include <main.hpp>
+#include <display.hpp>
 #include <kegconfig.hpp>
 #include <kegwebhandler.hpp>
-#include <wificonnection.hpp>
+#include <main.hpp>
 #include <ota.hpp>
-#include <display.hpp>
 #include <scale.hpp>
 #include <temp.hpp>
+#include <wificonnection.hpp>
 
 SerialDebug mySerial(115200L);
 KegConfig myConfig(CFG_MDNSNAME, CFG_FILENAME);

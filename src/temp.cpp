@@ -24,8 +24,7 @@ SOFTWARE.
 #include <kegconfig.hpp>
 #include <temp.hpp>
 
-TempHumidity::TempHumidity() {
-}
+TempHumidity::TempHumidity() {}
 
 void TempHumidity::setup() {
   Log.verbose(F("Temp: Initializing humidity sensor." CR));

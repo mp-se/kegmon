@@ -24,9 +24,10 @@ SOFTWARE.
 #ifndef SRC_MAIN_HPP_
 #define SRC_MAIN_HPP_
 
-#include <log.hpp>
 #include <LittleFS.h>
 #include <stdlib.h>
+
+#include <log.hpp>
 
 #define CFG_APPNAME "KegScale"         // Name of firmware
 #define CFG_MDNSNAME "kegscale"        // Network name

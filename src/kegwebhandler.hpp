@@ -21,15 +21,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#ifndef SRC_WEBSERVER_HPP_
-#define SRC_WEBSERVER_HPP_
+#ifndef SRC_KEGWEBHANDLER_HPP_
+#define SRC_KEGWEBHANDLER_HPP_
 
-#include <basewebhandler.hpp>
-#include <kegconfig.hpp>
 #include <ESP8266WebServer.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
 #include <incbin.h>
+
+#include <basewebhandler.hpp>
+#include <kegconfig.hpp>
 
 INCBIN_EXTERN(CalibrateHtm);
 
@@ -55,6 +56,6 @@ class KegWebHandler : public BaseWebHandler {
   explicit KegWebHandler(KegConfig* config);
 };
 
-#endif  // SRC_WEBSERVER_HPP_
+#endif  // SRC_KEGWEBHANDLER_HPP_
 
 // EOF

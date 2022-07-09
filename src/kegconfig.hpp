@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#ifndef SRC_CONFIG_HPP_
-#define SRC_CONFIG_HPP_
+#ifndef SRC_KEGCONFIG_HPP_
+#define SRC_KEGCONFIG_HPP_
 
-#include <main.hpp>
 #include <baseconfig.hpp>
+#include <main.hpp>
 
 #define PARAM_WEIGHT_PRECISION "weight-precision"
 #define PARAM_BREWFATHER_USERKEY "brewfather-userkey"
@@ -143,6 +143,6 @@ class KegConfig : public BaseConfig {
 
 extern KegConfig myConfig;
 
-#endif  // SRC_CONFIG_HPP_
+#endif  // SRC_KEGCONFIG_HPP_
 
 // EOF

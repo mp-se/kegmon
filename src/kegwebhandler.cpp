@@ -39,7 +39,7 @@ SOFTWARE.
 
 KegWebHandler::KegWebHandler(KegConfig* config) : BaseWebHandler(config) {
   _config = config;
-};
+}
 
 void KegWebHandler::setupWebHandlers() {
   Log.notice(F("WEB : Setting up keg web handlers." CR));
@@ -76,7 +76,7 @@ void KegWebHandler::webScaleTare() {
   // Request will contain 1 or 2, but we need 0 or 1 for indexing.
   if (_server->arg(PARAM_SCALE).toInt() == 1)
     idx = UnitIndex::UNIT_1;
-  else  
+  else
     idx = UnitIndex::UNIT_2;
 
   Log.notice(F("WEB : webServer callback /api/scale/tare." CR));
@@ -103,7 +103,7 @@ void KegWebHandler::webScaleFactor() {
   // Request will contain 1 or 2, but we need 0 or 1 for indexing.
   if (_server->arg(PARAM_SCALE).toInt() == 1)
     idx = UnitIndex::UNIT_1;
-  else  
+  else
     idx = UnitIndex::UNIT_2;
 
   Log.notice(

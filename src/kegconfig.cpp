@@ -22,11 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 #include <kegconfig.hpp>
-#include <main.hpp>
 #include <log.hpp>
+#include <main.hpp>
 
-KegConfig::KegConfig(String baseMDNS, String fileName) : BaseConfig(baseMDNS, fileName) {
-}
+KegConfig::KegConfig(String baseMDNS, String fileName)
+    : BaseConfig(baseMDNS, fileName) {}
 
 void KegConfig::createJson(DynamicJsonDocument& doc, bool skipSecrets) {
   // Call base class functions

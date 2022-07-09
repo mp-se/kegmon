@@ -23,8 +23,8 @@ SOFTWARE.
  */
 #include <Wire.h>
 
-#include <kegconfig.hpp>
 #include <display.hpp>
+#include <kegconfig.hpp>
 
 #define DISPLAY_ADR1 0x3c
 #define DISPLAY_ADR2 0x3d
