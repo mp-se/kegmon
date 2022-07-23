@@ -114,6 +114,24 @@
                 </div>
               </div>
 
+              <div class="row mb-3">
+                <fieldset class="form-group row">
+                  <legend class="col-form-label col-sm-2 float-sm-left pt-0">Weight Unit</legend>
+                  <div class="col-sm-4">
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="weight-unit" id="weight-unit-kg" value="kg"
+                        checked data-bs-toggle="tooltip" title="Weight unit used when displaying data">
+                      <label class="form-check-label" for="weight-unit-c">kg</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="weight-unit" id="weight-unit-lbs" value="lbs"
+                        data-bs-toggle="tooltip" title="Temperature format used with displaying data">
+                      <label class="form-check-label" for="weight-unit-lbs">lbs</label>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+
               <hr>
 
               <div class="row mb-3">
@@ -447,6 +465,11 @@
         $("#weight-precision").val(cfg["weight-precision"]);
         $("#brewfather-apikey").val(cfg["brewfather-apikey"]);
         $("#brewfather-userkey").val(cfg["brewfather-userkey"]);
+
+        if( cfg["temp-format"] == "C" ) $("#temp-format-c").click();
+        else $("#temp-format-f").click();
+        if( cfg["weight-unit"] == "lbs" ) $("#weight-unit-lbs").click();
+        else $("#weight-unit-kg").click();
 
         $("#keg-weight1").val(cfg["keg-weight1"]);
         $("#keg-weight2").val(cfg["keg-weight2"]);

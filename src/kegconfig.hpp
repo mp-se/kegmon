@@ -30,6 +30,7 @@ SOFTWARE.
 #define PARAM_WEIGHT_PRECISION "weight-precision"
 #define PARAM_BREWFATHER_USERKEY "brewfather-userkey"
 #define PARAM_BREWFATHER_APIKEY "brewfather-apikey"
+#define PARAM_WEIGHT_UNIT "weight-unit"
 #define PARAM_KEG_WEIGHT1 "keg-weight1"
 #define PARAM_KEG_WEIGHT2 "keg-weight2"
 #define PARAM_PINT_WEIGHT1 "pint-weight1"
@@ -63,6 +64,7 @@ struct BeerInfo {
 class KegConfig : public BaseConfig {
  private:
   int _weightPrecision = 2;
+  String _weightUnit = "kg";
   String _brewfatherUserKey = "";
   String _brewfatherApiKey = "";
 
@@ -128,6 +130,12 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }
 
+  const char* getWeightUnit() { return _weightUnit.c_str(); }
+  void setWeightUnit(String s) {
+    _weightUnit = s;
+    _saveNeeded = true;
+  }
+
   int32_t getScaleOffset(int idx) { return _scaleOffset[idx]; }
   void setScaleOffset(int idx, int32_t l) {
     _scaleOffset[idx] = l;
@@ -139,9 +147,58 @@ class KegConfig : public BaseConfig {
     _scaleFactor[idx] = f;
     _saveNeeded = true;
   }
+
+  // These settings are used for debugging and checking stability of the scales.
+  // Only influx is used for now
+  const char* getTargetHttpPost() { return ""; }
+  void setTargetHttpPost(String target) {}
+  const char* getHeader1HttpPost() { return ""; }
+  void setHeader1HttpPost(String header) {}
+  const char* getHeader2HttpPost() { return ""; }
+  void setHeader2HttpPost(String header) {}
+
+  const char* getTargetHttpGet() { return ""; }
+  void setTargetHttpGet(String target) {}
+  const char* getHeader1HttpGet() { return ""; }
+  void setHeader1HttpGet(String header) {}
+  const char* getHeader2HttpGet() { return ""; }
+  void setHeader2HttpGet(String header) {}
+
+  const char* getTargetInfluxDB2() { return PUSH_INFLUX_TARGET; }
+  void setTargetInfluxDB2(String target) {}
+  const char* getOrgInfluxDB2() { return PUSH_INFLUX_ORG; }
+  void setOrgInfluxDB2(String org) {}
+  const char* getBucketInfluxDB2() { return PUSH_INFLUX_BUCKET; }
+  void setBucketInfluxDB2(String bucket) {}
+  const char* getTokenInfluxDB2() { return PUSH_INFLUX_TOKEN; }
+  void setTokenInfluxDB2(String token) {}
+
+  const char* getTargetMqtt() { return ""; }
+  void setTargetMqtt(String target) {}
+  int getPortMqtt() { return 0; }
+  void setPortMqtt(int port) {}
+  const char* getUserMqtt() { return ""; }
+  void setUserMqtt(String user) {}
+  const char* getPassMqtt() { return ""; }
+  void setPassMqtt(String pass) {}
+};
+
+class KegAdvancedConfig {
+ private:
+ public:
+  // This is the maximum allowed deviation from the current average.
+  float getDeviationValue() { return 0.1; }  // 0.1 kg
+
+  // This is the max amount of invalid values before restarting the stats
+  int getMaxInvalidCount() { return 3; }  // 3*2 s = minimum 6 s
+
+  // This is the number of values in the statistics for the value to be
+  // classifed as stable.
+  uint32_t getStableCount() { return 5; }  // 5*2 s = 10 s
 };
 
 extern KegConfig myConfig;
+extern KegAdvancedConfig myAdvancedConfig;
 
 #endif  // SRC_KEGCONFIG_HPP_
 

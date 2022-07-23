@@ -21,6 +21,7 @@
   "pint-weight1": 0.1, 
   "pint-weight2": 0.1, 
   "weight-precision": 2,
+  "weight-unit": "kg",
   "scale-factor1": -21284.12,
   "scale-factor2": -21284.12,
   "scale-offset1": -286557,

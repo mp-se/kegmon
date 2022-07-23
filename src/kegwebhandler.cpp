@@ -164,10 +164,14 @@ void KegWebHandler::webStatus() {
 
   // For this we use the last value read from the scale to avoid having to much
   // communication. The value will be updated regulary second in the main loop.
-  doc[PARAM_PINTS1] = myScale.calculateNoPints(
-      UnitIndex::UNIT_1, myScale.getLastValue(UnitIndex::UNIT_1));
-  doc[PARAM_PINTS2] = myScale.calculateNoPints(
-      UnitIndex::UNIT_2, myScale.getLastValue(UnitIndex::UNIT_2));
+  doc[PARAM_PINTS1] = reduceFloatPrecision(
+      myScale.calculateNoPints(UnitIndex::UNIT_1,
+                               myScale.getLastValue(UnitIndex::UNIT_1)),
+      1);
+  doc[PARAM_PINTS2] = reduceFloatPrecision(
+      myScale.calculateNoPints(UnitIndex::UNIT_2,
+                               myScale.getLastValue(UnitIndex::UNIT_2)),
+      1);
 
   float f = myTemp.getTempValueC();
 

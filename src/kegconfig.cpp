@@ -36,6 +36,7 @@ void KegConfig::createJson(DynamicJsonDocument& doc, bool skipSecrets) {
 
   // Handle project specific config
   doc[PARAM_WEIGHT_PRECISION] = getWeightPrecision();
+  doc[PARAM_WEIGHT_UNIT] = getWeightUnit();
 
   doc[PARAM_BREWFATHER_APIKEY] = getBrewfatherApiKey();
   doc[PARAM_BREWFATHER_USERKEY] = getBrewfatherUserKey();
@@ -68,6 +69,7 @@ void KegConfig::parseJson(DynamicJsonDocument& doc) {
   // Handle project specific config
   if (!doc[PARAM_WEIGHT_PRECISION].isNull())
     setWeightPrecision(doc[PARAM_WEIGHT_PRECISION].as<int>());
+  if (!doc[PARAM_WEIGHT_UNIT].isNull()) setWeightUnit(doc[PARAM_WEIGHT_UNIT]);
 
   if (!doc[PARAM_BREWFATHER_APIKEY].isNull())
     setBrewfatherApiKey(doc[PARAM_BREWFATHER_APIKEY]);

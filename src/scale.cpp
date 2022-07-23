@@ -24,7 +24,10 @@ SOFTWARE.
 #include <kegconfig.hpp>
 #include <scale.hpp>
 
-Scale::Scale() {}
+Scale::Scale() {
+  _statisticValue[UnitIndex::UNIT_1].clear();
+  _statisticValue[UnitIndex::UNIT_2].clear();
+}
 
 void Scale::setup(bool force) {
   if (!_scale[0] || force) {
@@ -81,11 +84,72 @@ void Scale::setScaleFactor(UnitIndex idx) {
       fs);  // apply the saved scale factor so we get valid results
 }
 
-float Scale::getValue(UnitIndex idx) {
+float Scale::getValue(UnitIndex idx, bool updateStats) {
+#if defined(ENABLE_SCALE_SIMULATION)
+  if (idx == 1) return 0;  // Simulation mode only supports one scale attached
+
+  float f = getNextSimulatedValue();
+  Log.verbose(
+      F("Scal: Reading simulated weight=%F [%d], updating stats=%s." CR), f,
+      idx, updateStats ? "yes" : "no");
+#else
   if (!_scale[idx]) return 0;
 
   float f = _scale[idx]->get_units(_readCount);
-  Log.verbose(F("Scal: Reading weight=%F [%d]." CR), f, idx);
+  Log.verbose(F("Scal: Reading weight=%F [%d], updating stats %s." CR), f, idx,
+              updateStats ? "true" : "false");
+#endif
+
+  // If we have enough values and last stable level if its NAN, then update the
+  // lastStable value
+  if (statsCount(idx) > myAdvancedConfig.getStableCount() &&
+      !hasLastStableValue(idx)) {
+    _lastStableValue[idx] = statsAverage(idx);
+    Log.notice(F("Scal: Found a new stable value %F [%d]." CR),
+               _lastStableValue[idx], idx);
+  }
+
+  // Check if the min/max are too far apart, then we have a to wide spread of
+  // values and level has changed to much
+  if (statsCount(idx) > 0) {
+    if ((statsMax(idx) - statsMin(idx)) >
+        myAdvancedConfig.getDeviationValue()) {
+      Log.notice(F("Scal: Min/Max values deviates to much, restarting "
+                   "statistics [%d]." CR),
+                 idx);
+      statsClear(idx);
+    }
+  }
+
+  // Check if the level has changed up or down. If its down we record the delta
+  // as the latest pour.
+  if (statsCount(idx) > myAdvancedConfig.getStableCount() &&
+      hasLastStableValue(idx)) {
+    if ((_lastStableValue[idx] + myAdvancedConfig.getDeviationValue()) <
+        statsAverage(idx)) {
+      Log.notice(
+          F("Scal: Level has increased, adjusting from %F to %F [%d]." CR),
+          _lastStableValue[idx], statsAverage(idx), idx);
+      _lastStableValue[idx] = statsAverage(idx);
+    }
+
+    if ((_lastStableValue[idx] - myAdvancedConfig.getDeviationValue()) >
+        statsAverage(idx)) {
+      Log.notice(
+          F("Scal: Level has decreased, adjusting from %F to %F [%d]." CR),
+          _lastStableValue[idx], statsAverage(idx), idx);
+      _lastPour[idx] = _lastStableValue[idx] - statsAverage(idx);
+      Log.notice(F("Scal: Beer has been poured volume %F [%d]." CR),
+                 _lastPour[idx], idx);
+      _lastStableValue[idx] = statsAverage(idx);
+    }
+  }
+
+  // Update the statistics with the current value
+  if (updateStats) {
+    statsAdd(idx, f);
+  }
+
   _lastValue[idx] = f;  // cache the last read value, will be used by API's and
                         // updated in loop()
   return f;
@@ -130,15 +194,24 @@ void Scale::findFactor(UnitIndex idx, float weight) {
                   // new factor
 }
 
-int Scale::calculateNoPints(UnitIndex idx, float weight) {
+float Scale::calculateNoPints(UnitIndex idx, float weight) {
   if (!_scale[idx]) return 0;
 
   float p = myConfig.getPintWeight(idx);
 
   if (p == 0.0) p = 1;
 
-  int pints = (weight - myConfig.getKegWeight(idx)) / p;
+  float pints = (weight - myConfig.getKegWeight(idx)) / p;
   return pints < 0 ? 0 : pints;
+}
+
+void Scale::statsDump(UnitIndex idx) {
+  Log.notice(F("Scal: %d: Count=%d, Sum=%F, Min=%F, Max=%F" CR), idx,
+             statsCount(idx), statsSum(idx), statsMin(idx), statsMax(idx));
+  Log.notice(
+      F("Scal: %d: Average=%F, Variance=%F, PopStdev=%F, UnbiasedStdev=%F" CR),
+      idx, statsAverage(idx), statsVariance(idx), statsPopStdev(idx),
+      statsUnbiasedStdev(idx));
 }
 
 // EOF
