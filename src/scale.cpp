@@ -25,8 +25,8 @@ SOFTWARE.
 #include <scale.hpp>
 
 Scale::Scale() {
-  _statisticValue[UnitIndex::UNIT_1].clear();
-  _statisticValue[UnitIndex::UNIT_2].clear();
+  _statisticValue[UnitIndex::U1].clear();
+  _statisticValue[UnitIndex::U2].clear();
 }
 
 void Scale::setup(bool force) {
@@ -37,7 +37,7 @@ void Scale::setup(bool force) {
                 myConfig.getScaleOffset(0));
     _scale[0] = new HX711();
     _scale[0]->begin(PIN_SCALE1_SDA, PIN_SCALE1_SCL);
-    _scale[0]->set_offset(myConfig.getScaleOffset(UnitIndex::UNIT_1));
+    _scale[0]->set_offset(myConfig.getScaleOffset(UnitIndex::U1));
 
     if (_scale[0]->wait_ready_timeout(500)) {
       int32_t l = _scale[0]->get_units(1);
@@ -56,7 +56,7 @@ void Scale::setup(bool force) {
                 myConfig.getScaleOffset(1));
     _scale[1] = new HX711();
     _scale[1]->begin(PIN_SCALE2_SDA, PIN_SCALE2_SCL);
-    _scale[1]->set_offset(myConfig.getScaleOffset(UnitIndex::UNIT_2));
+    _scale[1]->set_offset(myConfig.getScaleOffset(UnitIndex::U2));
 
     if (_scale[1]->wait_ready_timeout(500)) {
       int32_t l = _scale[1]->get_units(1);
@@ -69,8 +69,8 @@ void Scale::setup(bool force) {
   }
 
   // Set the scale factor
-  setScaleFactor(UnitIndex::UNIT_1);
-  setScaleFactor(UnitIndex::UNIT_2);
+  setScaleFactor(UnitIndex::U1);
+  setScaleFactor(UnitIndex::U2);
 }
 
 void Scale::setScaleFactor(UnitIndex idx) {
@@ -99,7 +99,6 @@ float Scale::getValue(UnitIndex idx, bool updateStats) {
   Log.verbose(F("Scal: Reading weight=%F [%d], updating stats %s." CR), f, idx,
               updateStats ? "true" : "false");
 #endif
-
   // If we have enough values and last stable level if its NAN, then update the
   // lastStable value
   if (statsCount(idx) > myAdvancedConfig.getStableCount() &&
@@ -117,6 +116,8 @@ float Scale::getValue(UnitIndex idx, bool updateStats) {
       Log.notice(F("Scal: Min/Max values deviates to much, restarting "
                    "statistics [%d]." CR),
                  idx);
+      // Before clearing statistics we record the last average as the stable to get better accuracu for pour detection.
+      _lastStableValue[idx] = statsAverage(idx);
       statsClear(idx);
     }
   }

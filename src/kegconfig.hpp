@@ -35,16 +35,6 @@ SOFTWARE.
 #define PARAM_KEG_WEIGHT2 "keg-weight2"
 #define PARAM_PINT_WEIGHT1 "pint-weight1"
 #define PARAM_PINT_WEIGHT2 "pint-weight2"
-#define PARAM_SCALE_FACTOR1 "scale-factor1"
-#define PARAM_SCALE_FACTOR2 "scale-factor2"
-#define PARAM_SCALE_WEIGHT1 "scale-weight1"
-#define PARAM_SCALE_WEIGHT2 "scale-weight2"
-#define PARAM_SCALE_RAW1 "scale-raw1"
-#define PARAM_SCALE_RAW2 "scale-raw2"
-#define PARAM_SCALE_OFFSET1 "scale-offset1"
-#define PARAM_SCALE_OFFSET2 "scale-offset2"
-#define PARAM_PINTS1 "pints1"
-#define PARAM_PINTS2 "pints2"
 #define PARAM_BEER_NAME1 "beer-name1"
 #define PARAM_BEER_NAME2 "beer-name2"
 #define PARAM_BEER_ABV1 "beer-abv1"
@@ -53,6 +43,10 @@ SOFTWARE.
 #define PARAM_BEER_IBU2 "beer-ibu2"
 #define PARAM_BEER_EBC1 "beer-ebc1"
 #define PARAM_BEER_EBC2 "beer-ebc2"
+#define PARAM_SCALE_FACTOR1 "scale-factor1"
+#define PARAM_SCALE_FACTOR2 "scale-factor2"
+#define PARAM_SCALE_OFFSET1 "scale-offset1"
+#define PARAM_SCALE_OFFSET2 "scale-offset2"
 
 struct BeerInfo {
   String _name = "";
@@ -189,10 +183,7 @@ class KegAdvancedConfig {
   // This is the maximum allowed deviation from the current average.
   float getDeviationValue() { return 0.1; }  // 0.1 kg
 
-  // This is the max amount of invalid values before restarting the stats
-  int getMaxInvalidCount() { return 3; }  // 3*2 s = minimum 6 s
-
-  // This is the number of values in the statistics for the value to be
+  // This is the number of values in the statistics for the average value to be
   // classifed as stable.
   uint32_t getStableCount() { return 5; }  // 5*2 s = 10 s
 };

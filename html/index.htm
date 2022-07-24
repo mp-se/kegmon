@@ -126,6 +126,11 @@
               <div class="col-md-2 bg-light" id="pints1">Loading...</div> 
               <div class="col-md-2 bg-light" id="pints2">Loading...</div>
             </div>
+            <div class="row mb-3">
+              <div class="col-md-4 bg-light">Last pour</div>
+              <div class="col-md-2 bg-light" id="last-pour1">Loading...</div> 
+              <div class="col-md-2 bg-light" id="last-pour2">Loading...</div>
+            </div>
           </div>
         </div>
       </div>
@@ -149,12 +154,15 @@
         $("#id").text(cfg["id"]);
         $("#wifi-ssid").text(cfg["wifi-ssid"]); 
 
+        var w_unit = " " + cfg["weight-unit"];
+        var t_unit = " " + cfg["temp-format"];
+
         if( cfg["temperature"] === undefined ) {
           $('#toggle1').addClass('hide').removeClass('show').addClass('d-none');
           $('#toggle2').addClass('hide').removeClass('show').addClass('d-none');
           $('#toggle3').addClass('hide').removeClass('show').addClass('d-none');
         } else {
-          $("#temperature").text(cfg["temperature"] + " C"); 
+          $("#temperature").text(cfg["temperature"] + t_unit); 
           $("#humidity").text(cfg["humidity"] + " %"); 
         }
 
@@ -162,7 +170,8 @@
           $("#scale-weight1").text("");
           $("#pints1").text("");
         } else {
-          $("#scale-weight1").text(cfg["scale-weight1"] + " kg");
+          $("#scale-weight1").text(cfg["scale-weight1"] + w_unit);
+          // $("#scale-weight1").text(cfg["scale-stable-weight1"] + w_unit);
           $("#pints1").text(cfg["pints1"]);
         }
 
@@ -170,10 +179,22 @@
           $("#scale-weight2").text("");
           $("#pints2").text("");
         } else {
-          $("#scale-weight2").text(cfg["scale-weight2"] + " kg");
+          $("#scale-weight2").text(cfg["scale-weight2"] + w_unit);
+          // $("#scale-weight2").text(cfg["scale-stable-weight2"] + w_unit);
           $("#pints2").text(cfg["pints2"]);
         }
 
+        if( cfg["last-pour1"] === undefined ) {
+          $("#last-pour1").text("");
+        } else {
+          $("#last-pour1").text(cfg["last-pour1"] + w_unit);
+        }
+
+        if( cfg["last-pour2"] === undefined ) {
+          $("#last-pour2").text("");
+        } else {
+          $("#last-pour2").text(cfg["last-pour2"] + w_unit);
+        }
       })
       .fail(function () {
         showError('Unable to get data from the device.');

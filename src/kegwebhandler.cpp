@@ -37,6 +37,18 @@ SOFTWARE.
 #define PARAM_WEIGHT "weight"
 #define PARAM_SCALE "scale-index"
 
+// Additional scale values
+#define PARAM_SCALE_WEIGHT1 "scale-weight1"
+#define PARAM_SCALE_WEIGHT2 "scale-weight2"
+#define PARAM_SCALE_RAW1 "scale-raw1"
+#define PARAM_SCALE_RAW2 "scale-raw2"
+#define PARAM_PINTS1 "pints1"
+#define PARAM_PINTS2 "pints2"
+#define PARAM_SCALE_STABLE_WEIGHT1 "scale-stable-weight1"
+#define PARAM_SCALE_STABLE_WEIGHT2 "scale-stable-weight2"
+#define PARAM_LAST_POUR1 "last-pour1"
+#define PARAM_LAST_POUR2 "last-pour2"
+
 KegWebHandler::KegWebHandler(KegConfig* config) : BaseWebHandler(config) {
   _config = config;
 }
@@ -75,9 +87,9 @@ void KegWebHandler::webScaleTare() {
 
   // Request will contain 1 or 2, but we need 0 or 1 for indexing.
   if (_server->arg(PARAM_SCALE).toInt() == 1)
-    idx = UnitIndex::UNIT_1;
+    idx = UnitIndex::U1;
   else
-    idx = UnitIndex::UNIT_2;
+    idx = UnitIndex::U2;
 
   Log.notice(F("WEB : webServer callback /api/scale/tare." CR));
   myScale.tare(idx);
@@ -102,9 +114,9 @@ void KegWebHandler::webScaleFactor() {
 
   // Request will contain 1 or 2, but we need 0 or 1 for indexing.
   if (_server->arg(PARAM_SCALE).toInt() == 1)
-    idx = UnitIndex::UNIT_1;
+    idx = UnitIndex::U1;
   else
-    idx = UnitIndex::UNIT_2;
+    idx = UnitIndex::U2;
 
   Log.notice(
       F("WEB : webServer callback /api/scale/factor, weight=%F [%d]." CR),
@@ -130,18 +142,34 @@ void KegWebHandler::populateScaleJson(DynamicJsonDocument& doc) {
   doc[PARAM_SCALE_FACTOR1] = myConfig.getScaleFactor(0);
   doc[PARAM_SCALE_FACTOR2] = myConfig.getScaleFactor(1);
 
-  if (myScale.isConnected(UnitIndex::UNIT_1)) {
+  if (myScale.isConnected(UnitIndex::U1)) {
     doc[PARAM_SCALE_WEIGHT1] = reduceFloatPrecision(
-        myScale.getLastValue(UnitIndex::UNIT_1), myConfig.getWeightPrecision());
-    doc[PARAM_SCALE_RAW1] = myScale.getRawValue(UnitIndex::UNIT_1);
+        myScale.getLastValue(UnitIndex::U1), myConfig.getWeightPrecision());
+    doc[PARAM_SCALE_RAW1] = myScale.getRawValue(UnitIndex::U1);
     doc[PARAM_SCALE_OFFSET1] = myConfig.getScaleOffset(0);
   }
 
-  if (myScale.isConnected(UnitIndex::UNIT_2)) {
+  if (myScale.isConnected(UnitIndex::U2)) {
     doc[PARAM_SCALE_WEIGHT2] = reduceFloatPrecision(
-        myScale.getLastValue(UnitIndex::UNIT_2), myConfig.getWeightPrecision());
-    doc[PARAM_SCALE_RAW2] = myScale.getRawValue(UnitIndex::UNIT_2);
+        myScale.getLastValue(UnitIndex::U2), myConfig.getWeightPrecision());
+    doc[PARAM_SCALE_RAW2] = myScale.getRawValue(UnitIndex::U2);
     doc[PARAM_SCALE_OFFSET2] = myConfig.getScaleOffset(1);
+  }
+
+  if (myScale.hasLastStableValue(UnitIndex::U1)) {
+    doc[PARAM_SCALE_STABLE_WEIGHT1] = reduceFloatPrecision(myScale.getLastStableValue(UnitIndex::U1), myConfig.getWeightPrecision());
+  }
+
+  if (myScale.hasLastStableValue(UnitIndex::U2)) {
+    doc[PARAM_SCALE_STABLE_WEIGHT2] = reduceFloatPrecision(myScale.getLastStableValue(UnitIndex::U2), myConfig.getWeightPrecision());
+  }
+
+  if (myScale.hasPourValue(UnitIndex::U1)) {
+    doc[PARAM_LAST_POUR1] = reduceFloatPrecision(myScale.getPourValue(UnitIndex::U1), myConfig.getWeightPrecision());
+  }
+
+  if (myScale.hasPourValue(UnitIndex::U2)) {
+    doc[PARAM_LAST_POUR2] = reduceFloatPrecision(myScale.getPourValue(UnitIndex::U2), myConfig.getWeightPrecision());
   }
 
 #if LOG_LEVEL == 6
@@ -161,16 +189,18 @@ void KegWebHandler::webStatus() {
   doc[PARAM_SSID] = myConfig.getWifiSSID(0);
   doc[PARAM_APP_VER] = CFG_APPVER;
   doc[PARAM_APP_BUILD] = CFG_GITREV;
+  doc[PARAM_WEIGHT_UNIT] = myConfig.getWeightUnit();
+  doc[PARAM_TEMP_FORMAT] = String(myConfig.getTempFormat());
 
   // For this we use the last value read from the scale to avoid having to much
   // communication. The value will be updated regulary second in the main loop.
   doc[PARAM_PINTS1] = reduceFloatPrecision(
-      myScale.calculateNoPints(UnitIndex::UNIT_1,
-                               myScale.getLastValue(UnitIndex::UNIT_1)),
+      myScale.calculateNoPints(UnitIndex::U1,
+                               myScale.getLastValue(UnitIndex::U1)),
       1);
   doc[PARAM_PINTS2] = reduceFloatPrecision(
-      myScale.calculateNoPints(UnitIndex::UNIT_2,
-                               myScale.getLastValue(UnitIndex::UNIT_2)),
+      myScale.calculateNoPints(UnitIndex::U2,
+                               myScale.getLastValue(UnitIndex::U2)),
       1);
 
   float f = myTemp.getTempValueC();

@@ -116,8 +116,8 @@ class Scale {
 
   // Statistics
   void statsClearAll() {
-    statsClear(UnitIndex::UNIT_1);
-    statsClear(UnitIndex::UNIT_2);
+    statsClear(UnitIndex::U1);
+    statsClear(UnitIndex::U2);
   }
   void statsClear(UnitIndex idx) { _statisticValue[idx].clear(); }
   uint32_t statsCount(UnitIndex idx) { return _statisticValue[idx].count(); }
