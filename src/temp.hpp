@@ -37,9 +37,9 @@ class TempHumidity {
   TempHumidity(const TempHumidity&);
   TempHumidity& operator=(const TempHumidity&);
   void setup();
-  float getTempValueC();
-  float getTempValueF();
-  float getHumidityValue();
+  float getTempC();
+  float getTempF();
+  float getHumidity();
 };
 
 extern TempHumidity myTemp;

@@ -25,8 +25,8 @@ SOFTWARE.
 #include <scale.hpp>
 
 Scale::Scale() {
-  _statisticValue[UnitIndex::U1].clear();
-  _statisticValue[UnitIndex::U2].clear();
+  _statistic[UnitIndex::U1].clear();
+  _statistic[UnitIndex::U2].clear();
 }
 
 void Scale::setup(bool force) {
@@ -84,11 +84,11 @@ void Scale::setScaleFactor(UnitIndex idx) {
       fs);  // apply the saved scale factor so we get valid results
 }
 
-float Scale::getValue(UnitIndex idx, bool updateStats) {
+float Scale::readWeight(UnitIndex idx, bool updateStats) {
 #if defined(ENABLE_SCALE_SIMULATION)
   if (idx == 1) return 0;  // Simulation mode only supports one scale attached
 
-  float f = getNextSimulatedValue();
+  float f = getNextSimulated();
   Log.verbose(
       F("Scal: Reading simulated weight=%F [%d], updating stats=%s." CR), f,
       idx, updateStats ? "yes" : "no");
@@ -102,10 +102,10 @@ float Scale::getValue(UnitIndex idx, bool updateStats) {
   // If we have enough values and last stable level if its NAN, then update the
   // lastStable value
   if (statsCount(idx) > myAdvancedConfig.getStableCount() &&
-      !hasLastStableValue(idx)) {
-    _lastStableValue[idx] = statsAverage(idx);
+      !hasLastStableWeight(idx)) {
+    _lastStableWeight[idx] = statsAverage(idx);
     Log.notice(F("Scal: Found a new stable value %F [%d]." CR),
-               _lastStableValue[idx], idx);
+               _lastStableWeight[idx], idx);
   }
 
   // Check if the min/max are too far apart, then we have a to wide spread of
@@ -117,7 +117,7 @@ float Scale::getValue(UnitIndex idx, bool updateStats) {
                    "statistics [%d]." CR),
                  idx);
       // Before clearing statistics we record the last average as the stable to get better accuracu for pour detection.
-      _lastStableValue[idx] = statsAverage(idx);
+      _lastStableWeight[idx] = statsAverage(idx);
       statsClear(idx);
     }
   }
@@ -125,24 +125,24 @@ float Scale::getValue(UnitIndex idx, bool updateStats) {
   // Check if the level has changed up or down. If its down we record the delta
   // as the latest pour.
   if (statsCount(idx) > myAdvancedConfig.getStableCount() &&
-      hasLastStableValue(idx)) {
-    if ((_lastStableValue[idx] + myAdvancedConfig.getDeviationValue()) <
+      hasLastStableWeight(idx)) {
+    if ((_lastStableWeight[idx] + myAdvancedConfig.getDeviationValue()) <
         statsAverage(idx)) {
       Log.notice(
           F("Scal: Level has increased, adjusting from %F to %F [%d]." CR),
-          _lastStableValue[idx], statsAverage(idx), idx);
-      _lastStableValue[idx] = statsAverage(idx);
+          _lastStableWeight[idx], statsAverage(idx), idx);
+      _lastStableWeight[idx] = statsAverage(idx);
     }
 
-    if ((_lastStableValue[idx] - myAdvancedConfig.getDeviationValue()) >
+    if ((_lastStableWeight[idx] - myAdvancedConfig.getDeviationValue()) >
         statsAverage(idx)) {
       Log.notice(
           F("Scal: Level has decreased, adjusting from %F to %F [%d]." CR),
-          _lastStableValue[idx], statsAverage(idx), idx);
-      _lastPour[idx] = _lastStableValue[idx] - statsAverage(idx);
+          _lastStableWeight[idx], statsAverage(idx), idx);
+      _lastPourWeight[idx] = _lastStableWeight[idx] - statsAverage(idx);
       Log.notice(F("Scal: Beer has been poured volume %F [%d]." CR),
-                 _lastPour[idx], idx);
-      _lastStableValue[idx] = statsAverage(idx);
+                 _lastPourWeight[idx], idx);
+      _lastStableWeight[idx] = statsAverage(idx);
     }
   }
 
@@ -151,7 +151,7 @@ float Scale::getValue(UnitIndex idx, bool updateStats) {
     statsAdd(idx, f);
   }
 
-  _lastValue[idx] = f;  // cache the last read value, will be used by API's and
+  _lastWeight[idx] = f;  // cache the last read value, will be used by API's and
                         // updated in loop()
   return f;
 }
@@ -171,7 +171,7 @@ void Scale::tare(UnitIndex idx) {
   myConfig.saveFile();
 }
 
-int32_t Scale::getRawValue(UnitIndex idx) {
+int32_t Scale::readRawWeight(UnitIndex idx) {
   if (!_scale[idx]) return 0;
 
   int32_t l = _scale[idx]->read_average(
@@ -182,7 +182,7 @@ int32_t Scale::getRawValue(UnitIndex idx) {
 void Scale::findFactor(UnitIndex idx, float weight) {
   if (!_scale[idx]) return;
 
-  float l = getValue(idx);  // get value with applied scaling factor
+  float l = readWeight(idx);  // get value with applied scaling factor
   float f = l / weight;
   Log.verbose(F("Scal: Detecting factor for weight %F, raw %l %F [%d]." CR),
               weight, l, f, idx);
@@ -191,19 +191,31 @@ void Scale::findFactor(UnitIndex idx, float weight) {
   myConfig.saveFile();  // save the factor to file
 
   setScaleFactor(idx);  // apply the factor after it has been saved
-  getValue(idx);  // read the value again to update the cached value based on
-                  // new factor
+  readWeight(idx); // read the value again to update the cached value based on
+                   // new factor
 }
 
-float Scale::calculateNoPints(UnitIndex idx, float weight) {
-  if (!_scale[idx]) return 0;
+float Scale::calculateNoGlasses(UnitIndex idx) {
+  if (!isConnected(idx)) return 0;
 
-  float p = myConfig.getPintWeight(idx);
+  float weight = getAverageWeight(idx); 
+  // float weight = _lastWeight[idx];
+  float glassVol = myConfig.getGlassVolume(idx);
+  float fg = myConfig.getBeerFG(idx);
 
+  if (fg == 0.0) fg = 1.0;
+
+  float glassWeight = glassVol * fg;
+  float glass = (weight - myConfig.getKegWeight(idx)) / glassWeight;
+
+  Log.notice(F("Scal: Weight=%F kg, Glass Volume=%F liter, Glass Weight=%F kg FG=%F, Glasses=%F [%d]." CR), weight, glassVol, glassWeight, fg, glass, idx);
+
+  return glass < 0 ? 0 : glass;
+
+  /*
   if (p == 0.0) p = 1;
-
-  float pints = (weight - myConfig.getKegWeight(idx)) / p;
-  return pints < 0 ? 0 : pints;
+  float glass = (weight - myConfig.getKegWeight(idx)) / p;
+  return glass < 0 ? 0 : glass;*/
 }
 
 void Scale::statsDump(UnitIndex idx) {

@@ -32,10 +32,13 @@
             <a class="nav-link" href="/index.htm">Home</a>
           </li>
           <li class="nav-item">
+            <a class="nav-link" href="/beer.htm">Beer</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" href="/config.htm">Configuration</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" href="/calibration.htm">Calibration</a>
+            <a class="nav-link active" href="#"><b>Calibration</b></a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/upload.htm">Update firmware</a>
@@ -108,12 +111,13 @@
               </div>
               <div class="col border bg-light">
                 <p class="h4">Step 2 - Calculate factor</p>
-                <p>Place a known weight on the scale and press the factor button. The scale will calculate a factor and complete calibration. Use a weight between 0-50 kg.</p>
+                <p>Place a known weight on the scale and press the factor button. The scale will calculate a factor and complete calibration. Use any known weight.</p>
                 <div class="row">
                   <label for="weight" class="col-sm-2 col-form-label">Weight</label>
                   <div class="col-sm-5">
                     <input type="number" step="0.001" min="0" max="50" class="form-control" name="weight" id="weight" placeholder="0" data-bs-toggle="tooltip" title="Enter the value of the known weight in order to calibrate the scale."> 
                   </div>
+                  <label for="weight" id="weight-unit" class="col-sm-2 col-form-label"></label>
                 </div>
                 <br>
                 <button class="btn btn-secondary" id="factor-btn" data-bs-toggle="tooltip" title="Let the scale calcualate the factor based on the current load and known weight">Factor</button>
@@ -153,7 +157,7 @@
   </div>
 
   <script type="text/javascript">
-    //window.onload = start;
+    window.onload = start;
 
     $("#tare-btn").click(function(e){
       console.log( "Resetting scale #" + $("#scale-index").val() );
@@ -212,32 +216,38 @@
         $("#scale-raw").text("Raw: " + result["scale-raw2"]);
         $("#scale-weight").text("Weight: " + result["scale-weight2"]);
       }
+
+      $("#weight-unit").text(result["weight-unit"]);
     }
 
-    /*function getScale() {
+    function setButtonDisabled(b) {
+      $("#tare-btn").prop("disabled", b);
+      $("#factor-btn").prop("disabled", b);
+      $("#test-btn").prop("disabled", b);
+    }
+
+    function start() {
+      setButtonDisabled(true);
+
       var url = "/api/scale";
       //var url = "/test/scale.json";
-      $('#spinner').show(); 
-
-      $.getJSON(url, function (cfg) {
-        showScaleJson(cfg);
+      $('#spinner').show();
+      $.getJSON(url, function (result) {
+        console.log(result);
+        showScaleJson(result);        
       })
-      .fail(function () {
-        showError('Unable to get data from the device.');
-      })
-      .always(function() {
-        $('#spinner').hide(); 
-      });
-    }*/
-
-    /*function start() {
-      setInterval(getScale, 3000);
-    }*/
-
+        .fail(function () {
+          showError('Unable to get data from the device.');
+        })
+        .always(function () {
+          $('#spinner').hide();
+          setButtonDisabled(false);
+        });
+    }
   </script>
 
   <!-- START FOOTER -->
 
-  <div class="container themed-container bg-primary text-light row-margin-10">(C) Copyright 2021-22 Magnus Persson</div>
+  <div class="container themed-container bg-primary text-light row-margin-10">(C) Copyright 2022 Magnus Persson</div>
 </body>
 </html>

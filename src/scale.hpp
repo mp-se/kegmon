@@ -36,13 +36,13 @@ class Scale {
  private:
   HX711 *_scale[2] = {0, 0};
   int _readCount = 5;
-  float _lastValue[2] = {0, 0};
-  float _lastPour[2] = {NAN, NAN};
-  float _lastStableValue[2] = {NAN, NAN};
-  statistic::Statistic<float, uint32_t, true> _statisticValue[2];
+  float _lastWeight[2] = {0, 0};
+  float _lastPourWeight[2] = {NAN, NAN};
+  float _lastStableWeight[2] = {NAN, NAN};
+  statistic::Statistic<float, uint32_t, true> _statistic[2];
 
   void setScaleFactor(UnitIndex idx);
-  void statsAdd(UnitIndex idx, float val) { _statisticValue[idx].add(val); }
+  void statsAdd(UnitIndex idx, float val) { _statistic[idx].add(val); }
 
 #if defined(ENABLE_SCALE_SIMULATION)
   uint32_t _simulatedPos = 0;
@@ -82,7 +82,7 @@ class Scale {
       9.11290266666666, 9.114161, 9.11346033333333, 9.11539225,
       9.11459066666666, 9.1151595, 9.11711533333333};
 
-  float getNextSimulatedValue() {
+  float getNextSimulated() {
     if (_simulatedPos >= (sizeof(_simulatedData) / sizeof(float)))
       _simulatedPos = 0;
     return _simulatedData[_simulatedPos++];
@@ -95,44 +95,51 @@ class Scale {
   // Setup and status
   void setup(bool force = false);
   void tare(UnitIndex idx);
+#if defined(ENABLE_SCALE_SIMULATION)
+  bool isConnected(UnitIndex idx) { return _scale[idx] != 0 || idx == 0 ? true : false; }
+#else
   bool isConnected(UnitIndex idx) { return _scale[idx] != 0 ? true : false; }
+#endif
 
   // Read from scale
-  float getValue(UnitIndex idx, bool updateStats = false);
-  float getPourValue(UnitIndex idx) { return _lastPour[idx]; }
-  bool hasPourValue(UnitIndex idx) { return !isnan(_lastPour[idx]); }
-  float getLastValue(UnitIndex idx) { return _lastValue[idx]; }
-  float getLastStableValue(UnitIndex idx) { return _lastStableValue[idx]; }
-  bool hasLastStableValue(UnitIndex idx) {
-    return !isnan(_lastStableValue[idx]);
+  int32_t readRawWeight(UnitIndex idx);
+  float readWeight(UnitIndex idx, bool updateStats = false);
+
+  float getLastWeight(UnitIndex idx) { return _lastWeight[idx]; }
+  float getAverageWeight(UnitIndex idx) { return statsCount(idx)>0 ? statsAverage(idx) : _lastWeight[idx]; }
+
+  float getLastStableWeight(UnitIndex idx) { return _lastStableWeight[idx]; }
+  bool hasLastStableWeight(UnitIndex idx) {
+    return !isnan(_lastStableWeight[idx]);
   }
-  int32_t getRawValue(UnitIndex idx);
+
+  float getPourWeight(UnitIndex idx) { return _lastPourWeight[idx]; }
+  bool hasPourWeight(UnitIndex idx) { return !isnan(_lastPourWeight[idx]); }
 
   // Calibration
   void findFactor(UnitIndex idx, float weight);
 
   // Helper methods
-  float calculateNoPints(UnitIndex idx, float weight);
+  float calculateNoGlasses(UnitIndex idx);
 
   // Statistics
   void statsClearAll() {
     statsClear(UnitIndex::U1);
     statsClear(UnitIndex::U2);
   }
-  void statsClear(UnitIndex idx) { _statisticValue[idx].clear(); }
-  uint32_t statsCount(UnitIndex idx) { return _statisticValue[idx].count(); }
-  float statsSum(UnitIndex idx) { return _statisticValue[idx].sum(); }
-  float statsMin(UnitIndex idx) { return _statisticValue[idx].minimum(); }
-  float statsMax(UnitIndex idx) { return _statisticValue[idx].maximum(); }
-  float statsAverage(UnitIndex idx) { return _statisticValue[idx].average(); }
-  float statsVariance(UnitIndex idx) { return _statisticValue[idx].variance(); }
+  void statsClear(UnitIndex idx) { _statistic[idx].clear(); }
+  uint32_t statsCount(UnitIndex idx) { return _statistic[idx].count(); }
+  float statsSum(UnitIndex idx) { return _statistic[idx].sum(); }
+  float statsMin(UnitIndex idx) { return _statistic[idx].minimum(); }
+  float statsMax(UnitIndex idx) { return _statistic[idx].maximum(); }
+  float statsAverage(UnitIndex idx) { return _statistic[idx].average(); }
+  float statsVariance(UnitIndex idx) { return _statistic[idx].variance(); }
   float statsPopStdev(UnitIndex idx) {
-    return _statisticValue[idx].pop_stdev();
+    return _statistic[idx].pop_stdev();
   }
   float statsUnbiasedStdev(UnitIndex idx) {
-    return _statisticValue[idx].unbiased_stdev();
+    return _statistic[idx].unbiased_stdev();
   }
-
   void statsDump(UnitIndex idx);
 };
 

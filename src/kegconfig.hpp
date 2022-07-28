@@ -27,14 +27,14 @@ SOFTWARE.
 #include <baseconfig.hpp>
 #include <main.hpp>
 
-#define PARAM_WEIGHT_PRECISION "weight-precision"
 #define PARAM_BREWFATHER_USERKEY "brewfather-userkey"
 #define PARAM_BREWFATHER_APIKEY "brewfather-apikey"
 #define PARAM_WEIGHT_UNIT "weight-unit"
+#define PARAM_VOLUME_UNIT "volume-unit"
 #define PARAM_KEG_WEIGHT1 "keg-weight1"
 #define PARAM_KEG_WEIGHT2 "keg-weight2"
-#define PARAM_PINT_WEIGHT1 "pint-weight1"
-#define PARAM_PINT_WEIGHT2 "pint-weight2"
+#define PARAM_GLASS_VOLUME1 "glass-volume1"
+#define PARAM_GLASS_VOLUME2 "glass-volume2"
 #define PARAM_BEER_NAME1 "beer-name1"
 #define PARAM_BEER_NAME2 "beer-name2"
 #define PARAM_BEER_ABV1 "beer-abv1"
@@ -43,6 +43,8 @@ SOFTWARE.
 #define PARAM_BEER_IBU2 "beer-ibu2"
 #define PARAM_BEER_EBC1 "beer-ebc1"
 #define PARAM_BEER_EBC2 "beer-ebc2"
+#define PARAM_BEER_FG1 "beer-fg1"
+#define PARAM_BEER_FG2 "beer-fg2"
 #define PARAM_SCALE_FACTOR1 "scale-factor1"
 #define PARAM_SCALE_FACTOR2 "scale-factor2"
 #define PARAM_SCALE_OFFSET1 "scale-offset1"
@@ -53,19 +55,28 @@ struct BeerInfo {
   float _abv = 0.0;
   int _ebc = 0;
   int _ibu = 0;
+  float _fg = 1;
 };
+
+#define WEIGHT_KG "kg"
+#define WEIGHT_LBS "lbs"
+
+#define VOLUME_CL "kg"
+#define VOLUME_US "us-oz"
+#define VOLUME_UK "uk-oz"
 
 class KegConfig : public BaseConfig {
  private:
-  int _weightPrecision = 2;
-  String _weightUnit = "kg";
+  String _weightUnit = WEIGHT_KG;
+  String _volumeUnit = VOLUME_CL;
+
   String _brewfatherUserKey = "";
   String _brewfatherApiKey = "";
 
   float _scaleFactor[2] = {0, 0};
   int32_t _scaleOffset[2] = {0, 0};
-  float _kegWeight[2] = {0, 0};
-  float _pintWeight[2] = {0, 0};
+  float _kegWeight[2] = {0, 0}; // Weight in kg
+  float _glassVolume[2] = {0.40, 0.40}; // Volume in liters
   BeerInfo _beer[2];
 
  public:
@@ -95,6 +106,11 @@ class KegConfig : public BaseConfig {
     _beer[idx]._abv = f;
     _saveNeeded = true;
   }
+  float getBeerFG(int idx) { return _beer[idx]._fg; }
+  void setBeerFG(int idx, float f) {
+    _beer[idx]._fg = f;
+    _saveNeeded = true;
+  }
   int getBeerEBC(int idx) { return _beer[idx]._ebc; }
   void setBeerEBC(int idx, int i) {
     _beer[idx]._ebc = i;
@@ -112,21 +128,21 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }
 
-  float getPintWeight(int idx) { return _pintWeight[idx]; }
-  void setPintWeight(int idx, float f) {
-    _pintWeight[idx] = f;
-    _saveNeeded = true;
-  }
-
-  int getWeightPrecision() { return _weightPrecision; }
-  void setWeightPrecision(int i) {
-    _weightPrecision = i;
+  float getGlassVolume(int idx) { return _glassVolume[idx]; }
+  void setGlassVolume(int idx, float f) {
+    _glassVolume[idx] = f;
     _saveNeeded = true;
   }
 
   const char* getWeightUnit() { return _weightUnit.c_str(); }
   void setWeightUnit(String s) {
     _weightUnit = s;
+    _saveNeeded = true;
+  }
+
+  const char* getVolumeUnit() { return _volumeUnit.c_str(); }
+  void setVolumeUnit(String s) {
+    _volumeUnit = s;
     _saveNeeded = true;
   }
 
@@ -175,6 +191,11 @@ class KegConfig : public BaseConfig {
   void setUserMqtt(String user) {}
   const char* getPassMqtt() { return ""; }
   void setPassMqtt(String pass) {}
+
+  // These are helper function to assist with formatting of values
+  int getWeightPrecision() {
+    return 3;
+  }
 };
 
 class KegAdvancedConfig {

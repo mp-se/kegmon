@@ -42,8 +42,8 @@ SOFTWARE.
 #define PARAM_SCALE_WEIGHT2 "scale-weight2"
 #define PARAM_SCALE_RAW1 "scale-raw1"
 #define PARAM_SCALE_RAW2 "scale-raw2"
-#define PARAM_PINTS1 "pints1"
-#define PARAM_PINTS2 "pints2"
+#define PARAM_GLASS1 "glass1"
+#define PARAM_GLASS2 "glass2"
 #define PARAM_SCALE_STABLE_WEIGHT1 "scale-stable-weight1"
 #define PARAM_SCALE_STABLE_WEIGHT2 "scale-stable-weight2"
 #define PARAM_LAST_POUR1 "last-pour1"
@@ -67,6 +67,8 @@ void KegWebHandler::setupWebHandlers() {
               std::bind(&KegWebHandler::webStatus, this));
   _server->on("/calibration.htm", HTTP_GET,
               std::bind(&KegWebHandler::webCalibrateHtm, this));
+  _server->on("/beer.htm", HTTP_GET,
+              std::bind(&KegWebHandler::webBeerHtm, this));
 }
 
 void KegWebHandler::webScale() {
@@ -74,6 +76,9 @@ void KegWebHandler::webScale() {
 
   DynamicJsonDocument doc(300);
   populateScaleJson(doc);
+
+  doc[PARAM_WEIGHT_UNIT] = myConfig.getWeightUnit();
+  doc[PARAM_VOLUME_UNIT] = myConfig.getVolumeUnit();
 
   String out;
   out.reserve(300);
@@ -131,6 +136,9 @@ void KegWebHandler::webScaleFactor() {
   DynamicJsonDocument doc(300);
   populateScaleJson(doc);
 
+  doc[PARAM_WEIGHT_UNIT] = myConfig.getWeightUnit();
+  doc[PARAM_VOLUME_UNIT] = myConfig.getVolumeUnit();
+
   String out;
   out.reserve(300);
   serializeJson(doc, out);
@@ -144,32 +152,32 @@ void KegWebHandler::populateScaleJson(DynamicJsonDocument& doc) {
 
   if (myScale.isConnected(UnitIndex::U1)) {
     doc[PARAM_SCALE_WEIGHT1] = reduceFloatPrecision(
-        myScale.getLastValue(UnitIndex::U1), myConfig.getWeightPrecision());
-    doc[PARAM_SCALE_RAW1] = myScale.getRawValue(UnitIndex::U1);
+        myScale.getLastWeight(UnitIndex::U1), myConfig.getWeightPrecision());
+    doc[PARAM_SCALE_RAW1] = myScale.readRawWeight(UnitIndex::U1);
     doc[PARAM_SCALE_OFFSET1] = myConfig.getScaleOffset(0);
   }
 
   if (myScale.isConnected(UnitIndex::U2)) {
     doc[PARAM_SCALE_WEIGHT2] = reduceFloatPrecision(
-        myScale.getLastValue(UnitIndex::U2), myConfig.getWeightPrecision());
-    doc[PARAM_SCALE_RAW2] = myScale.getRawValue(UnitIndex::U2);
+        myScale.getLastWeight(UnitIndex::U2), myConfig.getWeightPrecision());
+    doc[PARAM_SCALE_RAW2] = myScale.readRawWeight(UnitIndex::U2);
     doc[PARAM_SCALE_OFFSET2] = myConfig.getScaleOffset(1);
   }
 
-  if (myScale.hasLastStableValue(UnitIndex::U1)) {
-    doc[PARAM_SCALE_STABLE_WEIGHT1] = reduceFloatPrecision(myScale.getLastStableValue(UnitIndex::U1), myConfig.getWeightPrecision());
+  if (myScale.hasLastStableWeight(UnitIndex::U1)) {
+    doc[PARAM_SCALE_STABLE_WEIGHT1] = reduceFloatPrecision(myScale.getLastStableWeight(UnitIndex::U1), myConfig.getWeightPrecision());
   }
 
-  if (myScale.hasLastStableValue(UnitIndex::U2)) {
-    doc[PARAM_SCALE_STABLE_WEIGHT2] = reduceFloatPrecision(myScale.getLastStableValue(UnitIndex::U2), myConfig.getWeightPrecision());
+  if (myScale.hasLastStableWeight(UnitIndex::U2)) {
+    doc[PARAM_SCALE_STABLE_WEIGHT2] = reduceFloatPrecision(myScale.getLastStableWeight(UnitIndex::U2), myConfig.getWeightPrecision());
   }
 
-  if (myScale.hasPourValue(UnitIndex::U1)) {
-    doc[PARAM_LAST_POUR1] = reduceFloatPrecision(myScale.getPourValue(UnitIndex::U1), myConfig.getWeightPrecision());
+  if (myScale.hasPourWeight(UnitIndex::U1)) {
+    doc[PARAM_LAST_POUR1] = reduceFloatPrecision(myScale.getPourWeight(UnitIndex::U1), 3);
   }
 
-  if (myScale.hasPourValue(UnitIndex::U2)) {
-    doc[PARAM_LAST_POUR2] = reduceFloatPrecision(myScale.getPourValue(UnitIndex::U2), myConfig.getWeightPrecision());
+  if (myScale.hasPourWeight(UnitIndex::U2)) {
+    doc[PARAM_LAST_POUR2] = reduceFloatPrecision(myScale.getPourWeight(UnitIndex::U2), 3);
   }
 
 #if LOG_LEVEL == 6
@@ -190,24 +198,21 @@ void KegWebHandler::webStatus() {
   doc[PARAM_APP_VER] = CFG_APPVER;
   doc[PARAM_APP_BUILD] = CFG_GITREV;
   doc[PARAM_WEIGHT_UNIT] = myConfig.getWeightUnit();
+  doc[PARAM_VOLUME_UNIT] = myConfig.getVolumeUnit();
   doc[PARAM_TEMP_FORMAT] = String(myConfig.getTempFormat());
 
   // For this we use the last value read from the scale to avoid having to much
   // communication. The value will be updated regulary second in the main loop.
-  doc[PARAM_PINTS1] = reduceFloatPrecision(
-      myScale.calculateNoPints(UnitIndex::U1,
-                               myScale.getLastValue(UnitIndex::U1)),
-      1);
-  doc[PARAM_PINTS2] = reduceFloatPrecision(
-      myScale.calculateNoPints(UnitIndex::U2,
-                               myScale.getLastValue(UnitIndex::U2)),
-      1);
+  doc[PARAM_GLASS1] = reduceFloatPrecision(
+      myScale.calculateNoGlasses(UnitIndex::U1), 1);
+  doc[PARAM_GLASS2] = reduceFloatPrecision(
+      myScale.calculateNoGlasses(UnitIndex::U2), 1);
 
-  float f = myTemp.getTempValueC();
+  float f = myTemp.getTempC();
 
   if (!isnan(f)) {
     doc[PARAM_TEMP] = f;
-    doc[PARAM_HUMIDITY] = myTemp.getHumidityValue();
+    doc[PARAM_HUMIDITY] = myTemp.getHumidity();
   }
 
   String out;

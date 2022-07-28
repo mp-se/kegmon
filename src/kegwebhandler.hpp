@@ -33,6 +33,7 @@ SOFTWARE.
 #include <kegconfig.hpp>
 
 INCBIN_EXTERN(CalibrateHtm);
+INCBIN_EXTERN(BeerHtm);
 
 class KegWebHandler : public BaseWebHandler {
  private:
@@ -50,6 +51,10 @@ class KegWebHandler : public BaseWebHandler {
   void webCalibrateHtm() {
     _server->send_P(200, "text/html", (const char*)gCalibrateHtmData,
                     gCalibrateHtmSize);
+  }
+  void webBeerHtm() {
+    _server->send_P(200, "text/html", (const char*)gBeerHtmData,
+                    gBeerHtmSize);
   }
 
  public:

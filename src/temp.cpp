@@ -32,7 +32,7 @@ void TempHumidity::setup() {
   _temp->begin();
 }
 
-float TempHumidity::getTempValueC() {
+float TempHumidity::getTempC() {
   if (!_temp) return NAN;
 
   float f = _temp->readTemperature();
@@ -48,7 +48,7 @@ float TempHumidity::getTempValueC() {
   return f;
 }
 
-float TempHumidity::getTempValueF() {
+float TempHumidity::getTempF() {
   if (!_temp) return NAN;
 
   float f = _temp->readTemperature(true);
@@ -64,7 +64,7 @@ float TempHumidity::getTempValueF() {
   return f;
 }
 
-float TempHumidity::getHumidityValue() {
+float TempHumidity::getHumidity() {
   if (!_temp) return NAN;
 
   float h = _temp->readHumidity();
