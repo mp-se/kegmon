@@ -9,6 +9,14 @@ This is the hardware schema that I have used in my build.
   The software will adopt to what devices are connected and will work with 
   one, two scales, one or two displays and without a temperature sensor. 
 
+I have noticed that some hx711 boards/loadcells will drift over time where other will not. The graph here shows two of my scales in my keezer where the second one (lower graph) is quite stable over time. The first one
+is not. The first point is ok, since this is me pouring a glass of beer but the others are strange. The difference is not small +2.3 kg over a 24 hour period and then back to normal. I need to do some more investigation
+what causes this. Could be differences in loadcells, cabling or the HX711 board itself. 
+
+.. image:: images/hx_drift.png
+  :width: 600
+  :alt: Schema
+
 Schema
 ******
 

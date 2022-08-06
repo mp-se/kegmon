@@ -34,6 +34,7 @@ SOFTWARE.
 
 INCBIN_EXTERN(CalibrateHtm);
 INCBIN_EXTERN(BeerHtm);
+INCBIN_EXTERN(StabilityHtm);
 
 class KegWebHandler : public BaseWebHandler {
  private:
@@ -47,14 +48,19 @@ class KegWebHandler : public BaseWebHandler {
   void webConfigGet();
   void webConfigPost();
   void webStatus();
+  void webStability();
+  void webStabilityClear();
 
   void webCalibrateHtm() {
     _server->send_P(200, "text/html", (const char*)gCalibrateHtmData,
                     gCalibrateHtmSize);
   }
   void webBeerHtm() {
-    _server->send_P(200, "text/html", (const char*)gBeerHtmData,
-                    gBeerHtmSize);
+    _server->send_P(200, "text/html", (const char*)gBeerHtmData, gBeerHtmSize);
+  }
+  void webStabilityHtm() {
+    _server->send_P(200, "text/html", (const char*)gStabilityHtmData,
+                    gStabilityHtmSize);
   }
 
  public:

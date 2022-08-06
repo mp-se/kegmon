@@ -40,14 +40,16 @@
           <li class="nav-item">
             <a class="nav-link" href="/beer.htm">Beer</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link active" href="#"><b>Configuration</b></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/calibration.htm">Calibration</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/upload.htm">Update Firmware</a>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Configuration
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Configuration</a></li>
+              <li><a class="dropdown-item" href="/calibration.htm">Scale calibration</a></li>
+              <li><a class="dropdown-item" href="/stability.htm">Stability statistics</a></li>
+              <li><a class="dropdown-item" href="/upload.htm">Upload firmware</a></li>
+            </ul>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/about.htm">About</a>
@@ -169,6 +171,16 @@
                 </fieldset>
               </div>
 
+              <div class="row mb-3">
+                <label for="display-layout" class="col-sm-2 col-form-label">Display layout</label>
+                <div class="col-sm-3">
+                  <select class="form-select" id="display-layout" name="display-layout" data-bs-toggle="tooltip" title="select layout on display">
+                    <option value="0">Default</option>
+                    <option value="9">Hardware stats</option>
+                  </select>
+                </div>
+              </div>
+
               <hr>
 
               <div class="row mb-3">
@@ -228,6 +240,8 @@
         $("#mdns").val(cfg["mdns"]);
         $("#brewfather-apikey").val(cfg["brewfather-apikey"]);
         $("#brewfather-userkey").val(cfg["brewfather-userkey"]);
+
+        $("#display-layout").val(cfg["display-layout"]);
 
         if (cfg["temp-format"] == "C") $("#temp-format-c").click();
         else $("#temp-format-f").click();

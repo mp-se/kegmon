@@ -27,6 +27,8 @@ SOFTWARE.
 Scale::Scale() {
   _statistic[UnitIndex::U1].clear();
   _statistic[UnitIndex::U2].clear();
+  _stability[UnitIndex::U1].clear();
+  _stability[UnitIndex::U2].clear();
 }
 
 void Scale::setup(bool force) {
@@ -116,7 +118,8 @@ float Scale::readWeight(UnitIndex idx, bool updateStats) {
       Log.notice(F("Scal: Min/Max values deviates to much, restarting "
                    "statistics [%d]." CR),
                  idx);
-      // Before clearing statistics we record the last average as the stable to get better accuracu for pour detection.
+      // Before clearing statistics we record the last average as the stable to
+      // get better accuracu for pour detection.
       _lastStableWeight[idx] = statsAverage(idx);
       statsClear(idx);
     }
@@ -152,7 +155,7 @@ float Scale::readWeight(UnitIndex idx, bool updateStats) {
   }
 
   _lastWeight[idx] = f;  // cache the last read value, will be used by API's and
-                        // updated in loop()
+                         // updated in loop()
   return f;
 }
 
@@ -191,14 +194,14 @@ void Scale::findFactor(UnitIndex idx, float weight) {
   myConfig.saveFile();  // save the factor to file
 
   setScaleFactor(idx);  // apply the factor after it has been saved
-  readWeight(idx); // read the value again to update the cached value based on
-                   // new factor
+  readWeight(idx);  // read the value again to update the cached value based on
+                    // new factor
 }
 
 float Scale::calculateNoGlasses(UnitIndex idx) {
   if (!isConnected(idx)) return 0;
 
-  float weight = getAverageWeight(idx); 
+  float weight = getAverageWeight(idx);
   // float weight = _lastWeight[idx];
   float glassVol = myConfig.getGlassVolume(idx);
   float fg = myConfig.getBeerFG(idx);
@@ -208,7 +211,9 @@ float Scale::calculateNoGlasses(UnitIndex idx) {
   float glassWeight = glassVol * fg;
   float glass = (weight - myConfig.getKegWeight(idx)) / glassWeight;
 
-  Log.notice(F("Scal: Weight=%F kg, Glass Volume=%F liter, Glass Weight=%F kg FG=%F, Glasses=%F [%d]." CR), weight, glassVol, glassWeight, fg, glass, idx);
+  Log.notice(F("Scal: Weight=%F kg, Glass Volume=%F liter, Glass Weight=%F kg "
+               "FG=%F, Glasses=%F [%d]." CR),
+             weight, glassVol, glassWeight, fg, glass, idx);
 
   return glass < 0 ? 0 : glass;
 

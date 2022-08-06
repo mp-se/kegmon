@@ -19,8 +19,3 @@ Based on the ideas of these projects (there are many that have implemented the s
 * https://github.com/nanab/BeerScale
 
 For docs see: https://mp-se.github.io/kegscale/index.html
-
-# What ongoing
-
-* Create 3d model for the display case and complete the build.
-* Complete documentation

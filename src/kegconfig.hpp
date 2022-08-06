@@ -29,6 +29,7 @@ SOFTWARE.
 
 #define PARAM_BREWFATHER_USERKEY "brewfather-userkey"
 #define PARAM_BREWFATHER_APIKEY "brewfather-apikey"
+#define PARAM_DISPLAY_LAYOUT "display-layout"
 #define PARAM_WEIGHT_UNIT "weight-unit"
 #define PARAM_VOLUME_UNIT "volume-unit"
 #define PARAM_KEG_WEIGHT1 "keg-weight1"
@@ -65,6 +66,8 @@ struct BeerInfo {
 #define VOLUME_US "us-oz"
 #define VOLUME_UK "uk-oz"
 
+enum DisplayLayout { Default = 0, HardwareStats = 9 };
+
 class KegConfig : public BaseConfig {
  private:
   String _weightUnit = WEIGHT_KG;
@@ -73,10 +76,12 @@ class KegConfig : public BaseConfig {
   String _brewfatherUserKey = "";
   String _brewfatherApiKey = "";
 
+  DisplayLayout _displayLayout = DisplayLayout::Default;
+
   float _scaleFactor[2] = {0, 0};
   int32_t _scaleOffset[2] = {0, 0};
-  float _kegWeight[2] = {0, 0}; // Weight in kg
-  float _glassVolume[2] = {0.40, 0.40}; // Volume in liters
+  float _kegWeight[2] = {0, 0};          // Weight in kg
+  float _glassVolume[2] = {0.40, 0.40};  // Volume in liters
   BeerInfo _beer[2];
 
  public:
@@ -158,6 +163,17 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }
 
+  DisplayLayout getDisplayLayout() { return _displayLayout; }
+  int getDisplayLayoutAsInt() { return _displayLayout; }
+  void setDisplayLayout(DisplayLayout d) {
+    _displayLayout = d;
+    _saveNeeded = true;
+  }
+  void setDisplayLayout(int d) {
+    _displayLayout = (DisplayLayout)d;
+    _saveNeeded = true;
+  }
+
   // These settings are used for debugging and checking stability of the scales.
   // Only influx is used for now
   const char* getTargetHttpPost() { return ""; }
@@ -193,9 +209,7 @@ class KegConfig : public BaseConfig {
   void setPassMqtt(String pass) {}
 
   // These are helper function to assist with formatting of values
-  int getWeightPrecision() {
-    return 3;
-  }
+  int getWeightPrecision() { return 3; }
 };
 
 class KegAdvancedConfig {

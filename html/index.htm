@@ -34,15 +34,17 @@
           <li class="nav-item">
             <a class="nav-link" href="/beer.htm">Beer</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/config.htm">Configuration</a>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Configuration
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/config.htm">Configuration</a></li>
+              <li><a class="dropdown-item" href="/calibration.htm">Scale calibration</a></li>
+              <li><a class="dropdown-item" href="/stability.htm">Stability statistics</a></li>
+              <li><a class="dropdown-item" href="/upload.htm">Upload firmware</a></li>
+            </ul>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/calibration.htm">Calibration</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/upload.htm">Update firmware</a>
-          </li> 
           <li class="nav-item">
             <a class="nav-link" href="/about.htm">About</a>
           </li> 
@@ -166,7 +168,7 @@
           $('#toggle2').addClass('hide').removeClass('show').addClass('d-none');
           $('#toggle3').addClass('hide').removeClass('show').addClass('d-none');
         } else {
-          $("#temperature").text(cfg["temperature"] + temp_unit); 
+          $("#temperature").text(cfg["temperature"] + " " + temp_unit); 
           $("#humidity").text(cfg["humidity"] + " %"); 
         }
 
@@ -174,8 +176,8 @@
         // TODO: Need to be able to convert between cl -> US fl oz, UK fl oz
 
         if( cfg["scale-weight1"] === undefined ) {
-          $("#scale-weight1").text("");
-          $("#glass1").text("");
+          $("#scale-weight1").text("no scale");
+          $("#glass1").text("no scale");
         } else {
           $("#scale-weight1").text(cfg["scale-weight1"] + weight_unit);
           // $("#scale-weight1").text(cfg["scale-stable-weight1"] + w_unit);
@@ -183,8 +185,8 @@
         }
 
         if( cfg["scale-weight2"] === undefined ) {
-          $("#scale-weight2").text("");
-          $("#glass2").text("");
+          $("#scale-weight2").text("no scale");
+          $("#glass2").text("no scale");
         } else {
           $("#scale-weight2").text(cfg["scale-weight2"] + weight_unit);
           // $("#scale-weight2").text(cfg["scale-stable-weight2"] + w_unit);
@@ -192,14 +194,14 @@
         }
 
         if( cfg["last-pour1"] === undefined ) {
-          $("#last-pour1").text("");
+          $("#last-pour1").text("no data");
         } else {
           var pour = parseFloat(cfg["last-pour1"]*100).toFixed(0);
           $("#last-pour1").text(pour + " cl");
         }
 
         if( cfg["last-pour2"] === undefined ) {
-          $("#last-pour2").text("");
+          $("#last-pour2").text("no data");
         } else {
           var pour = parseFloat(cfg["last-pour2"]*100).toFixed(0);
           $("#last-pour2").text(pour + " cl");

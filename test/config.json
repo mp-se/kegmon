@@ -25,6 +25,7 @@
   "weight-precision": 2,
   "weight-unit": "kg",
   "volume-unit": "cl",
+  "display-layout": 0,
   "scale-factor1": -21284.12,
   "scale-factor2": -21284.12,
   "scale-offset1": -286557,

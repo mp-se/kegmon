@@ -40,9 +40,13 @@ class Scale {
   float _lastPourWeight[2] = {NAN, NAN};
   float _lastStableWeight[2] = {NAN, NAN};
   statistic::Statistic<float, uint32_t, true> _statistic[2];
+  statistic::Statistic<float, uint32_t, true> _stability[2];
 
   void setScaleFactor(UnitIndex idx);
-  void statsAdd(UnitIndex idx, float val) { _statistic[idx].add(val); }
+  void statsAdd(UnitIndex idx, float val) {
+    _statistic[idx].add(val);
+    _stability[idx].add(val);
+  }
 
 #if defined(ENABLE_SCALE_SIMULATION)
   uint32_t _simulatedPos = 0;
@@ -96,7 +100,9 @@ class Scale {
   void setup(bool force = false);
   void tare(UnitIndex idx);
 #if defined(ENABLE_SCALE_SIMULATION)
-  bool isConnected(UnitIndex idx) { return _scale[idx] != 0 || idx == 0 ? true : false; }
+  bool isConnected(UnitIndex idx) {
+    return _scale[idx] != 0 || idx == 0 ? true : false;
+  }
 #else
   bool isConnected(UnitIndex idx) { return _scale[idx] != 0 ? true : false; }
 #endif
@@ -106,7 +112,9 @@ class Scale {
   float readWeight(UnitIndex idx, bool updateStats = false);
 
   float getLastWeight(UnitIndex idx) { return _lastWeight[idx]; }
-  float getAverageWeight(UnitIndex idx) { return statsCount(idx)>0 ? statsAverage(idx) : _lastWeight[idx]; }
+  float getAverageWeight(UnitIndex idx) {
+    return statsCount(idx) > 0 ? statsAverage(idx) : _lastWeight[idx];
+  }
 
   float getLastStableWeight(UnitIndex idx) { return _lastStableWeight[idx]; }
   bool hasLastStableWeight(UnitIndex idx) {
@@ -134,13 +142,24 @@ class Scale {
   float statsMax(UnitIndex idx) { return _statistic[idx].maximum(); }
   float statsAverage(UnitIndex idx) { return _statistic[idx].average(); }
   float statsVariance(UnitIndex idx) { return _statistic[idx].variance(); }
-  float statsPopStdev(UnitIndex idx) {
-    return _statistic[idx].pop_stdev();
-  }
+  float statsPopStdev(UnitIndex idx) { return _statistic[idx].pop_stdev(); }
   float statsUnbiasedStdev(UnitIndex idx) {
     return _statistic[idx].unbiased_stdev();
   }
   void statsDump(UnitIndex idx);
+
+  // Stability since start
+  void stabilityClear(UnitIndex idx) { _stability[idx].clear(); }
+  uint32_t stabilityCount(UnitIndex idx) { return _stability[idx].count(); }
+  float stabilitySum(UnitIndex idx) { return _stability[idx].sum(); }
+  float stabilityMin(UnitIndex idx) { return _stability[idx].minimum(); }
+  float stabilityMax(UnitIndex idx) { return _stability[idx].maximum(); }
+  float stabilityAverage(UnitIndex idx) { return _stability[idx].average(); }
+  float stabilityVariance(UnitIndex idx) { return _stability[idx].variance(); }
+  float stabilityPopStdev(UnitIndex idx) { return _stability[idx].pop_stdev(); }
+  float stabilityUnbiasedStdev(UnitIndex idx) {
+    return _stability[idx].unbiased_stdev();
+  }
 };
 
 extern Scale myScale;

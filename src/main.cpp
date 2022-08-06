@@ -118,7 +118,34 @@ void setup() {
 
 bool showPints = false;
 
-void drawScreen(UnitIndex idx) {
+void drawScreenHardwareStats(UnitIndex idx) {
+  myDisplay.clear(idx);
+  myDisplay.setFont(idx, FontSize::FONT_10);
+
+  if (myScale.isConnected(idx)) {
+    char buf[30];
+
+    snprintf(&buf[0], sizeof(buf), "Last wgt: %.3f",
+             myScale.getLastWeight(idx));
+    myDisplay.printLine(idx, 0, &buf[0]);
+    snprintf(&buf[0], sizeof(buf), "Stab wgt: %.3f",
+             myScale.getLastStableWeight(idx));
+    myDisplay.printLine(idx, 1, &buf[0]);
+    snprintf(&buf[0], sizeof(buf), "Ave  wgt: %.3f",
+             myScale.getAverageWeight(idx));
+    myDisplay.printLine(idx, 2, &buf[0]);
+    snprintf(&buf[0], sizeof(buf), "Stat min: %.3f", myScale.statsMin(idx));
+    myDisplay.printLine(idx, 3, &buf[0]);
+    snprintf(&buf[0], sizeof(buf), "Stat max: %.3f", myScale.statsMax(idx));
+    myDisplay.printLine(idx, 4, &buf[0]);
+    snprintf(&buf[0], sizeof(buf), "Stat dev: %.3f",
+             myScale.statsPopStdev(idx));
+    myDisplay.printLine(idx, 5, &buf[0]);
+  }
+  myDisplay.show(idx);
+}
+
+void drawScreenDefault(UnitIndex idx) {
   myDisplay.clear(idx);
   myDisplay.setFont(idx, FontSize::FONT_16);
 
@@ -196,8 +223,18 @@ void loop() {
     float weight2 = myScale.readWeight(UnitIndex::U2, true);
 
     // Update screens
-    drawScreen(UnitIndex::U1);
-    drawScreen(UnitIndex::U2);
+    switch (myConfig.getDisplayLayout()) {
+      default:
+      case DisplayLayout::Default:
+        drawScreenDefault(UnitIndex::U1);
+        drawScreenDefault(UnitIndex::U2);
+        break;
+
+      case DisplayLayout::HardwareStats:
+        drawScreenHardwareStats(UnitIndex::U1);
+        drawScreenHardwareStats(UnitIndex::U2);
+        break;
+    }
 
     Log.notice(F("Loop: Reading data scale1=%F, scale2=%F, lastStable1=%F, "
                  "lastStable2=%F,average1=%F,average2=%F" CR),
@@ -212,13 +249,12 @@ void loop() {
     char buf[250];
 
     String s;
-    snprintf(
-        &buf[0], sizeof(buf),
-        "scale,host=%s,device=%s "
-        "scale1=%f,scale2=%f,glass1=%f,glass2=%f",
-        myConfig.getMDNS(), myConfig.getID(), weight1, weight2,
-        myScale.calculateNoGlasses(UnitIndex::U1),
-        myScale.calculateNoGlasses(UnitIndex::U2));
+    snprintf(&buf[0], sizeof(buf),
+             "scale,host=%s,device=%s "
+             "scale1=%f,scale2=%f,glass1=%f,glass2=%f",
+             myConfig.getMDNS(), myConfig.getID(), weight1, weight2,
+             myScale.calculateNoGlasses(UnitIndex::U1),
+             myScale.calculateNoGlasses(UnitIndex::U2));
     s = &buf[0];
 
     if (myScale.hasLastStableWeight(UnitIndex::U1)) {
@@ -254,8 +290,7 @@ void loop() {
       snprintf(&buf[0], sizeof(buf),
                ",average1=%f,min1=%f,max1=%f,stdev1=%f,variance1=%f",
                myScale.statsAverage(UnitIndex::U1),
-               myScale.statsMin(UnitIndex::U1),
-               myScale.statsMax(UnitIndex::U1),
+               myScale.statsMin(UnitIndex::U1), myScale.statsMax(UnitIndex::U1),
                myScale.statsPopStdev(UnitIndex::U1),
                myScale.statsVariance(UnitIndex::U1));
       s = s + &buf[0];
@@ -265,15 +300,14 @@ void loop() {
       snprintf(&buf[0], sizeof(buf),
                ",average2=%f,min2=%f,max2=%f,stdev2=%f,variance2=%f",
                myScale.statsAverage(UnitIndex::U2),
-               myScale.statsMin(UnitIndex::U2),
-               myScale.statsMax(UnitIndex::U2),
+               myScale.statsMin(UnitIndex::U2), myScale.statsMax(UnitIndex::U2),
                myScale.statsPopStdev(UnitIndex::U2),
                myScale.statsVariance(UnitIndex::U2));
       s = s + &buf[0];
     }
 
     Log.verbose(F("Loop: Sending data to influx: %s" CR), s.c_str());
-    // myPush.sendInfluxDb2(s);
+    myPush.sendInfluxDb2(s);
 #endif
   }
 }

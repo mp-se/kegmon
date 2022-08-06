@@ -22,7 +22,8 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container">
       <a class="navbar-brand" href="/index.htm">Keg Scale</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
@@ -31,17 +32,22 @@
             <a class="nav-link" href="/index.htm">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/config.htm">Configuration</a>
+            <a class="nav-link" href="/beer.htm">Beer</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/calibration.htm">Calibration</a>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Configuration
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Configuration</a></li>
+              <li><a class="dropdown-item" href="/calibration.htm">Scale calibration</a></li>
+              <li><a class="dropdown-item" href="/stability.htm">Stability statistics</a></li>
+              <li><a class="dropdown-item" href="/upload.htm">Upload firmware</a></li>
+            </ul>
           </li>
-          <li class="nav-item">
-            <a class="nav-link active" href="/upload.htm">Update firmware</a>
-          </li> 
           <li class="nav-item">
             <a class="nav-link" href="/about.htm">About</a>
-          </li> 
+          </li>
         </ul>
       </div>
       <div class="spinner-border text-light" id="spinner" role="status"></div>
