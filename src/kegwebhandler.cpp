@@ -57,6 +57,8 @@ void KegWebHandler::setupWebHandlers() {
   Log.notice(F("WEB : Setting up keg web handlers." CR));
   BaseWebHandler::setupWebHandlers();
 
+  _server->on("/api/reset", HTTP_GET,
+              std::bind(&KegWebHandler::webReset, this));
   _server->on("/api/scale", HTTP_GET,
               std::bind(&KegWebHandler::webScale, this));
   _server->on("/api/stability", HTTP_GET,
@@ -287,6 +289,20 @@ void KegWebHandler::webStability() {
   serializeJson(doc, out);
   doc.clear();
   _server->send(200, "application/json", out.c_str());
+}
+
+void KegWebHandler::webReset() {
+  String id = _server->arg(PARAM_ID);
+  Log.notice(F("WEB : webServer callback /api/reset." CR));
+
+  if (!id.compareTo(myConfig.getID())) {
+    _server->send(200, "text/plain", "Performing reset...");
+    LittleFS.end();
+    delay(500);
+    ESP_RESET();
+  } else {
+    _server->send(400, "text/plain", "Unknown ID.");
+  }
 }
 
 void KegWebHandler::webStabilityClear() {

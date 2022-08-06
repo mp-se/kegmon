@@ -50,6 +50,7 @@ class KegWebHandler : public BaseWebHandler {
   void webStatus();
   void webStability();
   void webStabilityClear();
+  void webReset();
 
   void webCalibrateHtm() {
     _server->send_P(200, "text/html", (const char*)gCalibrateHtmData,
