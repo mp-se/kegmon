@@ -21,8 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
+#include <basepush.hpp>
 #include <kegconfig.hpp>
 #include <scale.hpp>
+
+extern BasePush myPush;
 
 Scale::Scale() {
   _statistic[UnitIndex::U1].clear();
@@ -97,13 +100,13 @@ float Scale::readWeight(UnitIndex idx, bool updateStats) {
 #else
   if (!_scale[idx]) return 0;
 
-  float f = _scale[idx]->get_units(_readCount);
+  float f = _scale[idx]->get_units(myConfig.getScaleReadCount());
   Log.verbose(F("Scal: Reading weight=%F [%d], updating stats %s." CR), f, idx,
               updateStats ? "true" : "false");
 #endif
   // If we have enough values and last stable level if its NAN, then update the
   // lastStable value
-  if (statsCount(idx) > myAdvancedConfig.getStableCount() &&
+  if (statsCount(idx) > myConfig.getScaleStableCount() &&
       !hasLastStableWeight(idx)) {
     _lastStableWeight[idx] = statsAverage(idx);
     Log.notice(F("Scal: Found a new stable value %F [%d]." CR),
@@ -114,7 +117,7 @@ float Scale::readWeight(UnitIndex idx, bool updateStats) {
   // values and level has changed to much
   if (statsCount(idx) > 0) {
     if ((statsMax(idx) - statsMin(idx)) >
-        myAdvancedConfig.getDeviationValue()) {
+        myConfig.getScaleMaxDeviationValue()) {
       Log.notice(F("Scal: Min/Max values deviates to much, restarting "
                    "statistics [%d]." CR),
                  idx);
@@ -127,9 +130,9 @@ float Scale::readWeight(UnitIndex idx, bool updateStats) {
 
   // Check if the level has changed up or down. If its down we record the delta
   // as the latest pour.
-  if (statsCount(idx) > myAdvancedConfig.getStableCount() &&
+  if (statsCount(idx) > myConfig.getScaleStableCount() &&
       hasLastStableWeight(idx)) {
-    if ((_lastStableWeight[idx] + myAdvancedConfig.getDeviationValue()) <
+    if ((_lastStableWeight[idx] + myConfig.getScaleMaxDeviationValue()) <
         statsAverage(idx)) {
       Log.notice(
           F("Scal: Level has increased, adjusting from %F to %F [%d]." CR),
@@ -137,7 +140,7 @@ float Scale::readWeight(UnitIndex idx, bool updateStats) {
       _lastStableWeight[idx] = statsAverage(idx);
     }
 
-    if ((_lastStableWeight[idx] - myAdvancedConfig.getDeviationValue()) >
+    if ((_lastStableWeight[idx] - myConfig.getScaleMaxDeviationValue()) >
         statsAverage(idx)) {
       Log.notice(
           F("Scal: Level has decreased, adjusting from %F to %F [%d]." CR),
@@ -145,8 +148,33 @@ float Scale::readWeight(UnitIndex idx, bool updateStats) {
       _lastPourWeight[idx] = _lastStableWeight[idx] - statsAverage(idx);
       Log.notice(F("Scal: Beer has been poured volume %F [%d]." CR),
                  _lastPourWeight[idx], idx);
+      float _prevStableWeight = _lastStableWeight[idx];
       _lastStableWeight[idx] = statsAverage(idx);
+
+#if defined(ENABLE_INFLUX_DEBUG)
+      // This part is used to send data to an influxdb in order to get data on
+      // scale stability/drift over time.
+      char buf[250];
+
+      String s;
+      snprintf(
+          &buf[0], sizeof(buf),
+          "pour,host=%s,device=%s "
+          "last-pour-weight%d=%f,last-stable-weight%d=%f,stable-weight%d=%f",
+          myConfig.getMDNS(), myConfig.getID(), idx + 1, _lastPourWeight[idx],
+          idx + 1, _prevStableWeight, idx + 1, _lastStableWeight[idx]);
+      s = &buf[0];
+
+      Log.verbose(F("Scale: Sending pour data to influx: %s" CR), s.c_str());
+      myPush.sendInfluxDb2(s);
+#endif
     }
+  }
+
+  if (f < 0) {  // We ignore negative values since this can be an faulty reading
+    Log.error(F("Scal: Ignoring value since it's less than zero %F [%d]." CR),
+              f, idx);
+    return _lastWeight[idx];
   }
 
   // Update the statistics with the current value
@@ -166,7 +194,7 @@ void Scale::tare(UnitIndex idx) {
               idx);
 
   _scale[idx]->set_scale();  // set scale factor to 1
-  _scale[idx]->tare();       // zero weight
+  _scale[idx]->tare(myConfig.getScaleReadCountCalibration());  // zero weight
   int32_t l = _scale[idx]->get_offset();
   Log.verbose(F("Scal: New scale offset found %l [%d]." CR), l, idx);
 
@@ -177,15 +205,22 @@ void Scale::tare(UnitIndex idx) {
 int32_t Scale::readRawWeight(UnitIndex idx) {
   if (!_scale[idx]) return 0;
 
+  statsClearAll();
+  stabilityClearAll();
+
   int32_t l = _scale[idx]->read_average(
-      _readCount);  // get the raw value without applying scaling factor
+      myConfig.getScaleReadCountCalibration());  // get the raw value without
+                                                 // applying scaling factor
   return l;
 }
 
 void Scale::findFactor(UnitIndex idx, float weight) {
   if (!_scale[idx]) return;
 
-  float l = readWeight(idx);  // get value with applied scaling factor
+  statsClearAll();
+  stabilityClearAll();
+
+  float l = _scale[idx]->get_units(myConfig.getScaleReadCountCalibration());
   float f = l / weight;
   Log.verbose(F("Scal: Detecting factor for weight %F, raw %l %F [%d]." CR),
               weight, l, f, idx);

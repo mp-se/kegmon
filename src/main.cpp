@@ -34,7 +34,6 @@ SOFTWARE.
 
 SerialDebug mySerial(115200L);
 KegConfig myConfig(CFG_MDNSNAME, CFG_FILENAME);
-KegAdvancedConfig myAdvancedConfig;
 WifiConnection myWifi(&myConfig, CFG_APPNAME, "password", CFG_MDNSNAME);
 OtaUpdate myOta(&myConfig, CFG_APPVER);
 KegWebHandler myWebHandler(&myConfig);
@@ -112,6 +111,9 @@ void setup() {
   myDisplay.printLine(UnitIndex::U1, 2, &buf[0]);
   snprintf(&buf[0], sizeof(buf), "Version: %s", CFG_APPVER);
   myDisplay.printLine(UnitIndex::U1, 3, &buf[0]);
+  snprintf(&buf[0], sizeof(buf), "Push: %s",
+           strlen(myConfig.getTargetInfluxDB2()) > 0 ? "Yes" : "No");
+  myDisplay.printLine(UnitIndex::U1, 4, &buf[0]);
   myDisplay.show(UnitIndex::U1);
   delay(3000);
 }

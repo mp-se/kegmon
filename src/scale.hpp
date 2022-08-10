@@ -35,7 +35,6 @@ SOFTWARE.
 class Scale {
  private:
   HX711 *_scale[2] = {0, 0};
-  int _readCount = 5;
   float _lastWeight[2] = {0, 0};
   float _lastPourWeight[2] = {NAN, NAN};
   float _lastStableWeight[2] = {NAN, NAN};
@@ -149,6 +148,10 @@ class Scale {
   void statsDump(UnitIndex idx);
 
   // Stability since start
+  void stabilityClearAll() {
+    stabilityClear(UnitIndex::U1);
+    stabilityClear(UnitIndex::U2);
+  }
   void stabilityClear(UnitIndex idx) { _stability[idx].clear(); }
   uint32_t stabilityCount(UnitIndex idx) { return _stability[idx].count(); }
   float stabilitySum(UnitIndex idx) { return _stability[idx].sum(); }

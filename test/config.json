@@ -29,5 +29,9 @@
   "scale-factor1": -21284.12,
   "scale-factor2": -21284.12,
   "scale-offset1": -286557,
-  "scale-offset2": -286557
+  "scale-offset2": -286557,
+  "scale-max-deviation": 0.1,
+  "scale-stable-count": 10,
+  "scale-read-count": 10,
+  "scale-read-count-calibration": 30
 }

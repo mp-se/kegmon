@@ -41,7 +41,8 @@
             <a class="nav-link" href="/beer.htm">Beer</a>
           </li>
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
               Configuration
             </a>
             <ul class="dropdown-menu">
@@ -102,7 +103,7 @@
               <input type="text" name="section" value="#collapseDevice" hidden>
 
               <div class="row mb-3">
-                <label for="mdns" class="col-sm-2 col-form-label">Device name</label>
+                <label for="mdns" class="col-sm-4 col-form-label">Device name</label>
                 <div class="col-sm-3">
                   <input type="text" maxlength="12" class="form-control" name="mdns" id="mdns" placeholder="kegscale"
                     data-bs-toggle="tooltip"
@@ -112,7 +113,7 @@
 
               <div class="row mb-3">
                 <fieldset class="form-group row">
-                  <legend class="col-form-label col-sm-2 float-sm-left pt-0">Temperature Format</legend>
+                  <legend class="col-form-label col-sm-4 float-sm-left pt-0">Temperature Format</legend>
                   <div class="col-sm-4">
                     <div class="form-check">
                       <input class="form-check-input" type="radio" name="temp-format" id="temp-format-c" value="C"
@@ -130,7 +131,7 @@
 
               <div class="row mb-3">
                 <fieldset class="form-group row" id="wip1">
-                  <legend class="col-form-label col-sm-2 float-sm-left pt-0">Weight Unit</legend>
+                  <legend class="col-form-label col-sm-4 float-sm-left pt-0">Weight Unit</legend>
                   <div class="col-sm-4">
                     <div class="form-check">
                       <input class="form-check-input" text="kg" type="radio" name="weight-unit" id="weight-unit-kg"
@@ -148,7 +149,7 @@
 
               <div class="row mb-3">
                 <fieldset class="form-group row" id="wip2">
-                  <legend class="col-form-label col-sm-2 float-sm-left pt-0">Volume Unit</legend>
+                  <legend class="col-form-label col-sm-4 float-sm-left pt-0">Volume Unit</legend>
                   <div class="col-sm-4">
                     <div class="form-check">
                       <input class="form-check-input" text="cl" type="radio" name="volume-unit" id="volume-unit-cl"
@@ -172,9 +173,10 @@
               </div>
 
               <div class="row mb-3">
-                <label for="display-layout" class="col-sm-2 col-form-label">Display layout</label>
+                <label for="display-layout" class="col-sm-4 col-form-label">Display layout</label>
                 <div class="col-sm-3">
-                  <select class="form-select" id="display-layout" name="display-layout" data-bs-toggle="tooltip" title="select layout on display">
+                  <select class="form-select" id="display-layout" name="display-layout" data-bs-toggle="tooltip"
+                    title="select layout on display">
                     <option value="0">Default</option>
                     <option value="9">Hardware stats</option>
                   </select>
@@ -184,7 +186,7 @@
               <hr>
 
               <div class="row mb-3">
-                <label for="brewfather-userkey" class="col-sm-2 col-form-label">Brewfather User Key</label>
+                <label for="brewfather-userkey" class="col-sm-4 col-form-label">Brewfather User Key</label>
                 <div class="col-sm-3">
                   <input type="text" maxlength="80" class="form-control" name="brewfather-userkey"
                     id="brewfather-userkey" placeholder="" data-bs-toggle="tooltip"
@@ -193,7 +195,7 @@
 
               </div>
               <div class="row mb-3">
-                <label for="brewfather-apikey" class="col-sm-2 col-form-label">Brewfather API Key</label>
+                <label for="brewfather-apikey" class="col-sm-4 col-form-label">Brewfather API Key</label>
                 <div class="col-sm-3">
                   <input type="text" maxlength="80" class="form-control" name="brewfather-apikey" id="brewfather-apikey"
                     placeholder="" data-bs-toggle="tooltip"
@@ -202,7 +204,7 @@
               </div>
 
               <div class="row mb-3">
-                <div class="col-sm-4 offset-sm-2">
+                <div class="col-sm-4 offset-sm-4">
                   <button type="submit" class="btn btn-primary" id="device-btn" data-bs-toggle="tooltip"
                     title="Save changes in this section">Save</button>
                 </div>
@@ -214,6 +216,70 @@
       </div>
 
     </div>
+
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingAdvaced">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAdvanced"
+          aria-expanded="false" aria-controls="collapseAdvanced">
+          <b>Advanced device settings</b>
+        </button>
+      </h2>
+      <div id="collapseAdvanced" class="accordion-collapse collapse" aria-labelledby="headingAdvanced"
+        data-bs-parent="#accordion">
+        <div class="accordion-body">
+
+          <form action="/api/config" method="post">
+            <input type="text" name="id" id="id2" hidden>
+            <input type="text" name="section" value="#collapseAdvanced" hidden>
+
+            <div class="row mb-3">
+              <label for="scale-max-deviation" class="col-sm-4 col-form-label">Scale max deviation</label>
+              <div class="col-sm-2">
+                <input type="number" min=".05" max=".50" step=".05" class="form-control" name="scale-max-deviation" id="scale-max-deviation" placeholder="0.1"
+                  data-bs-toggle="tooltip"
+                  title="Threashold for how much change in weight is needed for the scale to detect new level. Default 0.1 kg">
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <label for="scale-stable-count" class="col-sm-4 col-form-label">Scale stable count</label>
+              <div class="col-sm-2">
+                <input type="number" min="1" max="30" step="1" class="form-control" name="scale-stable-count" id="scale-stable-count" placeholder="0.1"
+                  data-bs-toggle="tooltip"
+                  title="Defines the number of scale measurements are required for a new stable level to be defined, each reading takes 2 seconds">
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <label for="scale-read-count" class="col-sm-4 col-form-label">Scale read count</label>
+              <div class="col-sm-2">
+                <input type="number" min="1" max="50" step="1" class="form-control" name="scale-read-count" id="scale-read-count" placeholder="10"
+                  data-bs-toggle="tooltip"
+                  title="Defines the number measurements is taken from the HX711 board to get an average reading, more readings = higher accuracy, longer delay">
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <label for="scale-read-count-calibration" class="col-sm-4 col-form-label">Scale read count, calibration</label>
+              <div class="col-sm-2">
+                <input type="number" min="1" max="100" step="1" class="form-control" name="scale-read-count-calibration" id="scale-read-count-calibration" placeholder="30"
+                  data-bs-toggle="tooltip"
+                  title="Defines the number measurements is taken from the HX711 board to get an average reading during calibration, more readings = higher accuracy, longer delay">
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-sm-4 offset-sm-4">
+                <button type="submit" class="btn btn-primary" id="advanced-btn" data-bs-toggle="tooltip"
+                  title="Save changes in this section">Save</button>
+              </div>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <script type="text/javascript">
@@ -223,6 +289,7 @@
 
     function setButtonDisabled(b) {
       $("#config-btn").prop("disabled", b);
+      $("#advanced-btn").prop("disabled", b);
     }
 
     // Get the configuration values from the API
@@ -236,6 +303,7 @@
         console.log(cfg);
 
         $("#id1").val(cfg["id"]);
+        $("#id2").val(cfg["id"]);
 
         $("#mdns").val(cfg["mdns"]);
         $("#brewfather-apikey").val(cfg["brewfather-apikey"]);
@@ -252,6 +320,11 @@
         if (cfg["volume-unit"] == "us-oz") $("#volume-unit-usoz").click();
         else if (cfg["volume-unit"] == "uk-oz") $("#volume-unit-ukoz").click();
         else $("#volume-unit-cl").click();
+
+        $("#scale-max-deviation").val(cfg["scale-max-deviation"]);
+        $("#scale-stable-count").val(cfg["scale-stable-count"]);
+        $("#scale-read-count").val(cfg["scale-read-count"]);
+        $("#scale-read-count-calibration").val(cfg["scale-read-count-calibration"]);
 
         // Disable these settings since they have not been implemented yet
         $("#wip1").prop("disabled", true);

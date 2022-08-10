@@ -50,6 +50,10 @@ SOFTWARE.
 #define PARAM_SCALE_FACTOR2 "scale-factor2"
 #define PARAM_SCALE_OFFSET1 "scale-offset1"
 #define PARAM_SCALE_OFFSET2 "scale-offset2"
+#define PARAM_SCALE_MAX_DEVIATION "scale-max-deviation"
+#define PARAM_SCALE_STABLE_COUNT "scale-stable-count"
+#define PARAM_SCALE_READ_COUNT "scale-read-count"
+#define PARAM_SCALE_READ_COUNT_CALIBRATION "scale-read-count-calibration"
 
 struct BeerInfo {
   String _name = "";
@@ -83,6 +87,11 @@ class KegConfig : public BaseConfig {
   float _kegWeight[2] = {0, 0};          // Weight in kg
   float _glassVolume[2] = {0.40, 0.40};  // Volume in liters
   BeerInfo _beer[2];
+
+  float _scaleMaxDeviationValue = 0.1;
+  uint32_t _scaleStableCount = 10;
+  int _scaleReadCount = 10;
+  int _scaleReadCountCalibration = 30;
 
  public:
   KegConfig(String baseMDNS, String fileName);
@@ -174,6 +183,35 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }
 
+  // This is the maximum allowed deviation from the current average.
+  float getScaleMaxDeviationValue() {
+    return _scaleMaxDeviationValue;
+  }  // 0.1 kg
+  void setScaleMaxDeviationValue(float f) {
+    _scaleMaxDeviationValue = f;
+    _saveNeeded = true;
+  }
+
+  // This is the number of values in the statistics for the average value to be
+  // classifed as stable. Loop interval is 2s
+  uint32_t getScaleStableCount() { return _scaleStableCount; }
+  void setScaleStableCount(uint32_t i) {
+    _scaleStableCount = i;
+    _saveNeeded = true;
+  }
+
+  int getScaleReadCount() { return _scaleReadCount; }
+  void setScaleReadCount(uint32_t i) {
+    _scaleReadCount = i;
+    _saveNeeded = true;
+  }
+
+  int getScaleReadCountCalibration() { return _scaleReadCountCalibration; }
+  void setScaleReadCountCalibration(uint32_t i) {
+    _scaleReadCountCalibration = i;
+    _saveNeeded = true;
+  }
+
   // These settings are used for debugging and checking stability of the scales.
   // Only influx is used for now
   const char* getTargetHttpPost() { return ""; }
@@ -212,19 +250,7 @@ class KegConfig : public BaseConfig {
   int getWeightPrecision() { return 3; }
 };
 
-class KegAdvancedConfig {
- private:
- public:
-  // This is the maximum allowed deviation from the current average.
-  float getDeviationValue() { return 0.1; }  // 0.1 kg
-
-  // This is the number of values in the statistics for the average value to be
-  // classifed as stable.
-  uint32_t getStableCount() { return 5; }  // 5*2 s = 10 s
-};
-
 extern KegConfig myConfig;
-extern KegAdvancedConfig myAdvancedConfig;
 
 #endif  // SRC_KEGCONFIG_HPP_
 
