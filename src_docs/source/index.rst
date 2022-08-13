@@ -7,7 +7,7 @@ Welcome to KegScale's documentation!
 ====================================
 
 .. note::
-  Reflects test version v1.0.0, Last updated 2022-06-11
+  Reflects test version v0.3.0 *beta1*, Last updated 2022-08-13
 
 This project is intended for my own use, I've have not really focused on making this reusable for others. 
 

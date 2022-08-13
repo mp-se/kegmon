@@ -206,7 +206,7 @@ int32_t Scale::readRawWeight(UnitIndex idx) {
   if (!_scale[idx]) return 0;
 
   statsClearAll();
-  stabilityClearAll();
+  // stabilityClearAll();
 
   int32_t l = _scale[idx]->read_average(
       myConfig.getScaleReadCountCalibration());  // get the raw value without
@@ -218,7 +218,7 @@ void Scale::findFactor(UnitIndex idx, float weight) {
   if (!_scale[idx]) return;
 
   statsClearAll();
-  stabilityClearAll();
+  // stabilityClearAll();
 
   float l = _scale[idx]->get_units(myConfig.getScaleReadCountCalibration());
   float f = l / weight;
