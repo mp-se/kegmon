@@ -92,8 +92,6 @@
         <div id="collapseCalibration" class="accordion-collapse collapse show" aria-labelledby="headingCalibration" data-bs-parent="#accordion" >
           <div class="accordion-body">
 
-
-
             <div class="row mb-3">
                 <label class="col-sm-2 col-form-label" for="scale-index">Select scale</label>
                 <div class="col-sm-2">
@@ -102,7 +100,6 @@
                     <option value="2">Scale 2</option>
                   </select>
                 </div>
-
             </div>
 
             <div class="row mb-3">
@@ -163,6 +160,8 @@
 
     $("#tare-btn").click(function(e){
       console.log( "Resetting scale #" + $("#scale-index").val() );
+      setButtonDisabled(true);
+      $('#spinner').show();
       $.ajax( { 
         type: "GET",
         url: "/api/scale/tare", 
@@ -171,13 +170,20 @@
         success: function(result) { 
           showSuccess('Scale is now reset to zero weight, procceed to step 2.');  
           showScaleJson(result);
+          setButtonDisabled(false);
+          $('#spinner').hide();
         },
-        error: function(result) { showError('Unable reset scale to zero weight.'); }
+        error: function(result) { 
+          showError('Unable reset scale to zero weight.'); 
+          setButtonDisabled(false); 
+          $('#spinner').hide(); }
       } );
     });
 
     $("#factor-btn").click(function(e){
       console.log( "Creating factor with known weight #" + $("#scale-index").val());
+      setButtonDisabled(true);
+      $('#spinner').show();
       $.ajax( { 
         type: "GET",
         url: "/api/scale/factor", 
@@ -186,13 +192,20 @@
         success: function(result) { 
           showSuccess('Scale is now calibrated...');  
           showScaleJson(result);
+          setButtonDisabled(false);
+          $('#spinner').hide();
         },
-        error: function(result) { showError('Unable calculate factor.'); }
+        error: function(result) { 
+          showError('Unable calculate factor.'); 
+          setButtonDisabled(false); 
+          $('#spinner').hide(); }
       } );
     });
 
     $("#test-btn").click(function(e){
       console.log( "Reading scale #" + $("#scale-index").val());
+      setButtonDisabled(true);
+      $('#spinner').show();
       $.ajax( { 
         type: "GET",
         url: "/api/scale", 
@@ -200,8 +213,13 @@
         data: { }, 
         success: function(result) { 
           showScaleJson(result);
+          setButtonDisabled(false);
+          $('#spinner').hide();
         },
-        error: function(result) { showError('Unable read scale.'); }
+        error: function(result) { 
+          showError('Unable read scale.'); 
+          setButtonDisabled(false); 
+          $('#spinner').hide(); }
       } );
     });
 
@@ -226,6 +244,7 @@
       $("#tare-btn").prop("disabled", b);
       $("#factor-btn").prop("disabled", b);
       $("#test-btn").prop("disabled", b);
+      $("#scale-index").prop("disabled", b);
     }
 
     function start() {

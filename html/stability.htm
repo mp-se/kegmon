@@ -167,12 +167,14 @@
 
         w_unit = cfg["weight-unit"];
 
+        var missing = "no data"
+
         if (cfg["stability-count1"] === undefined) {
-          $("#count1").text("no scale");
-          $("#min1").text("no scale");
-          $("#max1").text("no scale");
-          $("#ave1").text("no scale");
-          $("#stddev1").text("no scale");
+          $("#count1").text(missing);
+          $("#min1").text(missing);
+          $("#max1").text(missing);
+          $("#ave1").text(missing);
+          $("#stddev1").text(missing);
         } else {
           $("#count1").text(cfg["stability-count1"]);
           $("#min1").text(weight(w_unit, cfg["stability-min1"]));
@@ -182,11 +184,11 @@
         }
 
         if (cfg["stability-count2"] === undefined) {
-          $("#count2").text("no scale");
-          $("#min2").text("no scale");
-          $("#max2").text("no scale");
-          $("#ave2").text("no scale");
-          $("#stddev2").text("no scale");
+          $("#count2").text(missing);
+          $("#min2").text(missing);
+          $("#max2").text(missing);
+          $("#ave2").text(missing);
+          $("#stddev2").text(missing);
         } else {
           $("#count2").text(cfg["stability-count2"]);
           $("#min2").text(weight(w_unit, cfg["stability-min2"]));
