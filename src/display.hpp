@@ -24,7 +24,14 @@ SOFTWARE.
 #ifndef SRC_DISPLAY_HPP_
 #define SRC_DISPLAY_HPP_
 
+//#define DRIVER_1106 
+#define DRIVER_1306 
+
+#if defined(DRIVER_1106)
+#include <SH1106Wire.h>
+#elif defined(DRIVER_1306)
 #include <SSD1306Wire.h>
+#endif
 
 #include <main.hpp>
 
@@ -36,7 +43,12 @@ enum FontSize {  // OLED Size - 128x64
 
 class Display {
  private:
+#if defined(DRIVER_1106)
+  SH1106Wire* _display[2] = {0, 0};
+#elif defined(DRIVER_1306)
   SSD1306Wire* _display[2] = {0, 0};
+#endif
+
   int _width[2] = {128, 128};
   int _height[2] = {64, 64};
   FontSize _fontSize[2] = {FontSize::FONT_10, FontSize::FONT_10};

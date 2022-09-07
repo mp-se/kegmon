@@ -31,8 +31,13 @@ SOFTWARE.
 
 Display::Display() {
   scanI2C();
+#if defined(DRIVER_1106)
+  _display[0] = new SH1106Wire(DISPLAY_ADR1, PIN_OLED_SDA, PIN_OLED_SCL);
+  _display[1] = new SH1106Wire(DISPLAY_ADR2, PIN_OLED_SDA, PIN_OLED_SCL);
+#elif defined(DRIVER_1306)
   _display[0] = new SSD1306Wire(DISPLAY_ADR1, PIN_OLED_SDA, PIN_OLED_SCL);
   _display[1] = new SSD1306Wire(DISPLAY_ADR2, PIN_OLED_SDA, PIN_OLED_SCL);
+#endif
 }
 
 void Display::scanI2C() {
