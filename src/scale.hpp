@@ -38,6 +38,7 @@ class Scale {
   float _lastWeight[2] = {0, 0};
   float _lastPourWeight[2] = {NAN, NAN};
   float _lastStableWeight[2] = {NAN, NAN};
+  float _lastAverageWeight[2] = {NAN, NAN};
   statistic::Statistic<float, uint32_t, true> _statistic[2];
   statistic::Statistic<float, uint32_t, true> _stability[2];
 
@@ -122,6 +123,8 @@ class Scale {
 
   float getPourWeight(UnitIndex idx) { return _lastPourWeight[idx]; }
   bool hasPourWeight(UnitIndex idx) { return !isnan(_lastPourWeight[idx]); }
+
+  float getAverageWeightDirectionCoefficient(UnitIndex idx);
 
   // Calibration
   void findFactor(UnitIndex idx, float weight);

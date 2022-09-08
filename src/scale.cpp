@@ -179,6 +179,7 @@ float Scale::readWeight(UnitIndex idx, bool updateStats) {
 
   // Update the statistics with the current value
   if (updateStats) {
+    _lastAverageWeight[idx] = getAverageWeight(idx);
     statsAdd(idx, f);
   }
 
@@ -206,7 +207,6 @@ int32_t Scale::readRawWeight(UnitIndex idx) {
   if (!_scale[idx]) return 0;
 
   statsClearAll();
-  // stabilityClearAll();
 
   int32_t l = _scale[idx]->read_average(
       myConfig.getScaleReadCountCalibration());  // get the raw value without
@@ -218,7 +218,6 @@ void Scale::findFactor(UnitIndex idx, float weight) {
   if (!_scale[idx]) return;
 
   statsClearAll();
-  // stabilityClearAll();
 
   float l = _scale[idx]->get_units(myConfig.getScaleReadCountCalibration());
   float f = l / weight;
@@ -237,7 +236,6 @@ float Scale::calculateNoGlasses(UnitIndex idx) {
   if (!isConnected(idx)) return 0;
 
   float weight = getAverageWeight(idx);
-  // float weight = _lastWeight[idx];
   float glassVol = myConfig.getGlassVolume(idx);
   float fg = myConfig.getBeerFG(idx);
 
@@ -251,11 +249,20 @@ float Scale::calculateNoGlasses(UnitIndex idx) {
              weight, glassVol, glassWeight, fg, glass, idx);
 
   return glass < 0 ? 0 : glass;
+}
 
-  /*
-  if (p == 0.0) p = 1;
-  float glass = (weight - myConfig.getKegWeight(idx)) / p;
-  return glass < 0 ? 0 : glass;*/
+float Scale::getAverageWeightDirectionCoefficient(UnitIndex idx) {
+  if (isnan(_lastAverageWeight[idx]) || !statsCount(idx))
+    return NAN;
+
+  // Loop interval is 2 seconds
+  float coeff = (statsAverage(idx) - _lastAverageWeight[idx]) / 2 * 100;
+
+  /* char s[100];
+  snprintf(&s[0], sizeof(s), "LastAve: %.6f Ave: %6f, Coeff: %6f", _lastAverageWeight[idx], statsAverage(idx), coeff);
+  Log.notice("Scal: %s [%d]." CR, &s[0], idx); */
+
+  return coeff;
 }
 
 void Scale::statsDump(UnitIndex idx) {
