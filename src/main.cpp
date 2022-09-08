@@ -99,14 +99,14 @@ void setup() {
   char buf[30];
 
   myDisplay.clear(UnitIndex::U1);
-  myDisplay.setFont(UnitIndex::U1, FontSize::FONT_16);
+  myDisplay.setFont(UnitIndex::U1, FontSize::FONT_10);
   snprintf(&buf[0], sizeof(buf), "Scale 1: %s",
            myScale.isConnected(UnitIndex::U1) ? "Yes" : "No");
   myDisplay.printLine(UnitIndex::U1, 0, &buf[0]);
   snprintf(&buf[0], sizeof(buf), "Scale 2: %s",
            myScale.isConnected(UnitIndex::U2) ? "Yes" : "No");
   myDisplay.printLine(UnitIndex::U1, 1, &buf[0]);
-  snprintf(&buf[0], sizeof(buf), "Temp   : %s",
+  snprintf(&buf[0], sizeof(buf), "Temp : %s",
            !isnan(myTemp.getTempC()) ? "Yes" : "No");
   myDisplay.printLine(UnitIndex::U1, 2, &buf[0]);
   snprintf(&buf[0], sizeof(buf), "Version: %s", CFG_APPVER);
@@ -305,6 +305,12 @@ void loop() {
                myScale.statsMin(UnitIndex::U2), myScale.statsMax(UnitIndex::U2),
                myScale.statsPopStdev(UnitIndex::U2),
                myScale.statsVariance(UnitIndex::U2));
+      s = s + &buf[0];
+    }
+
+    if (!isnan(myTemp.getTempC())) {
+      snprintf(&buf[0], sizeof(buf), ",tempC=%f,tempF=%f,humidity=%f",
+               myTemp.getTempC(), myTemp.getTempF(), myTemp.getHumidity());
       s = s + &buf[0];
     }
 
