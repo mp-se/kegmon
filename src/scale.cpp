@@ -94,6 +94,10 @@ void Scale::setScaleFactor(UnitIndex idx) {
 }
 
 float Scale::readWeight(UnitIndex idx, bool updateStats) {
+  if (myConfig.getScaleFactor(idx) == 0 ||
+      myConfig.getScaleOffset(idx) == 0)  // Not initialized, just return zero
+    return 0;
+
 #if defined(ENABLE_SCALE_SIMULATION)
   if (idx == 1) return 0;  // Simulation mode only supports one scale attached
 
@@ -109,6 +113,11 @@ float Scale::readWeight(UnitIndex idx, bool updateStats) {
   Log.verbose(F("Scal: Reading weight=%F [%d], updating stats %s." CR), f, idx,
               updateStats ? "true" : "false");
 #endif
+
+  if (f > 100)  // If the value is more than 100 then the reading is proably
+                // wrong, cap the value
+    f = 100;
+
 #endif
   // If we have enough values and last stable level if its NAN, then update the
   // lastStable value
