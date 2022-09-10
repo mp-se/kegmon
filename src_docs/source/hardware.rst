@@ -6,23 +6,44 @@ Hardware
 This is the hardware schema that I have used in my build. 
 
 .. note::
-  The software will adopt to what devices are connected and will work with 
-  one, two scales, one or two displays and without a temperature sensor. 
+  The software will adopt to what external sensors  are connected and will work with 
+  one, two scales, one or two displays and with/without a temperature sensor. 
 
-I have noticed that some hx711 boards/loadcells will drift over time where other will not. 
+I noticed that my first build was really unsable, it could vary +/- 2kg over time. I've already
+added some features to the software to filter out the varying readings but these large changes are impossible 
+to fix with software. 
+
 The graph here shows two of my scales in my keezer where the second one (lower graph) is quite 
-stable over time. The first one is not. The first point is ok, since this is me pouring a glass 
-of beer but the others are strange. The difference is not small +2.3 kg over a 24 hour period 
-and then back to normal. I need to do some more investigation what causes this. Could be 
-differences in loadcells, cabling or the HX711 board itself. 
-
-In this version I have moved the HX711 boards to the display case and I will do stability tests of each
-base build before I use it in my keezer. This way I will be able to swap out the base since its more probable 
-that the load cells are crap rather than the HX711 boards
+stable over time. The first one is not. The difference is over 2 kg and it goes back to the previous 
+weight after a few hours. 
 
 .. image:: images/hx_drift.png
   :width: 600
   :alt: Scale drift
+
+So I'm currently trying to change the hardware setup in order to determine the source of the error. I found 3 main 
+types of HX711 boards:
+
+.. image:: images/hx711-options.png
+  :width: 600
+  :alt: HX711 boards
+
+* Green: Most common board when searching for HX711
+* Red: Sparkfun board
+* Purple: A variation of the Sparkfun board
+
+The SparkFun board is the most expensive one but has one major advantage. You can power it on +5V and 
+configure it to use 3.3V digital signal levels (using VCC and VDD pins). 
+
+1. For my first build I used the Green board and placed that in the base of the scale. With this approach I 
+had issues with drift and varying readings. I built two scales and one had issues,the other not.
+
+2. For the second build I moved the hx711 to the display case only keeping the load cells in the scale 
+base. I also changed to the purple board powered by 3.3V, currently that option works perfect with my 
+two first scales. 
+
+.. note::
+  I'm currently updating the 3d model for the display case to fit the larger board. 
 
 
 Schema
@@ -38,6 +59,11 @@ Case
 ----
 In this version the HX711 boards are moved to the case with the displays. The hope is that 
 this would stabilize the sensor readings and also make it easier to replace a faulty scale. 
+
+.. note::
+  I will update the hardware design to fit a larger OLED display 1.3". This will require a different
+  display driver on the software side. I'm also considering to update the software/design to an 
+  ESP32 for more processing power. 
 
 * U1 - Wemos D1 mini (I used the v3.0 version)
 * U2 - 0.96" 128x64 I2C OLED display (with option to change i2c adress, 0x3c)
@@ -59,6 +85,9 @@ havent yet created my own PCB, I want to stabilize the hardware design first.
 .. image:: images/HX711_component.jpg
   :width: 300
   :alt: HX711 board
+
+If you are using the Sparkfun board I suggest that you power the HX711 board with +5V (VCC) and +3.3V (VDD) 
+so the digital interface is compatible with the ESP. 
 
 .. image:: images/rj45_board.jpg
   :width: 300
@@ -128,8 +157,8 @@ CAT6 Wire Usage
 
 I used the following wires in the network cable to connect to each base. I used the combinator board to hook 
 up all the cables from the load cells. You dont need that but I found it easier to keep track of what goes where. 
-The base is quite thin so I cannot fit an RJ45 connector on the board or this would be an option. In that case this tables
-would probably not be valid (I have not checked that option).  
+The base is quite thin so I cannot fit an RJ45 connector on the board so i'm connecting the cable wires directly to the 
+combinator board.  
 
 .. list-table:: CAT Wiring
    :header-rows: 1
@@ -157,6 +186,10 @@ would probably not be valid (I have not checked that option).
 Building the display case
 *************************
 
+.. warning::
+  This part will be updated once I have received my new 1.3" displays and changed the design to cover the HX711 boards. This section 
+  is for the previous build with the HX711 in the scale base.
+  
 First step is to print the case parts and mount the OLED displays to the front. I use hot glue to fix the displays in place. 
 
 .. image:: images/oled_mount.jpg

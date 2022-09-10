@@ -5,6 +5,8 @@
 
 These models fit a cornelius keg of 18, 19 or 9 liters. Will fit smaller kegs as well. 
 
+`The models can be downloaded from here <https://www.printables.com/model/258303-scale-base-for-load-cells>`_
+
 Base
 ****
 

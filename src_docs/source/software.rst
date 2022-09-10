@@ -11,18 +11,18 @@ one via the web-browser.
 Installation
 ************
 
-To be defined.
+To be documented. 
 
 WIFI
 ****
 
-To be defined.
+To be documented. 
 
 
 OLED Screens
 ************
 
-The OLD screens will show the name of the beer, abv and alternate between kg and pints. The first 
+The OLD screens will show the name of the beer, abv and alternate between weight and pours. The first 
 screen will display values for keg 1 and the second for keg 2.
 
 
@@ -38,7 +38,7 @@ section will show the general device information.
 
 * **Current version**
 
-Shows the current software version.
+Shows the current software version including git revision.
 
 * **Host name**
 
@@ -46,7 +46,7 @@ Name of the device on the network.
 
 * **Device ID**
 
-ESP8266 chip ID.
+ESP8266 chip ID. Used for identifying the device.
 
 * **SSID**
 
@@ -54,19 +54,44 @@ Name of network we are connected to.
 
 * **Temperature**
 
-Temperature reading, not shown if there is no sensor.
+Temperature reading ()not shown if there is no sensor).
 
 * **Humidity**
 
-Humidity reading, not shown if there is no sensor.
+Humidity reading (not shown if there is no sensor).
 
 * **Weights**
 
 Shows weighs for scale 1 and 2.
 
-* **Pints**
+* **Glasses**
 
-Shows pints left for scale 1 and 2. You need to configure the weights under the configuration page.
+Shows glasses (pours) left for scale 1 and 2. 
+
+Beers
+*****
+
+This is where the software is configured. 
+
+.. image:: images/beer.png
+  :width: 600
+  :alt: Beer configuration
+
+* **Empty keg weight**
+
+Weight of the empty keg, used to determine how much beer is in the keg.
+
+* **Glass volume**
+
+Choose the volume of the beer glasses, used to determine how many pours are left. 
+
+* **Beer name**, **Beer ABV**, **Beer EBC**, **Beer IBU**
+
+Information about the beer, used to show on user interfaces.
+
+* **Beer FG**
+
+Used in formula for calculating the beer volume. FG has a slight impact on the weight / volume unit.
 
 
 Configuration
@@ -82,34 +107,25 @@ This is where the software is configured.
 
 Set the name of the device on the network, your network needs to support mDNS.
 
-* **Weight precision**
+* **Temperature format**
 
-How many deciamls will be shown for weight.
+Select format for temperatures
 
-* **Brewfather user key**
+* **Weight unit**
 
-Brewfather user key.
+Select format for weights
 
-* **Brewfather API key**
+* **Volume unit**
 
-Brewfather API key.
+Select format for volumes
 
-* **Empty keg weight**
+* **Display layout**
 
-What is the weight of your empty key, two fields for keg 1 + keg 2.
+Choose the layout/information on the OLED displays.
 
-* **Pint of beer weight**
+* **Brewfather user key**, **Brewfather API key**
 
-What is the weight of a pint of beer (or the normal glass you use), two fields for keg 1 + keg 2.
-
-* **Beer name**
-
-Name of the beers, two fields for keg 1 + keg 2. This data can be fetched from brewfather.
-
-* **Beer ABV**
-
-ABV of the beers, two fields for keg 1 + keg 2. This data can be fetched from brewfather.
-
+Brewfather User key/API key.
 
 Calibration
 ***********
@@ -148,3 +164,15 @@ on your computer.
 .. image:: images/upload.png
   :width: 600
   :alt: Upload firmware
+
+Stability
+*********
+
+Information page that can determine the stability of your hardware build.
+
+.. image:: images/stability.png
+  :width: 600
+  :alt: Statistics
+
+I have found that some of my hardware builds was not really stable so I added this 
+feature to check the scale build before doing the final assembly. 
