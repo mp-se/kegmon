@@ -47,7 +47,9 @@ void Display::scanI2C() {
   byte error, address;
   int n = 0;
 
+#if LOG_LEVEL == 6
   Log.verbose(F("Scanning I2C bus for devices: "));
+#endif
 
   for (address = 1; address < 127; address++) {
     // The i2c_scanner uses the return value of
@@ -68,7 +70,9 @@ void Display::scanI2C() {
 }
 
 void Display::setup(UnitIndex idx) {
+#if LOG_LEVEL == 6
   Log.verbose(F("Disp: Setting up OLED display [%d]." CR), idx);
+#endif
 
   _display[idx]->init();
   _display[idx]->displayOn();
@@ -91,7 +95,9 @@ void Display::setup(UnitIndex idx) {
 void Display::setFont(UnitIndex idx, FontSize fs) {
   if (!_display[idx]) return;
 
+#if LOG_LEVEL == 6
   Log.verbose(F("Disp: Setting font size %d [%d]." CR), fs, idx);
+#endif
   _fontSize[idx] = fs;
 
   switch (fs) {

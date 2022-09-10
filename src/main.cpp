@@ -314,7 +314,8 @@ void loop() {
       s = s + &buf[0];
     }
 
-    float dirCoeff = myScale.getAverageWeightDirectionCoefficient(UnitIndex::U1);
+    float dirCoeff =
+        myScale.getAverageWeightDirectionCoefficient(UnitIndex::U1);
     if (!isnan(dirCoeff)) {
       snprintf(&buf[0], sizeof(buf), ",dirCoeff1=%f", dirCoeff);
       s = s + &buf[0];
@@ -326,7 +327,9 @@ void loop() {
       s = s + &buf[0];
     }
 
+#if LOG_LEVEL == 6
     Log.verbose(F("Loop: Sending data to influx: %s" CR), s.c_str());
+#endif
     myPush.sendInfluxDb2(s);
 #endif
   }

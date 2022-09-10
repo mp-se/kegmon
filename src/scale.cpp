@@ -38,8 +38,10 @@ void Scale::setup(bool force) {
   if (!_scale[0] || force) {
     if (_scale[0]) delete _scale[0];
 
+#if LOG_LEVEL == 6
     Log.verbose(F("Scal: Initializing scale [0], using offset %l." CR),
                 myConfig.getScaleOffset(0));
+#endif
     _scale[0] = new HX711();
     _scale[0]->begin(PIN_SCALE1_SDA, PIN_SCALE1_SCL);
     _scale[0]->set_offset(myConfig.getScaleOffset(UnitIndex::U1));
@@ -57,8 +59,10 @@ void Scale::setup(bool force) {
   if (!_scale[1] || force) {
     if (_scale[1]) delete _scale[1];
 
+#if LOG_LEVEL == 6
     Log.verbose(F("Scal: Initializing scale [1], using offset %l." CR),
                 myConfig.getScaleOffset(1));
+#endif
     _scale[1] = new HX711();
     _scale[1]->begin(PIN_SCALE2_SDA, PIN_SCALE2_SCL);
     _scale[1]->set_offset(myConfig.getScaleOffset(UnitIndex::U2));
@@ -101,8 +105,10 @@ float Scale::readWeight(UnitIndex idx, bool updateStats) {
   if (!_scale[idx]) return 0;
 
   float f = _scale[idx]->get_units(myConfig.getScaleReadCount());
+#if LOG_LEVEL == 6
   Log.verbose(F("Scal: Reading weight=%F [%d], updating stats %s." CR), f, idx,
               updateStats ? "true" : "false");
+#endif
 #endif
   // If we have enough values and last stable level if its NAN, then update the
   // lastStable value
@@ -191,8 +197,10 @@ float Scale::readWeight(UnitIndex idx, bool updateStats) {
 void Scale::tare(UnitIndex idx) {
   if (!_scale[idx]) return;
 
+#if LOG_LEVEL == 6
   Log.verbose(F("Scal: Set scale to zero, prepare for calibration [%d]." CR),
               idx);
+#endif
 
   _scale[idx]->set_scale();  // set scale factor to 1
   _scale[idx]->tare(myConfig.getScaleReadCountCalibration());  // zero weight
@@ -221,8 +229,10 @@ void Scale::findFactor(UnitIndex idx, float weight) {
 
   float l = _scale[idx]->get_units(myConfig.getScaleReadCountCalibration());
   float f = l / weight;
+#if LOG_LEVEL == 6
   Log.verbose(F("Scal: Detecting factor for weight %F, raw %l %F [%d]." CR),
               weight, l, f, idx);
+#endif
 
   myConfig.setScaleFactor(idx, f);
   myConfig.saveFile();  // save the factor to file
@@ -252,15 +262,17 @@ float Scale::calculateNoGlasses(UnitIndex idx) {
 }
 
 float Scale::getAverageWeightDirectionCoefficient(UnitIndex idx) {
-  if (isnan(_lastAverageWeight[idx]) || !statsCount(idx))
-    return NAN;
+  if (isnan(_lastAverageWeight[idx]) || !statsCount(idx)) return NAN;
 
   // Loop interval is 2 seconds
   float coeff = (statsAverage(idx) - _lastAverageWeight[idx]) / 2 * 100;
 
-  /* char s[100];
-  snprintf(&s[0], sizeof(s), "LastAve: %.6f Ave: %6f, Coeff: %6f", _lastAverageWeight[idx], statsAverage(idx), coeff);
-  Log.notice("Scal: %s [%d]." CR, &s[0], idx); */
+#if LOG_LEVEL == 6
+  char s[100];
+  snprintf(&s[0], sizeof(s), "LastAve=%.6f Ave=%6f, Coeff=%6f",
+           _lastAverageWeight[idx], statsAverage(idx), coeff);
+  Log.verbose("Scal: %s [%d]." CR, &s[0], idx);
+#endif
 
   return coeff;
 }

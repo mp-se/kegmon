@@ -27,7 +27,9 @@ SOFTWARE.
 TempHumidity::TempHumidity() {}
 
 void TempHumidity::setup() {
+#if LOG_LEVEL == 6
   Log.verbose(F("Temp: Initializing humidity sensor." CR));
+#endif
   _temp = new DHT(PIN_DH2, DHT22, 1);
   _temp->begin();
 }
@@ -36,7 +38,9 @@ float TempHumidity::getTempC() {
   if (!_temp) return NAN;
 
   float f = _temp->readTemperature();
+#if LOG_LEVEL == 6
   Log.verbose(F("Temp: Reading temp %F C." CR), f);
+#endif
 
   if (isnan(f)) {
     Log.error(F("Temp: Error reading temperature, disable sensor." CR));
@@ -52,7 +56,9 @@ float TempHumidity::getTempF() {
   if (!_temp) return NAN;
 
   float f = _temp->readTemperature(true);
+#if LOG_LEVEL == 6
   Log.verbose(F("Temp: Reading temp %F F." CR), f);
+#endif
 
   if (isnan(f)) {
     Log.error(F("Temp: Error reading temperature, disable sensor." CR));
@@ -68,7 +74,9 @@ float TempHumidity::getHumidity() {
   if (!_temp) return NAN;
 
   float h = _temp->readHumidity();
+#if LOG_LEVEL == 6
   Log.verbose(F("Temp: Reading humidity %F." CR), h);
+#endif
 
   if (isnan(h)) {
     Log.error(F("Temp: Error reading humidity, disable sensor." CR));
