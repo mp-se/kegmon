@@ -20,7 +20,12 @@ Based on the ideas of these projects (there are many that have implemented the s
 
 For docs see: https://mp-se.github.io/kegscale/index.html
 
-# What ongoing
+# Update 2022 August
 
-* Create 3d model for the display case and complete the build.
-* Complete documentation
+After running my first build for a few weeks I noticed that the weight was not really stable so the HX711 scales are not that accurate. I've build in a few functions to measure the stability of the scales and use
+average values instead of the last reading. This has improved stability for one of my two scales so I'm also looking into hardware design to see what can be improved. Ideas so far:
+
+* Use average values over a longer time
+* Try out HX chips from other manufacturers.
+* Move HX chip from scale to outside the fride
+* Use larger weights for calibration (currently using 1 kg)

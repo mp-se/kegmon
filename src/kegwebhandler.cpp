@@ -37,6 +37,18 @@ SOFTWARE.
 #define PARAM_WEIGHT "weight"
 #define PARAM_SCALE "scale-index"
 
+// Additional scale values
+#define PARAM_SCALE_WEIGHT1 "scale-weight1"
+#define PARAM_SCALE_WEIGHT2 "scale-weight2"
+#define PARAM_SCALE_RAW1 "scale-raw1"
+#define PARAM_SCALE_RAW2 "scale-raw2"
+#define PARAM_GLASS1 "glass1"
+#define PARAM_GLASS2 "glass2"
+#define PARAM_SCALE_STABLE_WEIGHT1 "scale-stable-weight1"
+#define PARAM_SCALE_STABLE_WEIGHT2 "scale-stable-weight2"
+#define PARAM_LAST_POUR1 "last-pour1"
+#define PARAM_LAST_POUR2 "last-pour2"
+
 KegWebHandler::KegWebHandler(KegConfig* config) : BaseWebHandler(config) {
   _config = config;
 }
@@ -45,8 +57,14 @@ void KegWebHandler::setupWebHandlers() {
   Log.notice(F("WEB : Setting up keg web handlers." CR));
   BaseWebHandler::setupWebHandlers();
 
+  _server->on("/api/reset", HTTP_GET,
+              std::bind(&KegWebHandler::webReset, this));
   _server->on("/api/scale", HTTP_GET,
               std::bind(&KegWebHandler::webScale, this));
+  _server->on("/api/stability", HTTP_GET,
+              std::bind(&KegWebHandler::webStability, this));
+  _server->on("/api/stability/clear", HTTP_GET,
+              std::bind(&KegWebHandler::webStabilityClear, this));
   _server->on("/api/scale/tare", HTTP_GET,
               std::bind(&KegWebHandler::webScaleTare, this));
   _server->on("/api/scale/factor", HTTP_GET,
@@ -55,6 +73,10 @@ void KegWebHandler::setupWebHandlers() {
               std::bind(&KegWebHandler::webStatus, this));
   _server->on("/calibration.htm", HTTP_GET,
               std::bind(&KegWebHandler::webCalibrateHtm, this));
+  _server->on("/beer.htm", HTTP_GET,
+              std::bind(&KegWebHandler::webBeerHtm, this));
+  _server->on("/stability.htm", HTTP_GET,
+              std::bind(&KegWebHandler::webStabilityHtm, this));
 }
 
 void KegWebHandler::webScale() {
@@ -62,6 +84,9 @@ void KegWebHandler::webScale() {
 
   DynamicJsonDocument doc(300);
   populateScaleJson(doc);
+
+  doc[PARAM_WEIGHT_UNIT] = myConfig.getWeightUnit();
+  doc[PARAM_VOLUME_UNIT] = myConfig.getVolumeUnit();
 
   String out;
   out.reserve(300);
@@ -75,9 +100,9 @@ void KegWebHandler::webScaleTare() {
 
   // Request will contain 1 or 2, but we need 0 or 1 for indexing.
   if (_server->arg(PARAM_SCALE).toInt() == 1)
-    idx = UnitIndex::UNIT_1;
+    idx = UnitIndex::U1;
   else
-    idx = UnitIndex::UNIT_2;
+    idx = UnitIndex::U2;
 
   Log.notice(F("WEB : webServer callback /api/scale/tare." CR));
   myScale.tare(idx);
@@ -102,9 +127,9 @@ void KegWebHandler::webScaleFactor() {
 
   // Request will contain 1 or 2, but we need 0 or 1 for indexing.
   if (_server->arg(PARAM_SCALE).toInt() == 1)
-    idx = UnitIndex::UNIT_1;
+    idx = UnitIndex::U1;
   else
-    idx = UnitIndex::UNIT_2;
+    idx = UnitIndex::U2;
 
   Log.notice(
       F("WEB : webServer callback /api/scale/factor, weight=%F [%d]." CR),
@@ -119,6 +144,9 @@ void KegWebHandler::webScaleFactor() {
   DynamicJsonDocument doc(300);
   populateScaleJson(doc);
 
+  doc[PARAM_WEIGHT_UNIT] = myConfig.getWeightUnit();
+  doc[PARAM_VOLUME_UNIT] = myConfig.getVolumeUnit();
+
   String out;
   out.reserve(300);
   serializeJson(doc, out);
@@ -130,18 +158,40 @@ void KegWebHandler::populateScaleJson(DynamicJsonDocument& doc) {
   doc[PARAM_SCALE_FACTOR1] = myConfig.getScaleFactor(0);
   doc[PARAM_SCALE_FACTOR2] = myConfig.getScaleFactor(1);
 
-  if (myScale.isConnected(UnitIndex::UNIT_1)) {
+  if (myScale.isConnected(UnitIndex::U1)) {
     doc[PARAM_SCALE_WEIGHT1] = reduceFloatPrecision(
-        myScale.getLastValue(UnitIndex::UNIT_1), myConfig.getWeightPrecision());
-    doc[PARAM_SCALE_RAW1] = myScale.getRawValue(UnitIndex::UNIT_1);
+        myScale.getLastWeight(UnitIndex::U1), myConfig.getWeightPrecision());
+    doc[PARAM_SCALE_RAW1] = myScale.readRawWeight(UnitIndex::U1);
     doc[PARAM_SCALE_OFFSET1] = myConfig.getScaleOffset(0);
   }
 
-  if (myScale.isConnected(UnitIndex::UNIT_2)) {
+  if (myScale.isConnected(UnitIndex::U2)) {
     doc[PARAM_SCALE_WEIGHT2] = reduceFloatPrecision(
-        myScale.getLastValue(UnitIndex::UNIT_2), myConfig.getWeightPrecision());
-    doc[PARAM_SCALE_RAW2] = myScale.getRawValue(UnitIndex::UNIT_2);
+        myScale.getLastWeight(UnitIndex::U2), myConfig.getWeightPrecision());
+    doc[PARAM_SCALE_RAW2] = myScale.readRawWeight(UnitIndex::U2);
     doc[PARAM_SCALE_OFFSET2] = myConfig.getScaleOffset(1);
+  }
+
+  if (myScale.hasLastStableWeight(UnitIndex::U1)) {
+    doc[PARAM_SCALE_STABLE_WEIGHT1] =
+        reduceFloatPrecision(myScale.getLastStableWeight(UnitIndex::U1),
+                             myConfig.getWeightPrecision());
+  }
+
+  if (myScale.hasLastStableWeight(UnitIndex::U2)) {
+    doc[PARAM_SCALE_STABLE_WEIGHT2] =
+        reduceFloatPrecision(myScale.getLastStableWeight(UnitIndex::U2),
+                             myConfig.getWeightPrecision());
+  }
+
+  if (myScale.hasPourWeight(UnitIndex::U1)) {
+    doc[PARAM_LAST_POUR1] =
+        reduceFloatPrecision(myScale.getPourWeight(UnitIndex::U1), 3);
+  }
+
+  if (myScale.hasPourWeight(UnitIndex::U2)) {
+    doc[PARAM_LAST_POUR2] =
+        reduceFloatPrecision(myScale.getPourWeight(UnitIndex::U2), 3);
   }
 
 #if LOG_LEVEL == 6
@@ -161,19 +211,22 @@ void KegWebHandler::webStatus() {
   doc[PARAM_SSID] = myConfig.getWifiSSID(0);
   doc[PARAM_APP_VER] = CFG_APPVER;
   doc[PARAM_APP_BUILD] = CFG_GITREV;
+  doc[PARAM_WEIGHT_UNIT] = myConfig.getWeightUnit();
+  doc[PARAM_VOLUME_UNIT] = myConfig.getVolumeUnit();
+  doc[PARAM_TEMP_FORMAT] = String(myConfig.getTempFormat());
 
   // For this we use the last value read from the scale to avoid having to much
   // communication. The value will be updated regulary second in the main loop.
-  doc[PARAM_PINTS1] = myScale.calculateNoPints(
-      UnitIndex::UNIT_1, myScale.getLastValue(UnitIndex::UNIT_1));
-  doc[PARAM_PINTS2] = myScale.calculateNoPints(
-      UnitIndex::UNIT_2, myScale.getLastValue(UnitIndex::UNIT_2));
+  doc[PARAM_GLASS1] =
+      reduceFloatPrecision(myScale.calculateNoGlasses(UnitIndex::U1), 1);
+  doc[PARAM_GLASS2] =
+      reduceFloatPrecision(myScale.calculateNoGlasses(UnitIndex::U2), 1);
 
-  float f = myTemp.getTempValueC();
+  float f = myTemp.getTempC();
 
   if (!isnan(f)) {
     doc[PARAM_TEMP] = f;
-    doc[PARAM_HUMIDITY] = myTemp.getHumidityValue();
+    doc[PARAM_HUMIDITY] = myTemp.getHumidity();
   }
 
   String out;
@@ -181,6 +234,84 @@ void KegWebHandler::webStatus() {
   serializeJson(doc, out);
   doc.clear();
   _server->send(200, "application/json", out.c_str());
+}
+
+void KegWebHandler::webStability() {
+  Log.notice(F("WEB : webServer callback /api/stability." CR));
+
+#define PARAM_STABILITY_COUNT1 "stability-count1"
+#define PARAM_STABILITY_COUNT2 "stability-count2"
+#define PARAM_STABILITY_SUM1 "stability-sum1"
+#define PARAM_STABILITY_SUM2 "stability-sum2"
+#define PARAM_STABILITY_MIN1 "stability-min1"
+#define PARAM_STABILITY_MIN2 "stability-min2"
+#define PARAM_STABILITY_MAX1 "stability-max1"
+#define PARAM_STABILITY_MAX2 "stability-max2"
+#define PARAM_STABILITY_AVE1 "stability-ave1"
+#define PARAM_STABILITY_AVE2 "stability-ave2"
+#define PARAM_STABILITY_VAR1 "stability-var1"
+#define PARAM_STABILITY_VAR2 "stability-var2"
+#define PARAM_STABILITY_POPDEV1 "stability-popdev1"
+#define PARAM_STABILITY_POPDEV2 "stability-popdev2"
+#define PARAM_STABILITY_UBIASDEV1 "stability-ubiasdev1"
+#define PARAM_STABILITY_UBIASDEV2 "stability-ubiasdev2"
+
+  DynamicJsonDocument doc(500);
+
+  doc[PARAM_WEIGHT_UNIT] = myConfig.getWeightUnit();
+
+  if (myScale.stabilityCount(UnitIndex::U1) > 1) {
+    doc[PARAM_STABILITY_COUNT1] = myScale.stabilityCount(UnitIndex::U1);
+    doc[PARAM_STABILITY_SUM1] = myScale.stabilitySum(UnitIndex::U1);
+    doc[PARAM_STABILITY_MIN1] = myScale.stabilityMin(UnitIndex::U1);
+    doc[PARAM_STABILITY_MAX1] = myScale.stabilityMax(UnitIndex::U1);
+    doc[PARAM_STABILITY_AVE1] = myScale.stabilityAverage(UnitIndex::U1);
+    doc[PARAM_STABILITY_VAR1] = myScale.stabilityVariance(UnitIndex::U1);
+    doc[PARAM_STABILITY_POPDEV1] = myScale.stabilityPopStdev(UnitIndex::U1);
+    doc[PARAM_STABILITY_UBIASDEV1] =
+        myScale.stabilityUnbiasedStdev(UnitIndex::U1);
+  }
+
+  if (myScale.stabilityCount(UnitIndex::U2) > 1) {
+    doc[PARAM_STABILITY_COUNT2] = myScale.stabilityCount(UnitIndex::U2);
+    doc[PARAM_STABILITY_SUM2] = myScale.stabilitySum(UnitIndex::U2);
+    doc[PARAM_STABILITY_MIN2] = myScale.stabilityMin(UnitIndex::U2);
+    doc[PARAM_STABILITY_MAX2] = myScale.stabilityMax(UnitIndex::U2);
+    doc[PARAM_STABILITY_AVE2] = myScale.stabilityAverage(UnitIndex::U2);
+    doc[PARAM_STABILITY_VAR2] = myScale.stabilityVariance(UnitIndex::U2);
+    doc[PARAM_STABILITY_POPDEV2] = myScale.stabilityPopStdev(UnitIndex::U2);
+    doc[PARAM_STABILITY_UBIASDEV2] =
+        myScale.stabilityUnbiasedStdev(UnitIndex::U2);
+  }
+
+  String out;
+  out.reserve(500);
+  serializeJson(doc, out);
+  doc.clear();
+  _server->send(200, "application/json", out.c_str());
+}
+
+void KegWebHandler::webReset() {
+  String id = _server->arg(PARAM_ID);
+  Log.notice(F("WEB : webServer callback /api/reset." CR));
+
+  if (!id.compareTo(myConfig.getID())) {
+    _server->send(200, "text/plain", "Performing reset...");
+    LittleFS.end();
+    delay(500);
+    ESP_RESET();
+  } else {
+    _server->send(400, "text/plain", "Unknown ID.");
+  }
+}
+
+void KegWebHandler::webStabilityClear() {
+  Log.notice(F("WEB : webServer callback /api/stability/clear." CR));
+
+  myScale.stabilityClear(UnitIndex::U1);
+  myScale.stabilityClear(UnitIndex::U2);
+
+  _server->send(200, "application/json", "{}");
 }
 
 // EOF

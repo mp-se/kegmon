@@ -29,17 +29,22 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link active" href="/index.htm">Home</a>
+            <a class="nav-link active" href="/index.htm"><b>Home</b></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/config.htm">Configuration</a>
+            <a class="nav-link" href="/beer.htm">Beer</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/calibration.htm">Calibration</a>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Configuration
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/config.htm">Configuration</a></li>
+              <li><a class="dropdown-item" href="/calibration.htm">Scale calibration</a></li>
+              <li><a class="dropdown-item" href="/stability.htm">Stability statistics</a></li>
+              <li><a class="dropdown-item" href="/upload.htm">Upload firmware</a></li>
+            </ul>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/upload.htm">Update firmware</a>
-          </li> 
           <li class="nav-item">
             <a class="nav-link" href="/about.htm">About</a>
           </li> 
@@ -122,9 +127,14 @@
               <div class="col-md-2 bg-light" id="scale-weight2">Loading...</div>
             </div>
             <div class="row mb-3">
-              <div class="col-md-4 bg-light">Pints left</div>
-              <div class="col-md-2 bg-light" id="pints1">Loading...</div> 
-              <div class="col-md-2 bg-light" id="pints2">Loading...</div>
+              <div class="col-md-4 bg-light">Glasses left</div>
+              <div class="col-md-2 bg-light" id="glass1">Loading...</div> 
+              <div class="col-md-2 bg-light" id="glass2">Loading...</div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-4 bg-light">Last pour</div>
+              <div class="col-md-2 bg-light" id="last-pour1">Loading...</div> 
+              <div class="col-md-2 bg-light" id="last-pour2">Loading...</div>
             </div>
           </div>
         </div>
@@ -149,31 +159,53 @@
         $("#id").text(cfg["id"]);
         $("#wifi-ssid").text(cfg["wifi-ssid"]); 
 
+        var weight_unit = " " + cfg["weight-unit"];
+        var volume_unit = " " + cfg["volume-unit"];
+        var temp_unit = " " + cfg["temp-format"];
+
         if( cfg["temperature"] === undefined ) {
           $('#toggle1').addClass('hide').removeClass('show').addClass('d-none');
           $('#toggle2').addClass('hide').removeClass('show').addClass('d-none');
           $('#toggle3').addClass('hide').removeClass('show').addClass('d-none');
         } else {
-          $("#temperature").text(cfg["temperature"] + " C"); 
+          $("#temperature").text(cfg["temperature"] + " " + temp_unit); 
           $("#humidity").text(cfg["humidity"] + " %"); 
         }
 
+        // TODO: Need to be able to convert between kg -> lbs
+        // TODO: Need to be able to convert between cl -> US fl oz, UK fl oz
+
         if( cfg["scale-weight1"] === undefined ) {
-          $("#scale-weight1").text("");
-          $("#pints1").text("");
+          $("#scale-weight1").text("no scale");
+          $("#glass1").text("no scale");
         } else {
-          $("#scale-weight1").text(cfg["scale-weight1"] + " kg");
-          $("#pints1").text(cfg["pints1"]);
+          $("#scale-weight1").text(cfg["scale-weight1"] + weight_unit);
+          // $("#scale-weight1").text(cfg["scale-stable-weight1"] + w_unit);
+          $("#glass1").text(cfg["glass1"]);
         }
 
         if( cfg["scale-weight2"] === undefined ) {
-          $("#scale-weight2").text("");
-          $("#pints2").text("");
+          $("#scale-weight2").text("no scale");
+          $("#glass2").text("no scale");
         } else {
-          $("#scale-weight2").text(cfg["scale-weight2"] + " kg");
-          $("#pints2").text(cfg["pints2"]);
+          $("#scale-weight2").text(cfg["scale-weight2"] + weight_unit);
+          // $("#scale-weight2").text(cfg["scale-stable-weight2"] + w_unit);
+          $("#glass2").text(cfg["glass2"]);
         }
 
+        if( cfg["last-pour1"] === undefined ) {
+          $("#last-pour1").text("no data");
+        } else {
+          var pour = parseFloat(cfg["last-pour1"]*100).toFixed(0);
+          $("#last-pour1").text(pour + " cl");
+        }
+
+        if( cfg["last-pour2"] === undefined ) {
+          $("#last-pour2").text("no data");
+        } else {
+          var pour = parseFloat(cfg["last-pour2"]*100).toFixed(0);
+          $("#last-pour2").text(pour + " cl");
+        }
       })
       .fail(function () {
         showError('Unable to get data from the device.');
@@ -190,6 +222,6 @@
 
   <!-- START FOOTER -->
 
-  <div class="container themed-container bg-primary text-light row-margin-10">(C) Copyright 2021-22 Magnus Persson</div>
+  <div class="container themed-container bg-primary text-light row-margin-10">(C) Copyright 2022 Magnus Persson</div>
 </body>
 </html>

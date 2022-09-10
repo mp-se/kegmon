@@ -27,23 +27,15 @@ SOFTWARE.
 #include <baseconfig.hpp>
 #include <main.hpp>
 
-#define PARAM_WEIGHT_PRECISION "weight-precision"
 #define PARAM_BREWFATHER_USERKEY "brewfather-userkey"
 #define PARAM_BREWFATHER_APIKEY "brewfather-apikey"
+#define PARAM_DISPLAY_LAYOUT "display-layout"
+#define PARAM_WEIGHT_UNIT "weight-unit"
+#define PARAM_VOLUME_UNIT "volume-unit"
 #define PARAM_KEG_WEIGHT1 "keg-weight1"
 #define PARAM_KEG_WEIGHT2 "keg-weight2"
-#define PARAM_PINT_WEIGHT1 "pint-weight1"
-#define PARAM_PINT_WEIGHT2 "pint-weight2"
-#define PARAM_SCALE_FACTOR1 "scale-factor1"
-#define PARAM_SCALE_FACTOR2 "scale-factor2"
-#define PARAM_SCALE_WEIGHT1 "scale-weight1"
-#define PARAM_SCALE_WEIGHT2 "scale-weight2"
-#define PARAM_SCALE_RAW1 "scale-raw1"
-#define PARAM_SCALE_RAW2 "scale-raw2"
-#define PARAM_SCALE_OFFSET1 "scale-offset1"
-#define PARAM_SCALE_OFFSET2 "scale-offset2"
-#define PARAM_PINTS1 "pints1"
-#define PARAM_PINTS2 "pints2"
+#define PARAM_GLASS_VOLUME1 "glass-volume1"
+#define PARAM_GLASS_VOLUME2 "glass-volume2"
 #define PARAM_BEER_NAME1 "beer-name1"
 #define PARAM_BEER_NAME2 "beer-name2"
 #define PARAM_BEER_ABV1 "beer-abv1"
@@ -52,25 +44,54 @@ SOFTWARE.
 #define PARAM_BEER_IBU2 "beer-ibu2"
 #define PARAM_BEER_EBC1 "beer-ebc1"
 #define PARAM_BEER_EBC2 "beer-ebc2"
+#define PARAM_BEER_FG1 "beer-fg1"
+#define PARAM_BEER_FG2 "beer-fg2"
+#define PARAM_SCALE_FACTOR1 "scale-factor1"
+#define PARAM_SCALE_FACTOR2 "scale-factor2"
+#define PARAM_SCALE_OFFSET1 "scale-offset1"
+#define PARAM_SCALE_OFFSET2 "scale-offset2"
+#define PARAM_SCALE_MAX_DEVIATION "scale-max-deviation"
+#define PARAM_SCALE_STABLE_COUNT "scale-stable-count"
+#define PARAM_SCALE_READ_COUNT "scale-read-count"
+#define PARAM_SCALE_READ_COUNT_CALIBRATION "scale-read-count-calibration"
 
 struct BeerInfo {
   String _name = "";
   float _abv = 0.0;
   int _ebc = 0;
   int _ibu = 0;
+  float _fg = 1;
 };
+
+#define WEIGHT_KG "kg"
+#define WEIGHT_LBS "lbs"
+
+#define VOLUME_CL "kg"
+#define VOLUME_US "us-oz"
+#define VOLUME_UK "uk-oz"
+
+enum DisplayLayout { Default = 0, HardwareStats = 9 };
 
 class KegConfig : public BaseConfig {
  private:
-  int _weightPrecision = 2;
+  String _weightUnit = WEIGHT_KG;
+  String _volumeUnit = VOLUME_CL;
+
   String _brewfatherUserKey = "";
   String _brewfatherApiKey = "";
 
+  DisplayLayout _displayLayout = DisplayLayout::Default;
+
   float _scaleFactor[2] = {0, 0};
   int32_t _scaleOffset[2] = {0, 0};
-  float _kegWeight[2] = {0, 0};
-  float _pintWeight[2] = {0, 0};
+  float _kegWeight[2] = {0, 0};          // Weight in kg
+  float _glassVolume[2] = {0.40, 0.40};  // Volume in liters
   BeerInfo _beer[2];
+
+  float _scaleMaxDeviationValue = 0.1;
+  uint32_t _scaleStableCount = 10;
+  int _scaleReadCount = 10;
+  int _scaleReadCountCalibration = 30;
 
  public:
   KegConfig(String baseMDNS, String fileName);
@@ -99,6 +120,11 @@ class KegConfig : public BaseConfig {
     _beer[idx]._abv = f;
     _saveNeeded = true;
   }
+  float getBeerFG(int idx) { return _beer[idx]._fg; }
+  void setBeerFG(int idx, float f) {
+    _beer[idx]._fg = f;
+    _saveNeeded = true;
+  }
   int getBeerEBC(int idx) { return _beer[idx]._ebc; }
   void setBeerEBC(int idx, int i) {
     _beer[idx]._ebc = i;
@@ -116,15 +142,21 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }
 
-  float getPintWeight(int idx) { return _pintWeight[idx]; }
-  void setPintWeight(int idx, float f) {
-    _pintWeight[idx] = f;
+  float getGlassVolume(int idx) { return _glassVolume[idx]; }
+  void setGlassVolume(int idx, float f) {
+    _glassVolume[idx] = f;
     _saveNeeded = true;
   }
 
-  int getWeightPrecision() { return _weightPrecision; }
-  void setWeightPrecision(int i) {
-    _weightPrecision = i;
+  const char* getWeightUnit() { return _weightUnit.c_str(); }
+  void setWeightUnit(String s) {
+    _weightUnit = s;
+    _saveNeeded = true;
+  }
+
+  const char* getVolumeUnit() { return _volumeUnit.c_str(); }
+  void setVolumeUnit(String s) {
+    _volumeUnit = s;
     _saveNeeded = true;
   }
 
@@ -139,6 +171,83 @@ class KegConfig : public BaseConfig {
     _scaleFactor[idx] = f;
     _saveNeeded = true;
   }
+
+  DisplayLayout getDisplayLayout() { return _displayLayout; }
+  int getDisplayLayoutAsInt() { return _displayLayout; }
+  void setDisplayLayout(DisplayLayout d) {
+    _displayLayout = d;
+    _saveNeeded = true;
+  }
+  void setDisplayLayout(int d) {
+    _displayLayout = (DisplayLayout)d;
+    _saveNeeded = true;
+  }
+
+  // This is the maximum allowed deviation from the current average.
+  float getScaleMaxDeviationValue() {
+    return _scaleMaxDeviationValue;
+  }  // 0.1 kg
+  void setScaleMaxDeviationValue(float f) {
+    _scaleMaxDeviationValue = f;
+    _saveNeeded = true;
+  }
+
+  // This is the number of values in the statistics for the average value to be
+  // classifed as stable. Loop interval is 2s
+  uint32_t getScaleStableCount() { return _scaleStableCount; }
+  void setScaleStableCount(uint32_t i) {
+    _scaleStableCount = i;
+    _saveNeeded = true;
+  }
+
+  int getScaleReadCount() { return _scaleReadCount; }
+  void setScaleReadCount(uint32_t i) {
+    _scaleReadCount = i;
+    _saveNeeded = true;
+  }
+
+  int getScaleReadCountCalibration() { return _scaleReadCountCalibration; }
+  void setScaleReadCountCalibration(uint32_t i) {
+    _scaleReadCountCalibration = i;
+    _saveNeeded = true;
+  }
+
+  // These settings are used for debugging and checking stability of the scales.
+  // Only influx is used for now
+  const char* getTargetHttpPost() { return ""; }
+  void setTargetHttpPost(String target) {}
+  const char* getHeader1HttpPost() { return ""; }
+  void setHeader1HttpPost(String header) {}
+  const char* getHeader2HttpPost() { return ""; }
+  void setHeader2HttpPost(String header) {}
+
+  const char* getTargetHttpGet() { return ""; }
+  void setTargetHttpGet(String target) {}
+  const char* getHeader1HttpGet() { return ""; }
+  void setHeader1HttpGet(String header) {}
+  const char* getHeader2HttpGet() { return ""; }
+  void setHeader2HttpGet(String header) {}
+
+  const char* getTargetInfluxDB2() { return PUSH_INFLUX_TARGET; }
+  void setTargetInfluxDB2(String target) {}
+  const char* getOrgInfluxDB2() { return PUSH_INFLUX_ORG; }
+  void setOrgInfluxDB2(String org) {}
+  const char* getBucketInfluxDB2() { return PUSH_INFLUX_BUCKET; }
+  void setBucketInfluxDB2(String bucket) {}
+  const char* getTokenInfluxDB2() { return PUSH_INFLUX_TOKEN; }
+  void setTokenInfluxDB2(String token) {}
+
+  const char* getTargetMqtt() { return ""; }
+  void setTargetMqtt(String target) {}
+  int getPortMqtt() { return 0; }
+  void setPortMqtt(int port) {}
+  const char* getUserMqtt() { return ""; }
+  void setUserMqtt(String user) {}
+  const char* getPassMqtt() { return ""; }
+  void setPassMqtt(String pass) {}
+
+  // These are helper function to assist with formatting of values
+  int getWeightPrecision() { return 3; }
 };
 
 extern KegConfig myConfig;

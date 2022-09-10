@@ -43,6 +43,6 @@ SOFTWARE.
 #define PIN_SCALE2_SCL D4
 #define PIN_DH2 D7
 
-enum UnitIndex { UNIT_1 = 0, UNIT_2 = 1 };
+enum UnitIndex { U1 = 0, U2 = 1 };
 
 #endif  // SRC_MAIN_HPP_
