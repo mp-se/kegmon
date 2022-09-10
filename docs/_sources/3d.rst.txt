@@ -5,30 +5,12 @@
 
 These models fit a cornelius keg of 18, 19 or 9 liters. Will fit smaller kegs as well. 
 
-Base 1
-******
+`The models can be downloaded from here <https://www.printables.com/model/258303-scale-base-for-load-cells>`_
 
-This is a base for the last scale on the cable.
+Base
+****
 
-.. raw:: html
-
-   <style>
-   model-viewer { 
-      width: 600px; 
-      height: 600px; 
-   }
-   </style>
-   <div>
-   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-   <script nomodule src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>
-   <model-viewer height=400 width=400 id="mv-demo" shadow-intensity="1" src="./_static/3d/base1.glb" alt="Base 1" auto-rotate camera-controls poster=""></model-viewer>
-   </div>
-
-
-Base 2
-******
-
-This is a base for the first scale with passthrough cable to the last scale.
+This is a base for the scale.
 
 .. raw:: html
 
@@ -41,12 +23,12 @@ This is a base for the first scale with passthrough cable to the last scale.
    <div>
    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
    <script nomodule src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>
-   <model-viewer height=400 width=400 id="mv-demo" shadow-intensity="1" src="./_static/3d/base2.glb" alt="Base 2" auto-rotate camera-controls poster=""></model-viewer>
+   <model-viewer height=400 width=400 id="mv-demo" shadow-intensity="1" src="./_static/3d/base.glb" alt="Base" auto-rotate camera-controls poster=""></model-viewer>
    </div>
 
 
-Base Cover
-**********
+Cover
+*****
 
 This is a model for the cover that is placed on top of the wires to protect them.
 

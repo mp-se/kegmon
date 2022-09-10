@@ -16,8 +16,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="3D Models" href="3d.html" />
-    <link rel="prev" title="Hardware" href="hardware.html" /> 
+    <link rel="next" title="Hardware" href="hardware.html" />
+    <link rel="prev" title="Welcome to KegScale’s documentation!" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -37,17 +37,21 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Software</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#wifi">WIFI</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#oled-screens">OLED Screens</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#index">Index</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#beers">Beers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#calibration">Calibration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#firmware-update">Firmware update</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#stability">Stability</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware.html#case">Case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware.html#base-for-one">Base (for one)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="3d.html">3D Models</a></li>
 </ul>
 
@@ -81,15 +85,15 @@ that I use. The software has two interfaces, one via the OLED displays and
 one via the web-browser.</p>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>To be defined.</p>
+<p>To be documented.</p>
 </div>
 <div class="section" id="wifi">
 <h2>WIFI<a class="headerlink" href="#wifi" title="Permalink to this headline">¶</a></h2>
-<p>To be defined.</p>
+<p>To be documented.</p>
 </div>
 <div class="section" id="oled-screens">
 <h2>OLED Screens<a class="headerlink" href="#oled-screens" title="Permalink to this headline">¶</a></h2>
-<p>The OLD screens will show the name of the beer, abv and alternate between kg and pints. The first
+<p>The OLD screens will show the name of the beer, abv and alternate between weight and pours. The first
 screen will display values for keg 1 and the second for keg 2.</p>
 </div>
 <div class="section" id="index">
@@ -100,7 +104,7 @@ section will show the general device information.</p>
 <ul class="simple">
 <li><p><strong>Current version</strong></p></li>
 </ul>
-<p>Shows the current software version.</p>
+<p>Shows the current software version including git revision.</p>
 <ul class="simple">
 <li><p><strong>Host name</strong></p></li>
 </ul>
@@ -108,7 +112,7 @@ section will show the general device information.</p>
 <ul class="simple">
 <li><p><strong>Device ID</strong></p></li>
 </ul>
-<p>ESP8266 chip ID.</p>
+<p>ESP8266 chip ID. Used for identifying the device.</p>
 <ul class="simple">
 <li><p><strong>SSID</strong></p></li>
 </ul>
@@ -116,19 +120,40 @@ section will show the general device information.</p>
 <ul class="simple">
 <li><p><strong>Temperature</strong></p></li>
 </ul>
-<p>Temperature reading, not shown if there is no sensor.</p>
+<p>Temperature reading ()not shown if there is no sensor).</p>
 <ul class="simple">
 <li><p><strong>Humidity</strong></p></li>
 </ul>
-<p>Humidity reading, not shown if there is no sensor.</p>
+<p>Humidity reading (not shown if there is no sensor).</p>
 <ul class="simple">
 <li><p><strong>Weights</strong></p></li>
 </ul>
 <p>Shows weighs for scale 1 and 2.</p>
 <ul class="simple">
-<li><p><strong>Pints</strong></p></li>
+<li><p><strong>Glasses</strong></p></li>
 </ul>
-<p>Shows pints left for scale 1 and 2. You need to configure the weights under the configuration page.</p>
+<p>Shows glasses (pours) left for scale 1 and 2.</p>
+</div>
+<div class="section" id="beers">
+<h2>Beers<a class="headerlink" href="#beers" title="Permalink to this headline">¶</a></h2>
+<p>This is where the software is configured.</p>
+<a class="reference internal image-reference" href="_images/beer.png"><img alt="Beer configuration" src="_images/beer.png" style="width: 600px;" /></a>
+<ul class="simple">
+<li><p><strong>Empty keg weight</strong></p></li>
+</ul>
+<p>Weight of the empty keg, used to determine how much beer is in the keg.</p>
+<ul class="simple">
+<li><p><strong>Glass volume</strong></p></li>
+</ul>
+<p>Choose the volume of the beer glasses, used to determine how many pours are left.</p>
+<ul class="simple">
+<li><p><strong>Beer name</strong>, <strong>Beer ABV</strong>, <strong>Beer EBC</strong>, <strong>Beer IBU</strong></p></li>
+</ul>
+<p>Information about the beer, used to show on user interfaces.</p>
+<ul class="simple">
+<li><p><strong>Beer FG</strong></p></li>
+</ul>
+<p>Used in formula for calculating the beer volume. FG has a slight impact on the weight / volume unit.</p>
 </div>
 <div class="section" id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
@@ -139,33 +164,25 @@ section will show the general device information.</p>
 </ul>
 <p>Set the name of the device on the network, your network needs to support mDNS.</p>
 <ul class="simple">
-<li><p><strong>Weight precision</strong></p></li>
+<li><p><strong>Temperature format</strong></p></li>
 </ul>
-<p>How many deciamls will be shown for weight.</p>
+<p>Select format for temperatures</p>
 <ul class="simple">
-<li><p><strong>Brewfather user key</strong></p></li>
+<li><p><strong>Weight unit</strong></p></li>
 </ul>
-<p>Brewfather user key.</p>
+<p>Select format for weights</p>
 <ul class="simple">
-<li><p><strong>Brewfather API key</strong></p></li>
+<li><p><strong>Volume unit</strong></p></li>
 </ul>
-<p>Brewfather API key.</p>
+<p>Select format for volumes</p>
 <ul class="simple">
-<li><p><strong>Empty keg weight</strong></p></li>
+<li><p><strong>Display layout</strong></p></li>
 </ul>
-<p>What is the weight of your empty key, two fields for keg 1 + keg 2.</p>
+<p>Choose the layout/information on the OLED displays.</p>
 <ul class="simple">
-<li><p><strong>Pint of beer weight</strong></p></li>
+<li><p><strong>Brewfather user key</strong>, <strong>Brewfather API key</strong></p></li>
 </ul>
-<p>What is the weight of a pint of beer (or the normal glass you use), two fields for keg 1 + keg 2.</p>
-<ul class="simple">
-<li><p><strong>Beer name</strong></p></li>
-</ul>
-<p>Name of the beers, two fields for keg 1 + keg 2. This data can be fetched from brewfather.</p>
-<ul class="simple">
-<li><p><strong>Beer ABV</strong></p></li>
-</ul>
-<p>ABV of the beers, two fields for keg 1 + keg 2. This data can be fetched from brewfather.</p>
+<p>Brewfather User key/API key.</p>
 </div>
 <div class="section" id="calibration">
 <h2>Calibration<a class="headerlink" href="#calibration" title="Permalink to this headline">¶</a></h2>
@@ -198,14 +215,21 @@ check the measured value. If you are satisfied then you are done.</p>
 on your computer.</p>
 <a class="reference internal image-reference" href="_images/upload.png"><img alt="Upload firmware" src="_images/upload.png" style="width: 600px;" /></a>
 </div>
+<div class="section" id="stability">
+<h2>Stability<a class="headerlink" href="#stability" title="Permalink to this headline">¶</a></h2>
+<p>Information page that can determine the stability of your hardware build.</p>
+<a class="reference internal image-reference" href="_images/stability.png"><img alt="Statistics" src="_images/stability.png" style="width: 600px;" /></a>
+<p>I have found that some of my hardware builds was not really stable so I added this
+feature to check the scale build before doing the final assembly.</p>
+</div>
 </div>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="hardware.html" class="btn btn-neutral float-left" title="Hardware" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="3d.html" class="btn btn-neutral float-right" title="3D Models" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to KegScale’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="hardware.html" class="btn btn-neutral float-right" title="Hardware" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

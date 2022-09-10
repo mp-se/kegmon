@@ -7,17 +7,19 @@ Welcome to KegScale's documentation!
 ====================================
 
 .. note::
-  Reflects test version v0.1.0, Last updated 2022-06-11
+  Reflects test version v0.3.0, Last updated 2022-09-10
 
-This project is intended for my own use, I've have not really focused on making this reusable for others. 
+  Im still building my own so the project is regarded as work in progress.
+
+This project is intended for my own use, I've have not really focused on making this reusable for others so the 
+documentation is not that extensive. 
 
 However I have documented my build process and share it here. The design is created for 2 kegs but it 
-will work if you only use one (make sure to use the pins for scale 1 in that case)
+will work if you only use one (make sure to use the pins for scale 1 in that case). 
 
-Im still building my own so the project is regarded as work in progress.
+The software will detect how many hx711 are connected and if the tempsensor is available. 
 
 The project contains the following parts:
-
 * Software that manage the scale and present the readings.
 * Hardware design based on standard HX711 AD converter with load cells.
 * 3D models for the base and display case.
@@ -25,12 +27,23 @@ The project contains the following parts:
 Features
 ++++++++
 
-* Measure the weight of up to two kegs and estimate the number of pints (or pours) left in the keg. This 
-  is done using the weight of a keg and the weight of a pint of beer. 
-* Import beer information from brewfather (name, abv, ebc and ibu)
-* Show the remaning pints (or pours) on OLED displays, one per keg
+* Measure the weight of up to two kegs and estimate the number of pours left in the keg. 
+* Define the size of a pour by selecting the beer glass size. 
+* Volume of beer is determined by the FG and weight of the beer + keg.
+* Import beer information from brewfather (name, abv, ebc and ibu, fg)
+* Show the remaning pours on OLED displays, one per keg
+* Show the remaning pours on web interface
 * Configuration is done via web interface
 * Calibration of scales are done via web interface
+* Stores statistics about the scales since start to determine the stabilty of the load cells.
+* Update firmware via web interface
+
+Future
+++++++
+* Ability to change weight unit (currently only kg is supported)
+* Ability to change volume unit (currently only cl is supported)
+* Validate stability of the hardware design and load cells
+* Switch to larger OLED displays (0.96 -> 1.3), this requires a different display driver (currently compile time option). 
 
 Credits to
 ----------
@@ -47,14 +60,15 @@ Thanks to the following projects.
 * https://github.com/bogde/HX711
 * https://github.com/ThingPulse/esp8266-oled-ssd1306
 * https://modelviewer.dev/
+* https://github.com/RobTillaart/Statistic
 
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   hardware
    software
+   hardware
    3d
 
 
