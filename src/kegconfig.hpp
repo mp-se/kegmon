@@ -34,6 +34,8 @@ SOFTWARE.
 #define PARAM_VOLUME_UNIT "volume-unit"
 #define PARAM_KEG_WEIGHT1 "keg-weight1"
 #define PARAM_KEG_WEIGHT2 "keg-weight2"
+#define PARAM_KEG_VOLUME1 "keg-volume1"
+#define PARAM_KEG_VOLUME2 "keg-volume2"
 #define PARAM_GLASS_VOLUME1 "glass-volume1"
 #define PARAM_GLASS_VOLUME2 "glass-volume2"
 #define PARAM_BEER_NAME1 "beer-name1"
@@ -84,8 +86,9 @@ class KegConfig : public BaseConfig {
 
   float _scaleFactor[2] = {0, 0};
   int32_t _scaleOffset[2] = {0, 0};
-  float _kegWeight[2] = {0, 0};          // Weight in kg
-  float _glassVolume[2] = {0.40, 0.40};  // Volume in liters
+  float _kegWeight[2] = {4, 4}; // Weight in kg
+  float _kegVolume[2] = {19, 19}; // Weight in liters
+  float _glassVolume[2] = {0.40, 0.40}; // Volume in liters
   BeerInfo _beer[2];
 
   float _scaleMaxDeviationValue = 0.1;
@@ -139,6 +142,12 @@ class KegConfig : public BaseConfig {
   float getKegWeight(int idx) { return _kegWeight[idx]; }
   void setKegWeight(int idx, float f) {
     _kegWeight[idx] = f;
+    _saveNeeded = true;
+  }
+
+  float getKegVolume(int idx) { return _kegVolume[idx]; }
+  void setKegVolume(int idx, float f) {
+    _kegVolume[idx] = f;
     _saveNeeded = true;
   }
 

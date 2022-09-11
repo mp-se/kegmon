@@ -46,6 +46,7 @@ void KegConfig::createJson(DynamicJsonDocument& doc, bool skipSecrets) {
   doc[PARAM_SCALE_FACTOR1] = getScaleFactor(0);
   doc[PARAM_SCALE_OFFSET1] = getScaleOffset(0);
   doc[PARAM_KEG_WEIGHT1] = getKegWeight(0);
+  doc[PARAM_KEG_VOLUME1] = getKegVolume(0);
   doc[PARAM_GLASS_VOLUME1] = getGlassVolume(0);
   doc[PARAM_BEER_NAME1] = getBeerName(0);
   doc[PARAM_BEER_ABV1] = getBeerABV(0);
@@ -56,6 +57,7 @@ void KegConfig::createJson(DynamicJsonDocument& doc, bool skipSecrets) {
   doc[PARAM_SCALE_FACTOR2] = getScaleFactor(1);
   doc[PARAM_SCALE_OFFSET2] = getScaleOffset(1);
   doc[PARAM_KEG_WEIGHT2] = getKegWeight(1);
+  doc[PARAM_KEG_VOLUME2] = getKegVolume(1);
   doc[PARAM_GLASS_VOLUME2] = getGlassVolume(1);
   doc[PARAM_BEER_NAME2] = getBeerName(1);
   doc[PARAM_BEER_ABV2] = getBeerABV(1);
@@ -93,6 +95,8 @@ void KegConfig::parseJson(DynamicJsonDocument& doc) {
     setScaleOffset(0, doc[PARAM_SCALE_OFFSET1].as<float>());
   if (!doc[PARAM_KEG_WEIGHT1].isNull())
     setKegWeight(0, doc[PARAM_KEG_WEIGHT1].as<float>());
+  if (!doc[PARAM_KEG_VOLUME1].isNull())
+    setKegVolume(0, doc[PARAM_KEG_VOLUME1].as<float>());
   if (!doc[PARAM_GLASS_VOLUME1].isNull())
     setGlassVolume(0, doc[PARAM_GLASS_VOLUME1].as<float>());
   if (!doc[PARAM_BEER_NAME1].isNull()) setBeerName(0, doc[PARAM_BEER_NAME1]);
@@ -111,6 +115,8 @@ void KegConfig::parseJson(DynamicJsonDocument& doc) {
     setScaleOffset(1, doc[PARAM_SCALE_OFFSET2].as<float>());
   if (!doc[PARAM_KEG_WEIGHT2].isNull())
     setKegWeight(1, doc[PARAM_KEG_WEIGHT2].as<float>());
+  if (!doc[PARAM_KEG_VOLUME2].isNull())
+    setKegVolume(1, doc[PARAM_KEG_VOLUME2].as<float>());
   if (!doc[PARAM_GLASS_VOLUME2].isNull())
     setGlassVolume(1, doc[PARAM_GLASS_VOLUME2].as<float>());
   if (!doc[PARAM_BEER_NAME2].isNull()) setBeerName(1, doc[PARAM_BEER_NAME2]);

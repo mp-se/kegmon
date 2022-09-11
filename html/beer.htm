@@ -147,6 +147,43 @@
                 </div>
               </div>
 
+              <div class="row mb-3">
+                <label for="keg-volume1" class="col-sm-2 col-form-label">Keg volume</label>
+                <div class="col-sm-3">
+                  <select class="form-select col-sm-3" required name="keg-volume1" id="keg-volume1"
+                    data-bs-toggle="tooltip" title="Select the volume of your keg.">
+                    <option value="5">Mini 5l / 1.32gal / 169oz</option>
+                    <option value="9">Cornelious 9l</option>
+                    <option value="10">Mini 10l</option>
+                    <option value="18">Cornelious 18l</option>
+                    <option value="19">Cornelious 19l / 5gal / 640oz</option>
+                    <option value="20">Keykeg 20l</option>
+                    <option value="19.5">Sixth Barrel 5.16gal / 640oz</option>
+                    <option value="29.3">Quarter Barrel 7.75gal / 992oz</option>
+                    <option value="29">Unittank 29l</option>
+                    <option value="58.7">Half Barrel 15.5gal / 1984oz</option>
+                    <option value="58">Kegmenter 58l</option>
+                  </select>
+                </div>
+                <div class="col-sm-3">
+                  <select class="form-select col-sm-3" required name="keg-volume2" id="keg-volume2"
+                    data-bs-toggle="tooltip" title="Select the volume of your keg.">
+                    <option value="5">Mini 5l / 1.32gal / 169oz</option>
+                    <option value="9">Cornelious 9l</option>
+                    <option value="10">Mini 10l</option>
+                    <option value="18">Cornelious 18l</option>
+                    <option value="19">Cornelious 19l / 5gal / 640oz</option>
+                    <option value="20">Keykeg 20l</option>
+                    <option value="19.5">Sixth Barrel 5.16gal / 640oz</option>
+                    <option value="29.3">Quarter Barrel 7.75gal / 992oz</option>
+                    <option value="29">Unittank 29l</option>
+                    <option value="58.7">Half Barrel 15.5gal / 1984oz</option>
+                    <option value="58">Kegmenter 58l</option>
+                  </select>
+                </div>
+              </div>
+
+
               <hr>
 
               <div class="row mb-3">
@@ -401,6 +438,8 @@
         $("#keg-weight-unit").text(cfg["weight-unit"]);
         $("#glass-volume-unit").text(cfg["volume-unit"]);
 
+        $("#keg-volume1").val(cfg["keg-volume1"]);
+        $("#keg-volume2").val(cfg["keg-volume2"]);
         $("#keg-weight1").val(cfg["keg-weight1"]);
         $("#keg-weight2").val(cfg["keg-weight2"]);
         $("#glass-volume1").val(cfg["glass-volume1"]);
