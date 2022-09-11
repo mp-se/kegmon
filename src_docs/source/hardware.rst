@@ -42,6 +42,9 @@ had issues with drift and varying readings. I built two scales and one had issue
 base. I also changed to the purple board powered by 3.3V, currently that option works perfect with my 
 two first scales. 
 
+3. I discovered when running 2 scales that sharing the CLK signal to the HX711 was not a good idea, that introduced 
+errors in the accuracy. So in v0.4.0 I changes the CLK signal on the second scale to D8. 
+
 .. note::
   I'm currently updating the 3d model for the display case to fit the larger board. 
 
