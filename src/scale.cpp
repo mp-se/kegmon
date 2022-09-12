@@ -131,11 +131,14 @@ float Scale::readWeight(UnitIndex idx, bool updateStats) {
   // Check if the min/max are too far apart, then we have a to wide spread of
   // values and level has changed to much
   if (statsCount(idx) > 0) {
-    if ((statsMax(idx) - statsMin(idx)) >
-        myConfig.getScaleMaxDeviationValue()) {
-      Log.notice(F("Scal: Min/Max values deviates to much, restarting "
-                   "statistics [%d]." CR),
-                 idx);
+    if ((statsMax(idx) - myConfig.getScaleMaxDeviationValue()) >
+            statsAverage(idx) &&
+        (statsMin(idx) + myConfig.getScaleMaxDeviationValue()) <
+            statsAverage(idx)) {
+      Log.notice(
+          F("Scal: Min/Max values deviates to much from average, restarting "
+            "statistics [%d]." CR),
+          idx);
       // Before clearing statistics we record the last average as the stable to
       // get better accuracu for pour detection.
       _lastStableWeight[idx] = statsAverage(idx);
