@@ -43,6 +43,9 @@ void KegConfig::createJson(DynamicJsonDocument& doc, bool skipSecrets) {
   doc[PARAM_BREWFATHER_APIKEY] = getBrewfatherApiKey();
   doc[PARAM_BREWFATHER_USERKEY] = getBrewfatherUserKey();
 
+  doc[PARAM_BREWSPY_TOKEN1] = getBrewspyToken(0);
+  doc[PARAM_BREWSPY_TOKEN2] = getBrewspyToken(1);
+
   doc[PARAM_SCALE_FACTOR1] = getScaleFactor(0);
   doc[PARAM_SCALE_OFFSET1] = getScaleOffset(0);
   doc[PARAM_KEG_WEIGHT1] = getKegWeight(0);
@@ -85,6 +88,11 @@ void KegConfig::parseJson(DynamicJsonDocument& doc) {
     setBrewfatherApiKey(doc[PARAM_BREWFATHER_APIKEY]);
   if (!doc[PARAM_BREWFATHER_USERKEY].isNull())
     setBrewfatherUserKey(doc[PARAM_BREWFATHER_USERKEY]);
+
+  if (!doc[PARAM_BREWSPY_TOKEN1].isNull())
+    setBrewspyToken(0, doc[PARAM_BREWSPY_TOKEN1]);
+  if (!doc[PARAM_BREWSPY_TOKEN2].isNull())
+    setBrewspyToken(1, doc[PARAM_BREWSPY_TOKEN2]);
 
   if (!doc[PARAM_DISPLAY_LAYOUT].isNull())
     setDisplayLayout(doc[PARAM_DISPLAY_LAYOUT].as<int>());

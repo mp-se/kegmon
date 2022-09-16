@@ -21,16 +21,28 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#define INCBIN_OUTPUT_SECTION ".irom.text"
-#include <incbin.h>
+#ifndef SRC_BREWSPY_HPP_
+#define SRC_BREWSPY_HPP_
 
-INCBIN(IndexHtm, "html/index.min.htm");
-INCBIN(ConfigHtm, "html/config.min.htm");
-INCBIN(CalibrateHtm, "html/calibration.min.htm");
-INCBIN(AboutHtm, "html/about.min.htm");
-INCBIN(UploadHtm, "html/upload.min.htm");
-INCBIN(BeerHtm, "html/beer.min.htm");
-INCBIN(StabilityHtm, "html/stability.min.htm");
+#include <brewspy.hpp>
+#include <basepush.hpp>
+#include <kegconfig.hpp>
+
+class BrewspyPushHandler : public BasePush {
+ protected:
+    String httpGet(const char* target, const char* header1, const char* header2);
+
+ public:
+    explicit BrewspyPushHandler(KegConfig* config) : BasePush(config) { }
+
+    void sendTapInformation(UnitIndex idx);
+    void sendPourInformation(UnitIndex idx);
+
+    void clearKegInformation(UnitIndex idx);
+
+    String getTapInformation(const String& token);
+};
+
+#endif  // SRC_BREWSPY_HPP_
 
 // EOF
-

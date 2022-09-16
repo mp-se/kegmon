@@ -26,6 +26,7 @@ SOFTWARE.
 #include <scale.hpp>
 #include <temp.hpp>
 #include <utils.hpp>
+#include <brewspy.hpp>
 
 // Configuration or api params
 #define PARAM_APP_VER "app-ver"
@@ -55,6 +56,8 @@ KegWebHandler::KegWebHandler(KegConfig* config) : BaseWebHandler(config) {
 
 void KegWebHandler::setupWebHandlers() {
   Log.notice(F("WEB : Setting up keg web handlers." CR));
+  _server->enableCORS(true);
+
   BaseWebHandler::setupWebHandlers();
 
   _server->on("/api/reset", HTTP_GET,
@@ -77,6 +80,18 @@ void KegWebHandler::setupWebHandlers() {
               std::bind(&KegWebHandler::webBeerHtm, this));
   _server->on("/stability.htm", HTTP_GET,
               std::bind(&KegWebHandler::webStabilityHtm, this));
+  _server->on("/api/brewspy/tap", HTTP_GET,
+              std::bind(&KegWebHandler::webHandleBrewspy, this));
+}
+
+void KegWebHandler::webHandleBrewspy() {
+  String token = _server->arg("token");
+  Log.notice(F("WEB : webServer callback /api/brewspy/tap %s." CR), token.c_str());
+
+  BrewspyPushHandler brewspy = BrewspyPushHandler(&myConfig);
+  String json = brewspy.getTapInformation(token);
+
+  _server->send(200, "application/json", json.c_str());
 }
 
 void KegWebHandler::webScale() {
@@ -225,6 +240,9 @@ void KegWebHandler::webStatus() {
   float f = myTemp.getTempC();
 
   if (!isnan(f)) {
+
+    // TODO: Add conversion to F if that is selected!
+
     doc[PARAM_TEMP] = f;
     doc[PARAM_HUMIDITY] = myTemp.getHumidity();
   }

@@ -103,7 +103,7 @@
               <input type="text" name="section" value="#collapseDevice" hidden>
 
               <div class="row mb-3">
-                <label for="mdns" class="col-sm-4 col-form-label">Device name</label>
+                <label for="mdns" class="col-sm-2 col-form-label">Device name</label>
                 <div class="col-sm-3">
                   <input type="text" maxlength="12" class="form-control" name="mdns" id="mdns" placeholder="kegscale"
                     data-bs-toggle="tooltip"
@@ -113,8 +113,8 @@
 
               <div class="row mb-3">
                 <fieldset class="form-group row">
-                  <legend class="col-form-label col-sm-4 float-sm-left pt-0">Temperature Format</legend>
-                  <div class="col-sm-4">
+                  <legend class="col-form-label col-sm-2 float-sm-left pt-0">Temperature Format</legend>
+                  <div class="col-sm-2">
                     <div class="form-check">
                       <input class="form-check-input" type="radio" name="temp-format" id="temp-format-c" value="C"
                         checked data-bs-toggle="tooltip" title="Temperature format used with displaying data">
@@ -130,9 +130,9 @@
               </div>
 
               <div class="row mb-3">
-                <fieldset class="form-group row" id="wip1">
-                  <legend class="col-form-label col-sm-4 float-sm-left pt-0">Weight Unit</legend>
-                  <div class="col-sm-4">
+                <fieldset disabled class="form-group row" id="wip1">
+                  <legend class="col-form-label col-sm-2 float-sm-left pt-0">Weight Unit</legend>
+                  <div class="col-sm-2">
                     <div class="form-check">
                       <input class="form-check-input" text="kg" type="radio" name="weight-unit" id="weight-unit-kg"
                         value="kg" checked data-bs-toggle="tooltip" title="Weight unit used when entering/displaying">
@@ -148,9 +148,9 @@
               </div>
 
               <div class="row mb-3">
-                <fieldset class="form-group row" id="wip2">
-                  <legend class="col-form-label col-sm-4 float-sm-left pt-0">Volume Unit</legend>
-                  <div class="col-sm-4">
+                <fieldset disabled class="form-group row" id="wip2">
+                  <legend class="col-form-label col-sm-2 float-sm-left pt-0">Volume Unit</legend>
+                  <div class="col-sm-2">
                     <div class="form-check">
                       <input class="form-check-input" text="cl" type="radio" name="volume-unit" id="volume-unit-cl"
                         value="cl" checked data-bs-toggle="tooltip" title="Volume unit used when entering/displaying">
@@ -173,7 +173,7 @@
               </div>
 
               <div class="row mb-3">
-                <label for="display-layout" class="col-sm-4 col-form-label">Display layout</label>
+                <label for="display-layout" class="col-sm-2 col-form-label">Display layout</label>
                 <div class="col-sm-3">
                   <select class="form-select" id="display-layout" name="display-layout" data-bs-toggle="tooltip"
                     title="select layout on display">
@@ -186,16 +186,15 @@
               <hr>
 
               <div class="row mb-3">
-                <label for="brewfather-userkey" class="col-sm-4 col-form-label">Brewfather User Key</label>
+                <label for="brewfather-userkey" class="col-sm-2 col-form-label">Brewfather User Key</label>
                 <div class="col-sm-3">
                   <input type="text" maxlength="80" class="form-control" name="brewfather-userkey"
                     id="brewfather-userkey" placeholder="" data-bs-toggle="tooltip"
                     title="User key obtained from the control panel in brewfather. Need access to batches.">
                 </div>
-
               </div>
               <div class="row mb-3">
-                <label for="brewfather-apikey" class="col-sm-4 col-form-label">Brewfather API Key</label>
+                <label for="brewfather-apikey" class="col-sm-2 col-form-label">Brewfather API Key</label>
                 <div class="col-sm-3">
                   <input type="text" maxlength="80" class="form-control" name="brewfather-apikey" id="brewfather-apikey"
                     placeholder="" data-bs-toggle="tooltip"
@@ -203,8 +202,24 @@
                 </div>
               </div>
 
+              <hr>
+
               <div class="row mb-3">
-                <div class="col-sm-4 offset-sm-4">
+                <label for="brewspy-token1" class="col-sm-2 col-form-label">Brewspy Token - Tap 1 & 2</label>
+                <div class="col-sm-3">
+                  <input type="text" maxlength="80" class="form-control" name="brewspy-token1"
+                    id="brewspy-token1" placeholder="" data-bs-toggle="tooltip"
+                    title="Token for the first tap, can be found under the last part of the webhook URL.">
+                </div>
+                <div class="col-sm-3">
+                  <input type="text" maxlength="80" class="form-control" name="brewspy-token2" id="brewspy-token2"
+                    placeholder="" data-bs-toggle="tooltip"
+                    title="Token for the second tap, can be found under the last part of the webhook URL.">
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <div class="col-sm-2 offset-sm-2">
                   <button type="submit" class="btn btn-primary" id="device-btn" data-bs-toggle="tooltip"
                     title="Save changes in this section">Save</button>
                 </div>
@@ -233,25 +248,25 @@
             <input type="text" name="section" value="#collapseAdvanced" hidden>
 
             <div class="row mb-3">
-              <label for="scale-max-deviation" class="col-sm-4 col-form-label">Scale max deviation</label>
+              <label for="scale-max-deviation" class="col-sm-2 col-form-label">Scale max deviation</label>
               <div class="col-sm-2">
                 <input type="number" min=".05" max=".50" step=".05" class="form-control" name="scale-max-deviation" id="scale-max-deviation" placeholder="0.1"
                   data-bs-toggle="tooltip"
-                  title="Threashold for how much change in weight is needed for the scale to detect new level. Default 0.1 kg">
+                  title="Threashold for how much change in weight is needed for the scale to detect new level, i.e sensitivity of the scale. Default 0.1 kg">
               </div>
             </div>
 
             <div class="row mb-3">
-              <label for="scale-stable-count" class="col-sm-4 col-form-label">Scale stable count</label>
+              <label for="scale-stable-count" class="col-sm-2 col-form-label">Scale stable count</label>
               <div class="col-sm-2">
                 <input type="number" min="1" max="30" step="1" class="form-control" name="scale-stable-count" id="scale-stable-count" placeholder="0.1"
                   data-bs-toggle="tooltip"
-                  title="Defines the number of scale measurements are required for a new stable level to be defined, each reading takes 2 seconds">
+                  title="Defines the number of scale measurements are required for a new stable level to be determined, each reading takes 2 seconds">
               </div>
             </div>
 
             <div class="row mb-3">
-              <label for="scale-read-count" class="col-sm-4 col-form-label">Scale read count</label>
+              <label for="scale-read-count" class="col-sm-2 col-form-label">Scale read count</label>
               <div class="col-sm-2">
                 <input type="number" min="1" max="50" step="1" class="form-control" name="scale-read-count" id="scale-read-count" placeholder="10"
                   data-bs-toggle="tooltip"
@@ -260,7 +275,7 @@
             </div>
 
             <div class="row mb-3">
-              <label for="scale-read-count-calibration" class="col-sm-4 col-form-label">Scale read count, calibration</label>
+              <label for="scale-read-count-calibration" class="col-sm-2 col-form-label">Calibration read count</label>
               <div class="col-sm-2">
                 <input type="number" min="1" max="100" step="1" class="form-control" name="scale-read-count-calibration" id="scale-read-count-calibration" placeholder="30"
                   data-bs-toggle="tooltip"
@@ -269,7 +284,7 @@
             </div>
 
             <div class="row mb-3">
-              <div class="col-sm-4 offset-sm-4">
+              <div class="col-sm-2 offset-sm-2">
                 <button type="submit" class="btn btn-primary" id="advanced-btn" data-bs-toggle="tooltip"
                   title="Save changes in this section">Save</button>
               </div>
@@ -306,8 +321,12 @@
         $("#id2").val(cfg["id"]);
 
         $("#mdns").val(cfg["mdns"]);
+
         $("#brewfather-apikey").val(cfg["brewfather-apikey"]);
         $("#brewfather-userkey").val(cfg["brewfather-userkey"]);
+
+        $("#brewspy-token1").val(cfg["brewspy-token1"]);
+        $("#brewspy-token2").val(cfg["brewspy-token1"]);
 
         $("#display-layout").val(cfg["display-layout"]);
 

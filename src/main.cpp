@@ -24,6 +24,7 @@ SOFTWARE.
 #include <basepush.hpp>
 #include <display.hpp>
 #include <kegconfig.hpp>
+// #include <kegscreen.hpp>
 #include <kegwebhandler.hpp>
 #include <main.hpp>
 #include <ota.hpp>
@@ -37,6 +38,7 @@ KegConfig myConfig(CFG_MDNSNAME, CFG_FILENAME);
 WifiConnection myWifi(&myConfig, CFG_APPNAME, "password", CFG_MDNSNAME);
 OtaUpdate myOta(&myConfig, CFG_APPVER);
 KegWebHandler myWebHandler(&myConfig);
+// KegscreenWebHandler myWebHandler(&myConfig);
 BasePush myPush(&myConfig);
 Display myDisplay;
 Scale myScale;
@@ -239,11 +241,19 @@ void loop() {
     }
 
     Log.notice(F("Loop: Reading data scale1=%F, scale2=%F, lastStable1=%F, "
-                 "lastStable2=%F,average1=%F,average2=%F" CR),
-               weight1, weight2, myScale.getLastStableWeight(UnitIndex::U1),
-               myScale.getLastStableWeight(UnitIndex::U2),
-               myScale.statsAverage(UnitIndex::U1),
-               myScale.statsAverage(UnitIndex::U2));
+                  "lastStable2=%F,average1=%F,average2=%F,filter1=%F,filter2=%F" CR),
+                weight1, weight2, myScale.getLastStableWeight(UnitIndex::U1),
+                myScale.getLastStableWeight(UnitIndex::U2),
+                myScale.statsAverage(UnitIndex::U1),
+                myScale.statsAverage(UnitIndex::U2),
+                myScale.getLastFilterWeight(UnitIndex::U1), myScale.getLastFilterWeight(UnitIndex::U2));
+
+    /*Log.verbose(F("Loop: Pour data pourWeight1=%F, pourWeight2=%F, pourVolume1=%F, "
+                  "pourVolume2=%F" CR),
+                myScale.getPourWeight(UnitIndex::U1),
+                myScale.getPourWeight(UnitIndex::U2),
+                myScale.getPourVolume(UnitIndex::U1),
+                myScale.getPourVolume(UnitIndex::U2));*/
 
 #if defined(ENABLE_INFLUX_DEBUG)
     // This part is used to send data to an influxdb in order to get data on
@@ -251,13 +261,28 @@ void loop() {
     char buf[250];
 
     String s;
-    snprintf(&buf[0], sizeof(buf),
+    /*snprintf(&buf[0], sizeof(buf),
              "scale,host=%s,device=%s "
              "scale1=%f,scale2=%f,glass1=%f,glass2=%f",
              myConfig.getMDNS(), myConfig.getID(), weight1, weight2,
              myScale.calculateNoGlasses(UnitIndex::U1),
-             myScale.calculateNoGlasses(UnitIndex::U2));
+             myScale.calculateNoGlasses(UnitIndex::U2));*/
+    /*snprintf(&buf[0], sizeof(buf),
+             "scale,host=%s,device=%s "
+             "scale1=%f,scale2=%f,scaleVol1=%f,scaleVol2=%f",
+             myConfig.getMDNS(), myConfig.getID(), weight1, weight2, myScale.getLastVolume(UnitIndex::U1), myScale.getLastVolume(UnitIndex::U2));*/
+    snprintf(&buf[0], sizeof(buf), "scale,host=%s,device=%s scale1=%f,scale2=%f", myConfig.getMDNS(), myConfig.getID(), weight1, weight2);
     s = &buf[0];
+
+    /*if (!isnan(myScale.getLastFilterWeight(UnitIndex::U1))) {
+      snprintf(&buf[0], sizeof(buf), ",filter1=%f", myScale.getLastFilterWeight(UnitIndex::U1));
+      s += &buf[0];
+    }
+
+    if (!isnan(myScale.getLastFilterWeight(UnitIndex::U2))) {
+      snprintf(&buf[0], sizeof(buf), ",filter2=%f", myScale.getLastFilterWeight(UnitIndex::U2));
+      s += &buf[0];
+    }*/
 
     if (myScale.hasLastStableWeight(UnitIndex::U1)) {
       snprintf(&buf[0], sizeof(buf), ",stable-scale1=%f",
@@ -271,40 +296,38 @@ void loop() {
       s += &buf[0];
     }
 
-    if (myScale.hasPourWeight(UnitIndex::U1)) {
+    /*if (myScale.hasPourWeight(UnitIndex::U1)) {
       snprintf(&buf[0], sizeof(buf), ",pour1=%f",
                myScale.getPourWeight(UnitIndex::U1));
       s += &buf[0];
-    }
+    }*/
 
-    if (myScale.hasPourWeight(UnitIndex::U2)) {
+    /*if (myScale.hasPourWeight(UnitIndex::U2)) {
       snprintf(&buf[0], sizeof(buf), ",pour2=%f",
                myScale.getPourWeight(UnitIndex::U2));
       s += &buf[0];
-    }
+    }*/
 
-    snprintf(&buf[0], sizeof(buf), ",count1=%d,count2=%d",
+    /*snprintf(&buf[0], sizeof(buf), ",count1=%d,count2=%d",
              static_cast<int>(myScale.statsCount(UnitIndex::U1)),
              static_cast<int>(myScale.statsCount(UnitIndex::U2)));
-    s = s + &buf[0];
+    s = s + &buf[0];*/
 
     if (myScale.statsCount(UnitIndex::U1) > 0) {
       snprintf(&buf[0], sizeof(buf),
-               ",average1=%f,min1=%f,max1=%f,stdev1=%f,variance1=%f",
+               ",average1=%f,min1=%f,max1=%f,stdev1=%f",
                myScale.statsAverage(UnitIndex::U1),
                myScale.statsMin(UnitIndex::U1), myScale.statsMax(UnitIndex::U1),
-               myScale.statsPopStdev(UnitIndex::U1),
-               myScale.statsVariance(UnitIndex::U1));
+               myScale.statsPopStdev(UnitIndex::U1));
       s = s + &buf[0];
     }
 
     if (myScale.statsCount(UnitIndex::U2) > 0) {
       snprintf(&buf[0], sizeof(buf),
-               ",average2=%f,min2=%f,max2=%f,stdev2=%f,variance2=%f",
+               ",average2=%f,min2=%f,max2=%f,stdev2=%f",
                myScale.statsAverage(UnitIndex::U2),
                myScale.statsMin(UnitIndex::U2), myScale.statsMax(UnitIndex::U2),
-               myScale.statsPopStdev(UnitIndex::U2),
-               myScale.statsVariance(UnitIndex::U2));
+               myScale.statsPopStdev(UnitIndex::U2));
       s = s + &buf[0];
     }
 

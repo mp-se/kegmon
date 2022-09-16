@@ -28,10 +28,10 @@ SOFTWARE.
 extern BasePush myPush;
 
 Scale::Scale() {
-  _statistic[UnitIndex::U1].clear();
-  _statistic[UnitIndex::U2].clear();
-  _stability[UnitIndex::U1].clear();
-  _stability[UnitIndex::U2].clear();
+  _detection[UnitIndex::U1]._statistic.clear();
+  _detection[UnitIndex::U2]._statistic.clear();
+  _detection[UnitIndex::U1]._stability.clear();
+  _detection[UnitIndex::U2]._stability.clear();
 }
 
 void Scale::setup(bool force) {
@@ -80,6 +80,8 @@ void Scale::setup(bool force) {
   // Set the scale factor
   setScaleFactor(UnitIndex::U1);
   setScaleFactor(UnitIndex::U2);
+
+  Log.notice(F("Scal: Stable count %d, Min level change %F." CR), myConfig.getScaleStableCount(), myConfig.getScaleMaxDeviationValue() );
 }
 
 void Scale::setScaleFactor(UnitIndex idx) {
@@ -93,41 +95,17 @@ void Scale::setScaleFactor(UnitIndex idx) {
       fs);  // apply the saved scale factor so we get valid results
 }
 
-float Scale::readWeight(UnitIndex idx, bool updateStats) {
-  if (myConfig.getScaleFactor(idx) == 0 ||
-      myConfig.getScaleOffset(idx) == 0)  // Not initialized, just return zero
-    return 0;
-
-#if defined(ENABLE_SCALE_SIMULATION)
-  if (idx == 1) return 0;  // Simulation mode only supports one scale attached
-
-  float f = getNextSimulated();
-  Log.verbose(
-      F("Scal: Reading simulated weight=%F [%d], updating stats=%s." CR), f,
-      idx, updateStats ? "yes" : "no");
-#else
-  if (!_scale[idx]) return 0;
-
-  float f = _scale[idx]->get_units(myConfig.getScaleReadCount());
-#if LOG_LEVEL == 6
-  Log.verbose(F("Scal: Reading weight=%F [%d], updating stats %s." CR), f, idx,
-              updateStats ? "true" : "false");
-#endif
-
-  if (f > 100)  // If the value is more than 100 then the reading is proably
-                // wrong, cap the value
-    f = 100;
-
-#endif
-  // If we have enough values and last stable level if its NAN, then update the
-  // lastStable value
-  if (statsCount(idx) > myConfig.getScaleStableCount() &&
-      !hasLastStableWeight(idx)) {
-    _lastStableWeight[idx] = statsAverage(idx);
-    Log.notice(F("Scal: Found a new stable value %F [%d]." CR),
-               _lastStableWeight[idx], idx);
+float LevelDetection::applyKalmanFilter(float weight) {
+  if (isnan(_filterBaseline)) {
+    _filterBaseline = weight;
+    return weight;
   }
 
+  _lastFilterOutput = _filter->updateEstimate(weight);
+  return _lastFilterOutput;
+}
+
+void Scale::validateScaleLevel(UnitIndex idx) {
   // Check if the min/max are too far apart, then we have a to wide spread of
   // values and level has changed to much
   if (statsCount(idx) > 0) {
@@ -141,33 +119,35 @@ float Scale::readWeight(UnitIndex idx, bool updateStats) {
           idx);
       // Before clearing statistics we record the last average as the stable to
       // get better accuracu for pour detection.
-      _lastStableWeight[idx] = statsAverage(idx);
+      _detection[idx]._lastStableWeight = statsAverage(idx);
       statsClear(idx);
     }
   }
+}
 
+void Scale::checkForPour(UnitIndex idx) {
   // Check if the level has changed up or down. If its down we record the delta
   // as the latest pour.
   if (statsCount(idx) > myConfig.getScaleStableCount() &&
       hasLastStableWeight(idx)) {
-    if ((_lastStableWeight[idx] + myConfig.getScaleMaxDeviationValue()) <
+    if ((_detection[idx]._lastStableWeight + myConfig.getScaleMaxDeviationValue()) <
         statsAverage(idx)) {
       Log.notice(
           F("Scal: Level has increased, adjusting from %F to %F [%d]." CR),
-          _lastStableWeight[idx], statsAverage(idx), idx);
-      _lastStableWeight[idx] = statsAverage(idx);
+          _detection[idx]._lastStableWeight, statsAverage(idx), idx);
+      _detection[idx]._lastStableWeight = statsAverage(idx);
     }
 
-    if ((_lastStableWeight[idx] - myConfig.getScaleMaxDeviationValue()) >
+    if ((_detection[idx]._lastStableWeight - myConfig.getScaleMaxDeviationValue()) >
         statsAverage(idx)) {
       Log.notice(
           F("Scal: Level has decreased, adjusting from %F to %F [%d]." CR),
-          _lastStableWeight[idx], statsAverage(idx), idx);
-      _lastPourWeight[idx] = _lastStableWeight[idx] - statsAverage(idx);
+          _detection[idx]._lastStableWeight, statsAverage(idx), idx);
+      _lastPourWeight[idx] = _detection[idx]._lastStableWeight - statsAverage(idx);
       Log.notice(F("Scal: Beer has been poured volume %F [%d]." CR),
                  _lastPourWeight[idx], idx);
-      float _prevStableWeight = _lastStableWeight[idx];
-      _lastStableWeight[idx] = statsAverage(idx);
+      float _prevStableWeight = _detection[idx]._lastStableWeight;
+      _detection[idx]._lastStableWeight = statsAverage(idx);
 
 #if defined(ENABLE_INFLUX_DEBUG)
       // This part is used to send data to an influxdb in order to get data on
@@ -178,9 +158,9 @@ float Scale::readWeight(UnitIndex idx, bool updateStats) {
       snprintf(
           &buf[0], sizeof(buf),
           "pour,host=%s,device=%s "
-          "last-pour-weight%d=%f,last-stable-weight%d=%f,stable-weight%d=%f",
+          "last-pour-weight%d=%f,last-pour-volume%d=%f,last-stable-weight%d=%f,stable-weight%d=%f",
           myConfig.getMDNS(), myConfig.getID(), idx + 1, _lastPourWeight[idx],
-          idx + 1, _prevStableWeight, idx + 1, _lastStableWeight[idx]);
+          idx + 1, getPourVolume(idx), idx + 1, _prevStableWeight, idx + 1, _detection[idx]._lastStableWeight);
       s = &buf[0];
 
       Log.verbose(F("Scale: Sending pour data to influx: %s" CR), s.c_str());
@@ -188,21 +168,58 @@ float Scale::readWeight(UnitIndex idx, bool updateStats) {
 #endif
     }
   }
+}
 
-  if (f < 0) {  // We ignore negative values since this can be an faulty reading
+float Scale::readWeight(UnitIndex idx, bool updateStats) {
+  if (myConfig.getScaleFactor(idx) == 0 ||
+      myConfig.getScaleOffset(idx) == 0)  // Not initialized, just return zero
+    return 0;
+
+  if (!_scale[idx]) return 0;
+
+  float f = _scale[idx]->get_units(myConfig.getScaleReadCount());
+#if LOG_LEVEL == 6
+  Log.verbose(F("Scal: Reading weight=%F [%d], updating stats %s." CR), f, idx,
+              updateStats ? "true" : "false");
+#endif
+
+  f = _detection[idx].applyKalmanFilter(f);
+
+  // If the value is higher than 100 kb/lbs then the reading is proably wrong, just ignore the reading
+  if (f > 100) {
+    Log.error(F("Scal: Ignoring value since it's higher than 100, %F [%d]." CR),
+              f, idx);
+    return _lastWeight[idx];
+  }
+
+  // We ignore negative values since this can be an faulty reading
+  if (f < 0) {  
     Log.error(F("Scal: Ignoring value since it's less than zero %F [%d]." CR),
               f, idx);
     return _lastWeight[idx];
   }
 
+  // If we have enough values and last stable level if its NAN, then update the
+  // lastStable value
+  if (statsCount(idx) > myConfig.getScaleStableCount() &&
+      !hasLastStableWeight(idx)) {
+    _detection[idx]._lastStableWeight = statsAverage(idx);
+    Log.notice(F("Scal: Found a new stable value %F [%d]." CR),
+               _detection[idx]._lastStableWeight, idx);
+  }
+
+  // Check for pour and validate if the value is correct (filter out invalid values)
+  checkForPour(idx);
+  validateScaleLevel(idx);
+
   // Update the statistics with the current value
   if (updateStats) {
-    _lastAverageWeight[idx] = getAverageWeight(idx);
+    _detection[idx]._lastAverageWeight = getAverageWeight(idx);
     statsAdd(idx, f);
   }
 
-  _lastWeight[idx] = f;  // cache the last read value, will be used by API's and
-                         // updated in loop()
+  // cache the last read value, will be used by API's and updated in loop()
+  _lastWeight[idx] = f;  
   return f;
 }
 
@@ -214,8 +231,8 @@ void Scale::tare(UnitIndex idx) {
               idx);
 #endif
 
-  _scale[idx]->set_scale();  // set scale factor to 1
-  _scale[idx]->tare(myConfig.getScaleReadCountCalibration());  // zero weight
+  _scale[idx]->set_scale(); // set scale factor to 1
+  _scale[idx]->tare(myConfig.getScaleReadCountCalibration()); // zero weight
   int32_t l = _scale[idx]->get_offset();
   Log.verbose(F("Scal: New scale offset found %l [%d]." CR), l, idx);
 
@@ -273,11 +290,35 @@ float Scale::calculateNoGlasses(UnitIndex idx) {
   return glass < 0 ? 0 : glass;
 }
 
+float Scale::getPourVolume(UnitIndex idx) {
+  float fg = myConfig.getBeerFG(idx);
+
+  if(fg<1)
+    fg = 1.0;
+
+  if(isnan(_lastPourWeight[idx]) || _lastPourWeight[idx]<=0)
+    return 0;
+
+  return _lastPourWeight[idx] / fg;
+}
+
+float Scale::getLastVolume(UnitIndex idx) {
+  float fg = myConfig.getBeerFG(idx);
+
+  if(fg<1)
+    fg = 1.0;
+
+  if(isnan(_lastWeight[idx]) || _lastWeight[idx]<=0)
+    return 0;
+
+  return _lastWeight[idx] / fg;
+}
+
 float Scale::getAverageWeightDirectionCoefficient(UnitIndex idx) {
-  if (isnan(_lastAverageWeight[idx]) || !statsCount(idx)) return NAN;
+  if (isnan(_detection[idx]._lastAverageWeight) || !statsCount(idx)) return NAN;
 
   // Loop interval is 2 seconds
-  float coeff = (statsAverage(idx) - _lastAverageWeight[idx]) / 2 * 100;
+  float coeff = (statsAverage(idx) - _detection[idx]._lastAverageWeight) / 2 * 100;
 
 #if LOG_LEVEL == 6
   char s[100];
@@ -287,15 +328,6 @@ float Scale::getAverageWeightDirectionCoefficient(UnitIndex idx) {
 #endif
 
   return coeff;
-}
-
-void Scale::statsDump(UnitIndex idx) {
-  Log.notice(F("Scal: %d: Count=%d, Sum=%F, Min=%F, Max=%F" CR), idx,
-             statsCount(idx), statsSum(idx), statsMin(idx), statsMax(idx));
-  Log.notice(
-      F("Scal: %d: Average=%F, Variance=%F, PopStdev=%F, UnbiasedStdev=%F" CR),
-      idx, statsAverage(idx), statsVariance(idx), statsPopStdev(idx),
-      statsUnbiasedStdev(idx));
 }
 
 // EOF

@@ -29,6 +29,8 @@ SOFTWARE.
 
 #define PARAM_BREWFATHER_USERKEY "brewfather-userkey"
 #define PARAM_BREWFATHER_APIKEY "brewfather-apikey"
+#define PARAM_BREWSPY_TOKEN1 "brewspy-token1"
+#define PARAM_BREWSPY_TOKEN2 "brewspy-token2"
 #define PARAM_DISPLAY_LAYOUT "display-layout"
 #define PARAM_WEIGHT_UNIT "weight-unit"
 #define PARAM_VOLUME_UNIT "volume-unit"
@@ -82,13 +84,15 @@ class KegConfig : public BaseConfig {
   String _brewfatherUserKey = "";
   String _brewfatherApiKey = "";
 
+  String _brewspyToken[2] = { "", "" };
+
   DisplayLayout _displayLayout = DisplayLayout::Default;
 
   float _scaleFactor[2] = {0, 0};
   int32_t _scaleOffset[2] = {0, 0};
-  float _kegWeight[2] = {4, 4}; // Weight in kg
-  float _kegVolume[2] = {19, 19}; // Weight in liters
-  float _glassVolume[2] = {0.40, 0.40}; // Volume in liters
+  float _kegWeight[2] = {4, 4};          // Weight in kg
+  float _kegVolume[2] = {19, 19};        // Weight in liters
+  float _glassVolume[2] = {0.40, 0.40};  // Volume in liters
   BeerInfo _beer[2];
 
   float _scaleMaxDeviationValue = 0.1;
@@ -110,6 +114,12 @@ class KegConfig : public BaseConfig {
   const char* getBrewfatherApiKey() { return _brewfatherApiKey.c_str(); }
   void setBrewfatherApiKey(String s) {
     _brewfatherApiKey = s;
+    _saveNeeded = true;
+  }
+
+  const char* getBrewspyToken(int idx) { return _brewspyToken[idx].c_str(); }
+  void setBrewspyToken(int idx, String s) {
+    _brewspyToken[idx] = s;
     _saveNeeded = true;
   }
 
