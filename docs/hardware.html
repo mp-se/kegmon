@@ -91,7 +91,7 @@ stable over time. The first one is not. The difference is over 2 kg and it goes 
 weight after a few hours.</p>
 <a class="reference internal image-reference" href="_images/hx_drift.png"><img alt="Scale drift" src="_images/hx_drift.png" style="width: 600px;" /></a>
 <p>So I’m currently trying to change the hardware setup in order to determine the source of the error. I found 3 main
-types of HX711 boards:</p>
+types of HX711 boards.</p>
 <a class="reference internal image-reference" href="_images/hx711-options.png"><img alt="HX711 boards" src="_images/hx711-options.png" style="width: 600px;" /></a>
 <ul class="simple">
 <li><p>Green: Most common board when searching for HX711</p></li>
@@ -105,6 +105,8 @@ had issues with drift and varying readings. I built two scales and one had issue
 <p>2. For the second build I moved the hx711 to the display case only keeping the load cells in the scale
 base. I also changed to the purple board powered by 3.3V, currently that option works perfect with my
 two first scales.</p>
+<p>3. I discovered when running 2 scales that sharing the CLK signal to the HX711 was not a good idea, that introduced
+errors in the accuracy. So in v0.4.0 I changes the CLK signal on the second scale to D8.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>I’m currently updating the 3d model for the display case to fit the larger board.</p>
