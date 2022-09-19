@@ -47,7 +47,7 @@ class LevelDetection {
   void operator=(const LevelDetection &obj) = delete;
 
  public:
-  LevelDetection() { _filter = new SimpleKalmanFilter(1, 1, 1); }
+  LevelDetection() { _filter = new SimpleKalmanFilter(1, 1, 1.5); }
   float _lastStableWeight = NAN;
   float _lastAverageWeight = NAN;
   float _lastFilterOutput = NAN;

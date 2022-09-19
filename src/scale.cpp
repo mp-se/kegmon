@@ -112,7 +112,7 @@ void Scale::checkMaxDeviation(UnitIndex idx) {
           F("SCAL: Min/Max values deviates to much from average, restarting "
             "statistics %F-%F-%F [%d]." CR),
           statsMin(idx), statsAverage(idx), statsMax(idx), idx);
-      if (statsCount(idx) > myConfig.getScaleStableCount()) {
+      /*if (statsCount(idx) > myConfig.getScaleStableCount()) {
         Log.notice(
             F("SCAL: Value was stable, storing as stable level %F [%d]" CR),
             statsAverage(idx), idx);
@@ -125,7 +125,7 @@ void Scale::checkMaxDeviation(UnitIndex idx) {
             isConnected(UnitIndex::U2) ? getLastBeerVolumeLiters(UnitIndex::U2)
                                        : NAN,
             NAN, NAN);
-      }
+      }*/
       statsClear(idx);
     }
   }
