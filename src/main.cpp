@@ -24,7 +24,6 @@ SOFTWARE.
 #include <display.hpp>
 #include <kegconfig.hpp>
 #include <kegpush.hpp>
-// #include <kegscreen.hpp> // Future integration
 #include <kegwebhandler.hpp>
 #include <main.hpp>
 #include <ota.hpp>
@@ -38,7 +37,6 @@ KegConfig myConfig(CFG_MDNSNAME, CFG_FILENAME);
 WifiConnection myWifi(&myConfig, CFG_APPNAME, "password", CFG_MDNSNAME);
 OtaUpdate myOta(&myConfig, CFG_APPVER);
 KegWebHandler myWebHandler(&myConfig);
-// KegscreenWebHandler myWebHandler(&myConfig); // Future integration
 KegPushHandler myPush(&myConfig);
 Display myDisplay;
 Scale myScale;
@@ -94,6 +92,8 @@ void setup() {
   }
 
   myWifi.connect();
+  myWifi.timeSync();
+
   myWebHandler.setupWebServer();
   Log.notice(F("Main: Setup completed." CR));
 
@@ -142,8 +142,8 @@ void drawScreenHardwareStats(UnitIndex idx) {
     myDisplay.printLine(idx, 3, &buf[0]);
     snprintf(&buf[0], sizeof(buf), "Stat max: %.3f", myScale.statsMax(idx));
     myDisplay.printLine(idx, 4, &buf[0]);
-    snprintf(&buf[0], sizeof(buf), "Stat dev: %.3f",
-             myScale.statsPopStdev(idx));
+    /*snprintf(&buf[0], sizeof(buf), "Stat dev: %.3f",
+             myScale.statsPopStdev(idx));*/
     myDisplay.printLine(idx, 5, &buf[0]);
   }
   myDisplay.show(idx);
@@ -168,7 +168,8 @@ void drawScreenDefault(UnitIndex idx) {
     float glass = myScale.calculateNoGlasses(idx);
 
 #if LOG_LEVEL == 6
-    // Log.verbose(F("LOOP: Weight=%F Glasses=%F [%d]." CR), weight, glass, idx);
+    // Log.verbose(F("LOOP: Weight=%F Glasses=%F [%d]." CR), weight, glass,
+    // idx);
 #endif
 
     snprintf(&buf[0], sizeof(buf), "%.1f%%", myConfig.getBeerABV(idx));
@@ -277,20 +278,20 @@ void loop() {
     }
 
     if (myScale.statsCount(UnitIndex::U1) > 0) {
-      snprintf(&buf[0], sizeof(buf), ",count1=%d,average1=%f,min1=%f,max1=%f,stdev1=%f",
-               myScale.statsCount(UnitIndex::U2),
+      snprintf(&buf[0], sizeof(buf), ",count1=%d,average1=%f,min1=%f,max1=%f",
+               static_cast<int>(myScale.statsCount(UnitIndex::U2)),
                myScale.statsAverage(UnitIndex::U1),
-               myScale.statsMin(UnitIndex::U1), myScale.statsMax(UnitIndex::U1),
-               myScale.statsPopStdev(UnitIndex::U1));
+               myScale.statsMin(UnitIndex::U1),
+               myScale.statsMax(UnitIndex::U1));
       s = s + &buf[0];
     }
 
     if (myScale.statsCount(UnitIndex::U2) > 0) {
-      snprintf(&buf[0], sizeof(buf), ",count2=%d,average2=%f,min2=%f,max2=%f,stdev2=%f",
-               myScale.statsCount(UnitIndex::U2),
+      snprintf(&buf[0], sizeof(buf), ",count2=%d,average2=%f,min2=%f,max2=%f",
+               static_cast<int>(myScale.statsCount(UnitIndex::U2)),
                myScale.statsAverage(UnitIndex::U2),
-               myScale.statsMin(UnitIndex::U2), myScale.statsMax(UnitIndex::U2),
-               myScale.statsPopStdev(UnitIndex::U2));
+               myScale.statsMin(UnitIndex::U2),
+               myScale.statsMax(UnitIndex::U2));
       s = s + &buf[0];
     }
 
@@ -300,7 +301,7 @@ void loop() {
       s = s + &buf[0];
     }
 
-    float dirCoeff =
+    /*float dirCoeff =
         myScale.getAverageWeightDirectionCoefficient(UnitIndex::U1);
     if (!isnan(dirCoeff)) {
       snprintf(&buf[0], sizeof(buf), ",dirCoeff1=%f", dirCoeff);
@@ -311,7 +312,7 @@ void loop() {
     if (!isnan(dirCoeff)) {
       snprintf(&buf[0], sizeof(buf), ",dirCoeff2=%f", dirCoeff);
       s = s + &buf[0];
-    }
+    }*/
 
 #if LOG_LEVEL == 6
     // Log.verbose(F("LOOP: Sending data to influx: %s" CR), s.c_str());

@@ -41,32 +41,32 @@ Display::Display() {
 }
 
 void Display::scanI2C() {
-/*
-#if LOG_LEVEL == 6
-  Wire.begin();
+  /*
+  #if LOG_LEVEL == 6
+    Wire.begin();
 
-  byte error, address;
-  int n = 0;
+    byte error, address;
+    int n = 0;
 
-  Log.verbose(F("Scanning I2C bus for devices: "));
+    Log.verbose(F("Scanning I2C bus for devices: "));
 
-  for (address = 1; address < 127; address++) {
-    // The i2c_scanner uses the return value of
-    // the Write.endTransmisstion to see if
-    // a device did acknowledge to the address.
+    for (address = 1; address < 127; address++) {
+      // The i2c_scanner uses the return value of
+      // the Write.endTransmisstion to see if
+      // a device did acknowledge to the address.
 
-    Wire.beginTransmission(address);
-    error = Wire.endTransmission();
+      Wire.beginTransmission(address);
+      error = Wire.endTransmission();
 
-    if (error == 0) {
-      Serial.print(address, HEX);
-      Serial.print("\t");
-      n++;
+      if (error == 0) {
+        Serial.print(address, HEX);
+        Serial.print("\t");
+        n++;
+      }
     }
-  }
-  Serial.print("\n");
-#endif
-*/
+    Serial.print("\n");
+  #endif
+  */
 }
 
 void Display::setup(UnitIndex idx) {
@@ -96,7 +96,7 @@ void Display::setFont(UnitIndex idx, FontSize fs) {
   if (!_display[idx]) return;
 
 #if LOG_LEVEL == 6
-  // Log.verbose(F("Disp: Setting font size %d [%d]." CR), fs, idx);
+    // Log.verbose(F("Disp: Setting font size %d [%d]." CR), fs, idx);
 #endif
   _fontSize[idx] = fs;
 

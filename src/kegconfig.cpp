@@ -160,13 +160,14 @@ void KegConfig::parseJson(DynamicJsonDocument& doc) {
 float convertIncomingWeight(float w) {
   float r;
 
-  if (myConfig.isWeightUnitKG()) 
+  if (myConfig.isWeightUnitKG())
     r = w;
   else
     r = convertLBStoKG(w);
 
 #if LOG_LEVEL == 6
-  // Log.verbose(F("CFG : Convering %F to %F (%s)." CR), w, r, myConfig.getWeightUnit());
+    // Log.verbose(F("CFG : Convering %F to %F (%s)." CR), w, r,
+    // myConfig.getWeightUnit());
 #endif
   return r;
 }
@@ -178,11 +179,12 @@ float convertIncomingVolume(float v) {
     r = v * 100.0;
   else if (myConfig.isVolumeUnitUSOZ())
     r = convertUSOZtoCL(v);
-  else 
+  else
     r = convertUKOZtoCL(v);
 
 #if LOG_LEVEL == 6
-  // Log.verbose(F("CFG : Converting incoming volume %F to %F (%s)." CR), v, r, myConfig.getVolumeUnit());
+    // Log.verbose(F("CFG : Converting incoming volume %F to %F (%s)." CR), v,
+    // r, myConfig.getVolumeUnit());
 #endif
   return r;
 }
@@ -190,14 +192,15 @@ float convertIncomingVolume(float v) {
 float convertOutgoingWeight(float w) {
   float r;
 
-  if (myConfig.isWeightUnitKG()) 
+  if (myConfig.isWeightUnitKG())
     r = w;
-  else 
+  else
     r = convertKGtoLBS(w);
 
 #if LOG_LEVEL == 6
-  // Log.verbose(F("CFG : Converting outgoing weight %F to %F (%s)." CR), w, r, myConfig.getWeightUnit());
-#endif  
+    // Log.verbose(F("CFG : Converting outgoing weight %F to %F (%s)." CR), w,
+    // r, myConfig.getWeightUnit());
+#endif
   return r;
 }
 
@@ -207,12 +210,13 @@ float convertOutgoingVolume(float v) {
   if (myConfig.isVolumeUnitCL())
     r = (v == 0.0 ? 0.0 : v * 100.0);
   else if (myConfig.isVolumeUnitUSOZ())
-    r = convertCLtoUSOZ(v == 0.0 ? 0.0 : v*100.0);
-  else 
-    r = convertCLtoUKOZ(v == 0.0 ? 0.0 : v*100.0);
+    r = convertCLtoUSOZ(v == 0.0 ? 0.0 : v * 100.0);
+  else
+    r = convertCLtoUKOZ(v == 0.0 ? 0.0 : v * 100.0);
 
 #if LOG_LEVEL == 6
-  // Log.verbose(F("CFG : Converting outgoing volume %F to %F (%s)." CR), v, r, myConfig.getVolumeUnit());
+    // Log.verbose(F("CFG : Converting outgoing volume %F to %F (%s)." CR), v,
+    // r, myConfig.getVolumeUnit());
 #endif
   return r;
 }

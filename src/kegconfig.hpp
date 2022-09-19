@@ -100,8 +100,8 @@ class KegConfig : public BaseConfig {
   float _glassVolume[2] = {0.40, 0.40};  // Volume in liters
   BeerInfo _beer[2];
 
-  float _scaleMaxDeviationValue = 0.05;
-  uint32_t _scaleStableCount = 6;
+  float _scaleMaxDeviationValue = 0.1;
+  uint32_t _scaleStableCount = 4;
   int _scaleReadCount = 5;
   int _scaleReadCountCalibration = 30;
 

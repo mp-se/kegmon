@@ -27,7 +27,6 @@ SOFTWARE.
 #include <scale.hpp>
 #include <temp.hpp>
 #include <utils.hpp>
-#include <brewspy.hpp>
 
 // Configuration or api params
 #define PARAM_APP_VER "app-ver"
@@ -63,10 +62,10 @@ KegWebHandler::KegWebHandler(KegConfig* config) : BaseWebHandler(config) {
 
 void KegWebHandler::setupWebHandlers() {
   Log.notice(F("WEB : Setting up keg web handlers." CR));
-  _server->enableCORS(true);
-
   BaseWebHandler::setupWebHandlers();
 
+  _server->serveStatic("/levels.htm", LittleFS, LEVELS_FILENAME);
+  _server->serveStatic("/levels2.htm", LittleFS, LEVELS_FILENAME2);
   _server->on("/api/reset", HTTP_GET,
               std::bind(&KegWebHandler::webReset, this));
   _server->on("/api/scale", HTTP_GET,

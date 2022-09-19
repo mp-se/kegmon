@@ -36,8 +36,8 @@ void Scale::setup(bool force) {
     if (_scale[0]) delete _scale[0];
 
 #if LOG_LEVEL == 6
-    // Log.verbose(F("SCAL: Initializing scale [0], using offset %l." CR),
-    //            myConfig.getScaleOffset(0));
+      // Log.verbose(F("SCAL: Initializing scale [0], using offset %l." CR),
+      //            myConfig.getScaleOffset(0));
 #endif
     _scale[0] = new HX711();
     _scale[0]->begin(PIN_SCALE1_SDA, PIN_SCALE1_SCL);
@@ -57,8 +57,8 @@ void Scale::setup(bool force) {
     if (_scale[1]) delete _scale[1];
 
 #if LOG_LEVEL == 6
-    // Log.verbose(F("SCAL: Initializing scale [1], using offset %l." CR),
-    //            myConfig.getScaleOffset(1));
+      // Log.verbose(F("SCAL: Initializing scale [1], using offset %l." CR),
+      //            myConfig.getScaleOffset(1));
 #endif
     _scale[1] = new HX711();
     _scale[1]->begin(PIN_SCALE2_SDA, PIN_SCALE2_SCL);
@@ -77,8 +77,6 @@ void Scale::setup(bool force) {
   // Set the scale factor
   setScaleFactor(UnitIndex::U1);
   setScaleFactor(UnitIndex::U2);
-
-  Log.notice(F("Scal: Stable count %d, Min level change %F." CR), myConfig.getScaleStableCount(), myConfig.getScaleMaxDeviationValue() );
 }
 
 void Scale::setScaleFactor(UnitIndex idx) {
@@ -112,11 +110,21 @@ void Scale::checkMaxDeviation(UnitIndex idx) {
             statsAverage(idx)) {
       Log.notice(
           F("SCAL: Min/Max values deviates to much from average, restarting "
-            "statistics %F-%F-%F [%d]." CR), statsMin(idx), statsAverage(idx), statsMax(idx),
-          idx);
-      if( statsCount(idx) > myConfig.getScaleStableCount()) {
-        Log.notice(F("SCAL: Value was stable, storing as stable level %F [%d]" CR), statsAverage(idx), idx);
+            "statistics %F-%F-%F [%d]." CR),
+          statsMin(idx), statsAverage(idx), statsMax(idx), idx);
+      if (statsCount(idx) > myConfig.getScaleStableCount()) {
+        Log.notice(
+            F("SCAL: Value was stable, storing as stable level %F [%d]" CR),
+            statsAverage(idx), idx);
         _detection[idx]._lastStableWeight = statsAverage(idx);
+
+        myPush.pushKegInformation(idx);
+        logLevels(
+            isConnected(UnitIndex::U1) ? getLastBeerVolumeLiters(UnitIndex::U1)
+                                       : NAN,
+            isConnected(UnitIndex::U2) ? getLastBeerVolumeLiters(UnitIndex::U2)
+                                       : NAN,
+            NAN, NAN);
       }
       statsClear(idx);
     }
@@ -128,13 +136,23 @@ void Scale::checkForLevelChange(UnitIndex idx) {
   // as the latest pour.
   if (statsCount(idx) > myConfig.getScaleStableCount() &&
       hasLastStableWeight(idx)) {
-    if ((_detection[idx]._lastStableWeight + myConfig.getScaleMaxDeviationValue()) < statsAverage(idx)) {
+    if ((_detection[idx]._lastStableWeight +
+         myConfig.getScaleMaxDeviationValue()) < statsAverage(idx)) {
       Log.notice(
           F("SCAL: Level has increased, adjusting from %F to %F [%d]." CR),
           _detection[idx]._lastStableWeight, statsAverage(idx), idx);
       _detection[idx]._lastStableWeight = statsAverage(idx);
+
       myPush.pushKegInformation(idx);
-    } else if ((_detection[idx]._lastStableWeight - myConfig.getScaleMaxDeviationValue()) > statsAverage(idx)) {
+      logLevels(
+          isConnected(UnitIndex::U1) ? getLastBeerVolumeLiters(UnitIndex::U1)
+                                     : NAN,
+          isConnected(UnitIndex::U2) ? getLastBeerVolumeLiters(UnitIndex::U2)
+                                     : NAN,
+          NAN, NAN);
+
+    } else if ((_detection[idx]._lastStableWeight -
+                myConfig.getScaleMaxDeviationValue()) > statsAverage(idx)) {
       Log.notice(
           F("SCAL: Level has decreased, adjusting from %F to %F [%d]." CR),
           _detection[idx]._lastStableWeight, statsAverage(idx), idx);
@@ -144,7 +162,16 @@ void Scale::checkForLevelChange(UnitIndex idx) {
                  _lastPourWeight[idx], idx);
       float _prevStableWeight = _detection[idx]._lastStableWeight;
       _detection[idx]._lastStableWeight = statsAverage(idx);
-      myPush.pushPourInformation(idx);  // Notify registered endpoints
+
+      // Notify registered endpoints and save to log
+      myPush.pushPourInformation(idx);
+      logLevels(
+          isConnected(UnitIndex::U1) ? getLastBeerVolumeLiters(UnitIndex::U1)
+                                     : NAN,
+          isConnected(UnitIndex::U2) ? getLastBeerVolumeLiters(UnitIndex::U2)
+                                     : NAN,
+          idx == UnitIndex::U1 ? getPourVolumeLiters(idx) : NAN,
+          idx == UnitIndex::U2 ? getPourVolumeLiters(idx) : NAN);
 
 #if defined(ENABLE_INFLUX_DEBUG)
       // This part is used to send data to an influxdb in order to get data on
@@ -178,7 +205,7 @@ float Scale::readWeightKg(UnitIndex idx, bool updateStats) {
 
   float f = _scale[idx]->get_units(myConfig.getScaleReadCount());
 #if LOG_LEVEL == 6
-  // Log.verbose(F("SCAL: Reading weight=%F, updating stats %s [%d]" CR), f, 
+  // Log.verbose(F("SCAL: Reading weight=%F, updating stats %s [%d]" CR), f,
   //            updateStats ? "true" : "false", idx);
 #endif
 
@@ -194,9 +221,9 @@ float Scale::readWeightKg(UnitIndex idx, bool updateStats) {
 
   // We ignore negative values since this can be an faulty reading
   if (f < 0) {
-    Log.error(F("SCAL: Ignoring value since it's less than zero %F [%d]." CR),
+    Log.error(F("SCAL: Setting value to zero since it's less than 0 %F [%d]." CR),
               f, idx);
-    return _lastWeight[idx];
+    f = 0;
   }
 
 #if LOG_LEVEL == 6
@@ -213,6 +240,14 @@ float Scale::readWeightKg(UnitIndex idx, bool updateStats) {
     _detection[idx]._lastStableWeight = statsAverage(idx);
     Log.notice(F("SCAL: Found a new stable value %F [%d]." CR),
                _detection[idx]._lastStableWeight, idx);
+
+    myPush.pushKegInformation(idx);
+    logLevels(
+        isConnected(UnitIndex::U1) ? getLastBeerVolumeLiters(UnitIndex::U1)
+                                   : NAN,
+        isConnected(UnitIndex::U2) ? getLastBeerVolumeLiters(UnitIndex::U2)
+                                   : NAN,
+        NAN, NAN);
   }
 
   // Update the statistics with the current value
@@ -244,8 +279,8 @@ void Scale::tare(UnitIndex idx) {
               idx);
 #endif
 
-  _scale[idx]->set_scale(); // set scale factor to 1
-  _scale[idx]->tare(myConfig.getScaleReadCountCalibration()); // zero weight
+  _scale[idx]->set_scale();  // set scale factor to 1
+  _scale[idx]->tare(myConfig.getScaleReadCountCalibration());  // zero weight
   int32_t l = _scale[idx]->get_offset();
   Log.verbose(F("SCAL: New scale offset found %l [%d]." CR), l, idx);
 
@@ -297,39 +332,15 @@ float Scale::calculateNoGlasses(UnitIndex idx) {
   float glass = weight / glassWeight;
 
 #if LOG_LEVEL == 6
-  /*Log.verbose(F("SCAL: Weight=%F kg, Glass Volume=%F liter, Glass Weight=%F kg "
-                "FG=%F, Glasses=%F [%d]." CR),
+  /*Log.verbose(F("SCAL: Weight=%F kg, Glass Volume=%F liter, Glass Weight=%F kg
+     " "FG=%F, Glasses=%F [%d]." CR),
               weight, glassVol, glassWeight, fg, glass, idx);*/
 #endif
 
   return glass < 0 ? 0 : glass;
 }
 
-float Scale::getPourVolume(UnitIndex idx) {
-  float fg = myConfig.getBeerFG(idx);
-
-  if(fg<1)
-    fg = 1.0;
-
-  if(isnan(_lastPourWeight[idx]) || _lastPourWeight[idx]<=0)
-    return 0;
-
-  return _lastPourWeight[idx] / fg;
-}
-
-float Scale::getLastVolume(UnitIndex idx) {
-  float fg = myConfig.getBeerFG(idx);
-
-  if(fg<1)
-    fg = 1.0;
-
-  if(isnan(_lastWeight[idx]) || _lastWeight[idx]<=0)
-    return 0;
-
-  return _lastWeight[idx] / fg;
-}
-
-float Scale::getAverageWeightDirectionCoefficient(UnitIndex idx) {
+/*float Scale::getAverageWeightDirectionCoefficient(UnitIndex idx) {
   if (isnan(_detection[idx]._lastAverageWeight) || !statsCount(idx)) return NAN;
 
   // Loop interval is 2 seconds
@@ -337,13 +348,43 @@ float Scale::getAverageWeightDirectionCoefficient(UnitIndex idx) {
       (statsAverage(idx) - _detection[idx]._lastAverageWeight) / 2 * 100;
 
 #if LOG_LEVEL == 6
-  /*char s[100];
+  char s[100];
   snprintf(&s[0], sizeof(s), "LastAve=%.6f Ave=%6f, Coeff=%6f",
            _detection[idx]._lastAverageWeight, statsAverage(idx), coeff);
-  Log.verbose("SCAL: %s [%d]." CR, &s[0], idx);*/
+  Log.verbose("SCAL: %s [%d]." CR, &s[0], idx);
 #endif
 
   return coeff;
+}*/
+
+void Scale::logLevels(float kegVolume1, float kegVolume2, float pourVolume1,
+                      float pourVolume2) {
+  struct tm timeinfo;
+  time_t now = time(nullptr);
+  char s[100];
+  gmtime_r(&now, &timeinfo);
+  snprintf(&s[0], sizeof(s), "%04d-%02d-%02d %02d:%02d:%02d;%f;%f;%f;%f\n",
+           1900 + timeinfo.tm_year, timeinfo.tm_mon, timeinfo.tm_mday,
+           timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec,
+           kegVolume1 < 0 ? 0 : kegVolume1, kegVolume2 < 0 ? 0 : kegVolume2,
+           pourVolume1 < 0 ? 0 : pourVolume1,
+           pourVolume2 < 0 ? 0 : pourVolume2);
+
+  Log.notice(F("SCAL: Logging level change %s"), &s[0]);
+
+  File f = LittleFS.open(LEVELS_FILENAME, "a");
+
+  if (f && f.size() > LEVELS_FILEMAXSIZE) {
+    f.close();
+    bool b1 = LittleFS.remove(LEVELS_FILENAME2);
+    bool b2 = LittleFS.rename(LEVELS_FILENAME, LEVELS_FILENAME2);
+    f = LittleFS.open(LEVELS_FILENAME, "a");
+  }
+
+  if (f) {
+    f.write(&s[0], strlen(&s[0]));
+    f.close();
+  }
 }
 
 // EOF

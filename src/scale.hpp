@@ -31,6 +31,10 @@ SOFTWARE.
 #include <kegconfig.hpp>
 #include <main.hpp>
 
+#define LEVELS_FILENAME "levels.htm"
+#define LEVELS_FILENAME2 "levels2.htm"
+#define LEVELS_FILEMAXSIZE 2000
+
 // Note! Internally we assume that everything are in Metric formats, weights=Kg
 // and all volumes=Liters.
 
@@ -88,7 +92,14 @@ class Scale {
   float readWeightKg(UnitIndex idx, bool updateStats = false);
 
   float getLastWeightKg(UnitIndex idx) { return _lastWeight[idx]; }
-  float getLastBeerWeightKg(UnitIndex idx) { return _lastWeight[idx] - myConfig.getKegWeight(idx); }
+  float getLastBeerWeightKg(UnitIndex idx) {
+    return _lastWeight[idx] - myConfig.getKegWeight(idx);
+  }
+  float getLastBeerVolumeLiters(UnitIndex idx) {
+    return convertWeightKgToVolumeL(myConfig.getBeerFG(idx),
+                                    getLastBeerWeightKg(idx));
+  }
+
   // float getLastFilterWeight(UnitIndex idx) { return
   // _detection[idx]._lastFilterOutput; }
   float getAverageWeightKg(UnitIndex idx) {
@@ -115,9 +126,11 @@ class Scale {
     if (fg < 1) fg = 1;
     return isnan(kg) || kg == 0 ? 0 : kg / fg;
   }
+  void logLevels(float kegVolume1, float kegVolume2, float pourVolume1,
+                 float pourVolume2);
 
   // Statistics
-  float getAverageWeightDirectionCoefficient(UnitIndex idx);
+  // float getAverageWeightDirectionCoefficient(UnitIndex idx);
   void statsClearAll() {
     statsClear(UnitIndex::U1);
     statsClear(UnitIndex::U2);
@@ -132,7 +145,7 @@ class Scale {
   float statsAverage(UnitIndex idx) {
     return _detection[idx]._statistic.average();
   }
-  float statsVariance(UnitIndex idx) {
+  /*float statsVariance(UnitIndex idx) {
     return _detection[idx]._statistic.variance();
   }
   float statsPopStdev(UnitIndex idx) {
@@ -140,7 +153,7 @@ class Scale {
   }
   float statsUnbiasedStdev(UnitIndex idx) {
     return _detection[idx]._statistic.unbiased_stdev();
-  }
+  }*/
 
   // Stability since start
   void stabilityClearAll() {
