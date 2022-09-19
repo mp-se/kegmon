@@ -28,7 +28,7 @@ TempHumidity::TempHumidity() {}
 
 void TempHumidity::setup() {
 #if LOG_LEVEL == 6
-  Log.verbose(F("Temp: Initializing humidity sensor." CR));
+  // Log.verbose(F("Temp: Initializing humidity sensor." CR));
 #endif
   _temp = new DHT(PIN_DH2, DHT22, 1);
   _temp->begin();
@@ -39,7 +39,7 @@ float TempHumidity::getTempC() {
 
   float f = _temp->readTemperature();
 #if LOG_LEVEL == 6
-  Log.verbose(F("Temp: Reading temp %F C." CR), f);
+  // Log.verbose(F("Temp: Reading temp %F C." CR), f);
 #endif
 
   if (isnan(f)) {
@@ -57,7 +57,7 @@ float TempHumidity::getTempF() {
 
   float f = _temp->readTemperature(true);
 #if LOG_LEVEL == 6
-  Log.verbose(F("Temp: Reading temp %F F." CR), f);
+  // Log.verbose(F("Temp: Reading temp %F F." CR), f);
 #endif
 
   if (isnan(f)) {
@@ -75,7 +75,7 @@ float TempHumidity::getHumidity() {
 
   float h = _temp->readHumidity();
 #if LOG_LEVEL == 6
-  Log.verbose(F("Temp: Reading humidity %F." CR), h);
+  // Log.verbose(F("Temp: Reading humidity %F." CR), h);
 #endif
 
   if (isnan(h)) {

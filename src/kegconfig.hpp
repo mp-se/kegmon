@@ -29,11 +29,15 @@ SOFTWARE.
 
 #define PARAM_BREWFATHER_USERKEY "brewfather-userkey"
 #define PARAM_BREWFATHER_APIKEY "brewfather-apikey"
+#define PARAM_BREWSPY_TOKEN1 "brewspy-token1"
+#define PARAM_BREWSPY_TOKEN2 "brewspy-token2"
 #define PARAM_DISPLAY_LAYOUT "display-layout"
 #define PARAM_WEIGHT_UNIT "weight-unit"
 #define PARAM_VOLUME_UNIT "volume-unit"
 #define PARAM_KEG_WEIGHT1 "keg-weight1"
 #define PARAM_KEG_WEIGHT2 "keg-weight2"
+#define PARAM_KEG_VOLUME1 "keg-volume1"
+#define PARAM_KEG_VOLUME2 "keg-volume2"
 #define PARAM_GLASS_VOLUME1 "glass-volume1"
 #define PARAM_GLASS_VOLUME2 "glass-volume2"
 #define PARAM_BEER_NAME1 "beer-name1"
@@ -51,7 +55,6 @@ SOFTWARE.
 #define PARAM_SCALE_OFFSET1 "scale-offset1"
 #define PARAM_SCALE_OFFSET2 "scale-offset2"
 #define PARAM_SCALE_MAX_DEVIATION "scale-max-deviation"
-#define PARAM_SCALE_STABLE_COUNT "scale-stable-count"
 #define PARAM_SCALE_READ_COUNT "scale-read-count"
 #define PARAM_SCALE_READ_COUNT_CALIBRATION "scale-read-count-calibration"
 
@@ -66,11 +69,17 @@ struct BeerInfo {
 #define WEIGHT_KG "kg"
 #define WEIGHT_LBS "lbs"
 
-#define VOLUME_CL "kg"
+#define VOLUME_CL "cl"
 #define VOLUME_US "us-oz"
 #define VOLUME_UK "uk-oz"
 
 enum DisplayLayout { Default = 0, HardwareStats = 9 };
+
+float convertIncomingWeight(float w);
+float convertIncomingVolume(float v);
+float convertOutgoingWeight(float w);
+float convertOutgoingVolume(float v);
+float convertOutgoingTemperature(float t);
 
 class KegConfig : public BaseConfig {
  private:
@@ -80,17 +89,20 @@ class KegConfig : public BaseConfig {
   String _brewfatherUserKey = "";
   String _brewfatherApiKey = "";
 
+  String _brewspyToken[2] = {"", ""};
+
   DisplayLayout _displayLayout = DisplayLayout::Default;
 
   float _scaleFactor[2] = {0, 0};
   int32_t _scaleOffset[2] = {0, 0};
-  float _kegWeight[2] = {0, 0};          // Weight in kg
+  float _kegWeight[2] = {4, 4};          // Weight in kg
+  float _kegVolume[2] = {19, 19};        // Weight in liters
   float _glassVolume[2] = {0.40, 0.40};  // Volume in liters
   BeerInfo _beer[2];
 
-  float _scaleMaxDeviationValue = 0.1;
-  uint32_t _scaleStableCount = 10;
-  int _scaleReadCount = 10;
+  float _scaleMaxDeviationValue = 0.05;
+  uint32_t _scaleStableCount = 6;
+  int _scaleReadCount = 5;
   int _scaleReadCountCalibration = 30;
 
  public:
@@ -107,6 +119,12 @@ class KegConfig : public BaseConfig {
   const char* getBrewfatherApiKey() { return _brewfatherApiKey.c_str(); }
   void setBrewfatherApiKey(String s) {
     _brewfatherApiKey = s;
+    _saveNeeded = true;
+  }
+
+  const char* getBrewspyToken(int idx) { return _brewspyToken[idx].c_str(); }
+  void setBrewspyToken(int idx, String s) {
+    _brewspyToken[idx] = s;
     _saveNeeded = true;
   }
 
@@ -142,6 +160,12 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }
 
+  float getKegVolume(int idx) { return _kegVolume[idx]; }
+  void setKegVolume(int idx, float f) {
+    _kegVolume[idx] = f;
+    _saveNeeded = true;
+  }
+
   float getGlassVolume(int idx) { return _glassVolume[idx]; }
   void setGlassVolume(int idx, float f) {
     _glassVolume[idx] = f;
@@ -149,12 +173,17 @@ class KegConfig : public BaseConfig {
   }
 
   const char* getWeightUnit() { return _weightUnit.c_str(); }
+  bool isWeightUnitKG() { return _weightUnit.equals(WEIGHT_KG); }
+  bool isWeightUnitLBS() { return _weightUnit.equals(WEIGHT_LBS); }
   void setWeightUnit(String s) {
     _weightUnit = s;
     _saveNeeded = true;
   }
 
   const char* getVolumeUnit() { return _volumeUnit.c_str(); }
+  bool isVolumeUnitCL() { return _volumeUnit.equals(VOLUME_CL); }
+  bool isVolumeUnitUSOZ() { return _volumeUnit.equals(VOLUME_US); }
+  bool isVolumeUnitUKOZ() { return _volumeUnit.equals(VOLUME_UK); }
   void setVolumeUnit(String s) {
     _volumeUnit = s;
     _saveNeeded = true;
@@ -195,10 +224,6 @@ class KegConfig : public BaseConfig {
   // This is the number of values in the statistics for the average value to be
   // classifed as stable. Loop interval is 2s
   uint32_t getScaleStableCount() { return _scaleStableCount; }
-  void setScaleStableCount(uint32_t i) {
-    _scaleStableCount = i;
-    _saveNeeded = true;
-  }
 
   int getScaleReadCount() { return _scaleReadCount; }
   void setScaleReadCount(uint32_t i) {
@@ -228,13 +253,13 @@ class KegConfig : public BaseConfig {
   const char* getHeader2HttpGet() { return ""; }
   void setHeader2HttpGet(String header) {}
 
-  const char* getTargetInfluxDB2() { return PUSH_INFLUX_TARGET; }
+  const char* getTargetInfluxDB2() { return ""; }
   void setTargetInfluxDB2(String target) {}
-  const char* getOrgInfluxDB2() { return PUSH_INFLUX_ORG; }
+  const char* getOrgInfluxDB2() { return ""; }
   void setOrgInfluxDB2(String org) {}
-  const char* getBucketInfluxDB2() { return PUSH_INFLUX_BUCKET; }
+  const char* getBucketInfluxDB2() { return ""; }
   void setBucketInfluxDB2(String bucket) {}
-  const char* getTokenInfluxDB2() { return PUSH_INFLUX_TOKEN; }
+  const char* getTokenInfluxDB2() { return ""; }
   void setTokenInfluxDB2(String token) {}
 
   const char* getTargetMqtt() { return ""; }
@@ -247,7 +272,8 @@ class KegConfig : public BaseConfig {
   void setPassMqtt(String pass) {}
 
   // These are helper function to assist with formatting of values
-  int getWeightPrecision() { return 3; }
+  int getWeightPrecision() { return 2; }  // 2 decimans for kg
+  int getVolumePrecision() { return 0; }  // no decimals for cl
 };
 
 extern KegConfig myConfig;

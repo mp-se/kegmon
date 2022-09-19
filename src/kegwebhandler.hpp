@@ -37,7 +37,7 @@ INCBIN_EXTERN(BeerHtm);
 INCBIN_EXTERN(StabilityHtm);
 
 class KegWebHandler : public BaseWebHandler {
- private:
+ protected:
   KegConfig* _config;
 
   void setupWebHandlers();
@@ -51,6 +51,8 @@ class KegWebHandler : public BaseWebHandler {
   void webStability();
   void webStabilityClear();
   void webReset();
+  void webHandleBeerWrite();
+  void webHandleBrewspy();
 
   void webCalibrateHtm() {
     _server->send_P(200, "text/html", (const char*)gCalibrateHtmData,

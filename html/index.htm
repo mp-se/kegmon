@@ -22,7 +22,7 @@
 
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container">
-      <a class="navbar-brand" href="/index.htm">Keg Scale</a>
+      <a class="navbar-brand" href="/index.htm">Beer Keg Monitor</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -122,9 +122,19 @@
             <hr id="toggle3">
 
             <div class="row mb-3">
-              <div class="col-md-4 bg-light">Weight</div>
+              <div class="col-md-4 bg-light">Total Weight</div>
               <div class="col-md-2 bg-light" id="scale-weight1">Loading...</div> 
               <div class="col-md-2 bg-light" id="scale-weight2">Loading...</div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-4 bg-light">Beer Weight</div>
+              <div class="col-md-2 bg-light" id="beer-weight1">Loading...</div> 
+              <div class="col-md-2 bg-light" id="beer-weight2">Loading...</div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-4 bg-light">Beer Volume</div>
+              <div class="col-md-2 bg-light" id="beer-volume1">Loading...</div> 
+              <div class="col-md-2 bg-light" id="beer-volume2">Loading...</div>
             </div>
             <div class="row mb-3">
               <div class="col-md-4 bg-light">Glasses left</div>
@@ -133,8 +143,8 @@
             </div>
             <div class="row mb-3">
               <div class="col-md-4 bg-light">Last pour</div>
-              <div class="col-md-2 bg-light" id="last-pour1">Loading...</div> 
-              <div class="col-md-2 bg-light" id="last-pour2">Loading...</div>
+              <div class="col-md-2 bg-light" id="last-pour-volume1">Loading...</div> 
+              <div class="col-md-2 bg-light" id="last-pour-volume2">Loading...</div>
             </div>
           </div>
         </div>
@@ -163,6 +173,9 @@
         var volume_unit = " " + cfg["volume-unit"];
         var temp_unit = " " + cfg["temp-format"];
 
+        if( cfg["volume-unit"] != "cl" )
+          volume_unit = " fl oz.";
+
         if( cfg["temperature"] === undefined ) {
           $('#toggle1').addClass('hide').removeClass('show').addClass('d-none');
           $('#toggle2').addClass('hide').removeClass('show').addClass('d-none');
@@ -172,39 +185,40 @@
           $("#humidity").text(cfg["humidity"] + " %"); 
         }
 
-        // TODO: Need to be able to convert between kg -> lbs
-        // TODO: Need to be able to convert between cl -> US fl oz, UK fl oz
-
         if( cfg["scale-weight1"] === undefined ) {
           $("#scale-weight1").text("no scale");
+          $("#beer-weight1").text("no scale");
+          $("#beer-volume1").text("no scale");
           $("#glass1").text("no scale");
         } else {
           $("#scale-weight1").text(cfg["scale-weight1"] + weight_unit);
-          // $("#scale-weight1").text(cfg["scale-stable-weight1"] + w_unit);
+          $("#beer-weight1").text(cfg["beer-weight1"] + weight_unit);
+          $("#beer-volume1").text(cfg["beer-volume1"] + volume_unit);
           $("#glass1").text(cfg["glass1"]);
         }
 
         if( cfg["scale-weight2"] === undefined ) {
           $("#scale-weight2").text("no scale");
+          $("#beer-weight2").text("no scale");
+          $("#beer-volume2").text("no scale");
           $("#glass2").text("no scale");
         } else {
           $("#scale-weight2").text(cfg["scale-weight2"] + weight_unit);
-          // $("#scale-weight2").text(cfg["scale-stable-weight2"] + w_unit);
+          $("#beer-weight2").text(cfg["beer-weight2"] + weight_unit);
+          $("#beer-volume2").text(cfg["beer-volume2"] + volume_unit);
           $("#glass2").text(cfg["glass2"]);
         }
 
-        if( cfg["last-pour1"] === undefined ) {
-          $("#last-pour1").text("no data");
+        if( cfg["last-pour-volume1"] === undefined ) {
+          $("#last-pour-volume1").text("no data");
         } else {
-          var pour = parseFloat(cfg["last-pour1"]*100).toFixed(0);
-          $("#last-pour1").text(pour + " cl");
+          $("#last-pour-volume1").text(cfg["last-pour-volume1"] + " " + volume_unit);
         }
 
-        if( cfg["last-pour2"] === undefined ) {
-          $("#last-pour2").text("no data");
+        if( cfg["last-pour-volume2"] === undefined ) {
+          $("#last-pour-volume2").text("no data");
         } else {
-          var pour = parseFloat(cfg["last-pour2"]*100).toFixed(0);
-          $("#last-pour2").text(pour + " cl");
+          $("#last-pour-volume2").text(cfg["last-pour-volume2"] + " " + volume_unit);
         }
       })
       .fail(function () {

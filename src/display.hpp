@@ -24,9 +24,6 @@ SOFTWARE.
 #ifndef SRC_DISPLAY_HPP_
 #define SRC_DISPLAY_HPP_
 
-// #define DRIVER_1106
-#define DRIVER_1306
-
 #if defined(DRIVER_1106)
 #include <SH1106Wire.h>
 #elif defined(DRIVER_1306)

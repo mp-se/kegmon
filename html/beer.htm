@@ -27,7 +27,7 @@
 
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container">
-      <a class="navbar-brand" href="/index.htm">Keg Scale</a>
+      <a class="navbar-brand" href="/index.htm">Beer Keg Monitor</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -96,7 +96,7 @@
         <div id="collapseBeer" class="accordion-collapse collapse show" aria-labelledby="headingBeer"
           data-bs-parent="#accordion">
           <div class="accordion-body">
-            <form action="/api/config" method="post">
+            <form action="/api/beer" method="post">
               <input type="text" name="id" id="id1" hidden>
               <input type="text" name="section" value="#collapseBeer" hidden>
 
@@ -147,21 +147,73 @@
                 </div>
               </div>
 
+              <div class="row mb-3">
+                <label for="keg-volume1" class="col-sm-2 col-form-label">Keg volume</label>
+                <div class="col-sm-3">
+                  <select class="form-select col-sm-3" required name="keg-volume1" id="keg-volume1"
+                    data-bs-toggle="tooltip" title="Select the volume of your keg.">
+                    <option value="5">Mini 5l / 1.32gal / 169oz</option>
+                    <option value="9">Cornelious 9l</option>
+                    <option value="10">Mini 10l</option>
+                    <option value="18">Cornelius 18l</option>
+                    <option value="19">Cornelius 19l / 5gal / 640oz</option>
+                    <option value="20">Keykeg 20l</option>
+                    <option value="19.5">Sixth Barrel 5.16gal / 640oz</option>
+                    <option value="29.3">Quarter Barrel 7.75gal / 992oz</option>
+                    <option value="29">Unittank 29l</option>
+                    <option value="58.7">Half Barrel 15.5gal / 1984oz</option>
+                    <option value="58">Kegmenter 58l</option>
+                  </select>
+                </div>
+                <div class="col-sm-3">
+                  <select class="form-select col-sm-3" required name="keg-volume2" id="keg-volume2"
+                    data-bs-toggle="tooltip" title="Select the volume of your keg.">
+                    <option value="5">Mini 5l / 1.32gal / 169oz</option>
+                    <option value="9">Cornelious 9l</option>
+                    <option value="10">Mini 10l</option>
+                    <option value="18">Cornelius 18l</option>
+                    <option value="19">Cornelius 19l / 5gal / 640oz</option>
+                    <option value="20">Keykeg 20l</option>
+                    <option value="19.5">Sixth Barrel 5.16gal / 640oz</option>
+                    <option value="29.3">Quarter Barrel 7.75gal / 992oz</option>
+                    <option value="29">Unittank 29l</option>
+                    <option value="58.7">Half Barrel 15.5gal / 1984oz</option>
+                    <option value="58">Kegmenter 58l</option>
+                  </select>
+                </div>
+              </div>
+
               <hr>
 
               <div class="row mb-3">
-                <label for="keg-weight1" class="col-sm-2 col-form-label"></label>
+                <label class="col-sm-2 col-form-label">Fetch data</label>
                 <div class="col-sm-3">
-                  <button type="button" class="btn btn-secondary" data-field1="1" data-bs-toggle="modal"
-                    data-bs-target="#modal-brewfather" data-bs-toggle="tooltip"
-                    title="Select a brew from brewfather">Fetch from Brewfather</button>
+                  <button type="button" id="brewfather1-btn" class="btn btn-secondary col-sm-8" data-field1="1"
+                    data-bs-toggle="modal" data-bs-target="#brewfather-modal" data-bs-toggle="tooltip"
+                    title="Select a brew from brewfather">Brewfather (1)</button>
                 </div>
                 <div class="col-sm-3">
-                  <button type="button" class="btn btn-secondary" data-field1="2" data-bs-toggle="modal"
-                    data-bs-target="#modal-brewfather" data-bs-toggle="tooltip"
-                    title="Select a brew from brewfather">Fetch from Brewfather</button>
+                  <button type="button" id="brewfather2-btn" class="btn btn-secondary col-sm-8" data-field1="2"
+                    data-bs-toggle="modal" data-bs-target="#brewfather-modal" data-bs-toggle="tooltip"
+                    title="Select a brew from brewfather">Brewfather (2)</button>
                 </div>
               </div>
+
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label"></label>
+                <div class="col-sm-3">
+                  <button type="button" id="brewspy1-btn" class="btn btn-secondary col-sm-8" data-field1="1"
+                    data-bs-toggle="modal" data-bs-target="#brewspy-modal" data-bs-toggle="tooltip"
+                    title="Fetch brew from brewspy, token must be configured under configuration">Brewspy (1)</button>
+                </div>
+                <div class="col-sm-3">
+                  <button type="button" id="brewspy2-btn" class="btn btn-secondary col-sm-8" data-field1="2"
+                    data-bs-toggle="modal" data-bs-target="#brewspy-modal" data-bs-toggle="tooltip"
+                    title="Fetch brew from brewspy, token must be configured under configuration">Brewspy (2)</button>
+                </div>
+              </div>
+
+              <hr>
 
               <div class="row mb-3">
                 <label for="beer-name1" class="col-sm-2 col-form-label">Beer name</label>
@@ -215,33 +267,28 @@
 
               <div class="row mb-3">
                 <div class="col-sm-8 offset-sm-2">
-                  <button type="submit" class="btn btn-primary" id="push-btn">Save</button>
+                  <button type="submit" class="btn btn-primary" id="beer-btn">Save</button>
                 </div>
               </div>
             </form>
-
           </div>
         </div>
       </div>
-
     </div>
   </div>
 
-  <div class="modal fade" id="modal-brewfather" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  <div class="modal fade" id="brewfather-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-labelledby="modal-header" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="modal-header">Fetch beer from Brewfather</h5>
+          <h5 class="modal-title" id="brewfather-modal-header">Fetch beer from Brewfather</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-
-          <input type="text" id="field1" hidden>
-
+          <input type="text" id="brewfather-field1" hidden>
           <div class="row mb-3">
             <label class="col-sm-4 col-form-label" for="brewfather-list">Select beer</label>
-
             <div class="col-sm-8">
               <select class="form-select" id="brewfather-list" name="brewfather-list" data-bs-toggle="tooltip"
                 title="List of beers fetched from Brewfather">
@@ -250,7 +297,6 @@
             </div>
           </div>
         </div>
-
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" data-bs-dismiss="modal" data-bs-toggle="tooltip"
             title="Close dialog, press the save button in the section to save data">Close</button>
@@ -292,23 +338,25 @@
       return count;
     }
 
-    $('#modal-brewfather').on('show.bs.modal', function (event) {
+    $('#brewfather-modal').on('show.bs.modal', function (event) {
       var button = $(event.relatedTarget)
       var field1 = button.data('field1')
       var modal = $(this);
-      modal.find('.modal-body #field1').val(field1)
+      modal.find('.modal-body #brewfather-field1').val(field1)
+
+      $("#brewfather-list").empty();
 
       getBrewfatherBatches();
       // parseBrewfatherBatches();
     })
 
-    $('#modal-brewfather').on('hide.bs.modal', function (event) {
+    $('#brewfather-modal').on('hide.bs.modal', function (event) {
       var modal = $(this);
 
       beerId = modal.find('.modal-body #brewfather-list').val();
       for (var i = 0; i < brewFatherBatches.length; i++) {
         if (beerId == brewFatherBatches[i]['_id']) {
-          if ($("#field1").val() == "1") {
+          if ($("#brewfather-field1").val() == "1") {
             $("#beer-name1").val(brewFatherBatches[i]['recipe']['name']);
             $("#beer-abv1").val(brewFatherBatches[i]['measuredAbv']);
             $("#beer-ebc1").val(Math.round(brewFatherBatches[i]['estimatedColor']));
@@ -325,24 +373,23 @@
       }
     })
 
-    function hideModal() {
-      $('#modal-brewfather').hide();
-      $(".modal-backdrop").hide();
+    function hideModalBrewfather() {
+      setTimeout( function() { 
+        $('#brewfather-modal').hide();
+        $(".modal-backdrop").hide();
+      }, 1000);
     }
 
     function getBrewfatherBatches() {
-      var userkey = $("#brewfather-userkey").val();
-      var apikey = $("#brewfather-apikey").val();
-
       $("#brewfather-list").prop("disabled", true);
 
-      if (userkey == "" || apikey == "") {
+      if (brewFatherUserKey == "" || brewFatherApiKey == "") {
         showError('No user and api key is defined for brewfather.');
-        hideModal();
+        hideModalBrewfather();
         return;
       }
 
-      var auth = userkey + ":" + apikey;
+      var auth = brewFatherUserKey + ":" + brewFatherApiKey;
 
       $('#spinner').show();
       $.ajax({
@@ -359,31 +406,133 @@
           if (parseBrewfatherBatches() > 0) {
             $("#brewfather-list").prop("disabled", false);
           }
+          $('#spinner').hide();
         },
         statusCode: {
           401: function () {
-            showError('Brewfather error 401 - Unauthorized.');
-            hideModal();
+            showError('Brewfather error 401 - Unauthorized, check your api/user keys.');
+            hideModalBrewfather();
+            $('#spinner').hide();
           }
         },
         fail: function () {
-          showError('Unable to get data brewfather. There are limitation on how often the API can be called per hour.');
-          hideModal();
-        },
-        always: function () {
+          showError('Unable to get data from brewfather. There are limitation on how often the API can be called per hour.');
+          hideModalBrewfather();
           $('#spinner').hide();
         }
       });
     }
   </script>
 
+  <div class="modal fade" id="brewspy-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="modal-header" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="brewspy-modal-header">Fetch beer from Brewspy</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="text" id="brewspy-field1" hidden>
+          <div class="row mb-3">
+            <label class="col-sm-12 col-form-label" id="brewspy-status">Connecting to brew-spy.com</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var brewSpyJson = {}
+
+    $('#brewspy-modal').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget)
+      var field1 = button.data('field1')
+      var modal = $(this);
+      modal.find('.modal-body #brewspy-field1').val(field1)
+  
+      getBrewspyBatch();
+    })
+   
+    function hideModalBrewspy() {
+      setTimeout( function() { 
+        $('#brewspy-modal').hide();
+        $(".modal-backdrop").hide();
+
+        if ( brewSpyJson["recipe"] === undefined ) {
+          console.log( "No response to process" );
+        } else {
+          if ($("#brewspy-field1").val() == "1") {
+            $("#beer-name1").val(brewSpyJson["recipe"]);
+            $("#beer-abv1").val(brewSpyJson["abv"]);
+            $("#beer-ebc1").val("0");
+            $("#beer-ibu1").val("0");
+            $("#beer-fg1").val("1");
+          } else {
+            $("#beer-name2").val(brewSpyJson["recipe"]);
+            $("#beer-abv2").val(brewSpyJson["abv"]);
+            $("#beer-ebc2").val("0");
+            $("#beer-ibu2").val("0");
+            $("#beer-fg2").val("1");
+          }
+        }
+      }, 1000);
+    }
+  
+    function getBrewspyBatch() {
+      index = $("#brewspy-field1").val();
+
+      if( (brewspyToken1 == "" && index == "1") || (brewspyToken2 == "" && index == "2")) {
+        showError('No token defined for brewspy and selected tap.');
+        hideModalBrewspy();
+        return;
+      }
+
+      $('#spinner').show();
+      url = '/api/brewspy/tap?token=';
+      if( index == "1")
+        url = url + brewspyToken1;
+      else 
+        url = url + brewspyToken2;
+      console.log( "Brewspy url: " + url)
+
+      $.ajax({
+        url:  url,
+        // url: '../test/brewspy.json',
+        type: 'GET',
+        success: function (res) {
+          brewSpyJson = res
+          console.log(brewSpyJson);
+          hideModalBrewspy();
+          $('#spinner').hide();
+        },
+        error: function() {
+          showError('Brewspy error, check your token.');
+          hideModalBrewspy();
+          $('#spinner').hide();
+        }
+      });
+    }
+  </script>
+
+
   <script type="text/javascript">
     window.onload = getConfig;
+
+    var brewFatherApiKey = ""
+    var brewFatherUserKey = ""
+
+    var brewspyToken1 = ""
+    var brewspyToken2 = ""
 
     setButtonDisabled(true);
 
     function setButtonDisabled(b) {
-      $("#config-btn").prop("disabled", b);
+      $("#beer-btn").prop("disabled", b);
+      $("#brewfather1-btn").prop("disabled", b);
+      $("#brewfather2-btn").prop("disabled", b);
+      $("#brewspy1-btn").prop("disabled", b);
+      $("#brewspy2-btn").prop("disabled", b);
     }
 
     // Get the configuration values from the API
@@ -391,16 +540,24 @@
       setButtonDisabled(true);
 
       var url = "/api/config";
-      //var url = "/test/config.json";
+      // var url = "/test/config.json";
       $('#spinner').show();
       $.getJSON(url, function (cfg) {
         console.log(cfg);
 
         $("#id1").val(cfg["id"]);
 
+        brewFatherUserKey = cfg["brewfather-userkey"];
+        brewFatherApiKey = cfg["brewfather-apikey"];
+
         $("#keg-weight-unit").text(cfg["weight-unit"]);
         $("#glass-volume-unit").text(cfg["volume-unit"]);
 
+        brewspyToken1 = cfg["brewspy-token1"];
+        brewspyToken2 = cfg["brewspy-token2"];
+
+        $("#keg-volume1").val(cfg["keg-volume1"]);
+        $("#keg-volume2").val(cfg["keg-volume2"]);
         $("#keg-weight1").val(cfg["keg-weight1"]);
         $("#keg-weight2").val(cfg["keg-weight2"]);
         $("#glass-volume1").val(cfg["glass-volume1"]);

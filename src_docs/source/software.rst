@@ -7,6 +7,9 @@ THe software is tailored towards my personal needs and external service
 that I use. The software has two interfaces, one via the OLED displays and 
 one via the web-browser.
 
+The scale seams to be much more stable now that I added a kalman filter as the first step,
+this eliminates the big changes in values. It takes a few seconds for the level to stabilize but
+that's not a big issue. 
 
 Installation
 ************

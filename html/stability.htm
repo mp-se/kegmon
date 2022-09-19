@@ -22,7 +22,7 @@
 
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container">
-      <a class="navbar-brand" href="/index.htm">Keg Scale</a>
+      <a class="navbar-brand" href="/index.htm">Beer Keg Monitor</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -140,22 +140,6 @@
         error: function(result) { showError('Unable to clear stability statistics.'); }
       } );
     });
-
-    function weight(unit, kg) {
-      if(unit == "kg") 
-        return Number.parseFloat(kg).toFixed(3) + " kg";
-
-        
-
-      return Number.parseFloat(kg * 2.20462262185).toFixed(3) + " lbs";
-    }
-
-    function weightSmall(unit, kg) {
-      if(unit == "kg") 
-        return Number.parseFloat(kg*1000).toFixed(0) + " gram";
-
-      return Number.parseFloat(kg*35.27396195).toFixed(1) + " oz";
-    }
 
     function getStatus() {
       var url = "/api/stability";
