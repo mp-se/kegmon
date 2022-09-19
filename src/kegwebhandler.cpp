@@ -21,6 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
+#include <kegpush.hpp>
 #include <kegwebhandler.hpp>
 #include <main.hpp>
 #include <scale.hpp>
@@ -41,14 +42,20 @@ SOFTWARE.
 // Additional scale values
 #define PARAM_SCALE_WEIGHT1 "scale-weight1"
 #define PARAM_SCALE_WEIGHT2 "scale-weight2"
+#define PARAM_BEER_WEIGHT1 "beer-weight1"
+#define PARAM_BEER_WEIGHT2 "beer-weight2"
+#define PARAM_BEER_VOLUME1 "beer-volume1"
+#define PARAM_BEER_VOLUME2 "beer-volume2"
 #define PARAM_SCALE_RAW1 "scale-raw1"
 #define PARAM_SCALE_RAW2 "scale-raw2"
 #define PARAM_GLASS1 "glass1"
 #define PARAM_GLASS2 "glass2"
 #define PARAM_SCALE_STABLE_WEIGHT1 "scale-stable-weight1"
 #define PARAM_SCALE_STABLE_WEIGHT2 "scale-stable-weight2"
-#define PARAM_LAST_POUR1 "last-pour1"
-#define PARAM_LAST_POUR2 "last-pour2"
+#define PARAM_LAST_POUR_WEIGHT1 "last-pour-weight1"
+#define PARAM_LAST_POUR_WEIGHT2 "last-pour-weight2"
+#define PARAM_LAST_POUR_VOLUME1 "last-pour-volume1"
+#define PARAM_LAST_POUR_VOLUME2 "last-pour-volume2"
 
 KegWebHandler::KegWebHandler(KegConfig* config) : BaseWebHandler(config) {
   _config = config;
@@ -82,15 +89,16 @@ void KegWebHandler::setupWebHandlers() {
               std::bind(&KegWebHandler::webStabilityHtm, this));
   _server->on("/api/brewspy/tap", HTTP_GET,
               std::bind(&KegWebHandler::webHandleBrewspy, this));
+  _server->on("/api/beer", HTTP_POST,
+              std::bind(&KegWebHandler::webHandleBeerWrite, this));
 }
 
 void KegWebHandler::webHandleBrewspy() {
   String token = _server->arg("token");
-  Log.notice(F("WEB : webServer callback /api/brewspy/tap %s." CR), token.c_str());
+  Log.notice(F("WEB : webServer callback /api/brewspy/tap %s." CR),
+             token.c_str());
 
-  BrewspyPushHandler brewspy = BrewspyPushHandler(&myConfig);
-  String json = brewspy.getTapInformation(token);
-
+  String json = myPush.requestTapInfoFromBrewspy(token);
   _server->send(200, "application/json", json.c_str());
 }
 
@@ -137,7 +145,7 @@ void KegWebHandler::webScaleTare() {
 }
 
 void KegWebHandler::webScaleFactor() {
-  float weight = _server->arg(PARAM_WEIGHT).toFloat();
+  float weight = convertIncomingWeight(_server->arg(PARAM_WEIGHT).toFloat());
   UnitIndex idx;
 
   // Request will contain 1 or 2, but we need 0 or 1 for indexing.
@@ -147,7 +155,7 @@ void KegWebHandler::webScaleFactor() {
     idx = UnitIndex::U2;
 
   Log.notice(
-      F("WEB : webServer callback /api/scale/factor, weight=%F [%d]." CR),
+      F("WEB : webServer callback /api/scale/factor, weight=%Fkg [%d]." CR),
       weight, idx);
 
   myScale.findFactor(idx, weight);
@@ -175,38 +183,62 @@ void KegWebHandler::populateScaleJson(DynamicJsonDocument& doc) {
 
   if (myScale.isConnected(UnitIndex::U1)) {
     doc[PARAM_SCALE_WEIGHT1] = reduceFloatPrecision(
-        myScale.getLastWeight(UnitIndex::U1), myConfig.getWeightPrecision());
-    doc[PARAM_SCALE_RAW1] = myScale.readRawWeight(UnitIndex::U1);
+        convertOutgoingWeight(myScale.getLastWeightKg(UnitIndex::U1)),
+        myConfig.getWeightPrecision());
+    doc[PARAM_SCALE_RAW1] = myScale.readRawWeightKg(UnitIndex::U1);
     doc[PARAM_SCALE_OFFSET1] = myConfig.getScaleOffset(0);
+    doc[PARAM_BEER_WEIGHT1] = reduceFloatPrecision(
+        convertOutgoingWeight(myScale.getLastStableWeightKg(UnitIndex::U1) -
+                              myConfig.getKegWeight(UnitIndex::U1)),
+        myConfig.getWeightPrecision());
+    doc[PARAM_BEER_VOLUME1] = reduceFloatPrecision(
+        convertOutgoingVolume(myScale.getLastStableVolumeLiters(UnitIndex::U1)),
+        myConfig.getVolumePrecision());
   }
 
   if (myScale.isConnected(UnitIndex::U2)) {
     doc[PARAM_SCALE_WEIGHT2] = reduceFloatPrecision(
-        myScale.getLastWeight(UnitIndex::U2), myConfig.getWeightPrecision());
-    doc[PARAM_SCALE_RAW2] = myScale.readRawWeight(UnitIndex::U2);
+        convertOutgoingWeight(myScale.getLastWeightKg(UnitIndex::U2)),
+        myConfig.getWeightPrecision());
+    doc[PARAM_SCALE_RAW2] = myScale.readRawWeightKg(UnitIndex::U2);
     doc[PARAM_SCALE_OFFSET2] = myConfig.getScaleOffset(1);
+    doc[PARAM_BEER_WEIGHT2] = reduceFloatPrecision(
+        convertOutgoingWeight(myScale.getLastStableWeightKg(UnitIndex::U2) -
+                              myConfig.getKegWeight(UnitIndex::U2)),
+        myConfig.getWeightPrecision());
+    doc[PARAM_BEER_VOLUME2] = reduceFloatPrecision(
+        convertOutgoingVolume(myScale.getLastStableVolumeLiters(UnitIndex::U2)),
+        myConfig.getVolumePrecision());
   }
 
   if (myScale.hasLastStableWeight(UnitIndex::U1)) {
-    doc[PARAM_SCALE_STABLE_WEIGHT1] =
-        reduceFloatPrecision(myScale.getLastStableWeight(UnitIndex::U1),
-                             myConfig.getWeightPrecision());
+    doc[PARAM_SCALE_STABLE_WEIGHT1] = reduceFloatPrecision(
+        convertOutgoingWeight(myScale.getLastStableWeightKg(UnitIndex::U1)),
+        myConfig.getWeightPrecision());
   }
 
   if (myScale.hasLastStableWeight(UnitIndex::U2)) {
-    doc[PARAM_SCALE_STABLE_WEIGHT2] =
-        reduceFloatPrecision(myScale.getLastStableWeight(UnitIndex::U2),
-                             myConfig.getWeightPrecision());
+    doc[PARAM_SCALE_STABLE_WEIGHT2] = reduceFloatPrecision(
+        convertOutgoingWeight(myScale.getLastStableWeightKg(UnitIndex::U2)),
+        myConfig.getWeightPrecision());
   }
 
   if (myScale.hasPourWeight(UnitIndex::U1)) {
-    doc[PARAM_LAST_POUR1] =
-        reduceFloatPrecision(myScale.getPourWeight(UnitIndex::U1), 3);
+    doc[PARAM_LAST_POUR_WEIGHT1] = reduceFloatPrecision(
+        convertOutgoingWeight(myScale.getPourWeightKg(UnitIndex::U1)),
+        myConfig.getWeightPrecision());
+    doc[PARAM_LAST_POUR_VOLUME1] = reduceFloatPrecision(
+        convertOutgoingVolume(myScale.getPourVolumeLiters(UnitIndex::U1)),
+        myConfig.getVolumePrecision());
   }
 
   if (myScale.hasPourWeight(UnitIndex::U2)) {
-    doc[PARAM_LAST_POUR2] =
-        reduceFloatPrecision(myScale.getPourWeight(UnitIndex::U2), 3);
+    doc[PARAM_LAST_POUR_WEIGHT2] = reduceFloatPrecision(
+        convertOutgoingWeight(myScale.getPourWeightKg(UnitIndex::U2)),
+        myConfig.getWeightPrecision());
+    doc[PARAM_LAST_POUR_VOLUME2] = reduceFloatPrecision(
+        convertOutgoingVolume(myScale.getPourVolumeLiters(UnitIndex::U2)),
+        myConfig.getVolumePrecision());
   }
 
 #if LOG_LEVEL == 6
@@ -240,10 +272,7 @@ void KegWebHandler::webStatus() {
   float f = myTemp.getTempC();
 
   if (!isnan(f)) {
-
-    // TODO: Add conversion to F if that is selected!
-
-    doc[PARAM_TEMP] = f;
+    doc[PARAM_TEMP] = convertOutgoingTemperature(f);
     doc[PARAM_HUMIDITY] = myTemp.getHumidity();
   }
 
@@ -276,7 +305,8 @@ void KegWebHandler::webStability() {
 
   DynamicJsonDocument doc(500);
 
-  doc[PARAM_WEIGHT_UNIT] = myConfig.getWeightUnit();
+  doc[PARAM_WEIGHT_UNIT] = WEIGHT_KG;  // myConfig.getWeightUnit(); Always use
+                                       // KG for the stability data
 
   if (myScale.stabilityCount(UnitIndex::U1) > 1) {
     doc[PARAM_STABILITY_COUNT1] = myScale.stabilityCount(UnitIndex::U1);
@@ -330,6 +360,50 @@ void KegWebHandler::webStabilityClear() {
   myScale.stabilityClear(UnitIndex::U2);
 
   _server->send(200, "application/json", "{}");
+}
+
+void KegWebHandler::webHandleBeerWrite() {
+  String id = _server->arg(PARAM_ID);
+  Log.notice(F("WEB : webServer callback for /api/beer." CR));
+
+  if (!id.equalsIgnoreCase(_webConfig->getID())) {
+    Log.error(F("WEB : Wrong ID received %s, expected %s" CR), id.c_str(),
+              _webConfig->getID());
+    _server->send(400, "text/plain", "Invalid ID.");
+    return;
+  }
+
+  DynamicJsonDocument doc(2000);
+
+  // Mapping post format to json for parsing in config class
+  for (int i = 0; i < _server->args(); i++) {
+    String arg = _server->argName(i);
+
+    if (!arg.compareTo("plain") || !arg.compareTo(PARAM_ID) ||
+        !arg.compareTo(PARAM_PASS) || !arg.compareTo(PARAM_PASS2) ||
+        !arg.compareTo(PARAM_SSID) || !arg.compareTo(PARAM_SSID2)) {
+      Log.verbose(F("WEB : Skipping param %ss" CR), arg.c_str());
+    } else {
+      Log.verbose(F("WEB : Adding param %s=%s" CR), arg.c_str(),
+                  _server->arg(i).c_str());
+      doc[arg] = _server->arg(i);
+    }
+  }
+
+#if LOG_LEVEL == 6
+  serializeJson(doc, Serial);
+  Serial.print(CR);
+#endif
+
+  _webConfig->parseJson(doc);
+  _webConfig->saveFile();
+
+  String path = "/beer.htm";
+
+  if (_server->hasArg("section")) path += _server->arg("section").c_str();
+
+  _server->sendHeader("Location", path, true);
+  _server->send(302, "text/plain", "Config saved");
 }
 
 // EOF

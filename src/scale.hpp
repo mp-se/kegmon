@@ -25,22 +25,25 @@ SOFTWARE.
 #define SRC_SCALE_HPP_
 
 #include <HX711.h>
-#include <Statistic.h>
 #include <SimpleKalmanFilter.h>
+#include <Statistic.h>
 
+#include <kegconfig.hpp>
 #include <main.hpp>
 
-// Note! Internally we assume that all weights are in KG and all volumes are in Liters.
+// Note! Internally we assume that everything are in Metric formats, weights=Kg
+// and all volumes=Liters.
 
 class LevelDetection {
  private:
   float _filterBaseline = NAN;
   SimpleKalmanFilter *_filter;
 
+  LevelDetection(const LevelDetection &obj) = delete;
+  void operator=(const LevelDetection &obj) = delete;
+
  public:
-  LevelDetection() {
-    _filter = new SimpleKalmanFilter(1, 1, 1);
-  }
+  LevelDetection() { _filter = new SimpleKalmanFilter(1, 1, 1); }
   float _lastStableWeight = NAN;
   float _lastAverageWeight = NAN;
   float _lastFilterOutput = NAN;
@@ -64,8 +67,8 @@ class Scale {
     _detection[idx]._stability.add(val);
   }
 
-  void validateScaleLevel(UnitIndex idx);
-  void checkForPour(UnitIndex idx);
+  void checkMaxDeviation(UnitIndex idx);
+  void checkForLevelChange(UnitIndex idx);
 
  public:
   Scale();
@@ -81,22 +84,37 @@ class Scale {
   bool hasPourWeight(UnitIndex idx) { return !isnan(_lastPourWeight[idx]); }
 
   // Read from scale
-  int32_t readRawWeight(UnitIndex idx);
-  float readWeight(UnitIndex idx, bool updateStats = false);
+  int32_t readRawWeightKg(UnitIndex idx);
+  float readWeightKg(UnitIndex idx, bool updateStats = false);
 
-  float getLastWeight(UnitIndex idx) { return _lastWeight[idx]; }
-  float getLastFilterWeight(UnitIndex idx) { return _detection[idx]._lastFilterOutput; }
-  float getLastVolume(UnitIndex idx);
-  float getAverageWeight(UnitIndex idx) {
+  float getLastWeightKg(UnitIndex idx) { return _lastWeight[idx]; }
+  float getLastBeerWeightKg(UnitIndex idx) { return _lastWeight[idx] - myConfig.getKegWeight(idx); }
+  // float getLastFilterWeight(UnitIndex idx) { return
+  // _detection[idx]._lastFilterOutput; }
+  float getAverageWeightKg(UnitIndex idx) {
     return statsCount(idx) > 0 ? statsAverage(idx) : _lastWeight[idx];
   }
 
-  float getLastStableWeight(UnitIndex idx) { return _detection[idx]._lastStableWeight; }
-  float getPourWeight(UnitIndex idx) { return _lastPourWeight[idx]; }
-  float getPourVolume(UnitIndex idx);
+  float getLastStableWeightKg(UnitIndex idx) {
+    return _detection[idx]._lastStableWeight;
+  }
+  float getLastStableVolumeLiters(UnitIndex idx) {
+    return convertWeightKgToVolumeL(
+        myConfig.getBeerFG(idx),
+        _detection[idx]._lastStableWeight - myConfig.getKegWeight(idx));
+  }
+  float getPourWeightKg(UnitIndex idx) { return _lastPourWeight[idx]; }
+  float getPourVolumeLiters(UnitIndex idx) {
+    return convertWeightKgToVolumeL(myConfig.getBeerFG(idx),
+                                    _lastPourWeight[idx]);
+  }
 
   // Helper methods
   float calculateNoGlasses(UnitIndex idx);
+  float convertWeightKgToVolumeL(float fg, float kg) {
+    if (fg < 1) fg = 1;
+    return isnan(kg) || kg == 0 ? 0 : kg / fg;
+  }
 
   // Statistics
   float getAverageWeightDirectionCoefficient(UnitIndex idx);
@@ -105,13 +123,21 @@ class Scale {
     statsClear(UnitIndex::U2);
   }
   void statsClear(UnitIndex idx) { _detection[idx]._statistic.clear(); }
-  uint32_t statsCount(UnitIndex idx) { return _detection[idx]._statistic.count(); }
+  uint32_t statsCount(UnitIndex idx) {
+    return _detection[idx]._statistic.count();
+  }
   float statsSum(UnitIndex idx) { return _detection[idx]._statistic.sum(); }
   float statsMin(UnitIndex idx) { return _detection[idx]._statistic.minimum(); }
   float statsMax(UnitIndex idx) { return _detection[idx]._statistic.maximum(); }
-  float statsAverage(UnitIndex idx) { return _detection[idx]._statistic.average(); }
-  float statsVariance(UnitIndex idx) { return _detection[idx]._statistic.variance(); }
-  float statsPopStdev(UnitIndex idx) { return _detection[idx]._statistic.pop_stdev(); }
+  float statsAverage(UnitIndex idx) {
+    return _detection[idx]._statistic.average();
+  }
+  float statsVariance(UnitIndex idx) {
+    return _detection[idx]._statistic.variance();
+  }
+  float statsPopStdev(UnitIndex idx) {
+    return _detection[idx]._statistic.pop_stdev();
+  }
   float statsUnbiasedStdev(UnitIndex idx) {
     return _detection[idx]._statistic.unbiased_stdev();
   }
@@ -122,13 +148,25 @@ class Scale {
     stabilityClear(UnitIndex::U2);
   }
   void stabilityClear(UnitIndex idx) { _detection[idx]._stability.clear(); }
-  uint32_t stabilityCount(UnitIndex idx) { return _detection[idx]._stability.count(); }
+  uint32_t stabilityCount(UnitIndex idx) {
+    return _detection[idx]._stability.count();
+  }
   float stabilitySum(UnitIndex idx) { return _detection[idx]._stability.sum(); }
-  float stabilityMin(UnitIndex idx) { return _detection[idx]._stability.minimum(); }
-  float stabilityMax(UnitIndex idx) { return _detection[idx]._stability.maximum(); }
-  float stabilityAverage(UnitIndex idx) { return _detection[idx]._stability.average(); }
-  float stabilityVariance(UnitIndex idx) { return _detection[idx]._stability.variance(); }
-  float stabilityPopStdev(UnitIndex idx) { return _detection[idx]._stability.pop_stdev(); }
+  float stabilityMin(UnitIndex idx) {
+    return _detection[idx]._stability.minimum();
+  }
+  float stabilityMax(UnitIndex idx) {
+    return _detection[idx]._stability.maximum();
+  }
+  float stabilityAverage(UnitIndex idx) {
+    return _detection[idx]._stability.average();
+  }
+  float stabilityVariance(UnitIndex idx) {
+    return _detection[idx]._stability.variance();
+  }
+  float stabilityPopStdev(UnitIndex idx) {
+    return _detection[idx]._stability.pop_stdev();
+  }
   float stabilityUnbiasedStdev(UnitIndex idx) {
     return _detection[idx]._stability.unbiased_stdev();
   }

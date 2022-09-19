@@ -51,6 +51,7 @@ class KegWebHandler : public BaseWebHandler {
   void webStability();
   void webStabilityClear();
   void webReset();
+  void webHandleBeerWrite();
   void webHandleBrewspy();
 
   void webCalibrateHtm() {

@@ -24,23 +24,20 @@ SOFTWARE.
 #ifndef SRC_BREWSPY_HPP_
 #define SRC_BREWSPY_HPP_
 
-#include <brewspy.hpp>
 #include <basepush.hpp>
-#include <kegconfig.hpp>
+#include <main.hpp>
 
-class BrewspyPushHandler : public BasePush {
+class Brewspy {
  protected:
-    String httpGet(const char* target, const char* header1, const char* header2);
+  BasePush *_push;
 
  public:
-    explicit BrewspyPushHandler(KegConfig* config) : BasePush(config) { }
+  explicit Brewspy(BasePush *push) { _push = push; }
 
-    void sendTapInformation(UnitIndex idx);
-    void sendPourInformation(UnitIndex idx);
-
-    void clearKegInformation(UnitIndex idx);
-
-    String getTapInformation(const String& token);
+  void sendTapInformation(UnitIndex idx);
+  void sendPourInformation(UnitIndex idx);
+  void clearKegInformation(UnitIndex idx);
+  String getTapInformation(const String &token);
 };
 
 #endif  // SRC_BREWSPY_HPP_

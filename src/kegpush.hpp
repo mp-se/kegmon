@@ -21,28 +21,32 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#ifndef SRC_MAIN_HPP_
-#define SRC_MAIN_HPP_
+#ifndef SRC_KEGPUSH_HPP_
+#define SRC_KEGPUSH_HPP_
 
-#include <LittleFS.h>
-#include <stdlib.h>
+#include <basepush.hpp>
+#include <brewspy.hpp>
+#include <kegconfig.hpp>
 
-#include <log.hpp>
+class KegPushHandler : public BasePush {
+ private:
+  Brewspy* _brewspy = 0;
 
-#define CFG_APPNAME "KegMon"         // Name of firmware
-#define CFG_MDNSNAME "KegMon"        // Network name
-#define CFG_FILENAME "/kegmon.json"  // Name of config file
+ public:
+  explicit KegPushHandler(KegConfig* config) : BasePush(config) {
+    _brewspy = new Brewspy(this);
+  }
 
-#define ESP_RESET ESP.reset
-#define PIN_LED 2
-#define PIN_OLED_SDA D2
-#define PIN_OLED_SCL D1
-#define PIN_SCALE1_SDA D3
-#define PIN_SCALE1_SCL D4
-#define PIN_SCALE2_SDA D5
-#define PIN_SCALE2_SCL D8
-#define PIN_DH2 D7
+  String requestTapInfoFromBrewspy(String& token) {
+    return _brewspy->getTapInformation(token);
+  }
 
-enum UnitIndex { U1 = 0, U2 = 1 };
+  void pushPourInformation(UnitIndex idx);
+  void pushKegInformation(UnitIndex idx);
+};
 
-#endif  // SRC_MAIN_HPP_
+extern KegPushHandler myPush;
+
+#endif  // SRC_KEGPUSH_HPP_
+
+// EOF

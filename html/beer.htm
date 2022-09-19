@@ -27,7 +27,7 @@
 
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container">
-      <a class="navbar-brand" href="/index.htm">Keg Scale</a>
+      <a class="navbar-brand" href="/index.htm">Beer Keg Monitor</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -96,7 +96,7 @@
         <div id="collapseBeer" class="accordion-collapse collapse show" aria-labelledby="headingBeer"
           data-bs-parent="#accordion">
           <div class="accordion-body">
-            <form action="/api/config" method="post">
+            <form action="/api/beer" method="post">
               <input type="text" name="id" id="id1" hidden>
               <input type="text" name="section" value="#collapseBeer" hidden>
 
@@ -155,8 +155,8 @@
                     <option value="5">Mini 5l / 1.32gal / 169oz</option>
                     <option value="9">Cornelious 9l</option>
                     <option value="10">Mini 10l</option>
-                    <option value="18">Cornelious 18l</option>
-                    <option value="19">Cornelious 19l / 5gal / 640oz</option>
+                    <option value="18">Cornelius 18l</option>
+                    <option value="19">Cornelius 19l / 5gal / 640oz</option>
                     <option value="20">Keykeg 20l</option>
                     <option value="19.5">Sixth Barrel 5.16gal / 640oz</option>
                     <option value="29.3">Quarter Barrel 7.75gal / 992oz</option>
@@ -171,8 +171,8 @@
                     <option value="5">Mini 5l / 1.32gal / 169oz</option>
                     <option value="9">Cornelious 9l</option>
                     <option value="10">Mini 10l</option>
-                    <option value="18">Cornelious 18l</option>
-                    <option value="19">Cornelious 19l / 5gal / 640oz</option>
+                    <option value="18">Cornelius 18l</option>
+                    <option value="19">Cornelius 19l / 5gal / 640oz</option>
                     <option value="20">Keykeg 20l</option>
                     <option value="19.5">Sixth Barrel 5.16gal / 640oz</option>
                     <option value="29.3">Quarter Barrel 7.75gal / 992oz</option>
@@ -465,15 +465,15 @@
           if ($("#brewspy-field1").val() == "1") {
             $("#beer-name1").val(brewSpyJson["recipe"]);
             $("#beer-abv1").val(brewSpyJson["abv"]);
-            $("#beer-ebc1").val("");
-            $("#beer-ibu1").val("");
-            $("#beer-fg1").val("");
+            $("#beer-ebc1").val("0");
+            $("#beer-ibu1").val("0");
+            $("#beer-fg1").val("1");
           } else {
             $("#beer-name2").val(brewSpyJson["recipe"]);
             $("#beer-abv2").val(brewSpyJson["abv"]);
-            $("#beer-ebc2").val("");
-            $("#beer-ibu2").val("");
-            $("#beer-fg2").val("");
+            $("#beer-ebc2").val("0");
+            $("#beer-ibu2").val("0");
+            $("#beer-fg2").val("1");
           }
         }
       }, 1000);
@@ -547,14 +547,14 @@
 
         $("#id1").val(cfg["id"]);
 
-        brewFatherUserKey = cfg["#brewfather-userkey"];
-        brewFatherApiKey = cfg["#brewfather-apikey"];
+        brewFatherUserKey = cfg["brewfather-userkey"];
+        brewFatherApiKey = cfg["brewfather-apikey"];
 
         $("#keg-weight-unit").text(cfg["weight-unit"]);
         $("#glass-volume-unit").text(cfg["volume-unit"]);
 
         brewspyToken1 = cfg["brewspy-token1"];
-        brewspyToken1 = cfg["brewspy-token1"];
+        brewspyToken2 = cfg["brewspy-token2"];
 
         $("#keg-volume1").val(cfg["keg-volume1"]);
         $("#keg-volume2").val(cfg["keg-volume2"]);

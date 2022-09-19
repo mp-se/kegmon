@@ -1,9 +1,9 @@
-.. KegScale documentation master file, created by
+.. KegMon documentation master file, created by
    sphinx-quickstart on Tue Jun  7 09:29:30 2022.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to KegScale's documentation!
+Welcome to KegMon's documentation!
 ====================================
 
 .. note::
@@ -37,11 +37,12 @@ Features
 * Calibration of scales are done via web interface
 * Stores statistics about the scales since start to determine the stabilty of the load cells.
 * Update firmware via web interface
+* Interact with brew-spy's tap list
+* Ability to change weight unit (currently only kg is supported)
+* Ability to change volume unit (currently only cl is supported)
 
 Future
 ++++++
-* Ability to change weight unit (currently only kg is supported)
-* Ability to change volume unit (currently only cl is supported)
 * Validate stability of the hardware design and load cells
 * Switch to larger OLED displays (0.96 -> 1.3), this requires a different display driver (currently compile time option). 
 
@@ -61,6 +62,7 @@ Thanks to the following projects.
 * https://github.com/ThingPulse/esp8266-oled-ssd1306
 * https://modelviewer.dev/
 * https://github.com/RobTillaart/Statistic
+* https://github.com/denyssene/SimpleKalmanFilter
 
 
 .. toctree::

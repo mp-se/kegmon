@@ -22,7 +22,7 @@ weight after a few hours.
   :alt: Scale drift
 
 So I'm currently trying to change the hardware setup in order to determine the source of the error. I found 3 main 
-types of HX711 boards:
+types of HX711 boards. 
 
 .. image:: images/hx711-options.png
   :width: 600

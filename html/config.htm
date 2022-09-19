@@ -27,7 +27,7 @@
 
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container">
-      <a class="navbar-brand" href="/index.htm">Keg Scale</a>
+      <a class="navbar-brand" href="/index.htm">Beer Keg Monitor</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -105,7 +105,7 @@
               <div class="row mb-3">
                 <label for="mdns" class="col-sm-2 col-form-label">Device name</label>
                 <div class="col-sm-3">
-                  <input type="text" maxlength="12" class="form-control" name="mdns" id="mdns" placeholder="kegscale"
+                  <input type="text" maxlength="12" class="form-control" name="mdns" id="mdns" placeholder="kegmon"
                     data-bs-toggle="tooltip"
                     title="Name of the device. Will be used for identifying the device on your local network.">
                 </div>
@@ -130,7 +130,7 @@
               </div>
 
               <div class="row mb-3">
-                <fieldset disabled class="form-group row" id="wip1">
+                <fieldset class="form-group row" id="wip1">
                   <legend class="col-form-label col-sm-2 float-sm-left pt-0">Weight Unit</legend>
                   <div class="col-sm-2">
                     <div class="form-check">
@@ -148,7 +148,7 @@
               </div>
 
               <div class="row mb-3">
-                <fieldset disabled class="form-group row" id="wip2">
+                <fieldset class="form-group row" id="wip2">
                   <legend class="col-form-label col-sm-2 float-sm-left pt-0">Volume Unit</legend>
                   <div class="col-sm-2">
                     <div class="form-check">
@@ -250,12 +250,13 @@
             <div class="row mb-3">
               <label for="scale-max-deviation" class="col-sm-2 col-form-label">Scale max deviation</label>
               <div class="col-sm-2">
-                <input type="number" min=".05" max=".50" step=".05" class="form-control" name="scale-max-deviation" id="scale-max-deviation" placeholder="0.1"
+                <input type="number" min=".05" max=".50" step=".05" class="form-control" name="scale-max-deviation" id="scale-max-deviation" placeholder="0.05"
                   data-bs-toggle="tooltip"
-                  title="Threashold for how much change in weight is needed for the scale to detect new level, i.e sensitivity of the scale. Default 0.1 kg">
+                  title="Threashold for how much change in weight is needed for the scale to detect new level, i.e sensitivity of the scale. Default 0.05 kg">
               </div>
             </div>
 
+            <!--
             <div class="row mb-3">
               <label for="scale-stable-count" class="col-sm-2 col-form-label">Scale stable count</label>
               <div class="col-sm-2">
@@ -264,13 +265,14 @@
                   title="Defines the number of scale measurements are required for a new stable level to be determined, each reading takes 2 seconds">
               </div>
             </div>
+            -->
 
             <div class="row mb-3">
               <label for="scale-read-count" class="col-sm-2 col-form-label">Scale read count</label>
               <div class="col-sm-2">
-                <input type="number" min="1" max="50" step="1" class="form-control" name="scale-read-count" id="scale-read-count" placeholder="10"
+                <input type="number" min="1" max="50" step="1" class="form-control" name="scale-read-count" id="scale-read-count" placeholder="5"
                   data-bs-toggle="tooltip"
-                  title="Defines the number measurements is taken from the HX711 board to get an average reading, more readings = higher accuracy, longer delay">
+                  title="Defines the number measurements is taken from the HX711 board to get an average reading">
               </div>
             </div>
 
@@ -326,7 +328,7 @@
         $("#brewfather-userkey").val(cfg["brewfather-userkey"]);
 
         $("#brewspy-token1").val(cfg["brewspy-token1"]);
-        $("#brewspy-token2").val(cfg["brewspy-token1"]);
+        $("#brewspy-token2").val(cfg["brewspy-token2"]);
 
         $("#display-layout").val(cfg["display-layout"]);
 
@@ -341,13 +343,9 @@
         else $("#volume-unit-cl").click();
 
         $("#scale-max-deviation").val(cfg["scale-max-deviation"]);
-        $("#scale-stable-count").val(cfg["scale-stable-count"]);
+        // $("#scale-stable-count").val(cfg["scale-stable-count"]);
         $("#scale-read-count").val(cfg["scale-read-count"]);
         $("#scale-read-count-calibration").val(cfg["scale-read-count-calibration"]);
-
-        // Disable these settings since they have not been implemented yet
-        $("#wip1").prop("disabled", true);
-        $("#wip2").prop("disabled", true);
       })
         .fail(function () {
           showError('Unable to get data from the device.');

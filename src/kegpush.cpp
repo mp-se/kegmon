@@ -21,28 +21,17 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#ifndef SRC_MAIN_HPP_
-#define SRC_MAIN_HPP_
-
-#include <LittleFS.h>
-#include <stdlib.h>
-
+#include <kegpush.hpp>
 #include <log.hpp>
+#include <scale.hpp>
+#include <utils.hpp>
 
-#define CFG_APPNAME "KegMon"         // Name of firmware
-#define CFG_MDNSNAME "KegMon"        // Network name
-#define CFG_FILENAME "/kegmon.json"  // Name of config file
+void KegPushHandler::pushPourInformation(UnitIndex idx) {
+  _brewspy->sendPourInformation(idx);
+}
 
-#define ESP_RESET ESP.reset
-#define PIN_LED 2
-#define PIN_OLED_SDA D2
-#define PIN_OLED_SCL D1
-#define PIN_SCALE1_SDA D3
-#define PIN_SCALE1_SCL D4
-#define PIN_SCALE2_SDA D5
-#define PIN_SCALE2_SCL D8
-#define PIN_DH2 D7
+void KegPushHandler::pushKegInformation(UnitIndex idx) {
+  _brewspy->sendTapInformation(idx);
+}
 
-enum UnitIndex { U1 = 0, U2 = 1 };
-
-#endif  // SRC_MAIN_HPP_
+// EOF
