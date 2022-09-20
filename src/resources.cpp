@@ -31,5 +31,6 @@ INCBIN(AboutHtm, "html/about.min.htm");
 INCBIN(UploadHtm, "html/upload.min.htm");
 INCBIN(BeerHtm, "html/beer.min.htm");
 INCBIN(StabilityHtm, "html/stability.min.htm");
+INCBIN(GraphHtm, "html/graph.min.htm");
 
 // EOF

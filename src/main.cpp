@@ -114,7 +114,7 @@ void setup() {
   snprintf(&buf[0], sizeof(buf), "Version: %s", CFG_APPVER);
   myDisplay.printLine(UnitIndex::U1, 3, &buf[0]);
   snprintf(&buf[0], sizeof(buf), "Push: %s",
-           strlen(myConfig.getTargetInfluxDB2()) > 0 ? "Yes" : "No");
+           strlen(PUSH_INFLUX_TARGET) > 0 ? "Yes" : "No");
   myDisplay.printLine(UnitIndex::U1, 4, &buf[0]);
   myDisplay.show(UnitIndex::U1);
   delay(3000);
@@ -138,9 +138,9 @@ void drawScreenHardwareStats(UnitIndex idx) {
     snprintf(&buf[0], sizeof(buf), "Ave  wgt: %.3f",
              myScale.getAverageWeightKg(idx));
     myDisplay.printLine(idx, 2, &buf[0]);
-    snprintf(&buf[0], sizeof(buf), "Stat min: %.3f", myScale.statsMin(idx));
+    snprintf(&buf[0], sizeof(buf), "Min wgt: %.3f", myScale.statsMin(idx));
     myDisplay.printLine(idx, 3, &buf[0]);
-    snprintf(&buf[0], sizeof(buf), "Stat max: %.3f", myScale.statsMax(idx));
+    snprintf(&buf[0], sizeof(buf), "Max wgt: %.3f", myScale.statsMax(idx));
     myDisplay.printLine(idx, 4, &buf[0]);
     /*snprintf(&buf[0], sizeof(buf), "Stat dev: %.3f",
              myScale.statsPopStdev(idx));*/
@@ -162,9 +162,6 @@ void drawScreenDefault(UnitIndex idx) {
 
   if (myScale.isConnected(idx)) {
     // float weight = myScale.getLastValue(idx);
-    float weight = myScale.hasLastStableWeight(idx)
-                       ? myScale.getLastStableWeightKg(idx)
-                       : myScale.getLastWeightKg(idx);
     float glass = myScale.calculateNoGlasses(idx);
 
 #if LOG_LEVEL == 6
@@ -179,9 +176,9 @@ void drawScreenDefault(UnitIndex idx) {
       snprintf(&buf[0], sizeof(buf), "%.1f glasses", glass);
       myDisplay.printPosition(idx, -1, 32, &buf[0]);
     } else {
-      convertFloatToString(weight, &buf[0], myConfig.getWeightPrecision());
+      convertFloatToString(myScale.getLastBeerWeightKg(idx), &buf[0], myConfig.getWeightPrecision());
       String s(&buf[0]);
-      s += " kg";
+      s += " " + String(myConfig.getWeightUnit());
       myDisplay.printPosition(idx, -1, 32, s.c_str());
     }
   } else {
@@ -279,7 +276,7 @@ void loop() {
 
     if (myScale.statsCount(UnitIndex::U1) > 0) {
       snprintf(&buf[0], sizeof(buf), ",count1=%d,average1=%f,min1=%f,max1=%f",
-               static_cast<int>(myScale.statsCount(UnitIndex::U2)),
+               static_cast<int>(myScale.statsCount(UnitIndex::U1)),
                myScale.statsAverage(UnitIndex::U1),
                myScale.statsMin(UnitIndex::U1),
                myScale.statsMax(UnitIndex::U1));

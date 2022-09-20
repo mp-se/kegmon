@@ -35,6 +35,7 @@ SOFTWARE.
 INCBIN_EXTERN(CalibrateHtm);
 INCBIN_EXTERN(BeerHtm);
 INCBIN_EXTERN(StabilityHtm);
+INCBIN_EXTERN(GraphHtm);
 
 class KegWebHandler : public BaseWebHandler {
  protected:
@@ -53,6 +54,7 @@ class KegWebHandler : public BaseWebHandler {
   void webReset();
   void webHandleBeerWrite();
   void webHandleBrewspy();
+  void webHandleLogsClear();
 
   void webCalibrateHtm() {
     _server->send_P(200, "text/html", (const char*)gCalibrateHtmData,
@@ -64,6 +66,10 @@ class KegWebHandler : public BaseWebHandler {
   void webStabilityHtm() {
     _server->send_P(200, "text/html", (const char*)gStabilityHtmData,
                     gStabilityHtmSize);
+  }
+  void webGraphHtm() {
+    _server->send_P(200, "text/html", (const char*)gGraphHtmData,
+                    gGraphHtmSize);
   }
 
  public:

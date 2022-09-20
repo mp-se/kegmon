@@ -17,6 +17,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <!-- START MENU -->
 
@@ -41,8 +42,8 @@
             <ul class="dropdown-menu">
               <li><a class="dropdown-item" href="/config.htm">Configuration</a></li>
               <li><a class="dropdown-item" href="/calibration.htm">Scale calibration</a></li>
-              <li><a class="dropdown-item" href="/graph.htm">History graph</a></li>
-              <li><a class="dropdown-item" href="#">Stability statistics</a></li>
+              <li><a class="dropdown-item" href="#">History graph</a></li>
+              <li><a class="dropdown-item" href="/stability.htm">Stability statistics</a></li>
               <li><a class="dropdown-item" href="/upload.htm">Upload firmware</a></li>
             </ul>
           </li>
@@ -85,114 +86,155 @@
 
     <div class="accordion" id="accordion">
       <div class="accordion-item">
-        <h2 class="accordion-header" id="headingStability">
-          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseStability" aria-expanded="true" aria-controls="collapseStability" >
-            <b>Stability</b>
+        <h2 class="accordion-header" id="headingGraph">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGraph" aria-expanded="true" aria-controls="collapseGraph">
+            <b>History graph</b>
           </button>
         </h2>
-        <div id="collapseStability" class="accordion-collapse collapse show" aria-labelledby="headingStability" data-bs-parent="#accordion" >
+        <div id="collapseGraph" class="accordion-collapse" aria-labelledby="headingGraph" data-bs-parent="#accordion">
           <div class="accordion-body">
-            <div class="row mb-3">
-              <div class="col-md-4 bg-light">Count</div>
-              <div class="col-md-2 bg-light" id="count1">Loading...</div> 
-              <div class="col-md-2 bg-light" id="count2">Loading...</div>
-            </div>
-            <div class="row mb-3">
-              <div class="col-md-4 bg-light">Min</div>
-              <div class="col-md-2 bg-light" id="min1">Loading...</div> 
-              <div class="col-md-2 bg-light" id="min2">Loading...</div>
-            </div>
-            <div class="row mb-3">
-              <div class="col-md-4 bg-light">Max</div>
-              <div class="col-md-2 bg-light" id="max1">Loading...</div> 
-              <div class="col-md-2 bg-light" id="max2">Loading...</div>
-            </div>
-            <div class="row mb-3">
-              <div class="col-md-4 bg-light">Average</div>
-              <div class="col-md-2 bg-light" id="ave1">Loading...</div> 
-              <div class="col-md-2 bg-light" id="ave2">Loading...</div>
-            </div>
-            <div class="row mb-3">
-              <div class="col-md-4 bg-light">Std. deviation</div>
-              <div class="col-md-2 bg-light" id="stddev1">Loading...</div> 
-              <div class="col-md-2 bg-light" id="stddev2">Loading...</div>
-            </div>
-
-            <button class="btn btn-secondary" id="clear-btn" data-bs-toggle="tooltip" title="Clear the stability statistics">Clear statistics</button>
-
-          </div>
+            <canvas id="kegChart"></canvas>
+          </div>  
         </div>
       </div>
-
     </div>
   </div>
+  
+  <script>
+    // Data arrays for chart
+    var dataLabels = [];
+    var dataKeg1 = [];
+    var dataKeg2 = [];
+    var dataPour1 = [];
+    var dataPour2 = [];
+    var kegChart = 0;
 
-  <script type="text/javascript">
-    window.onload = start;
+    const kegData = {
+      data: {
+        labels: dataLabels,
+        datasets: [{
+          type: 'line',
+          label: 'Keg 1',
+          borderColor: "#85C1E9",
+          backgroundColor: "#AED6F1",
+          pointStyle: 'circle',
+          pointRadius: 5,
+          pointHoverRadius: 10,
+          data: dataKeg1,
+        },{
+          type: 'line',
+          label: 'Keg 2',
+          borderColor: '#76D7C4',
+          backgroundColor: '#A3E4D7',
+          pointStyle: 'circle',
+          pointRadius: 5,
+          pointHoverRadius: 10,
+          data: dataKeg2,
+        },{
+          type: 'bar',
+          label: 'Pour 1',
+          borderColor: '#F8C471',
+          backgroundColor: '#FAD7A0',
+          borderWidth: 2,
+          borderRadius: 5,
+          borderSkipped: false,
+          data: dataPour1,
+        },{
+          type: 'bar',
+          label: 'Pour 2',
+          borderColor: '#F0B27A',
+          backgroundColor: '#F5CBA7',
+          borderWidth: 2,
+          borderRadius: 5,
+          borderSkipped: false,
+          data: dataPour2,
+        }],
+        options: {
+          responsive: true,
+          scales: {
+            x: {
+              type: 'time',
+            },
+            y: {
 
-    $("#clear-btn").click(function(e){
-      console.log( "Clear statistics" );
-      $.ajax( { 
-        type: "GET",
-        url: "/api/stability/clear", 
-        success: function(result) { 
-          showSuccess('Stability statistics cleared.');  
-        },
-        error: function(result) { showError('Unable to clear stability statistics.'); }
-      } );
-    });
+            }
+          }
+        }
+      }
+    };
 
-    function getStatus() {
-      var url = "/api/stability";
-      //var url = "/test/stability.json";
+    window.onload = loadChartData;
+
+    function loadChartData() {
+      // Last known value to handle 'nan' elements in the data
+      var lastKeg1 = 0.0;
+      var lastKeg2 = 0.0;
+      var lastPour1 = 0.0;
+      var lastPour2 = 0.0;
+      var maxItems = 40;
+
+      var url = "/levels";
+      //var url = "/test/graph.txt";
       $('#spinner').show(); 
+      $.get(url, function (data) {
+        var lines = data.split('\n');        
+        for(var line = 0; line < lines.length; line++) {
+          var points = lines[line].split(';');
+          dataLabels.push( points[0] );
+          yt = Date.parse( points[0] );
 
-      $.getJSON(url, function (cfg) {
-        console.log( cfg );
+          if(points[1]=="nan") {
+            points[1] = lastKeg1;
+          } 
+          lastKeg1 = parseFloat(points[1]);
+          dataKeg1.push( { y: lastKeg1, x: yt } );
 
-        w_unit = cfg["weight-unit"];
+          if(points[2]=="nan") {
+            points[2] = lastKeg2;
+          } 
+          lastKeg2 = parseFloat(points[2]);
+          dataKeg2.push( { y: lastKeg2, x: yt } );
+          
+          if(points[3]=="nan") {
+            points[3] = 0;
+          } 
+          lastPour1 = parseFloat(points[3]);
+          dataPour1.push( { y: lastPour1, x: yt } );
 
-        var missing = "no data"
-
-        if (cfg["stability-count1"] === undefined) {
-          $("#count1").text(missing);
-          $("#min1").text(missing);
-          $("#max1").text(missing);
-          $("#ave1").text(missing);
-          $("#stddev1").text(missing);
-        } else {
-          $("#count1").text(cfg["stability-count1"]);
-          $("#min1").text(weight(w_unit, cfg["stability-min1"]));
-          $("#max1").text(weight(w_unit, cfg["stability-max1"]));
-          $("#ave1").text(weight(w_unit, cfg["stability-ave1"]));
-          $("#stddev1").text(weight(w_unit, cfg["stability-popdev1"]));
+          if(points[4]=="nan") {
+            points[4] = 0;
+          } 
+          lastPour2 = parseFloat(points[4]);
+          dataPour2.push( { y: lastPour2, x: yt } );
         }
 
-        if (cfg["stability-count2"] === undefined) {
-          $("#count2").text(missing);
-          $("#min2").text(missing);
-          $("#max2").text(missing);
-          $("#ave2").text(missing);
-          $("#stddev2").text(missing);
-        } else {
-          $("#count2").text(cfg["stability-count2"]);
-          $("#min2").text(weight(w_unit, cfg["stability-min2"]));
-          $("#max2").text(weight(w_unit, cfg["stability-max2"]));
-          $("#ave2").text(weight(w_unit, cfg["stability-ave2"]));
-          $("#stddev2").text(weight(w_unit, cfg["stability-popdev2"]));
+        while (dataLabels.length > maxItems) {
+          dataLabels.shift();
+          dataKeg1.shift();
+          dataKeg2.shift();
+          dataPour1.shift();
+          dataPour2.shift();
         }
-
       })
       .fail(function () {
-        showError('Unable to get data from the device.');
+        showError("Failed to load level history from device");
+        $('#spinner').hide(); 
       })
       .always(function() {
+        console.log( "Creating chart" );
+        createChart();
         $('#spinner').hide(); 
       });
     }
 
-    function start() {
-      setInterval(getStatus, 5000);
+    function createChart() {
+      if( kegChart )
+        kegChart.destroy();
+
+      kegChart = new Chart(
+        document.getElementById('kegChart'),
+        kegData,
+      );
     }
   </script>
 

@@ -93,7 +93,8 @@ class Scale {
 
   float getLastWeightKg(UnitIndex idx) { return _lastWeight[idx]; }
   float getLastBeerWeightKg(UnitIndex idx) {
-    return _lastWeight[idx] - myConfig.getKegWeight(idx);
+    float bw = _lastWeight[idx] - myConfig.getKegWeight(idx);
+    return bw < 0.0 ? 0.0 : bw;
   }
   float getLastBeerVolumeLiters(UnitIndex idx) {
     return convertWeightKgToVolumeL(myConfig.getBeerFG(idx),
@@ -110,14 +111,14 @@ class Scale {
     return _detection[idx]._lastStableWeight;
   }
   float getLastStableVolumeLiters(UnitIndex idx) {
-    return convertWeightKgToVolumeL(
-        myConfig.getBeerFG(idx),
-        _detection[idx]._lastStableWeight - myConfig.getKegWeight(idx));
+    return convertWeightKgToVolumeL(myConfig.getBeerFG(idx),
+                                    getLastBeerWeightKg(idx));
   }
   float getPourWeightKg(UnitIndex idx) { return _lastPourWeight[idx]; }
   float getPourVolumeLiters(UnitIndex idx) {
-    return convertWeightKgToVolumeL(myConfig.getBeerFG(idx),
-                                    _lastPourWeight[idx]);
+    float v =
+        convertWeightKgToVolumeL(myConfig.getBeerFG(idx), _lastPourWeight[idx]);
+    return v < 0.0 ? 0.0 : v;
   }
 
   // Helper methods

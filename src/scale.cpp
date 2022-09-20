@@ -156,12 +156,25 @@ void Scale::checkForLevelChange(UnitIndex idx) {
       Log.notice(
           F("SCAL: Level has decreased, adjusting from %F to %F [%d]." CR),
           _detection[idx]._lastStableWeight, statsAverage(idx), idx);
-      _lastPourWeight[idx] =
+
+      float lastPour = 
           _detection[idx]._lastStableWeight - statsAverage(idx);
-      Log.notice(F("SCAL: Beer has been poured volume %F [%d]." CR),
-                 _lastPourWeight[idx], idx);
-      float _prevStableWeight = _detection[idx]._lastStableWeight;
       _detection[idx]._lastStableWeight = statsAverage(idx);
+
+      // Check if the keg was removed so we dont register a too large pour
+      if ((_detection[idx]._lastStableWeight - myConfig.getKegWeight(idx)) < 0) {
+          lastPour -= myConfig.getKegWeight(idx);
+          if (lastPour > 0.0) {
+            _lastPourWeight[idx] = lastPour;
+            Log.notice(F("SCAL: Keg removed and beer has been poured volume %F [%d]." CR),
+                      _lastPourWeight[idx], idx);
+          }
+      } else {
+        _lastPourWeight[idx] = lastPour;
+        Log.notice(F("SCAL: Beer has been poured volume %F [%d]." CR),
+                  _lastPourWeight[idx], idx);
+      }
+
 
       // Notify registered endpoints and save to log
       myPush.pushPourInformation(idx);
@@ -177,6 +190,7 @@ void Scale::checkForLevelChange(UnitIndex idx) {
       // This part is used to send data to an influxdb in order to get data on
       // scale stability/drift over time.
       char buf[250];
+      float _prevStableWeight = _detection[idx]._lastStableWeight;
 
       String s;
       snprintf(&buf[0], sizeof(buf),
@@ -211,19 +225,19 @@ float Scale::readWeightKg(UnitIndex idx, bool updateStats) {
 
   f = _detection[idx].applyKalmanFilter(f);
 
-  // If the value is higher than 100 kb/lbs then the reading is proably wrong,
-  // just ignore the reading
+  // If the value is higher/lower than 100 kb/lbs then the reading is proably
+  // wrong, just ignore the reading
   if (f > 100) {
-    Log.error(F("SCAL: Ignoring value since it's higher than 100, %F [%d]." CR),
-              f, idx);
+    Log.error(
+        F("SCAL: Ignoring value since it's higher than 100kg, %F [%d]." CR), f,
+        idx);
     return _lastWeight[idx];
   }
 
-  // We ignore negative values since this can be an faulty reading
-  if (f < 0) {
-    Log.error(F("SCAL: Setting value to zero since it's less than 0 %F [%d]." CR),
+  if (f < -100) {
+    Log.error(F("SCAL: Ignoring value since it's less than 100kg %F [%d]." CR),
               f, idx);
-    f = 0;
+    return _lastWeight[idx];
   }
 
 #if LOG_LEVEL == 6

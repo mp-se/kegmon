@@ -64,8 +64,8 @@ void KegWebHandler::setupWebHandlers() {
   Log.notice(F("WEB : Setting up keg web handlers." CR));
   BaseWebHandler::setupWebHandlers();
 
-  _server->serveStatic("/levels.htm", LittleFS, LEVELS_FILENAME);
-  _server->serveStatic("/levels2.htm", LittleFS, LEVELS_FILENAME2);
+  _server->serveStatic("/levels", LittleFS, LEVELS_FILENAME);
+  _server->serveStatic("/levels2", LittleFS, LEVELS_FILENAME2);
   _server->on("/api/reset", HTTP_GET,
               std::bind(&KegWebHandler::webReset, this));
   _server->on("/api/scale", HTTP_GET,
@@ -86,10 +86,28 @@ void KegWebHandler::setupWebHandlers() {
               std::bind(&KegWebHandler::webBeerHtm, this));
   _server->on("/stability.htm", HTTP_GET,
               std::bind(&KegWebHandler::webStabilityHtm, this));
+  _server->on("/graph.htm", HTTP_GET,
+              std::bind(&KegWebHandler::webGraphHtm, this));
   _server->on("/api/brewspy/tap", HTTP_GET,
               std::bind(&KegWebHandler::webHandleBrewspy, this));
   _server->on("/api/beer", HTTP_POST,
               std::bind(&KegWebHandler::webHandleBeerWrite, this));
+  _server->on("/api/logs/clear", HTTP_GET,
+              std::bind(&KegWebHandler::webHandleLogsClear, this));
+}
+
+void KegWebHandler::webHandleLogsClear() {
+  String id = _server->arg(PARAM_ID);
+  Log.notice(F("WEB : webServer callback for /api/logs/clear." CR));
+
+  if (!id.compareTo(myConfig.getID())) {
+    _server->send(200, "text/plain", "Removing logfiles...");
+    LittleFS.remove(LEVELS_FILENAME);
+    LittleFS.remove(LEVELS_FILENAME2);
+    _server->send(200, "text/plain", "Level logfiles cleared.");
+  } else {
+    _server->send(400, "text/plain", "Unknown ID.");
+  }
 }
 
 void KegWebHandler::webHandleBrewspy() {
@@ -187,8 +205,7 @@ void KegWebHandler::populateScaleJson(DynamicJsonDocument& doc) {
     doc[PARAM_SCALE_RAW1] = myScale.readRawWeightKg(UnitIndex::U1);
     doc[PARAM_SCALE_OFFSET1] = myConfig.getScaleOffset(0);
     doc[PARAM_BEER_WEIGHT1] = reduceFloatPrecision(
-        convertOutgoingWeight(myScale.getLastStableWeightKg(UnitIndex::U1) -
-                              myConfig.getKegWeight(UnitIndex::U1)),
+        convertOutgoingWeight(myScale.getLastBeerWeightKg(UnitIndex::U1)),
         myConfig.getWeightPrecision());
     doc[PARAM_BEER_VOLUME1] = reduceFloatPrecision(
         convertOutgoingVolume(myScale.getLastStableVolumeLiters(UnitIndex::U1)),
@@ -202,8 +219,7 @@ void KegWebHandler::populateScaleJson(DynamicJsonDocument& doc) {
     doc[PARAM_SCALE_RAW2] = myScale.readRawWeightKg(UnitIndex::U2);
     doc[PARAM_SCALE_OFFSET2] = myConfig.getScaleOffset(1);
     doc[PARAM_BEER_WEIGHT2] = reduceFloatPrecision(
-        convertOutgoingWeight(myScale.getLastStableWeightKg(UnitIndex::U2) -
-                              myConfig.getKegWeight(UnitIndex::U2)),
+        convertOutgoingWeight(myScale.getLastBeerWeightKg(UnitIndex::U2)),
         myConfig.getWeightPrecision());
     doc[PARAM_BEER_VOLUME2] = reduceFloatPrecision(
         convertOutgoingVolume(myScale.getLastStableVolumeLiters(UnitIndex::U2)),
