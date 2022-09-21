@@ -117,13 +117,15 @@
               <div class="col-md-2 bg-light" id="stddev1">Loading...</div> 
               <div class="col-md-2 bg-light" id="stddev2">Loading...</div>
             </div>
-
+            <div class="row mb-3">
+              <div class="col-md-4 bg-light">Deviation (%)</div>
+              <div class="col-md-2 bg-light" id="dev1">Loading...</div> 
+              <div class="col-md-2 bg-light" id="dev2">Loading...</div>
+            </div>
             <button class="btn btn-secondary" id="clear-btn" data-bs-toggle="tooltip" title="Clear the stability statistics">Clear statistics</button>
-
           </div>
         </div>
       </div>
-
     </div>
   </div>
 
@@ -162,10 +164,11 @@
           $("#stddev1").text(missing);
         } else {
           $("#count1").text(cfg["stability-count1"]);
-          $("#min1").text(weight(w_unit, cfg["stability-min1"]));
-          $("#max1").text(weight(w_unit, cfg["stability-max1"]));
-          $("#ave1").text(weight(w_unit, cfg["stability-ave1"]));
-          $("#stddev1").text(weight(w_unit, cfg["stability-popdev1"]));
+          $("#min1").text(cfg["stability-min1"]);
+          $("#max1").text(cfg["stability-max1"]);
+          $("#ave1").text(cfg["stability-ave1"]);
+          $("#stddev1").text(cfg["stability-popdev1"]);
+          $("#dev1").text( (parseFloat(cfg["stability-popdev1"]) / parseFloat(cfg["stability-ave1"])).toFixed(2) );
         }
 
         if (cfg["stability-count2"] === undefined) {
@@ -176,10 +179,11 @@
           $("#stddev2").text(missing);
         } else {
           $("#count2").text(cfg["stability-count2"]);
-          $("#min2").text(weight(w_unit, cfg["stability-min2"]));
-          $("#max2").text(weight(w_unit, cfg["stability-max2"]));
-          $("#ave2").text(weight(w_unit, cfg["stability-ave2"]));
-          $("#stddev2").text(weight(w_unit, cfg["stability-popdev2"]));
+          $("#min2").text(cfg["stability-min2"]);
+          $("#max2").text(cfg["stability-max2"]);
+          $("#ave2").text(cfg["stability-ave2"]);
+          $("#stddev2").text(cfg["stability-popdev2"]);
+          $("#dev2").text( (parseFloat(cfg["stability-popdev2"]) / parseFloat(cfg["stability-ave2"])).toFixed(2) );
         }
 
       })

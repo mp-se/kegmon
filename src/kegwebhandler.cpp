@@ -320,7 +320,7 @@ void KegWebHandler::webStability() {
 
   DynamicJsonDocument doc(500);
 
-  doc[PARAM_WEIGHT_UNIT] = WEIGHT_KG;  // myConfig.getWeightUnit(); Always use
+  // doc[PARAM_WEIGHT_UNIT] = WEIGHT_KG;  // myConfig.getWeightUnit(); Always use
                                        // KG for the stability data
 
   if (myScale.stabilityCount(UnitIndex::U1) > 1) {

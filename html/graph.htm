@@ -94,6 +94,7 @@
         <div id="collapseGraph" class="accordion-collapse" aria-labelledby="headingGraph" data-bs-parent="#accordion">
           <div class="accordion-body">
             <canvas id="kegChart"></canvas>
+            <canvas id="pourChart"></canvas>
           </div>  
         </div>
       </div>
@@ -102,16 +103,19 @@
   
   <script>
     // Data arrays for chart
-    var dataLabels = [];
+    var labelsKeg = [];
     var dataKeg1 = [];
     var dataKeg2 = [];
+    var kegChart = 0;
+
+    var labelsPour = [];
     var dataPour1 = [];
     var dataPour2 = [];
-    var kegChart = 0;
+    var pourChart = 0;
 
     const kegData = {
       data: {
-        labels: dataLabels,
+        labels: labelsKeg,
         datasets: [{
           type: 'line',
           label: 'Keg 1',
@@ -130,7 +134,28 @@
           pointRadius: 5,
           pointHoverRadius: 10,
           data: dataKeg2,
-        },{
+        }],
+        options: {
+          responsive: true,
+          scales: {
+            x: {
+              type: 'time',
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'liters'
+              }
+            }
+          }
+        }
+      }
+    };
+
+    const pourData = {
+      data: {
+        labels: labelsPour,
+        datasets: [{
           type: 'bar',
           label: 'Pour 1',
           borderColor: '#F8C471',
@@ -154,9 +179,12 @@
           scales: {
             x: {
               type: 'time',
-            },
+           },
             y: {
-
+              title: {
+                display: true,
+                text: 'cl',
+              }
             }
           }
         }
@@ -164,6 +192,26 @@
     };
 
     window.onload = loadChartData;
+
+    // Input is in liters
+    function cnvKegVol(vol, format) {
+      if(format == "us-oz") {
+        return vol * 0.264172052;
+      } else if(format == "uk-oz") {
+        return vol * 0.219969157;
+      }
+      return vol;
+    }
+
+    // Input is in centi-liters
+    function cnvPourVol(vol, format) {
+      if(format == "us-oz") {
+        return vol / 0.34;
+      } else if(format == "uk-oz") {
+        return vol / 2.84;
+      }
+      return vol;
+    }
 
     function loadChartData() {
       // Last known value to handle 'nan' elements in the data
@@ -173,56 +221,98 @@
       var lastPour2 = 0.0;
       var maxItems = 40;
 
-      var url = "/levels";
-      //var url = "/test/graph.txt";
       $('#spinner').show(); 
-      $.get(url, function (data) {
-        var lines = data.split('\n');        
-        for(var line = 0; line < lines.length; line++) {
-          var points = lines[line].split(';');
-          dataLabels.push( points[0] );
-          yt = Date.parse( points[0] );
 
-          if(points[1]=="nan") {
-            points[1] = lastKeg1;
-          } 
-          lastKeg1 = parseFloat(points[1]);
-          dataKeg1.push( { y: lastKeg1, x: yt } );
+      url = "/api/config";
+      url = "../test/config.json";
+      $.getJSON(url, function(data) { 
+        console.log( data );
+        console.log( data["volume-unit"] )
 
-          if(points[2]=="nan") {
-            points[2] = lastKeg2;
-          } 
-          lastKeg2 = parseFloat(points[2]);
-          dataKeg2.push( { y: lastKeg2, x: yt } );
-          
-          if(points[3]=="nan") {
-            points[3] = 0;
-          } 
-          lastPour1 = parseFloat(points[3]);
-          dataPour1.push( { y: lastPour1, x: yt } );
+        var unit = data["volume-unit"];
 
-          if(points[4]=="nan") {
-            points[4] = 0;
-          } 
-          lastPour2 = parseFloat(points[4]);
-          dataPour2.push( { y: lastPour2, x: yt } );
+        if(unit == "cl") {
+          ku = "liters";
+          pu = "cl";
+        }
+        else if(unit == "us-oz")  {
+          ku = "US gallons";
+          pu = "fl. oz.";
+        }
+        else if(unit == "uk-oz")  {
+          ku = "Imperial gallons";
+          pu = "fl. oz.";
         }
 
-        while (dataLabels.length > maxItems) {
-          dataLabels.shift();
-          dataKeg1.shift();
-          dataKeg2.shift();
-          dataPour1.shift();
-          dataPour2.shift();
-        }
+        kegData["data"]["datasets"][0]["label"] = "Keg 1 (" + ku + ")";
+        kegData["data"]["datasets"][1]["label"] = "Keg 2 (" + ku + ")";
+
+        pourData["data"]["datasets"][0]["label"] = "Pour 1 (" + pu + ")";
+        pourData["data"]["datasets"][1]["label"] = "Pour 2 (" + pu + ")";
+
+        var url = "/levels";
+        //var url = "/test/graph.txt";
+        $.get(url, function (data2) {
+          console.log(data2);
+
+          var lines = data2.split('\n');        
+          for(var line = 0; line < lines.length; line++) {
+            var points = lines[line].split(';');
+            yt = Date.parse( points[0] );
+
+            // Data set for kegs
+            labelsKeg.push( points[0] );
+
+            if(points[1]=="nan") points[1] = lastKeg1;
+            lastKeg1 = parseFloat(points[1]);
+            dataKeg1.push( { y: cnvKegVol(lastKeg1, unit), x: yt } );
+
+            if(points[2]=="nan") points[2] = lastKeg2;
+            lastKeg2 = parseFloat(points[2]);
+            dataKeg2.push( { y: cnvKegVol(lastKeg2, unit), x: yt } );
+
+            // Data set for pours          
+            if(points[3]=="nan" && points[4]=="nan") {
+              // Skip value
+            } else {
+              labelsPour.push( points[0] );
+
+              if(points[3]=="nan") points[3] = 0;
+              lastPour1 = parseFloat(points[3])*100;
+              dataPour1.push( { y: cnvPourVol(lastPour1, unit), x: yt } );
+              if(points[4]=="nan") points[4] = 0;
+              lastPour2 = parseFloat(points[4])*100;
+              dataPour2.push( { y: cnvPourVol(lastPour2, unit), x: yt } );
+            }
+          }
+
+          // Limit the number of items to show
+          while (labelsKeg.length > maxItems) {
+            labelsKeg.shift();
+            dataKeg1.shift();
+            dataKeg2.shift();
+          }
+
+          while (labelsPour.length > maxItems) {
+            labelsPour.shift();
+            dataPour1.shift();
+            dataPour2.shift();
+          }
+        })
+        .fail(function () {
+          showError("Failed to load level history from device");
+          $('#spinner').hide(); 
+        })
+        .always(function() {
+          console.log( "Creating chart" );
+          createChart();
+        });
       })
       .fail(function () {
         showError("Failed to load level history from device");
         $('#spinner').hide(); 
       })
       .always(function() {
-        console.log( "Creating chart" );
-        createChart();
         $('#spinner').hide(); 
       });
     }
@@ -234,6 +324,14 @@
       kegChart = new Chart(
         document.getElementById('kegChart'),
         kegData,
+      );
+
+      if( pourChart )
+        pourChart.destroy();
+
+      pourChart = new Chart(
+        document.getElementById('pourChart'),
+        pourData,
       );
     }
   </script>
