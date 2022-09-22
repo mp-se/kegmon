@@ -55,13 +55,13 @@ void Brewspy::sendTapInformation(UnitIndex idx) {
   doc["token"] = myConfig.getBrewspyToken(idx);
   doc["unit"] = "l";
   doc["kegVolume"] = myConfig.getKegVolume(idx);
-  doc["beerLeft"] = myScale.getLastStableVolumeLiters(idx);
-  doc["pour"] = myScale.getPourVolumeLiters(idx);
+  doc["beerLeft"] = myScale.getBeerStableVolume(idx);
+  doc["pour"] = myScale.getPourVolume(idx);
   Log.notice(F("BSPY: Sending TAP information to brewspy, last %Fl / %Fkg, "
                "pour %Fl  [%d]" CR),
-             myScale.getLastStableVolumeLiters(idx),
-             myScale.getLastStableWeightKg(idx),
-             myScale.getPourVolumeLiters(idx), idx);
+             myScale.getBeerStableVolume(idx),
+             myScale.getBeerStableWeight(idx),
+             myScale.getPourVolume(idx), idx);
 
   String out;
   out.reserve(100);
@@ -89,9 +89,9 @@ void Brewspy::sendPourInformation(UnitIndex idx) {
 
   doc["token"] = myConfig.getBrewspyToken(idx);
   doc["unit"] = "l";
-  doc["pour"] = myScale.getPourVolumeLiters(idx);
+  doc["pour"] = myScale.getPourVolume(idx);
   Log.notice(F("BSPY: Sending POUR information to brewspy, pour %Fl [%d]." CR),
-             myScale.getPourVolumeLiters(idx), idx);
+             myScale.getPourVolume(idx), idx);
 
   String out;
   out.reserve(100);

@@ -130,20 +130,18 @@ void drawScreenHardwareStats(UnitIndex idx) {
     char buf[30];
 
     snprintf(&buf[0], sizeof(buf), "Last wgt: %.3f",
-             myScale.getLastWeightKg(idx));
+             myScale.getTotalWeight(idx));
     myDisplay.printLine(idx, 0, &buf[0]);
     snprintf(&buf[0], sizeof(buf), "Stab wgt: %.3f",
-             myScale.getLastStableWeightKg(idx));
+             myScale.getTotalStableWeight(idx));
     myDisplay.printLine(idx, 1, &buf[0]);
     snprintf(&buf[0], sizeof(buf), "Ave  wgt: %.3f",
-             myScale.getAverageWeightKg(idx));
+             myScale.getStatsDetection(idx)->ave());
     myDisplay.printLine(idx, 2, &buf[0]);
-    snprintf(&buf[0], sizeof(buf), "Min wgt: %.3f", myScale.statsMin(idx));
+    snprintf(&buf[0], sizeof(buf), "Min wgt: %.3f", myScale.getStatsDetection(idx)->min());
     myDisplay.printLine(idx, 3, &buf[0]);
-    snprintf(&buf[0], sizeof(buf), "Max wgt: %.3f", myScale.statsMax(idx));
+    snprintf(&buf[0], sizeof(buf), "Max wgt: %.3f", myScale.getStatsDetection(idx)->max());
     myDisplay.printLine(idx, 4, &buf[0]);
-    /*snprintf(&buf[0], sizeof(buf), "Stat dev: %.3f",
-             myScale.statsPopStdev(idx));*/
     myDisplay.printLine(idx, 5, &buf[0]);
   }
   myDisplay.show(idx);
@@ -162,7 +160,7 @@ void drawScreenDefault(UnitIndex idx) {
 
   if (myScale.isConnected(idx)) {
     // float weight = myScale.getLastValue(idx);
-    float glass = myScale.calculateNoGlasses(idx);
+    float glass = myScale.getNoGlasses(idx);
 
 #if LOG_LEVEL == 6
     // Log.verbose(F("LOOP: Weight=%F Glasses=%F [%d]." CR), weight, glass,
@@ -176,7 +174,7 @@ void drawScreenDefault(UnitIndex idx) {
       snprintf(&buf[0], sizeof(buf), "%.1f glasses", glass);
       myDisplay.printPosition(idx, -1, 32, &buf[0]);
     } else {
-      convertFloatToString(myScale.getLastBeerWeightKg(idx), &buf[0], myConfig.getWeightPrecision());
+      convertFloatToString(myScale.getBeerWeight(idx), &buf[0], myConfig.getWeightPrecision());
       String s(&buf[0]);
       s += " " + String(myConfig.getWeightUnit());
       myDisplay.printPosition(idx, -1, 32, s.c_str());
@@ -223,8 +221,8 @@ void loop() {
     }
 
     // Read the scales, only once per loop
-    float weight1 = myScale.readWeightKg(UnitIndex::U1, true);
-    float weight2 = myScale.readWeightKg(UnitIndex::U2, true);
+    float weight1 = myScale.read(UnitIndex::U1, true);
+    float weight2 = myScale.read(UnitIndex::U2, true);
 
     // Update screens
     switch (myConfig.getDisplayLayout()) {
@@ -244,12 +242,12 @@ void loop() {
         F("LOOP: Reading data scale1=%Fkg, scale2=%Fkg, lastStable1=%Fkg, "
           "lastStable2=%Fkg,average1=%Fkg,average2=%Fkg,pour1=%Fkg,pour2=%"
           "Fkg" CR),
-        weight1, weight2, myScale.getLastStableWeightKg(UnitIndex::U1),
-        myScale.getLastStableWeightKg(UnitIndex::U2),
-        myScale.statsAverage(UnitIndex::U1),
-        myScale.statsAverage(UnitIndex::U2),
-        myScale.getPourWeightKg(UnitIndex::U1),
-        myScale.getPourWeightKg(UnitIndex::U2));
+        weight1, weight2, myScale.getTotalStableWeight(UnitIndex::U1),
+        myScale.getTotalStableWeight(UnitIndex::U2),
+        myScale.getStatsDetection(UnitIndex::U1)->ave(),
+        myScale.getStatsDetection(UnitIndex::U2)->ave(),
+        myScale.getPourWeight(UnitIndex::U1),
+        myScale.getPourWeight(UnitIndex::U2));
 
 #if defined(ENABLE_INFLUX_DEBUG)
     // This part is used to send data to an influxdb in order to get data on
@@ -262,33 +260,33 @@ void loop() {
              myConfig.getID(), weight1, weight2);
     s = &buf[0];
 
-    if (myScale.hasLastStableWeight(UnitIndex::U1)) {
+    if (myScale.hasStableWeight(UnitIndex::U1)) {
       snprintf(&buf[0], sizeof(buf), ",stable-scale1=%f",
-               myScale.getLastStableWeightKg(UnitIndex::U1));
+               myScale.getTotalStableWeight(UnitIndex::U1));
       s += &buf[0];
     }
 
-    if (myScale.hasLastStableWeight(UnitIndex::U2)) {
+    if (myScale.hasStableWeight(UnitIndex::U2)) {
       snprintf(&buf[0], sizeof(buf), ",stable-scale2=%f",
-               myScale.getLastStableWeightKg(UnitIndex::U2));
+               myScale.getTotalStableWeight(UnitIndex::U2));
       s += &buf[0];
     }
 
-    if (myScale.statsCount(UnitIndex::U1) > 0) {
+    if (myScale.getStatsDetection(UnitIndex::U1)->cnt() > 0) {
       snprintf(&buf[0], sizeof(buf), ",count1=%d,average1=%f,min1=%f,max1=%f",
-               static_cast<int>(myScale.statsCount(UnitIndex::U1)),
-               myScale.statsAverage(UnitIndex::U1),
-               myScale.statsMin(UnitIndex::U1),
-               myScale.statsMax(UnitIndex::U1));
+               static_cast<int>(myScale.getStatsDetection(UnitIndex::U1)->cnt()),
+               myScale.getStatsDetection(UnitIndex::U1)->ave(),
+               myScale.getStatsDetection(UnitIndex::U1)->min(),
+               myScale.getStatsDetection(UnitIndex::U1)->max());
       s = s + &buf[0];
     }
 
-    if (myScale.statsCount(UnitIndex::U2) > 0) {
+    if (myScale.getStatsDetection(UnitIndex::U2)->cnt() > 0) {
       snprintf(&buf[0], sizeof(buf), ",count2=%d,average2=%f,min2=%f,max2=%f",
-               static_cast<int>(myScale.statsCount(UnitIndex::U2)),
-               myScale.statsAverage(UnitIndex::U2),
-               myScale.statsMin(UnitIndex::U2),
-               myScale.statsMax(UnitIndex::U2));
+               static_cast<int>(myScale.getStatsDetection(UnitIndex::U2)->cnt()),
+               myScale.getStatsDetection(UnitIndex::U2)->ave(),
+               myScale.getStatsDetection(UnitIndex::U2)->min(),
+               myScale.getStatsDetection(UnitIndex::U2)->max());
       s = s + &buf[0];
     }
 
@@ -297,19 +295,6 @@ void loop() {
                myTemp.getTempC(), myTemp.getTempF(), myTemp.getHumidity());
       s = s + &buf[0];
     }
-
-    /*float dirCoeff =
-        myScale.getAverageWeightDirectionCoefficient(UnitIndex::U1);
-    if (!isnan(dirCoeff)) {
-      snprintf(&buf[0], sizeof(buf), ",dirCoeff1=%f", dirCoeff);
-      s = s + &buf[0];
-    }
-
-    dirCoeff = myScale.getAverageWeightDirectionCoefficient(UnitIndex::U2);
-    if (!isnan(dirCoeff)) {
-      snprintf(&buf[0], sizeof(buf), ",dirCoeff2=%f", dirCoeff);
-      s = s + &buf[0];
-    }*/
 
 #if LOG_LEVEL == 6
     // Log.verbose(F("LOOP: Sending data to influx: %s" CR), s.c_str());

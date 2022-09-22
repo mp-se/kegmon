@@ -200,59 +200,59 @@ void KegWebHandler::populateScaleJson(DynamicJsonDocument& doc) {
 
   if (myScale.isConnected(UnitIndex::U1)) {
     doc[PARAM_SCALE_WEIGHT1] = reduceFloatPrecision(
-        convertOutgoingWeight(myScale.getLastWeightKg(UnitIndex::U1)),
+        convertOutgoingWeight(myScale.getTotalStableWeight(UnitIndex::U1)),
         myConfig.getWeightPrecision());
-    doc[PARAM_SCALE_RAW1] = myScale.readRawWeightKg(UnitIndex::U1);
+    doc[PARAM_SCALE_RAW1] = myScale.readRaw(UnitIndex::U1);
     doc[PARAM_SCALE_OFFSET1] = myConfig.getScaleOffset(0);
     doc[PARAM_BEER_WEIGHT1] = reduceFloatPrecision(
-        convertOutgoingWeight(myScale.getLastBeerWeightKg(UnitIndex::U1)),
+        convertOutgoingWeight(myScale.getBeerWeight(UnitIndex::U1)),
         myConfig.getWeightPrecision());
     doc[PARAM_BEER_VOLUME1] = reduceFloatPrecision(
-        convertOutgoingVolume(myScale.getLastStableVolumeLiters(UnitIndex::U1)),
+        convertOutgoingVolume(myScale.getBeerVolume(UnitIndex::U1)),
         myConfig.getVolumePrecision());
   }
 
   if (myScale.isConnected(UnitIndex::U2)) {
     doc[PARAM_SCALE_WEIGHT2] = reduceFloatPrecision(
-        convertOutgoingWeight(myScale.getLastWeightKg(UnitIndex::U2)),
+        convertOutgoingWeight(myScale.getTotalStableWeight(UnitIndex::U2)),
         myConfig.getWeightPrecision());
-    doc[PARAM_SCALE_RAW2] = myScale.readRawWeightKg(UnitIndex::U2);
+    doc[PARAM_SCALE_RAW2] = myScale.readRaw(UnitIndex::U2);
     doc[PARAM_SCALE_OFFSET2] = myConfig.getScaleOffset(1);
     doc[PARAM_BEER_WEIGHT2] = reduceFloatPrecision(
-        convertOutgoingWeight(myScale.getLastBeerWeightKg(UnitIndex::U2)),
+        convertOutgoingWeight(myScale.getBeerWeight(UnitIndex::U2)),
         myConfig.getWeightPrecision());
     doc[PARAM_BEER_VOLUME2] = reduceFloatPrecision(
-        convertOutgoingVolume(myScale.getLastStableVolumeLiters(UnitIndex::U2)),
+        convertOutgoingVolume(myScale.getBeerVolume(UnitIndex::U2)),
         myConfig.getVolumePrecision());
   }
 
-  if (myScale.hasLastStableWeight(UnitIndex::U1)) {
+  if (myScale.hasStableWeight(UnitIndex::U1)) {
     doc[PARAM_SCALE_STABLE_WEIGHT1] = reduceFloatPrecision(
-        convertOutgoingWeight(myScale.getLastStableWeightKg(UnitIndex::U1)),
+        convertOutgoingWeight(myScale.getTotalStableWeight(UnitIndex::U1)),
         myConfig.getWeightPrecision());
   }
 
-  if (myScale.hasLastStableWeight(UnitIndex::U2)) {
+  if (myScale.hasStableWeight(UnitIndex::U2)) {
     doc[PARAM_SCALE_STABLE_WEIGHT2] = reduceFloatPrecision(
-        convertOutgoingWeight(myScale.getLastStableWeightKg(UnitIndex::U2)),
+        convertOutgoingWeight(myScale.getTotalStableWeight(UnitIndex::U2)),
         myConfig.getWeightPrecision());
   }
 
   if (myScale.hasPourWeight(UnitIndex::U1)) {
     doc[PARAM_LAST_POUR_WEIGHT1] = reduceFloatPrecision(
-        convertOutgoingWeight(myScale.getPourWeightKg(UnitIndex::U1)),
+        convertOutgoingWeight(myScale.getPourWeight(UnitIndex::U1)),
         myConfig.getWeightPrecision());
     doc[PARAM_LAST_POUR_VOLUME1] = reduceFloatPrecision(
-        convertOutgoingVolume(myScale.getPourVolumeLiters(UnitIndex::U1)),
+        convertOutgoingVolume(myScale.getPourVolume(UnitIndex::U1)),
         myConfig.getVolumePrecision());
   }
 
   if (myScale.hasPourWeight(UnitIndex::U2)) {
     doc[PARAM_LAST_POUR_WEIGHT2] = reduceFloatPrecision(
-        convertOutgoingWeight(myScale.getPourWeightKg(UnitIndex::U2)),
+        convertOutgoingWeight(myScale.getPourWeight(UnitIndex::U2)),
         myConfig.getWeightPrecision());
     doc[PARAM_LAST_POUR_VOLUME2] = reduceFloatPrecision(
-        convertOutgoingVolume(myScale.getPourVolumeLiters(UnitIndex::U2)),
+        convertOutgoingVolume(myScale.getPourVolume(UnitIndex::U2)),
         myConfig.getVolumePrecision());
   }
 
@@ -280,9 +280,9 @@ void KegWebHandler::webStatus() {
   // For this we use the last value read from the scale to avoid having to much
   // communication. The value will be updated regulary second in the main loop.
   doc[PARAM_GLASS1] =
-      reduceFloatPrecision(myScale.calculateNoGlasses(UnitIndex::U1), 1);
+      reduceFloatPrecision(myScale.getNoStableGlasses(UnitIndex::U1), 1);
   doc[PARAM_GLASS2] =
-      reduceFloatPrecision(myScale.calculateNoGlasses(UnitIndex::U2), 1);
+      reduceFloatPrecision(myScale.getNoStableGlasses(UnitIndex::U2), 1);
 
   float f = myTemp.getTempC();
 
@@ -320,31 +320,31 @@ void KegWebHandler::webStability() {
 
   DynamicJsonDocument doc(500);
 
-  // doc[PARAM_WEIGHT_UNIT] = WEIGHT_KG;  // myConfig.getWeightUnit(); Always use
-                                       // KG for the stability data
+  Stability stability1 = myScale.getStability(UnitIndex::U1);
+  Stability stability2 = myScale.getStability(UnitIndex::U2);
 
-  if (myScale.stabilityCount(UnitIndex::U1) > 1) {
-    doc[PARAM_STABILITY_COUNT1] = myScale.stabilityCount(UnitIndex::U1);
-    doc[PARAM_STABILITY_SUM1] = myScale.stabilitySum(UnitIndex::U1);
-    doc[PARAM_STABILITY_MIN1] = myScale.stabilityMin(UnitIndex::U1);
-    doc[PARAM_STABILITY_MAX1] = myScale.stabilityMax(UnitIndex::U1);
-    doc[PARAM_STABILITY_AVE1] = myScale.stabilityAverage(UnitIndex::U1);
-    doc[PARAM_STABILITY_VAR1] = myScale.stabilityVariance(UnitIndex::U1);
-    doc[PARAM_STABILITY_POPDEV1] = myScale.stabilityPopStdev(UnitIndex::U1);
+  if (stability1.count() > 1) {
+    doc[PARAM_STABILITY_COUNT1] = stability1.count();
+    doc[PARAM_STABILITY_SUM1] = stability1.sum();
+    doc[PARAM_STABILITY_MIN1] = stability1.min();
+    doc[PARAM_STABILITY_MAX1] = stability1.max();
+    doc[PARAM_STABILITY_AVE1] = stability1.average();
+    doc[PARAM_STABILITY_VAR1] = stability1.variance();
+    doc[PARAM_STABILITY_POPDEV1] = stability1.popStdev();
     doc[PARAM_STABILITY_UBIASDEV1] =
-        myScale.stabilityUnbiasedStdev(UnitIndex::U1);
+        stability1.unbiasedStdev();
   }
 
-  if (myScale.stabilityCount(UnitIndex::U2) > 1) {
-    doc[PARAM_STABILITY_COUNT2] = myScale.stabilityCount(UnitIndex::U2);
-    doc[PARAM_STABILITY_SUM2] = myScale.stabilitySum(UnitIndex::U2);
-    doc[PARAM_STABILITY_MIN2] = myScale.stabilityMin(UnitIndex::U2);
-    doc[PARAM_STABILITY_MAX2] = myScale.stabilityMax(UnitIndex::U2);
-    doc[PARAM_STABILITY_AVE2] = myScale.stabilityAverage(UnitIndex::U2);
-    doc[PARAM_STABILITY_VAR2] = myScale.stabilityVariance(UnitIndex::U2);
-    doc[PARAM_STABILITY_POPDEV2] = myScale.stabilityPopStdev(UnitIndex::U2);
+  if (stability2.count() > 1) {
+    doc[PARAM_STABILITY_COUNT2] = stability2.count();
+    doc[PARAM_STABILITY_SUM2] = stability2.sum();
+    doc[PARAM_STABILITY_MIN2] = stability2.min();
+    doc[PARAM_STABILITY_MAX2] = stability2.max();
+    doc[PARAM_STABILITY_AVE2] = stability2.average();
+    doc[PARAM_STABILITY_VAR2] = stability2.variance();
+    doc[PARAM_STABILITY_POPDEV2] = stability2.popStdev();
     doc[PARAM_STABILITY_UBIASDEV2] =
-        myScale.stabilityUnbiasedStdev(UnitIndex::U2);
+        stability2.unbiasedStdev();
   }
 
   String out;
@@ -371,8 +371,8 @@ void KegWebHandler::webReset() {
 void KegWebHandler::webStabilityClear() {
   Log.notice(F("WEB : webServer callback /api/stability/clear." CR));
 
-  myScale.stabilityClear(UnitIndex::U1);
-  myScale.stabilityClear(UnitIndex::U2);
+  myScale.getStability(UnitIndex::U1).clear();
+  myScale.getStability(UnitIndex::U2).clear();
 
   _server->send(200, "application/json", "{}");
 }
