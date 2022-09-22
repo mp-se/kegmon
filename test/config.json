@@ -22,6 +22,8 @@
   "beer-ibu2": 42,
   "keg-weight1": 4.6,
   "keg-weight2": 4.6,
+  "keg-volume1": 19,
+  "keg-volume2": 10,
   "glass-volume1": 0.40, 
   "glass-volume2": 0.33, 
   "weight-precision": 2,

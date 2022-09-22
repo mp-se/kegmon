@@ -92,61 +92,77 @@
         </h2>
         <div id="collapseSoftware" class="accordion-collapse collapse show" aria-labelledby="headingSoftware" data-bs-parent="#accordion" >
           <div class="accordion-body">
-            <div class="row mb-3">
-              <div class="col-md-4 bg-light">Current version</div>
-              <div class="col-md-4 bg-light" id="app-ver">Loading...</div>
-            </div>
-            <div class="row mb-3">
-              <div class="col-md-4 bg-light">Host name</div>
-              <div class="col-md-4 bg-light" id="mdns">Loading...</div>
-            </div>
-            <div class="row mb-3">
-              <div class="col-md-4 bg-light">Device ID</div>
-              <div class="col-md-4 bg-light" id="id">Loading...</div>
-            </div>
-            <div class="row mb-3">
-              <div class="col-md-4 bg-light">SSID</div>
-              <div class="col-md-4 bg-light" id="wifi-ssid">Loading...</div>
-            </div>
 
-            <hr>
+            <div class="row mb-3">
+              <div class="col-md-2 bg-light"></div>
+              <div class="col-md-3">
+                <div class="progress">
+                  <div class="progress-bar" id="beer-percent1" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="progress">
+                  <div class="progress-bar" id="beer-percent2" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+              </div>
+            </div>           
 
-            <div class="row mb-3" id="toggle1">
-              <div class="col-md-4 bg-light">Temperature</div>
-              <div class="col-md-4 bg-light" id="temperature">Loading...</div>
+            <div class="row mb-3">
+              <div class="col-md-2 bg-light">Total Weight</div>
+              <div class="col-md-3 bg-light" id="scale-weight1">Loading...</div> 
+              <div class="col-md-3 bg-light" id="scale-weight2">Loading...</div>
             </div>
-            <div class="row mb-3" id="toggle2">
-              <div class="col-md-4 bg-light">Humidity</div>
-              <div class="col-md-4 bg-light" id="humidity">Loading...</div>
+            <div class="row mb-3">
+              <div class="col-md-2 bg-light">Beer Weight</div>
+              <div class="col-md-3 bg-light" id="beer-weight1">Loading...</div> 
+              <div class="col-md-3 bg-light" id="beer-weight2">Loading...</div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-2 bg-light">Beer Volume</div>
+              <div class="col-md-3 bg-light" id="beer-volume1">Loading...</div> 
+              <div class="col-md-3 bg-light" id="beer-volume2">Loading...</div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-2 bg-light">Glasses left</div>
+              <div class="col-md-3 bg-light" id="glass1">Loading...</div> 
+              <div class="col-md-3 bg-light" id="glass2">Loading...</div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-2 bg-light">Last pour</div>
+              <div class="col-md-3 bg-light" id="last-pour-volume1">Loading...</div> 
+              <div class="col-md-3 bg-light" id="last-pour-volume2">Loading...</div>
             </div>
 
             <hr id="toggle3">
 
+            <div class="row mb-3" id="toggle1">
+              <div class="col-md-2 bg-light">Temperature</div>
+              <div class="col-md-6 bg-light" id="temperature">Loading...</div>
+            </div>
+            <div class="row mb-3" id="toggle2">
+              <div class="col-md-2 bg-light">Humidity</div>
+              <div class="col-md-6 bg-light" id="humidity">Loading...</div>
+            </div>
+          
+            <hr>
+
             <div class="row mb-3">
-              <div class="col-md-4 bg-light">Total Weight</div>
-              <div class="col-md-2 bg-light" id="scale-weight1">Loading...</div> 
-              <div class="col-md-2 bg-light" id="scale-weight2">Loading...</div>
+              <div class="col-md-2 bg-light">Current version</div>
+              <div class="col-md-6 bg-light" id="app-ver">Loading...</div>
             </div>
             <div class="row mb-3">
-              <div class="col-md-4 bg-light">Beer Weight</div>
-              <div class="col-md-2 bg-light" id="beer-weight1">Loading...</div> 
-              <div class="col-md-2 bg-light" id="beer-weight2">Loading...</div>
+              <div class="col-md-2 bg-light">Host name</div>
+              <div class="col-md-6 bg-light" id="mdns">Loading...</div>
             </div>
             <div class="row mb-3">
-              <div class="col-md-4 bg-light">Beer Volume</div>
-              <div class="col-md-2 bg-light" id="beer-volume1">Loading...</div> 
-              <div class="col-md-2 bg-light" id="beer-volume2">Loading...</div>
+              <div class="col-md-2 bg-light">Device ID</div>
+              <div class="col-md-6 bg-light" id="id">Loading...</div>
             </div>
             <div class="row mb-3">
-              <div class="col-md-4 bg-light">Glasses left</div>
-              <div class="col-md-2 bg-light" id="glass1">Loading...</div> 
-              <div class="col-md-2 bg-light" id="glass2">Loading...</div>
+              <div class="col-md-2 bg-light">SSID</div>
+              <div class="col-md-6 bg-light" id="wifi-ssid">Loading...</div>
             </div>
-            <div class="row mb-3">
-              <div class="col-md-4 bg-light">Last pour</div>
-              <div class="col-md-2 bg-light" id="last-pour-volume1">Loading...</div> 
-              <div class="col-md-2 bg-light" id="last-pour-volume2">Loading...</div>
-            </div>
+
           </div>
         </div>
       </div>
@@ -156,6 +172,10 @@
 
   <script type="text/javascript">
     window.onload = start;
+
+    function setProgress(val, id) {
+      $(id).css('width', val+'%').attr('aria-valuenow', val).text(val + "%");
+    }
 
     function getStatus() {
       var url = "/api/status";
@@ -196,6 +216,8 @@
           $("#beer-weight1").text(cfg["beer-weight1"] + weight_unit);
           $("#beer-volume1").text(cfg["beer-volume1"] + volume_unit);
           $("#glass1").text(cfg["glass1"]);
+
+          setProgress(Math.round((cfg["beer-volume1"]/cfg["keg-volume1"])*100), "#beer-percent1");
         }
 
         if( cfg["scale-weight2"] === undefined ) {
@@ -208,6 +230,8 @@
           $("#beer-weight2").text(cfg["beer-weight2"] + weight_unit);
           $("#beer-volume2").text(cfg["beer-volume2"] + volume_unit);
           $("#glass2").text(cfg["glass2"]);
+
+          setProgress(Math.round((cfg["beer-volume2"]/cfg["keg-volume2"])*100), "#beer-percent2");
         }
 
         if( cfg["last-pour-volume1"] === undefined ) {
@@ -221,6 +245,7 @@
         } else {
           $("#last-pour-volume2").text(cfg["last-pour-volume2"] + " " + volume_unit);
         }
+
       })
       .fail(function () {
         showError('Unable to get data from the device.');

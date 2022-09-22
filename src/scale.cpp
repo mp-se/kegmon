@@ -91,17 +91,6 @@ void Scale::setScaleFactor(UnitIndex idx) {
   _scale[idx]->set_scale(
       fs);  // apply the saved scale factor so we get valid results
 }
-
-/*float LevelDetection::applyKalmanFilter(float weight) {
-  if (isnan(_filterBaseline)) {
-    _filterBaseline = weight;
-    return weight;
-  }
-
-  _lastFilterOutput = _filter->updateEstimate(weight);
-  return _lastFilterOutput;
-}*/
-
 float Scale::read(UnitIndex idx, bool updateStats) {
   if (myConfig.getScaleFactor(idx) == 0 ||
       myConfig.getScaleOffset(idx) == 0)  // Not initialized, just return zero
@@ -119,8 +108,8 @@ float Scale::read(UnitIndex idx, bool updateStats) {
   // wrong, just ignore the reading
   if (raw > 100) {
     Log.error(
-        F("SCAL: Ignoring value since it's higher than 100kg, %F [%d]." CR), raw,
-        idx);
+        F("SCAL: Ignoring value since it's higher than 100kg, %F [%d]." CR),
+        raw, idx);
     return NAN;
   }
 
@@ -130,11 +119,10 @@ float Scale::read(UnitIndex idx, bool updateStats) {
     return NAN;
   }
 
-  if( !updateStats )
-    return raw;
+  if (!updateStats) return raw;
 
   float kalman = getKalmanDetection(idx)->processValue(raw);
-  float stat = getStatsDetection(idx)->processValue(kalman);
+  float stat = getStatsDetection(idx)->processValue((raw+kalman) / 2);
   return stat;
 }
 
@@ -179,7 +167,7 @@ void Scale::findFactor(UnitIndex idx, float weight) {
   myConfig.saveFile();  // save the factor to file
 
   setScaleFactor(idx);  // apply the factor after it has been saved
-  read(idx, false); // read the value again to update the cached value based
+  read(idx, false);     // read the value again to update the cached value based
                         // on new factor
 }
 
@@ -216,20 +204,16 @@ void Scale::logLevels(float kegVolume1, float kegVolume2, float pourVolume1,
 void Scale::pushKegUpdate(UnitIndex idx) {
   myPush.pushKegInformation(idx);
   logLevels(
-        isConnected(UnitIndex::U1) ? getBeerStableVolume(UnitIndex::U1)
-                                    : NAN,
-        isConnected(UnitIndex::U2) ? getBeerStableVolume(UnitIndex::U2)
-                                    : NAN,
-        NAN, NAN);
+      isConnected(UnitIndex::U1) ? getBeerStableVolume(UnitIndex::U1) : NAN,
+      isConnected(UnitIndex::U2) ? getBeerStableVolume(UnitIndex::U2) : NAN,
+      NAN, NAN);
 }
 
 void Scale::pushPourUpdate(UnitIndex idx) {
   myPush.pushPourInformation(idx);
   logLevels(
-      isConnected(UnitIndex::U1) ? getBeerStableVolume(UnitIndex::U1)
-                                  : NAN,
-      isConnected(UnitIndex::U2) ? getBeerStableVolume(UnitIndex::U2)
-                                  : NAN,
+      isConnected(UnitIndex::U1) ? getBeerStableVolume(UnitIndex::U1) : NAN,
+      isConnected(UnitIndex::U2) ? getBeerStableVolume(UnitIndex::U2) : NAN,
       idx == UnitIndex::U1 ? getPourVolume(idx) : NAN,
       idx == UnitIndex::U2 ? getPourVolume(idx) : NAN);
 }

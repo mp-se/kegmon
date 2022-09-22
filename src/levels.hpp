@@ -24,9 +24,10 @@ SOFTWARE.
 #ifndef SRC_LEVELS_HPP_
 #define SRC_LEVELS_HPP_
 
+#include <Arduino.h>
 #include <SimpleKalmanFilter.h>
 #include <Statistic.h>
-#include <Arduino.h>
+
 #include <kegconfig.hpp>
 
 class Stability {
@@ -46,25 +47,6 @@ class Stability {
   uint32_t count() { return _stability.count(); }
 };
 
-/*class LevelDetection {
- private:
-  float _filterBaseline = NAN;
-  SimpleKalmanFilter *_filter;
-
-  LevelDetection(const LevelDetection&) = delete;
-  void operator=(const LevelDetection&) = delete;
-
- public:
-  LevelDetection() { _filter = new SimpleKalmanFilter(1, 1, 1.5); }
-  float _lastStableWeight = NAN;
-  float _lastAverageWeight = NAN;
-  float _lastFilterOutput = NAN;
-
-  statistic::Statistic<float, uint32_t, true> _statistic;
-
-  float applyKalmanFilter(float value);
-};*/
-
 class KalmanLevelDetection {
  private:
   UnitIndex _idx;
@@ -73,11 +55,14 @@ class KalmanLevelDetection {
   float _raw = NAN;
   float _value = NAN;
 
-  KalmanLevelDetection(const KalmanLevelDetection&) = delete;
-  void operator=(const KalmanLevelDetection&) = delete;
+  KalmanLevelDetection(const KalmanLevelDetection &) = delete;
+  void operator=(const KalmanLevelDetection &) = delete;
 
  public:
-  KalmanLevelDetection(UnitIndex idx) { _idx = idx; _filter = new SimpleKalmanFilter(1, 1, 1.5); }
+  explicit KalmanLevelDetection(UnitIndex idx) {
+    _idx = idx;
+    _filter = new SimpleKalmanFilter(1, 1, 0.01);
+  }
 
   bool hasValue() { return !isnan(_value); }
 
@@ -85,15 +70,7 @@ class KalmanLevelDetection {
   float getRawValue() { return _raw; }
   float getValue() { return _value; }
 
-  float processValue(float v) {
-    _raw = v;
-    if (isnan(_baseline)) {
-      _baseline = v;
-      return v;
-    }
-    _value = _filter->updateEstimate(v);
-    return _value;
-  }
+  float processValue(float v);
 };
 
 class StatsLevelDetection {
@@ -103,15 +80,15 @@ class StatsLevelDetection {
   float _stable = NAN;
   float _pour = NAN;
 
-  StatsLevelDetection(const StatsLevelDetection&) = delete;
-  void operator=(const StatsLevelDetection&) = delete;
+  StatsLevelDetection(const StatsLevelDetection &) = delete;
+  void operator=(const StatsLevelDetection &) = delete;
 
   void checkForStable();
   void checkForMaxDeviation();
   void checkForLevelChange();
 
  public:
-  StatsLevelDetection(UnitIndex idx) { _idx = idx; }
+  explicit StatsLevelDetection(UnitIndex idx) { _idx = idx; }
 
   bool hasStableValue() { return !isnan(_stable); }
   bool hasPourValue() { return !isnan(_pour); }
@@ -126,13 +103,7 @@ class StatsLevelDetection {
   float ave() { return _statistic.average(); }
   float cnt() { return _statistic.count(); }
 
-  float processValue(float v) {
-    checkForStable();
-    _statistic.add(v);
-    checkForMaxDeviation();
-    checkForLevelChange();
-    return ave();
-  }
+  float processValue(float v);
 };
 
 #endif  // SRC_LEVELS_HPP_

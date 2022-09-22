@@ -284,6 +284,9 @@ void KegWebHandler::webStatus() {
   doc[PARAM_GLASS2] =
       reduceFloatPrecision(myScale.getNoStableGlasses(UnitIndex::U2), 1);
 
+  doc[PARAM_KEG_VOLUME1] = convertOutgoingVolume(myConfig.getKegVolume(0));
+  doc[PARAM_KEG_VOLUME2] = convertOutgoingVolume(myConfig.getKegVolume(1));
+
   float f = myTemp.getTempC();
 
   if (!isnan(f)) {
@@ -331,8 +334,7 @@ void KegWebHandler::webStability() {
     doc[PARAM_STABILITY_AVE1] = stability1.average();
     doc[PARAM_STABILITY_VAR1] = stability1.variance();
     doc[PARAM_STABILITY_POPDEV1] = stability1.popStdev();
-    doc[PARAM_STABILITY_UBIASDEV1] =
-        stability1.unbiasedStdev();
+    doc[PARAM_STABILITY_UBIASDEV1] = stability1.unbiasedStdev();
   }
 
   if (stability2.count() > 1) {
@@ -343,8 +345,7 @@ void KegWebHandler::webStability() {
     doc[PARAM_STABILITY_AVE2] = stability2.average();
     doc[PARAM_STABILITY_VAR2] = stability2.variance();
     doc[PARAM_STABILITY_POPDEV2] = stability2.popStdev();
-    doc[PARAM_STABILITY_UBIASDEV2] =
-        stability2.unbiasedStdev();
+    doc[PARAM_STABILITY_UBIASDEV2] = stability2.unbiasedStdev();
   }
 
   String out;

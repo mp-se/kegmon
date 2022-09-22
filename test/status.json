@@ -21,6 +21,8 @@
   "last-pour-weight2": 0.14,
   "last-pour-volume1": 0.34,
   "last-pour-volume2": 0.14,
+  "keg-volume1": 19,
+  "keg-volume2": 10,
   "weight-unit": "kg",
   "volume-unit": "cl",
   "temp-format": "F",

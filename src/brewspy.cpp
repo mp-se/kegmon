@@ -59,8 +59,7 @@ void Brewspy::sendTapInformation(UnitIndex idx) {
   doc["pour"] = myScale.getPourVolume(idx);
   Log.notice(F("BSPY: Sending TAP information to brewspy, last %Fl / %Fkg, "
                "pour %Fl  [%d]" CR),
-             myScale.getBeerStableVolume(idx),
-             myScale.getBeerStableWeight(idx),
+             myScale.getBeerStableVolume(idx), myScale.getBeerStableWeight(idx),
              myScale.getPourVolume(idx), idx);
 
   String out;

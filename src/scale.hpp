@@ -25,6 +25,7 @@ SOFTWARE.
 #define SRC_SCALE_HPP_
 
 #include <HX711.h>
+
 #include <kegconfig.hpp>
 #include <levels.hpp>
 #include <main.hpp>
@@ -38,13 +39,13 @@ SOFTWARE.
 
 class WeightVolumeConverter {
  private:
-  float _fg; 
+  float _fg;
   UnitIndex _idx;
 
  public:
-  WeightVolumeConverter(UnitIndex idx) { 
+  explicit WeightVolumeConverter(UnitIndex idx) {
     _idx = idx;
-    _fg = myConfig.getBeerFG(idx); 
+    _fg = myConfig.getBeerFG(idx);
     if (_fg < 1) _fg = 1;
   }
 
@@ -64,10 +65,10 @@ class WeightVolumeConverter {
 class Scale {
  private:
   // Setup and scale handling
-  HX711 *_scale[2] = {0, 0};
-  Stability _stability[2]; 
-  KalmanLevelDetection* _kalmanLevel[2] = { 0, 0 };
-  StatsLevelDetection* _statsLevel[2] = { 0, 0 };
+  HX711* _scale[2] = {0, 0};
+  Stability _stability[2];
+  KalmanLevelDetection* _kalmanLevel[2] = {0, 0};
+  StatsLevelDetection* _statsLevel[2] = {0, 0};
 
   Scale(const Scale&) = delete;
   void operator=(const Scale&) = delete;
@@ -80,8 +81,12 @@ class Scale {
   Scale();
 
   Stability& getStability(UnitIndex idx) { return _stability[idx]; }
-  KalmanLevelDetection* getKalmanDetection(UnitIndex idx) { return _kalmanLevel[idx]; }
-  StatsLevelDetection* getStatsDetection(UnitIndex idx) { return _statsLevel[idx]; }
+  KalmanLevelDetection* getKalmanDetection(UnitIndex idx) {
+    return _kalmanLevel[idx];
+  }
+  StatsLevelDetection* getStatsDetection(UnitIndex idx) {
+    return _statsLevel[idx];
+  }
 
   // Setup and scale handling
   void setup(bool force = false);
@@ -96,24 +101,61 @@ class Scale {
 
   // Shortcuts to subclasses....
   bool hasWeight(UnitIndex idx) { return getKalmanDetection(idx)->hasValue(); }
-  bool hasStableWeight(UnitIndex idx) { return getStatsDetection(idx)->hasStableValue(); }
-  bool hasPourWeight(UnitIndex idx) { return getStatsDetection(idx)->hasPourValue(); }
+  bool hasStableWeight(UnitIndex idx) {
+    return getStatsDetection(idx)->hasStableValue();
+  }
+  bool hasPourWeight(UnitIndex idx) {
+    return getStatsDetection(idx)->hasPourValue();
+  }
 
   // Returns weights in kg
-  float getTotalWeight(UnitIndex idx) { return getKalmanDetection(idx)->getValue(); }
-  float getTotalRawWeight(UnitIndex idx) { return getKalmanDetection(idx)->getRawValue(); }
-  float getTotalStableWeight(UnitIndex idx) { return getStatsDetection(idx)->getStableValue(); }
-  float getBeerWeight(UnitIndex idx) { return getKalmanDetection(idx)->hasValue() ? getKalmanDetection(idx)->getValue() - myConfig.getKegWeight(idx) : 0; }
-  float getBeerStableWeight(UnitIndex idx) { return getStatsDetection(idx)->hasStableValue() ? getStatsDetection(idx)->getStableValue() - myConfig.getKegWeight(idx) : 0; }
-  float getPourWeight(UnitIndex idx) { return getStatsDetection(idx)->hasPourValue() ? getStatsDetection(idx)->getPourValue() : 0; }
+  float getTotalWeight(UnitIndex idx) {
+    return getKalmanDetection(idx)->getValue();
+  }
+  float getTotalRawWeight(UnitIndex idx) {
+    return getKalmanDetection(idx)->getRawValue();
+  }
+  float getTotalStableWeight(UnitIndex idx) {
+    return getStatsDetection(idx)->getStableValue();
+  }
+  float getBeerWeight(UnitIndex idx) {
+    return getKalmanDetection(idx)->hasValue()
+               ? getKalmanDetection(idx)->getValue() -
+                     myConfig.getKegWeight(idx)
+               : NAN;
+  }
+  float getBeerStableWeight(UnitIndex idx) {
+    return getStatsDetection(idx)->hasStableValue()
+               ? getStatsDetection(idx)->getStableValue() -
+                     myConfig.getKegWeight(idx)
+               : NAN;
+  }
+  float getPourWeight(UnitIndex idx) {
+    return getStatsDetection(idx)->getPourValue();
+  }
 
   // Returns weights in liters
-  float getBeerVolume(UnitIndex idx) { WeightVolumeConverter conv(idx); return conv.weightToVolume( getBeerWeight(idx) ); }
-  float getBeerStableVolume(UnitIndex idx) { WeightVolumeConverter conv(idx); return conv.weightToVolume( getBeerStableWeight(idx) ); }
-  float getPourVolume(UnitIndex idx) { WeightVolumeConverter conv(idx); return conv.weightToVolume( getPourWeight(idx) ); }
+  float getBeerVolume(UnitIndex idx) {
+    WeightVolumeConverter conv(idx);
+    return conv.weightToVolume(getBeerWeight(idx));
+  }
+  float getBeerStableVolume(UnitIndex idx) {
+    WeightVolumeConverter conv(idx);
+    return conv.weightToVolume(getBeerStableWeight(idx));
+  }
+  float getPourVolume(UnitIndex idx) {
+    WeightVolumeConverter conv(idx);
+    return conv.weightToVolume(getPourWeight(idx));
+  }
 
-  float getNoGlasses(UnitIndex idx) { WeightVolumeConverter conv(idx); return conv.weightToGlasses( getBeerWeight(idx) ); }
-  float getNoStableGlasses(UnitIndex idx) { WeightVolumeConverter conv(idx); return conv.weightToGlasses( getBeerStableWeight(idx) ); }
+  float getNoGlasses(UnitIndex idx) {
+    WeightVolumeConverter conv(idx);
+    return conv.weightToGlasses(getBeerWeight(idx));
+  }
+  float getNoStableGlasses(UnitIndex idx) {
+    WeightVolumeConverter conv(idx);
+    return conv.weightToGlasses(getBeerStableWeight(idx));
+  }
 };
 
 extern Scale myScale;
