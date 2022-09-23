@@ -250,7 +250,7 @@ void loop() {
         break;
     }
 
-    Log.notice(
+    /*Log.notice(
         F("LOOP: Reading data raw1=%F,raw2=%F,kalman1=%F,kalman2=%F,stab1=%F, "
           "stab2=%F,ave1=%F,ave2=%F,min1=%F,min2=%F,max1=%F,max2=%F,pour1=%F,"
           "pour2=%F" CR),
@@ -267,54 +267,47 @@ void loop() {
         myScale.getStatsDetection(UnitIndex::U1)->max(),
         myScale.getStatsDetection(UnitIndex::U2)->max(),
         myScale.getPourWeight(UnitIndex::U1),
-        myScale.getPourWeight(UnitIndex::U2));
+        myScale.getPourWeight(UnitIndex::U2));*/
+
+    Log.notice(F("LOOP: Reading data raw1=%F,raw2=%F,stats1=%F, "
+                 "stats2=%F,pour1=%F,"
+                 "pour2=%F" CR),
+               myScale.getRawDetection(UnitIndex::U1)->getLastValue(),
+               myScale.getRawDetection(UnitIndex::U2)->getLastValue(),
+               myScale.getStatsDetection(UnitIndex::U1)->getStableValue(),
+               myScale.getStatsDetection(UnitIndex::U2)->getStableValue(),
+               myScale.getStatsDetection(UnitIndex::U1)->getPourValue(),
+               myScale.getStatsDetection(UnitIndex::U2)->getPourValue());
 
 #if defined(ENABLE_INFLUX_DEBUG)
     // This part is used to send data to an influxdb in order to get data on
     // scale stability/drift over time.
     char buf[250];
 
+    float raw1 = myScale.getRawDetection(UnitIndex::U1)->getLastValue();
+    float raw2 = myScale.getRawDetection(UnitIndex::U2)->getLastValue();
+
     String s;
-    snprintf(&buf[0], sizeof(buf),
-             "debug,host=%s,device=%s raw1=%f,raw2=%f,kalman1=%f,kalman2=%f",
-             myConfig.getMDNS(), myConfig.getID(),
-             myScale.getTotalRawWeight(UnitIndex::U1),
-             myScale.getTotalRawWeight(UnitIndex::U2),
-             myScale.getTotalWeight(UnitIndex::U1),
-             myScale.getTotalWeight(UnitIndex::U2));
+    snprintf(&buf[0], sizeof(buf), "debug,host=%s,device=%s raw1=%f,raw2=%f",
+             myConfig.getMDNS(), myConfig.getID(), isnan(raw1) ? 0 : raw1,
+             isnan(raw2) ? 0 : raw2);
     s = &buf[0];
 
-    if (myScale.hasStableWeight(UnitIndex::U1)) {
-      snprintf(&buf[0], sizeof(buf), ",stable1=%f",
-               myScale.getTotalStableWeight(UnitIndex::U1));
-      s += &buf[0];
-    }
+#if defined ENABLE_KALMAN_LEVEL
+    float kal1 = myScale.getKalmanDetection(UnitIndex::U1)->getValue();
+    float kal2 = myScale.getKalmanDetection(UnitIndex::U2)->getValue();
 
-    if (myScale.hasStableWeight(UnitIndex::U2)) {
-      snprintf(&buf[0], sizeof(buf), ",stable2=%f",
-               myScale.getTotalStableWeight(UnitIndex::U2));
-      s += &buf[0];
-    }
+    snprintf(&buf[0], sizeof(buf), ",kalman1=%f,kalman2=%f",
+             isnan(kal1) ? 0 : kal1, isnan(kal2) ? 0 : kal2);
+    s += &buf[0];
+#endif
 
-    if (myScale.getStatsDetection(UnitIndex::U1)->cnt() > 0) {
-      snprintf(
-          &buf[0], sizeof(buf), ",cnt1=%d,ave1=%f,min1=%f,max1=%f",
-          static_cast<int>(myScale.getStatsDetection(UnitIndex::U1)->cnt()),
-          myScale.getStatsDetection(UnitIndex::U1)->ave(),
-          myScale.getStatsDetection(UnitIndex::U1)->min(),
-          myScale.getStatsDetection(UnitIndex::U1)->max());
-      s = s + &buf[0];
-    }
+    float stats1 = myScale.getStatsDetection(UnitIndex::U1)->getStableValue();
+    float stats2 = myScale.getStatsDetection(UnitIndex::U2)->getStableValue();
 
-    if (myScale.getStatsDetection(UnitIndex::U2)->cnt() > 0) {
-      snprintf(
-          &buf[0], sizeof(buf), ",cnt2=%d,ave2=%f,min2=%f,max2=%f",
-          static_cast<int>(myScale.getStatsDetection(UnitIndex::U2)->cnt()),
-          myScale.getStatsDetection(UnitIndex::U2)->ave(),
-          myScale.getStatsDetection(UnitIndex::U2)->min(),
-          myScale.getStatsDetection(UnitIndex::U2)->max());
-      s = s + &buf[0];
-    }
+    snprintf(&buf[0], sizeof(buf), ",stats1=%f,stats2=%f",
+             isnan(stats1) ? 0 : stats1, isnan(stats2) ? 0 : stats2);
+    s += &buf[0];
 
     if (!isnan(myTemp.getTempC())) {
       snprintf(&buf[0], sizeof(buf), ",tempC=%f,tempF=%f,humidity=%f",
@@ -323,7 +316,7 @@ void loop() {
     }
 
 #if LOG_LEVEL == 6
-    // Log.verbose(F("LOOP: Sending data to influx: %s" CR), s.c_str());
+    Log.verbose(F("LOOP: %s" CR), s.c_str());
 #endif
     myPush.sendInfluxDb2(s, PUSH_INFLUX_TARGET, PUSH_INFLUX_ORG,
                          PUSH_INFLUX_BUCKET, PUSH_INFLUX_TOKEN);

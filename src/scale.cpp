@@ -25,9 +25,11 @@ SOFTWARE.
 #include <scale.hpp>
 
 Scale::Scale() {
+#if defined ENABLE_KALMAN_LEVEL
   _kalmanLevel[0] = new KalmanLevelDetection(UnitIndex::U1);
   _kalmanLevel[1] = new KalmanLevelDetection(UnitIndex::U2);
-  _statsLevel[0] = new StatsLevelDetection(UnitIndex::U1);
+#endif
+      _statsLevel[0] = new StatsLevelDetection(UnitIndex::U1);
   _statsLevel[1] = new StatsLevelDetection(UnitIndex::U2);
 }
 
@@ -121,8 +123,15 @@ float Scale::read(UnitIndex idx, bool updateStats) {
 
   if (!updateStats) return raw;
 
-  float kalman = getKalmanDetection(idx)->processValue(raw);
-  float stat = getStatsDetection(idx)->processValue((raw + kalman) / 2);
+  // Trying out various ways to filter and stabilize the reads.
+  _rawLevel[idx].add(raw);
+#if defined ENABLE_KALMAN_LEVEL
+  float kalman =
+      getKalmanDetection(idx)->processValue(raw, _rawLevel[idx].average());
+#endif
+
+  float stat =
+      getStatsDetection(idx)->processValue(raw, _rawLevel[idx].average());
   return stat;
 }
 
@@ -153,8 +162,6 @@ int32_t Scale::readRaw(UnitIndex idx) {
 
 void Scale::findFactor(UnitIndex idx, float weight) {
   if (!_scale[idx]) return;
-
-  // statsClearAll();
 
   float l = _scale[idx]->get_units(myConfig.getScaleReadCountCalibration());
   float f = l / weight;

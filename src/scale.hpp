@@ -37,6 +37,8 @@ SOFTWARE.
 // Note! Internally we assume that everything are in Metric formats, weights=Kg
 // and all volumes=Liters.
 
+// #define ENABLE_KALMAN_LEVEL
+
 class WeightVolumeConverter {
  private:
   float _fg;
@@ -67,7 +69,10 @@ class Scale {
   // Setup and scale handling
   HX711* _scale[2] = {0, 0};
   Stability _stability[2];
+  RawLevelDetection _rawLevel[2];
+#if defined ENABLE_KALMAN_LEVEL
   KalmanLevelDetection* _kalmanLevel[2] = {0, 0};
+#endif
   StatsLevelDetection* _statsLevel[2] = {0, 0};
 
   Scale(const Scale&) = delete;
@@ -81,9 +86,12 @@ class Scale {
   Scale();
 
   Stability* getStability(UnitIndex idx) { return &_stability[idx]; }
+  RawLevelDetection* getRawDetection(UnitIndex idx) { return &_rawLevel[idx]; }
+#if defined ENABLE_KALMAN_LEVEL
   KalmanLevelDetection* getKalmanDetection(UnitIndex idx) {
     return _kalmanLevel[idx];
   }
+#endif
   StatsLevelDetection* getStatsDetection(UnitIndex idx) {
     return _statsLevel[idx];
   }
@@ -100,7 +108,35 @@ class Scale {
   void pushPourUpdate(UnitIndex idx);
 
   // Shortcuts to subclasses....
+#if defined ENABLE_KALMAN_LEVEL
   bool hasWeight(UnitIndex idx) { return getKalmanDetection(idx)->hasValue(); }
+  float getTotalWeight(UnitIndex idx) {
+    return getKalmanDetection(idx)->getValue();
+  }
+  float getTotalRawWeight(UnitIndex idx) {
+    return getKalmanDetection(idx)->getRawValue();
+  }
+  float getBeerWeight(UnitIndex idx) {
+    return getKalmanDetection(idx)->hasValue()
+               ? getKalmanDetection(idx)->getValue() -
+                     myConfig.getKegWeight(idx)
+               : NAN;
+  }
+#else
+  bool hasWeight(UnitIndex idx) { return getRawDetection(idx)->hasValue(); }
+  float getTotalWeight(UnitIndex idx) {
+    return getRawDetection(idx)->getValue();
+  }
+  float getTotalRawWeight(UnitIndex idx) {
+    return getRawDetection(idx)->getValue();
+  }
+  float getBeerWeight(UnitIndex idx) {
+    return getRawDetection(idx)->hasValue()
+               ? getRawDetection(idx)->getValue() - myConfig.getKegWeight(idx)
+               : NAN;
+  }
+#endif
+
   bool hasStableWeight(UnitIndex idx) {
     return getStatsDetection(idx)->hasStableValue();
   }
@@ -108,21 +144,8 @@ class Scale {
     return getStatsDetection(idx)->hasPourValue();
   }
 
-  // Returns weights in kg
-  float getTotalWeight(UnitIndex idx) {
-    return getKalmanDetection(idx)->getValue();
-  }
-  float getTotalRawWeight(UnitIndex idx) {
-    return getKalmanDetection(idx)->getRawValue();
-  }
   float getTotalStableWeight(UnitIndex idx) {
     return getStatsDetection(idx)->getStableValue();
-  }
-  float getBeerWeight(UnitIndex idx) {
-    return getKalmanDetection(idx)->hasValue()
-               ? getKalmanDetection(idx)->getValue() -
-                     myConfig.getKegWeight(idx)
-               : NAN;
   }
   float getBeerStableWeight(UnitIndex idx) {
     return getStatsDetection(idx)->hasStableValue()

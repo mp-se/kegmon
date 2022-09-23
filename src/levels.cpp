@@ -24,7 +24,19 @@ SOFTWARE.
 #include <levels.hpp>
 #include <scale.hpp>
 
-void StatsLevelDetection::checkForMaxDeviation() {
+void StatsLevelDetection::checkForMaxDeviation(float ref) {
+
+  if (cnt() > 0) {
+    float delta = abs(ave() - ref);
+
+    if (delta > myConfig.getScaleMaxDeviationValue()) {
+      Log.notice(
+          F("SCAL: Average statistics deviates too much from raw values %F, restarting stable level detection [%d]." CR), delta, _idx);
+      clear();
+    }
+  }
+
+  /*
   // Check if the min/max are too far apart, then level has changed to much so
   // the value is no longer stable.
   if (cnt() > 0) {
@@ -37,9 +49,10 @@ void StatsLevelDetection::checkForMaxDeviation() {
       clear();
     }
   }
+  */
 }
 
-void StatsLevelDetection::checkForLevelChange() {
+void StatsLevelDetection::checkForLevelChange(float ref) {
   // Check if the level has changed up or down. If its down we record the delta
   // as the latest pour.
   if (cnt() > myConfig.getScaleStableCount() && hasStableValue()) {
@@ -80,19 +93,73 @@ void StatsLevelDetection::checkForLevelChange() {
   }
 }
 
-void StatsLevelDetection::checkForStable() {
-  // If we have enough values and last stable level if its NAN, then update the
-  // lastStable value
+void StatsLevelDetection::checkForStable(float ref) {
   if (cnt() > myConfig.getScaleStableCount() && !hasStableValue()) {
     _stable = ave();
     Log.notice(F("SCAL: Found a new stable value %F [%d]." CR),
-               getStableValue(), _idx);
-
+                getStableValue(), _idx);
     myScale.pushKegUpdate(_idx);
   }
+
+  /*
+  const float maxRefDifferenceStable = 0.1;  // kg
+
+  // If we have enough values and last stable level if its NAN, then update the
+  // lastStable value
+  if (cnt() > myConfig.getScaleStableCount() && !hasStableValue()) {
+    float delta = abs(ave() - ref);
+
+    if (delta > maxRefDifferenceStable) {
+      Log.notice(F("SCAL: The proposed stable value differs to much from raw "
+                   "ref %F restarting stats [%d]." CR),
+                 delta, _idx);
+      clear();
+    } else {
+      _stable = ave();
+      Log.notice(F("SCAL: Found a new stable value %F [%d]." CR),
+                 getStableValue(), _idx);
+
+      myScale.pushKegUpdate(_idx);
+    }
+  }
+  */
 }
 
-float KalmanLevelDetection::processValue(float v) {
+/*void StatsLevelDetection::checkForRefDeviation(float ref) {
+  const float maxRefDifference = 0.6;  // kg
+
+  if (cnt()) {
+    if ((ave() + maxRefDifference) < ref) {
+      Log.notice(
+          F("SCAL: Level has jumped, from %F to %F restarting stats [%d]." CR),
+          ave(), ref, _idx);
+      clear();
+    } else if ((ave() - maxRefDifference) > ref) {
+      Log.notice(
+          F("SCAL: Level has jumped from %F to %F restarting stats [%d]." CR),
+          ave(), ref, _idx);
+
+      clear();
+    }
+  }
+}*/
+
+float StatsLevelDetection::processValue(float v, float ref) {
+  // checkForRefDeviation(ref);
+  _statistic.add(v);
+  checkForMaxDeviation(ref);
+  checkForStable(ref);
+  checkForLevelChange(ref);
+#if LOG_DEBUG == 6
+  Log.verbose(F("SCAL: Update statistics filter value %F ave %F min %F max %F "
+                "[%d]." CR),
+              v, ave(), min(), max(), _idx);
+#endif
+  return ave();
+}
+
+#if defined ENABLE_KALMAN_LEVEL
+float KalmanLevelDetection::processValue(float v, float ref) {
   _raw = v;
   if (isnan(_baseline)) {
     _baseline = v;
@@ -107,17 +174,9 @@ float KalmanLevelDetection::processValue(float v) {
   return _value;
 }
 
-float StatsLevelDetection::processValue(float v) {
-  checkForStable();
-  _statistic.add(v);
-  checkForMaxDeviation();
-  checkForLevelChange();
-#if LOG_DEBUG == 6
-  Log.verbose(F("SCAL: Update statistics filter value %F ave %F min %F max %F "
-                "[%d]." CR),
-              v, ave(), min(), max(), _idx);
-#endif
-  return ave();
+void KalmanLevelDetection::checkForRefDeviation(float ref) {
+  // for future reference
 }
+#endif
 
 // EOF
