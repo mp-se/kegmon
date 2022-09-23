@@ -80,7 +80,7 @@ class Scale {
  public:
   Scale();
 
-  Stability& getStability(UnitIndex idx) { return _stability[idx]; }
+  Stability* getStability(UnitIndex idx) { return &_stability[idx]; }
   KalmanLevelDetection* getKalmanDetection(UnitIndex idx) {
     return _kalmanLevel[idx];
   }

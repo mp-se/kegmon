@@ -294,6 +294,11 @@ void KegWebHandler::webStatus() {
     doc[PARAM_HUMIDITY] = myTemp.getHumidity();
   }
 
+#if LOG_LEVEL == 6
+  serializeJson(doc, Serial);
+  Serial.print(CR);
+#endif
+
   String out;
   out.reserve(1000);
   serializeJson(doc, out);
@@ -323,30 +328,37 @@ void KegWebHandler::webStability() {
 
   DynamicJsonDocument doc(500);
 
-  Stability stability1 = myScale.getStability(UnitIndex::U1);
-  Stability stability2 = myScale.getStability(UnitIndex::U2);
+  Stability* stability1 = myScale.getStability(UnitIndex::U1);
+  Stability* stability2 = myScale.getStability(UnitIndex::U2);
 
-  if (stability1.count() > 1) {
-    doc[PARAM_STABILITY_COUNT1] = stability1.count();
-    doc[PARAM_STABILITY_SUM1] = stability1.sum();
-    doc[PARAM_STABILITY_MIN1] = stability1.min();
-    doc[PARAM_STABILITY_MAX1] = stability1.max();
-    doc[PARAM_STABILITY_AVE1] = stability1.average();
-    doc[PARAM_STABILITY_VAR1] = stability1.variance();
-    doc[PARAM_STABILITY_POPDEV1] = stability1.popStdev();
-    doc[PARAM_STABILITY_UBIASDEV1] = stability1.unbiasedStdev();
+  doc[PARAM_WEIGHT_UNIT] = myConfig.getWeightUnit();
+
+  if (stability1->count() > 1) {
+    doc[PARAM_STABILITY_COUNT1] = stability1->count();
+    doc[PARAM_STABILITY_SUM1] = stability1->sum();
+    doc[PARAM_STABILITY_MIN1] = stability1->min();
+    doc[PARAM_STABILITY_MAX1] = stability1->max();
+    doc[PARAM_STABILITY_AVE1] = stability1->average();
+    doc[PARAM_STABILITY_VAR1] = stability1->variance();
+    doc[PARAM_STABILITY_POPDEV1] = stability1->popStdev();
+    doc[PARAM_STABILITY_UBIASDEV1] = stability1->unbiasedStdev();
   }
 
-  if (stability2.count() > 1) {
-    doc[PARAM_STABILITY_COUNT2] = stability2.count();
-    doc[PARAM_STABILITY_SUM2] = stability2.sum();
-    doc[PARAM_STABILITY_MIN2] = stability2.min();
-    doc[PARAM_STABILITY_MAX2] = stability2.max();
-    doc[PARAM_STABILITY_AVE2] = stability2.average();
-    doc[PARAM_STABILITY_VAR2] = stability2.variance();
-    doc[PARAM_STABILITY_POPDEV2] = stability2.popStdev();
-    doc[PARAM_STABILITY_UBIASDEV2] = stability2.unbiasedStdev();
+  if (stability2->count() > 1) {
+    doc[PARAM_STABILITY_COUNT2] = stability2->count();
+    doc[PARAM_STABILITY_SUM2] = stability2->sum();
+    doc[PARAM_STABILITY_MIN2] = stability2->min();
+    doc[PARAM_STABILITY_MAX2] = stability2->max();
+    doc[PARAM_STABILITY_AVE2] = stability2->average();
+    doc[PARAM_STABILITY_VAR2] = stability2->variance();
+    doc[PARAM_STABILITY_POPDEV2] = stability2->popStdev();
+    doc[PARAM_STABILITY_UBIASDEV2] = stability2->unbiasedStdev();
   }
+
+#if LOG_LEVEL == 6
+  serializeJson(doc, Serial);
+  Serial.print(CR);
+#endif
 
   String out;
   out.reserve(500);
@@ -372,8 +384,8 @@ void KegWebHandler::webReset() {
 void KegWebHandler::webStabilityClear() {
   Log.notice(F("WEB : webServer callback /api/stability/clear." CR));
 
-  myScale.getStability(UnitIndex::U1).clear();
-  myScale.getStability(UnitIndex::U2).clear();
+  myScale.getStability(UnitIndex::U1)->clear();
+  myScale.getStability(UnitIndex::U2)->clear();
 
   _server->send(200, "application/json", "{}");
 }

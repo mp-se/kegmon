@@ -219,7 +219,7 @@
       var lastKeg2 = 0.0;
       var lastPour1 = 0.0;
       var lastPour2 = 0.0;
-      var maxItems = 40;
+      var maxItems = 50;
 
       $('#spinner').show(); 
 
@@ -253,59 +253,73 @@
         var url = "/levels";
         //var url = "/test/graph.txt";
         $.get(url, function (data2) {
-          console.log(data2);
+          var url = "/levels2";
+          //var url = "/test/graph2.txt";
+          $.get(url, function (data3) {
+            data2 = data3 + data2
+          })
+          .fail(function () {
+              // Ignore this, not an error
+          })
+          .always(function() {
+            console.log(data2);
 
-          var lines = data2.split('\n');        
-          for(var line = 0; line < lines.length; line++) {
-            var points = lines[line].split(';');
-            yt = Date.parse( points[0] );
+            var lines = data2.split('\n');        
+            for(var line = 0; line < lines.length; line++) {
+              var points = lines[line].split(';');
 
-            // Data set for kegs
-            labelsKeg.push( points[0] );
+              if(points.length>4) {
+                yt = Date.parse( points[0] );
 
-            if(points[1]=="nan") points[1] = lastKeg1;
-            lastKeg1 = parseFloat(points[1]);
-            dataKeg1.push( { y: cnvKegVol(lastKeg1, unit), x: yt } );
+                // Data set for kegs
+                labelsKeg.push( points[0] );
 
-            if(points[2]=="nan") points[2] = lastKeg2;
-            lastKeg2 = parseFloat(points[2]);
-            dataKeg2.push( { y: cnvKegVol(lastKeg2, unit), x: yt } );
+                if(points[1]=="nan") points[1] = lastKeg1;
+                lastKeg1 = parseFloat(points[1]);
+                dataKeg1.push( { y: cnvKegVol(lastKeg1, unit), x: yt } );
 
-            // Data set for pours          
-            if(points[3]=="nan" && points[4]=="nan") {
-              // Skip value
-            } else {
-              labelsPour.push( points[0] );
+                if(points[2]=="nan") points[2] = lastKeg2;
+                lastKeg2 = parseFloat(points[2]);
+                dataKeg2.push( { y: cnvKegVol(lastKeg2, unit), x: yt } );
 
-              if(points[3]=="nan") points[3] = 0;
-              lastPour1 = parseFloat(points[3])*100;
-              dataPour1.push( { y: cnvPourVol(lastPour1, unit), x: yt } );
-              if(points[4]=="nan") points[4] = 0;
-              lastPour2 = parseFloat(points[4])*100;
-              dataPour2.push( { y: cnvPourVol(lastPour2, unit), x: yt } );
+                // Data set for pours          
+                if(points[3]=="nan" && points[4]=="nan") {
+                  // Skip value
+                } else {
+                  labelsPour.push( points[0] );
+
+                  if(points[3]=="nan") points[3] = 0;
+                  lastPour1 = parseFloat(points[3])*100;
+                  dataPour1.push( { y: cnvPourVol(lastPour1, unit), x: yt } );
+                  if(points[4]=="nan") points[4] = 0;
+                  lastPour2 = parseFloat(points[4])*100;
+                  dataPour2.push( { y: cnvPourVol(lastPour2, unit), x: yt } );
+                }
+              }
             }
-          }
 
-          // Limit the number of items to show
-          while (labelsKeg.length > maxItems) {
-            labelsKeg.shift();
-            dataKeg1.shift();
-            dataKeg2.shift();
-          }
+            // Limit the number of items to show
+            while (labelsKeg.length > maxItems) {
+              labelsKeg.shift();
+              dataKeg1.shift();
+              dataKeg2.shift();
+            }
 
-          while (labelsPour.length > maxItems) {
-            labelsPour.shift();
-            dataPour1.shift();
-            dataPour2.shift();
-          }
+            while (labelsPour.length > maxItems) {
+              labelsPour.shift();
+              dataPour1.shift();
+              dataPour2.shift();
+            }
+
+            console.log( "Creating chart" );
+            createChart();
+          });
         })
         .fail(function () {
           showError("Failed to load level history from device");
           $('#spinner').hide(); 
         })
         .always(function() {
-          console.log( "Creating chart" );
-          createChart();
         });
       })
       .fail(function () {

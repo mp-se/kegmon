@@ -29,8 +29,6 @@ Scale::Scale() {
   _kalmanLevel[1] = new KalmanLevelDetection(UnitIndex::U2);
   _statsLevel[0] = new StatsLevelDetection(UnitIndex::U1);
   _statsLevel[1] = new StatsLevelDetection(UnitIndex::U2);
-  getStability(UnitIndex::U1).clear();
-  getStability(UnitIndex::U2).clear();
 }
 
 void Scale::setup(bool force) {
@@ -119,6 +117,8 @@ float Scale::read(UnitIndex idx, bool updateStats) {
     return NAN;
   }
 
+  _stability[idx].add(raw);
+
   if (!updateStats) return raw;
 
   float kalman = getKalmanDetection(idx)->processValue(raw);
@@ -204,16 +204,16 @@ void Scale::logLevels(float kegVolume1, float kegVolume2, float pourVolume1,
 void Scale::pushKegUpdate(UnitIndex idx) {
   myPush.pushKegInformation(idx);
   logLevels(
-      isConnected(UnitIndex::U1) ? getBeerStableVolume(UnitIndex::U1) : NAN,
-      isConnected(UnitIndex::U2) ? getBeerStableVolume(UnitIndex::U2) : NAN,
+      isConnected(UnitIndex::U1) && hasStableWeight(UnitIndex::U1) ? getBeerStableVolume(UnitIndex::U1) : NAN,
+      isConnected(UnitIndex::U2) && hasStableWeight(UnitIndex::U2) ? getBeerStableVolume(UnitIndex::U2) : NAN,
       NAN, NAN);
 }
 
 void Scale::pushPourUpdate(UnitIndex idx) {
   myPush.pushPourInformation(idx);
   logLevels(
-      isConnected(UnitIndex::U1) ? getBeerStableVolume(UnitIndex::U1) : NAN,
-      isConnected(UnitIndex::U2) ? getBeerStableVolume(UnitIndex::U2) : NAN,
+      isConnected(UnitIndex::U1) && hasStableWeight(UnitIndex::U1) ? getBeerStableVolume(UnitIndex::U1) : NAN,
+      isConnected(UnitIndex::U2) && hasStableWeight(UnitIndex::U2) ? getBeerStableVolume(UnitIndex::U2) : NAN,
       idx == UnitIndex::U1 ? getPourVolume(idx) : NAN,
       idx == UnitIndex::U2 ? getPourVolume(idx) : NAN);
 }
