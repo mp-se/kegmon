@@ -95,6 +95,11 @@
           <div class="accordion-body">
             <canvas id="kegChart"></canvas>
             <canvas id="pourChart"></canvas>
+
+            <div class="row mb-3">
+              <button class="col-md-2 btn btn-secondary" id="refresh-btn" data-bs-toggle="tooltip" title="Refresh graphs">Manual refresh</button>
+            </div>
+  
           </div>  
         </div>
       </div>
@@ -192,6 +197,11 @@
     };
 
     window.onload = loadChartData;
+
+    $("#refresh-btn").click(function(e){
+      console.log( "Refreshing graphs" );
+      loadChartData();
+    });
 
     // Input is in liters
     function cnvKegVol(vol, format) {

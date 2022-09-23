@@ -250,22 +250,24 @@ void loop() {
         break;
     }
 
-    Log.notice(F("LOOP: Reading data raw1=%F,raw2=%F,kalman1=%F,kalman2=%F,stab1=%F, "
-                 "stab2=%F,ave1=%F,ave2=%F,min1=%F,min2=%F,max1=%F,max2=%F,pour1=%F,pour2=%F" CR),
-               myScale.getTotalRawWeight(UnitIndex::U1),
-               myScale.getTotalRawWeight(UnitIndex::U2),
-               myScale.getTotalWeight(UnitIndex::U1),
-               myScale.getTotalWeight(UnitIndex::U2),
-               myScale.getTotalStableWeight(UnitIndex::U1),
-               myScale.getTotalStableWeight(UnitIndex::U2),
-               myScale.getStatsDetection(UnitIndex::U1)->ave(),
-               myScale.getStatsDetection(UnitIndex::U2)->ave(),
-               myScale.getStatsDetection(UnitIndex::U1)->min(),
-               myScale.getStatsDetection(UnitIndex::U2)->min(),
-               myScale.getStatsDetection(UnitIndex::U1)->max(),
-               myScale.getStatsDetection(UnitIndex::U2)->max(),
-               myScale.getPourWeight(UnitIndex::U1),
-               myScale.getPourWeight(UnitIndex::U2));
+    Log.notice(
+        F("LOOP: Reading data raw1=%F,raw2=%F,kalman1=%F,kalman2=%F,stab1=%F, "
+          "stab2=%F,ave1=%F,ave2=%F,min1=%F,min2=%F,max1=%F,max2=%F,pour1=%F,"
+          "pour2=%F" CR),
+        myScale.getTotalRawWeight(UnitIndex::U1),
+        myScale.getTotalRawWeight(UnitIndex::U2),
+        myScale.getTotalWeight(UnitIndex::U1),
+        myScale.getTotalWeight(UnitIndex::U2),
+        myScale.getTotalStableWeight(UnitIndex::U1),
+        myScale.getTotalStableWeight(UnitIndex::U2),
+        myScale.getStatsDetection(UnitIndex::U1)->ave(),
+        myScale.getStatsDetection(UnitIndex::U2)->ave(),
+        myScale.getStatsDetection(UnitIndex::U1)->min(),
+        myScale.getStatsDetection(UnitIndex::U2)->min(),
+        myScale.getStatsDetection(UnitIndex::U1)->max(),
+        myScale.getStatsDetection(UnitIndex::U2)->max(),
+        myScale.getPourWeight(UnitIndex::U1),
+        myScale.getPourWeight(UnitIndex::U2));
 
 #if defined(ENABLE_INFLUX_DEBUG)
     // This part is used to send data to an influxdb in order to get data on
@@ -274,11 +276,12 @@ void loop() {
 
     String s;
     snprintf(&buf[0], sizeof(buf),
-             "debug,host=%s,device=%s raw1=%f,raw2=%f,kalman1=%f,kalman2=%f", myConfig.getMDNS(),
-              myConfig.getID(), myScale.getTotalRawWeight(UnitIndex::U1),
-              myScale.getTotalRawWeight(UnitIndex::U2),
-              myScale.getTotalWeight(UnitIndex::U1),
-              myScale.getTotalWeight(UnitIndex::U2) );
+             "debug,host=%s,device=%s raw1=%f,raw2=%f,kalman1=%f,kalman2=%f",
+             myConfig.getMDNS(), myConfig.getID(),
+             myScale.getTotalRawWeight(UnitIndex::U1),
+             myScale.getTotalRawWeight(UnitIndex::U2),
+             myScale.getTotalWeight(UnitIndex::U1),
+             myScale.getTotalWeight(UnitIndex::U2));
     s = &buf[0];
 
     if (myScale.hasStableWeight(UnitIndex::U1)) {

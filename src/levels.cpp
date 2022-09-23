@@ -101,7 +101,8 @@ float KalmanLevelDetection::processValue(float v) {
   _value = _filter->updateEstimate(v);
 
 #if LOG_DEBUG == 6
-  Log.verbose(F("SCAL: Update kalman filter base %F value %F [%d]." CR), _baseline, _value, _idx);
+  Log.verbose(F("SCAL: Update kalman filter base %F value %F [%d]." CR),
+              _baseline, _value, _idx);
 #endif
   return _value;
 }
@@ -112,7 +113,9 @@ float StatsLevelDetection::processValue(float v) {
   checkForMaxDeviation();
   checkForLevelChange();
 #if LOG_DEBUG == 6
-  Log.verbose(F("SCAL: Update statistics filter value %F ave %F min %F max %F [%d]." CR), v, ave(), min(), max(), _idx);
+  Log.verbose(F("SCAL: Update statistics filter value %F ave %F min %F max %F "
+                "[%d]." CR),
+              v, ave(), min(), max(), _idx);
 #endif
   return ave();
 }

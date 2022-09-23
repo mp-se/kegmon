@@ -34,4 +34,3 @@ INCBIN(StabilityHtm, "html/stability.min.htm");
 INCBIN(GraphHtm, "html/graph.min.htm");
 
 // EOF
-
