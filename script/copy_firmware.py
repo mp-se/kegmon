@@ -11,13 +11,13 @@ def after_build(source, target, env):
     print( "Executing custom step " )
     dir    = env.GetLaunchDir()
     name   = env.get( "PIOENV" )
-    if name == "kegscale-debug" :
+    if name == "kegmon-debug" :
         target = dir + "/bin/firmware-debug.bin"
         source = dir + "/.pio/build/" + name + "/firmware.bin"
         print( "Copy file : " + source + " -> " + target )
         shutil.copyfile( source, target )
 
-    if name == "kegscale-release" :
+    if name == "kegmon-release" :
         target = dir + "/bin/firmware.bin"
         source = dir + "/.pio/build/" + name + "/firmware.bin"
         print( "Copy file : " + source + " -> " + target )
