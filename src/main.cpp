@@ -170,7 +170,6 @@ void drawScreenDefault(UnitIndex idx) {
   if (!(loopCounter % 10)) showPints = !showPints;
 
   if (myScale.isConnected(idx)) {
-    // float weight = myScale.getLastValue(idx);
     float glass = myScale.getNoGlasses(idx);
 
 #if LOG_LEVEL == 6
