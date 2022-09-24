@@ -7,9 +7,13 @@ Welcome to KegMon's documentation!
 ====================================
 
 .. note::
-  Reflects test version v0.3.0, Last updated 2022-09-10
+  Reflects test version v0.4.0, Last updated 2022-09-24
 
   Im still building my own so the project is regarded as work in progress.
+
+Main challenges so far:
+* Stable level detection, I'm trying out a few methods to detect a stable level and tuning the algorithms I have implemented. It's plausible that this is dependant on the hardware build and components. My second build seams to be more stable (at least in room temperature)
+* The esp8266 is really slow when interacting with the web ui. I'm considering switching to an esp32 instead with more power and/or an async web server. 
 
 This project is intended for my own use, I've have not really focused on making this reusable for others so the 
 documentation is not that extensive. 
@@ -17,7 +21,7 @@ documentation is not that extensive.
 However I have documented my build process and share it here. The design is created for 2 kegs but it 
 will work if you only use one (make sure to use the pins for scale 1 in that case). 
 
-The software will detect how many hx711 are connected and if the tempsensor is available. 
+The software will detect how many hx711 are connected and if there is a tempsensor. 
 
 The project contains the following parts:
 * Software that manage the scale and present the readings.
@@ -27,19 +31,21 @@ The project contains the following parts:
 Features
 ++++++++
 
-* Measure the weight of up to two kegs and estimate the number of pours left in the keg. 
-* Define the size of a pour by selecting the beer glass size. 
-* Volume of beer is determined by the FG and weight of the beer + keg.
+* Measure the weight & volume of up to two kegs and estimate the number of glasses are left in the keg
+* Define the size of a pour by selecting the beer glass size
+* Volume of beer is determined by the FG and weight of the beer (total - keg)
 * Import beer information from brewfather (name, abv, ebc and ibu, fg)
-* Show the remaning pours on OLED displays, one per keg
-* Show the remaning pours on web interface
+* Import beer information from brewspy (name, abv) - fg will come in when the brewspy API has implemented it
+* Show the remaning glasses on OLED displays, one per keg
+* Show the remaning glasses on web interface
 * Configuration is done via web interface
-* Calibration of scales are done via web interface
-* Stores statistics about the scales since start to determine the stabilty of the load cells.
+* Calibration of scales are done via web interface, no need for building your own firmware
+* Stores statistics about the scales since start to determine the stabilty of the load cells
 * Update firmware via web interface
-* Interact with brew-spy's tap list
-* Ability to change weight unit (currently only kg is supported)
-* Ability to change volume unit (currently only cl is supported)
+* Interact with brew-spy's tap list (volume and pour notification)
+* Display volumes in cl or fl. oz (uk & us)
+* Display weights in kg or lbs
+* Show a graph over scale changes and pours (last 40 data points)
 
 Future
 ++++++

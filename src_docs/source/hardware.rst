@@ -10,8 +10,8 @@ This is the hardware schema that I have used in my build.
   one, two scales, one or two displays and with/without a temperature sensor. 
 
 I noticed that my first build was really unsable, it could vary +/- 2kg over time. I've already
-added some features to the software to filter out the varying readings but these large changes are impossible 
-to fix with software. 
+added some features to the software to filter out the varying readings but these large changes are difficult 
+to fix with software. So I need to determine if this is related to software or hardware. 
 
 The graph here shows two of my scales in my keezer where the second one (lower graph) is quite 
 stable over time. The first one is not. The difference is over 2 kg and it goes back to the previous 
