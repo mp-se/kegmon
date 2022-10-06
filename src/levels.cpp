@@ -25,13 +25,13 @@ SOFTWARE.
 #include <scale.hpp>
 
 void StatsLevelDetection::checkForMaxDeviation(float ref) {
-
   if (cnt() > 0) {
     float delta = abs(ave() - ref);
 
     if (delta > myConfig.getScaleMaxDeviationValue()) {
-      Log.notice(
-          F("SCAL: Average statistics deviates too much from raw values %F, restarting stable level detection [%d]." CR), delta, _idx);
+      Log.notice(F("SCAL: Average statistics deviates too much from raw values "
+                   "%F, restarting stable level detection [%d]." CR),
+                 delta, _idx);
       clear();
     }
   }
@@ -97,7 +97,7 @@ void StatsLevelDetection::checkForStable(float ref) {
   if (cnt() > myConfig.getScaleStableCount() && !hasStableValue()) {
     _stable = ave();
     Log.notice(F("SCAL: Found a new stable value %F [%d]." CR),
-                getStableValue(), _idx);
+               getStableValue(), _idx);
     myScale.pushKegUpdate(_idx);
   }
 

@@ -141,7 +141,7 @@ class StatsLevelDetection {
   // void checkForRefDeviation(float ref);
 
   // Implementation of statistics for determine a stable level and also pour
-  // detection. 
+  // detection.
 
  public:
   explicit StatsLevelDetection(UnitIndex idx) { _idx = idx; }

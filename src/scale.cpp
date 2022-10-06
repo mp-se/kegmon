@@ -29,7 +29,7 @@ Scale::Scale() {
   _kalmanLevel[0] = new KalmanLevelDetection(UnitIndex::U1);
   _kalmanLevel[1] = new KalmanLevelDetection(UnitIndex::U2);
 #endif
-      _statsLevel[0] = new StatsLevelDetection(UnitIndex::U1);
+  _statsLevel[0] = new StatsLevelDetection(UnitIndex::U1);
   _statsLevel[1] = new StatsLevelDetection(UnitIndex::U2);
 }
 

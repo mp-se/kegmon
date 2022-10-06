@@ -40,7 +40,12 @@ SOFTWARE.
 #define PIN_SCALE1_SDA D3
 #define PIN_SCALE1_SCL D4
 #define PIN_SCALE2_SDA D5
+#if defined(HARDWARE_REV1)
+#define PIN_SCALE2_SCL D4
+#warning "Configured for hardware rev1"
+#else
 #define PIN_SCALE2_SCL D8
+#endif
 #define PIN_DH2 D7
 
 enum UnitIndex { U1 = 0, U2 = 1 };

@@ -46,18 +46,6 @@ const int loopInterval = 2000;
 int loopCounter = 0;
 uint32_t loopMillis = 0;
 
-void printHeap(String prefix = "Main") {
-  Log.notice(
-      F("%s: Free-heap %d kb, Heap-rag %d %%, Max-block %d kb Stack=%d b." CR),
-      prefix.c_str(), ESP.getFreeHeap() / 1024, ESP.getHeapFragmentation(),
-      ESP.getMaxFreeBlockSize() / 1024, ESP.getFreeContStack());
-}
-
-char* convertFloatToString(float f, char* buffer, int dec) {
-  dtostrf(f, 6, dec, buffer);
-  return buffer;
-}
-
 void setup() {
   Log.notice(F("Main: Reset reason %s." CR), ESP.getResetInfo().c_str());
   Log.notice(F("Main: Started setup for %s." CR),
