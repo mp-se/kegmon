@@ -102,7 +102,7 @@ class KegConfig : public BaseConfig {
 
   float _scaleMaxDeviationValue = 0.1;
   uint32_t _scaleStableCount = 6;
-  int _scaleReadCount = 5;
+  int _scaleReadCount = 4;
   int _scaleReadCountCalibration = 30;
 
  public:
