@@ -23,6 +23,7 @@ SOFTWARE.
  */
 #include <kegpush.hpp>
 #include <scale.hpp>
+#include <perf.hpp>
 
 Scale::Scale() {
 #if defined ENABLE_KALMAN_LEVEL
@@ -98,6 +99,7 @@ float Scale::read(UnitIndex idx, bool updateStats) {
 
   if (!_scale[idx]) return 0;
 
+  PERF_BEGIN("scale-read");
   float raw = _scale[idx]->get_units(myConfig.getScaleReadCount());
 #if LOG_LEVEL == 6
   // Log.verbose(F("SCAL: Reading weight=%F, updating stats %s [%d]" CR), f,
@@ -110,28 +112,41 @@ float Scale::read(UnitIndex idx, bool updateStats) {
     Log.error(
         F("SCAL: Ignoring value since it's higher than 100kg, %F [%d]." CR),
         raw, idx);
+    PERF_END("scale-read");
     return NAN;
   }
 
   if (raw < -100) {
     Log.error(F("SCAL: Ignoring value since it's less than -100kg %F [%d]." CR),
               raw, idx);
+    PERF_END("scale-read");
     return NAN;
   }
 
   _stability[idx].add(raw);
 
-  if (!updateStats) return raw;
+  if (!updateStats) {
+    PERF_END("scale-read");
+    return raw;
+  }
 
   // Trying out various ways to filter and stabilize the reads.
+  PERF_START("scale-read-filterraw");
   _rawLevel[idx].add(raw);
+  PERF_END("scale-read-filterraw");
+
 #if defined ENABLE_KALMAN_LEVEL
+  PERF_START("scale-read-kalman");
   float kalman =
       getKalmanDetection(idx)->processValue(raw, _rawLevel[idx].average());
+  PERF_END("scale-read-kalman");
 #endif
 
+  PERF_START("scale-read-filterstats");
   float stat =
       getStatsDetection(idx)->processValue(raw, _rawLevel[idx].average());
+  PERF_END("scale-read-filterstats");
+  PERF_END("scale-read");
   return stat;
 }
 
@@ -154,9 +169,11 @@ void Scale::tare(UnitIndex idx) {
 
 int32_t Scale::readRaw(UnitIndex idx) {
   if (!_scale[idx]) return 0;
+  PERF_BEGIN("scale-readraw");
   int32_t l = _scale[idx]->read_average(
       myConfig.getScaleReadCountCalibration());  // get the raw value without
                                                  // applying scaling factor
+  PERF_END("scale-readraw");
   return l;
 }
 

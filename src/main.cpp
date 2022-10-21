@@ -30,6 +30,7 @@ SOFTWARE.
 #include <scale.hpp>
 #include <temp.hpp>
 #include <utils.hpp>
+#include <perf.hpp>
 #include <wificonnection.hpp>
 
 SerialDebug mySerial(115200L);
@@ -47,14 +48,22 @@ int loopCounter = 0;
 uint32_t loopMillis = 0;
 
 void setup() {
+#if defined(PERF_ENABLE)
+  PerfLogging perf;
+  perf.getInstance().setBaseConfig(&myConfig);
+#endif
+
+  PERF_BEGIN("setup");
   Log.notice(F("Main: Reset reason %s." CR), ESP.getResetInfo().c_str());
   Log.notice(F("Main: Started setup for %s." CR),
              String(ESP.getChipId(), HEX).c_str());
   Log.notice(F("Main: Build options: %s (%s) LOGLEVEL %d " CR), CFG_APPVER,
              CFG_GITREV, LOG_LEVEL);
 
+  PERF_BEGIN("setup-display");
   myDisplay.setup(UnitIndex::U1);
   myDisplay.setup(UnitIndex::U2);
+  PERF_END("setup-display");
   myConfig.checkFileSystem();
 
   // Temporary for migrating due to namechange of configuration file.
@@ -65,10 +74,18 @@ void setup() {
     f.close();
   // End
 
+  PERF_BEGIN("setup-config");
   myConfig.loadFile();
+  PERF_END("setup-config");
+  PERF_BEGIN("setup-wifi");
   myWifi.init();
+  PERF_END("setup-wifi");
+  PERF_BEGIN("setup-scale");
   myScale.setup();
+  PERF_END("setup-scale");
+  PERF_BEGIN("setup-temp");
   myTemp.setup();
+  PERF_END("setup-temp");
 
   ESP.wdtDisable();
   ESP.wdtEnable(5000);
@@ -88,10 +105,17 @@ void setup() {
     myWifi.startPortal();
   }
 
+  PERF_BEGIN("setup-wifi-connect");
   myWifi.connect();
+  PERF_END("setup-wifi-connect");
+  PERF_BEGIN("setup-timesync");
   myWifi.timeSync();
+  PERF_END("setup-timesync");
 
+  PERF_BEGIN("setup-webserver");
   myWebHandler.setupWebServer();
+  PERF_END("setup-webserver");
+
   Log.notice(F("Main: Setup completed." CR));
 
   // Show what sensors has been detected on display 1
@@ -114,6 +138,9 @@ void setup() {
            strlen(PUSH_INFLUX_TARGET) > 0 ? "Yes" : "No");
   myDisplay.printLine(UnitIndex::U1, 4, &buf[0]);
   myDisplay.show(UnitIndex::U1);
+
+  PERF_END("main-setup");
+  PERF_PUSH();
   delay(3000);
 }
 
@@ -220,22 +247,32 @@ void loop() {
     }
 
     // Read the scales, only once per loop
+    PERF_BEGIN("loop-scale-read1");
     myScale.read(UnitIndex::U1, true);
+    PERF_END("loop-scale-read1");
+    PERF_BEGIN("loop-scale-read2");
     myScale.read(UnitIndex::U2, true);
+    PERF_END("loop-scale-read2");
 
     // Update screens
     switch (myConfig.getDisplayLayout()) {
       default:
       case DisplayLayout::Default:
+        PERF_BEGIN("loop-display-default");
         drawScreenDefault(UnitIndex::U1);
         drawScreenDefault(UnitIndex::U2);
+        PERF_END("loop-display-default");
         break;
 
       case DisplayLayout::HardwareStats:
+        PERF_BEGIN("loop-display-hardware");
         drawScreenHardwareStats(UnitIndex::U1);
         drawScreenHardwareStats(UnitIndex::U2);
+        PERF_END("loop-display-hardware");
         break;
     }
+
+    PERF_PUSH();
 
     /*Log.notice(
         F("LOOP: Reading data raw1=%F,raw2=%F,kalman1=%F,kalman2=%F,stab1=%F, "
@@ -307,7 +344,7 @@ void loop() {
 #endif
     myPush.sendInfluxDb2(s, PUSH_INFLUX_TARGET, PUSH_INFLUX_ORG,
                          PUSH_INFLUX_BUCKET, PUSH_INFLUX_TOKEN);
-#endif
+#endif // ENABLE_INFLUX_DEBUG
   }
 }
 
