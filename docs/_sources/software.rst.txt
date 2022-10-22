@@ -14,7 +14,7 @@ that's not a big issue.
 Installation
 ************
 
-To be documented. 
+If there is an interest let me know and I will add the project to brewflasher for easier flashing.
 
 WIFI
 ****
@@ -39,6 +39,22 @@ section will show the general device information.
   :width: 600
   :alt: Index
 
+* **Temperature**
+
+Temperature reading (not shown if there is no sensor).
+
+* **Humidity**
+
+Humidity reading (not shown if there is no sensor).
+
+* **Weights/Volumes**
+
+Shows weighs for scale 1 and 2.
+
+* **Glasses**
+
+Shows glasses (pours) left for scale 1 and 2. 
+
 * **Current version**
 
 Shows the current software version including git revision.
@@ -54,22 +70,6 @@ ESP8266 chip ID. Used for identifying the device.
 * **SSID**
 
 Name of network we are connected to.
-
-* **Temperature**
-
-Temperature reading ()not shown if there is no sensor).
-
-* **Humidity**
-
-Humidity reading (not shown if there is no sensor).
-
-* **Weights**
-
-Shows weighs for scale 1 and 2.
-
-* **Glasses**
-
-Shows glasses (pours) left for scale 1 and 2. 
 
 Beers
 *****
@@ -94,7 +94,7 @@ Information about the beer, used to show on user interfaces.
 
 * **Beer FG**
 
-Used in formula for calculating the beer volume. FG has a slight impact on the weight / volume unit.
+Used in formula for calculating the beer volume. FG has a slight impact on the weight / volume unit. If not defined 1 will be used for calculations.
 
 
 Configuration
@@ -130,6 +130,10 @@ Choose the layout/information on the OLED displays.
 
 Brewfather User key/API key.
 
+* **Brewspy token**
+
+Brewspy tokens for keg 1 & keg 2.
+
 Calibration
 ***********
 
@@ -158,15 +162,19 @@ the factor for estimating the weight.
 The third step is to validate that everything works, place anohter thing with a know weight and 
 check the measured value. If you are satisfied then you are done.
 
-Firmware update
-***************
+History
+*******
 
-Here you can upload a new firmware version without the need to hook the device to a serial port 
-on your computer.
+Shows the last level changes detected by the software. There is a second graph for the pours.
 
-.. image:: images/upload.png
+.. image:: images/history.png
   :width: 600
-  :alt: Upload firmware
+  :alt: Level changes
+
+.. image:: images/history2.png
+  :width: 600
+  :alt: Pours
+
 
 Stability
 *********
@@ -179,3 +187,14 @@ Information page that can determine the stability of your hardware build.
 
 I have found that some of my hardware builds was not really stable so I added this 
 feature to check the scale build before doing the final assembly. 
+
+Firmware update
+***************
+
+Here you can upload a new firmware version without the need to hook the device to a serial port 
+on your computer.
+
+.. image:: images/upload.png
+  :width: 600
+  :alt: Upload firmware
+
