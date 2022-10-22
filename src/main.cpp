@@ -135,7 +135,11 @@ void setup() {
   snprintf(&buf[0], sizeof(buf), "Version: %s", CFG_APPVER);
   myDisplay.printLine(UnitIndex::U1, 3, &buf[0]);
   snprintf(&buf[0], sizeof(buf), "Push: %s",
-           strlen(PUSH_INFLUX_TARGET) > 0 ? "Yes" : "No");
+#if defined(ENABLE_INFLUX_DEBUG)
+    "Yes");
+#else
+    "No");
+#endif
   myDisplay.printLine(UnitIndex::U1, 4, &buf[0]);
   myDisplay.show(UnitIndex::U1);
 
@@ -330,6 +334,7 @@ void loop() {
     float stats2 = myScale.getStatsDetection(UnitIndex::U2)->getStableValue();
 
     snprintf(&buf[0], sizeof(buf), ",stats1=%f,stats2=%f",
+    
              isnan(stats1) ? 0 : stats1, isnan(stats2) ? 0 : stats2);
     s += &buf[0];
 
