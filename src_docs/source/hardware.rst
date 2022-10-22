@@ -190,8 +190,7 @@ Building the display case
 *************************
 
 .. warning::
-  This part will be updated once I have received my new 1.3" displays and changed the design to cover the HX711 boards. This section 
-  is for the previous build with the HX711 in the scale base.
+  This part will be updated since in my new prototype im using two connections, one for each keg. 
   
 First step is to print the case parts and mount the OLED displays to the front. I use hot glue to fix the displays in place. 
 

@@ -14,7 +14,7 @@ that's not a big issue.
 Installation
 ************
 
-To be documented. 
+If there is an interest let me know and I will add the project to brewflasher for easier flashing.
 
 WIFI
 ****
