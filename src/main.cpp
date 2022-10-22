@@ -27,10 +27,10 @@ SOFTWARE.
 #include <kegwebhandler.hpp>
 #include <main.hpp>
 #include <ota.hpp>
+#include <perf.hpp>
 #include <scale.hpp>
 #include <temp.hpp>
 #include <utils.hpp>
-#include <perf.hpp>
 #include <wificonnection.hpp>
 
 SerialDebug mySerial(115200L);
@@ -136,9 +136,9 @@ void setup() {
   myDisplay.printLine(UnitIndex::U1, 3, &buf[0]);
   snprintf(&buf[0], sizeof(buf), "Push: %s",
 #if defined(ENABLE_INFLUX_DEBUG)
-    "Yes");
+           "Yes");
 #else
-    "No");
+           "No");
 #endif
   myDisplay.printLine(UnitIndex::U1, 4, &buf[0]);
   myDisplay.show(UnitIndex::U1);
@@ -334,7 +334,7 @@ void loop() {
     float stats2 = myScale.getStatsDetection(UnitIndex::U2)->getStableValue();
 
     snprintf(&buf[0], sizeof(buf), ",stats1=%f,stats2=%f",
-    
+
              isnan(stats1) ? 0 : stats1, isnan(stats2) ? 0 : stats2);
     s += &buf[0];
 
@@ -349,7 +349,7 @@ void loop() {
 #endif
     myPush.sendInfluxDb2(s, PUSH_INFLUX_TARGET, PUSH_INFLUX_ORG,
                          PUSH_INFLUX_BUCKET, PUSH_INFLUX_TOKEN);
-#endif // ENABLE_INFLUX_DEBUG
+#endif  // ENABLE_INFLUX_DEBUG
   }
 }
 

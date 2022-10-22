@@ -23,5 +23,11 @@ def after_build(source, target, env):
         print( "Copy file : " + source + " -> " + target )
         shutil.copyfile( source, target )
 
+    if name == "kegmon-rev1-release" :
+        target = dir + "/bin/firmware_rev1.bin"
+        source = dir + "/.pio/build/" + name + "/firmware.bin"
+        print( "Copy file : " + source + " -> " + target )
+        shutil.copyfile( source, target )
+
 print( "Adding custom build step (copy firmware): ")
 env.AddPostAction("buildprog", after_build)

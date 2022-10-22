@@ -22,8 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 #include <kegpush.hpp>
-#include <scale.hpp>
 #include <perf.hpp>
+#include <scale.hpp>
 
 Scale::Scale() {
 #if defined ENABLE_KALMAN_LEVEL
