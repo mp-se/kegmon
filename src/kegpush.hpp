@@ -41,8 +41,8 @@ class KegPushHandler : public BasePush {
     return _brewspy->getTapInformation(token);
   }
 
-  void pushPourInformation(UnitIndex idx);
-  void pushKegInformation(UnitIndex idx);
+  void pushPourInformation(UnitIndex idx, float pourVol);
+  void pushKegInformation(UnitIndex idx, float stableVol, float pourVol);
 };
 
 extern KegPushHandler myPush;

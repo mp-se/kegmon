@@ -49,5 +49,6 @@ SOFTWARE.
 #define PIN_DH2 D7
 
 enum UnitIndex { U1 = 0, U2 = 1 };
+enum LevelDetectionType { RAW = 0, KALMAN = 1, STATS = 2 };
 
 #endif  // SRC_MAIN_HPP_

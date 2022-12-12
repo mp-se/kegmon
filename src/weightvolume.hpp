@@ -21,18 +21,38 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#include <kegpush.hpp>
-#include <log.hpp>
-#include <scale.hpp>
-#include <utils.hpp>
+#ifndef SRC_WEIGHTVOLUME_HPP_
+#define SRC_WEIGHTVOLUME_HPP_
 
-void KegPushHandler::pushPourInformation(UnitIndex idx, float pourVol) {
-  _brewspy->sendPourInformation(idx, pourVol);
-}
+#include <kegconfig.hpp>
 
-void KegPushHandler::pushKegInformation(UnitIndex idx, float stableVol,
-                                        float pourVol) {
-  _brewspy->sendTapInformation(idx, stableVol, pourVol);
-}
+// Note! Internally we assume that everything are in Metric formats, weights=Kg
+// and all volumes=Liters.
+class WeightVolumeConverter {
+ private:
+  float _fg;
+  UnitIndex _idx;
+
+ public:
+  explicit WeightVolumeConverter(UnitIndex idx) {
+    _idx = idx;
+    _fg = myConfig.getBeerFG(idx);
+    if (_fg < 1) _fg = 1;
+  }
+
+  float weightToVolume(float kg) {
+    float liter = isnan(kg) || kg == 0 ? 0 : kg / _fg;
+    return liter;
+  }
+
+  float weightToGlasses(float kg) {
+    float glassVol = myConfig.getGlassVolume(_idx);
+    float glassWeight = glassVol * _fg;
+    float glass = kg / glassWeight;
+    return glass < 0 ? 0 : glass;
+  }
+};
+
+#endif  // SRC_WEIGHTVOLUME_HPP_
 
 // EOF

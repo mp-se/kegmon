@@ -21,18 +21,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#include <kegpush.hpp>
-#include <log.hpp>
-#include <scale.hpp>
-#include <utils.hpp>
-
-void KegPushHandler::pushPourInformation(UnitIndex idx, float pourVol) {
-  _brewspy->sendPourInformation(idx, pourVol);
-}
-
-void KegPushHandler::pushKegInformation(UnitIndex idx, float stableVol,
-                                        float pourVol) {
-  _brewspy->sendTapInformation(idx, stableVol, pourVol);
-}
+#include <levelraw.hpp>
 
 // EOF

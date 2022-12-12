@@ -21,18 +21,30 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#include <kegpush.hpp>
-#include <log.hpp>
-#include <scale.hpp>
-#include <utils.hpp>
+#ifndef SRC_STABILITY_HPP_
+#define SRC_STABILITY_HPP_
 
-void KegPushHandler::pushPourInformation(UnitIndex idx, float pourVol) {
-  _brewspy->sendPourInformation(idx, pourVol);
-}
+#include <Statistic.h>
 
-void KegPushHandler::pushKegInformation(UnitIndex idx, float stableVol,
-                                        float pourVol) {
-  _brewspy->sendTapInformation(idx, stableVol, pourVol);
-}
+class Stability {
+ private:
+  statistic::Statistic<float, uint32_t, true> _stability;
+
+  // For viewing the stability of the scale over time. Uses raw / unfiltered
+  // values.
+ public:
+  void clear() { _stability.clear(); }
+  void add(float v) { _stability.add(v); }
+  float sum() { return _stability.sum(); }
+  float min() { return _stability.minimum(); }
+  float max() { return _stability.maximum(); }
+  float average() { return _stability.average(); }
+  float variance() { return _stability.variance(); }
+  float popStdev() { return _stability.pop_stdev(); }
+  float unbiasedStdev() { return _stability.unbiased_stdev(); }
+  uint32_t count() { return _stability.count(); }
+};
+
+#endif  // SRC_STABILITY_HPP_
 
 // EOF

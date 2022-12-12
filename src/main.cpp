@@ -41,6 +41,7 @@ KegWebHandler myWebHandler(&myConfig);
 KegPushHandler myPush(&myConfig);
 Display myDisplay;
 Scale myScale;
+LevelDetection myLevelDetection;
 TempHumidity myTemp;
 
 const int loopInterval = 2000;
@@ -148,7 +149,7 @@ void setup() {
   delay(3000);
 }
 
-bool showPints = false;
+bool showPints[2] = {false, false};
 
 void drawScreenHardwareStats(UnitIndex idx) {
   myDisplay.clear(idx);
@@ -158,22 +159,23 @@ void drawScreenHardwareStats(UnitIndex idx) {
     char buf[30];
 
     snprintf(&buf[0], sizeof(buf), "Last wgt: %.3f",
-             myScale.getTotalWeight(idx));
+             myLevelDetection.getTotalWeight(idx));
     myDisplay.printLine(idx, 0, &buf[0]);
     snprintf(&buf[0], sizeof(buf), "Stab wgt: %.3f",
-             myScale.getTotalStableWeight(idx));
+             myLevelDetection.getTotalStableWeight(idx));
     myDisplay.printLine(idx, 1, &buf[0]);
     snprintf(&buf[0], sizeof(buf), "Ave  wgt: %.3f",
-             myScale.getStatsDetection(idx)->ave());
+             myLevelDetection.getStatsDetection(idx)->ave());
     myDisplay.printLine(idx, 2, &buf[0]);
     snprintf(&buf[0], sizeof(buf), "Min wgt: %.3f",
-             myScale.getStatsDetection(idx)->min());
+             myLevelDetection.getStatsDetection(idx)->min());
     myDisplay.printLine(idx, 3, &buf[0]);
     snprintf(&buf[0], sizeof(buf), "Max wgt: %.3f",
-             myScale.getStatsDetection(idx)->max());
+             myLevelDetection.getStatsDetection(idx)->max());
     myDisplay.printLine(idx, 4, &buf[0]);
     myDisplay.printLine(idx, 5, &buf[0]);
   }
+
   myDisplay.show(idx);
 }
 
@@ -186,10 +188,10 @@ void drawScreenDefault(UnitIndex idx) {
   snprintf(&buf[0], sizeof(buf), "%s", myConfig.getBeerName(idx));
   myDisplay.printPosition(idx, -1, 0, &buf[0]);
 
-  if (!(loopCounter % 10)) showPints = !showPints;
+  if (!(loopCounter % 10)) showPints[idx] = !showPints[idx];
 
   if (myScale.isConnected(idx)) {
-    float glass = myScale.getNoGlasses(idx);
+    float glass = myLevelDetection.getNoGlasses(idx, LevelDetectionType::RAW);
 
 #if LOG_LEVEL == 6
     // Log.verbose(F("LOOP: Weight=%F Glasses=%F [%d]." CR), weight, glass,
@@ -199,12 +201,13 @@ void drawScreenDefault(UnitIndex idx) {
     snprintf(&buf[0], sizeof(buf), "%.1f%%", myConfig.getBeerABV(idx));
     myDisplay.printPosition(idx, -1, 16, &buf[0]);
 
-    if (!showPints) {
+    if (!showPints[idx]) {
       snprintf(&buf[0], sizeof(buf), "%.1f glasses", glass);
       myDisplay.printPosition(idx, -1, 32, &buf[0]);
     } else {
-      convertFloatToString(myScale.getBeerWeight(idx), &buf[0],
-                           myConfig.getWeightPrecision());
+      convertFloatToString(
+          myLevelDetection.getBeerWeight(idx, LevelDetectionType::RAW), &buf[0],
+          myConfig.getWeightPrecision());
       String s(&buf[0]);
       s += " " + String(myConfig.getWeightUnit());
       myDisplay.printPosition(idx, -1, 32, s.c_str());
@@ -252,10 +255,10 @@ void loop() {
 
     // Read the scales, only once per loop
     PERF_BEGIN("loop-scale-read1");
-    myScale.read(UnitIndex::U1, true);
+    myLevelDetection.update(UnitIndex::U1, myScale.read(UnitIndex::U1));
     PERF_END("loop-scale-read1");
     PERF_BEGIN("loop-scale-read2");
-    myScale.read(UnitIndex::U2, true);
+    myLevelDetection.update(UnitIndex::U2, myScale.read(UnitIndex::U2));
     PERF_END("loop-scale-read2");
 
     // Update screens
@@ -297,41 +300,47 @@ void loop() {
         myScale.getPourWeight(UnitIndex::U1),
         myScale.getPourWeight(UnitIndex::U2));*/
 
-    Log.notice(F("LOOP: Reading data raw1=%F,raw2=%F,stats1=%F, "
-                 "stats2=%F,pour1=%F,"
-                 "pour2=%F" CR),
-               myScale.getRawDetection(UnitIndex::U1)->getLastValue(),
-               myScale.getRawDetection(UnitIndex::U2)->getLastValue(),
-               myScale.getStatsDetection(UnitIndex::U1)->getStableValue(),
-               myScale.getStatsDetection(UnitIndex::U2)->getStableValue(),
-               myScale.getStatsDetection(UnitIndex::U1)->getPourValue(),
-               myScale.getStatsDetection(UnitIndex::U2)->getPourValue());
+    Log.notice(
+        F("LOOP: Reading data raw1=%F,raw2=%F,stats1=%F, "
+          "stats2=%F,pour1=%F,"
+          "pour2=%F" CR),
+        myLevelDetection.getRawDetection(UnitIndex::U1)->getLastValue(),
+        myLevelDetection.getRawDetection(UnitIndex::U2)->getLastValue(),
+        myLevelDetection.getStatsDetection(UnitIndex::U1)->getStableValue(),
+        myLevelDetection.getStatsDetection(UnitIndex::U2)->getStableValue(),
+        myLevelDetection.getStatsDetection(UnitIndex::U1)->getPourValue(),
+        myLevelDetection.getStatsDetection(UnitIndex::U2)->getPourValue());
 
 #if defined(ENABLE_INFLUX_DEBUG)
     // This part is used to send data to an influxdb in order to get data on
     // scale stability/drift over time.
     char buf[250];
 
-    float raw1 = myScale.getRawDetection(UnitIndex::U1)->getLastValue();
-    float raw2 = myScale.getRawDetection(UnitIndex::U2)->getLastValue();
+    float raw1 =
+        myLevelDetection.getRawDetection(UnitIndex::U1)->getLastValue();
+    float raw2 =
+        myLevelDetection.getRawDetection(UnitIndex::U2)->getLastValue();
 
     String s;
-    snprintf(&buf[0], sizeof(buf), "debug,host=%s,device=%s raw1=%f,raw2=%f",
+    snprintf(&buf[0], sizeof(buf),
+             "debug,host=%s,device=%s "
+             "raw1=%f,"
+             "raw2=%f",
              myConfig.getMDNS(), myConfig.getID(), isnan(raw1) ? 0 : raw1,
              isnan(raw2) ? 0 : raw2);
     s = &buf[0];
 
-#if defined ENABLE_KALMAN_LEVEL
-    float kal1 = myScale.getKalmanDetection(UnitIndex::U1)->getValue();
-    float kal2 = myScale.getKalmanDetection(UnitIndex::U2)->getValue();
+    float kal1 = myLevelDetection.getKalmanDetection(UnitIndex::U1)->getValue();
+    float kal2 = myLevelDetection.getKalmanDetection(UnitIndex::U2)->getValue();
 
     snprintf(&buf[0], sizeof(buf), ",kalman1=%f,kalman2=%f",
              isnan(kal1) ? 0 : kal1, isnan(kal2) ? 0 : kal2);
     s += &buf[0];
-#endif
 
-    float stats1 = myScale.getStatsDetection(UnitIndex::U1)->getStableValue();
-    float stats2 = myScale.getStatsDetection(UnitIndex::U2)->getStableValue();
+    float stats1 =
+        myLevelDetection.getStatsDetection(UnitIndex::U1)->getStableValue();
+    float stats2 =
+        myLevelDetection.getStatsDetection(UnitIndex::U2)->getStableValue();
 
     snprintf(&buf[0], sizeof(buf), ",stats1=%f,stats2=%f",
 

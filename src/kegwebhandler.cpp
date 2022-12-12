@@ -23,6 +23,7 @@ SOFTWARE.
  */
 #include <kegpush.hpp>
 #include <kegwebhandler.hpp>
+#include <levels.hpp>
 #include <main.hpp>
 #include <scale.hpp>
 #include <temp.hpp>
@@ -195,64 +196,68 @@ void KegWebHandler::webScaleFactor() {
 }
 
 void KegWebHandler::populateScaleJson(DynamicJsonDocument& doc) {
+  // This will return the raw weight so that that we get the actual values.
   doc[PARAM_SCALE_FACTOR1] = myConfig.getScaleFactor(0);
   doc[PARAM_SCALE_FACTOR2] = myConfig.getScaleFactor(1);
-
   if (myScale.isConnected(UnitIndex::U1)) {
     doc[PARAM_SCALE_WEIGHT1] = reduceFloatPrecision(
-        convertOutgoingWeight(myScale.getTotalStableWeight(UnitIndex::U1)),
+        convertOutgoingWeight(
+            myLevelDetection.getTotalRawWeight(UnitIndex::U1)),
         myConfig.getWeightPrecision());
     doc[PARAM_SCALE_RAW1] = myScale.readRaw(UnitIndex::U1);
     doc[PARAM_SCALE_OFFSET1] = myConfig.getScaleOffset(0);
     doc[PARAM_BEER_WEIGHT1] = reduceFloatPrecision(
-        convertOutgoingWeight(myScale.getBeerWeight(UnitIndex::U1)),
+        convertOutgoingWeight(myLevelDetection.getBeerWeight(UnitIndex::U1)),
         myConfig.getWeightPrecision());
     doc[PARAM_BEER_VOLUME1] = reduceFloatPrecision(
-        convertOutgoingVolume(myScale.getBeerVolume(UnitIndex::U1)),
+        convertOutgoingVolume(myLevelDetection.getBeerVolume(UnitIndex::U1)),
         myConfig.getVolumePrecision());
   }
 
   if (myScale.isConnected(UnitIndex::U2)) {
     doc[PARAM_SCALE_WEIGHT2] = reduceFloatPrecision(
-        convertOutgoingWeight(myScale.getTotalStableWeight(UnitIndex::U2)),
+        convertOutgoingWeight(
+            myLevelDetection.getTotalStableWeight(UnitIndex::U2)),
         myConfig.getWeightPrecision());
     doc[PARAM_SCALE_RAW2] = myScale.readRaw(UnitIndex::U2);
     doc[PARAM_SCALE_OFFSET2] = myConfig.getScaleOffset(1);
     doc[PARAM_BEER_WEIGHT2] = reduceFloatPrecision(
-        convertOutgoingWeight(myScale.getBeerWeight(UnitIndex::U2)),
+        convertOutgoingWeight(myLevelDetection.getBeerWeight(UnitIndex::U2)),
         myConfig.getWeightPrecision());
     doc[PARAM_BEER_VOLUME2] = reduceFloatPrecision(
-        convertOutgoingVolume(myScale.getBeerVolume(UnitIndex::U2)),
+        convertOutgoingVolume(myLevelDetection.getBeerVolume(UnitIndex::U2)),
         myConfig.getVolumePrecision());
   }
 
-  if (myScale.hasStableWeight(UnitIndex::U1)) {
+  if (myLevelDetection.hasStableWeight(UnitIndex::U1)) {
     doc[PARAM_SCALE_STABLE_WEIGHT1] = reduceFloatPrecision(
-        convertOutgoingWeight(myScale.getTotalStableWeight(UnitIndex::U1)),
+        convertOutgoingWeight(
+            myLevelDetection.getTotalStableWeight(UnitIndex::U1)),
         myConfig.getWeightPrecision());
   }
 
-  if (myScale.hasStableWeight(UnitIndex::U2)) {
+  if (myLevelDetection.hasStableWeight(UnitIndex::U2)) {
     doc[PARAM_SCALE_STABLE_WEIGHT2] = reduceFloatPrecision(
-        convertOutgoingWeight(myScale.getTotalStableWeight(UnitIndex::U2)),
+        convertOutgoingWeight(
+            myLevelDetection.getTotalStableWeight(UnitIndex::U2)),
         myConfig.getWeightPrecision());
   }
 
-  if (myScale.hasPourWeight(UnitIndex::U1)) {
+  if (myLevelDetection.hasPourWeight(UnitIndex::U1)) {
     doc[PARAM_LAST_POUR_WEIGHT1] = reduceFloatPrecision(
-        convertOutgoingWeight(myScale.getPourWeight(UnitIndex::U1)),
+        convertOutgoingWeight(myLevelDetection.getPourWeight(UnitIndex::U1)),
         myConfig.getWeightPrecision());
     doc[PARAM_LAST_POUR_VOLUME1] = reduceFloatPrecision(
-        convertOutgoingVolume(myScale.getPourVolume(UnitIndex::U1)),
+        convertOutgoingVolume(myLevelDetection.getPourVolume(UnitIndex::U1)),
         myConfig.getVolumePrecision());
   }
 
-  if (myScale.hasPourWeight(UnitIndex::U2)) {
+  if (myLevelDetection.hasPourWeight(UnitIndex::U2)) {
     doc[PARAM_LAST_POUR_WEIGHT2] = reduceFloatPrecision(
-        convertOutgoingWeight(myScale.getPourWeight(UnitIndex::U2)),
+        convertOutgoingWeight(myLevelDetection.getPourWeight(UnitIndex::U2)),
         myConfig.getWeightPrecision());
     doc[PARAM_LAST_POUR_VOLUME2] = reduceFloatPrecision(
-        convertOutgoingVolume(myScale.getPourVolume(UnitIndex::U2)),
+        convertOutgoingVolume(myLevelDetection.getPourVolume(UnitIndex::U2)),
         myConfig.getVolumePrecision());
   }
 
@@ -279,10 +284,10 @@ void KegWebHandler::webStatus() {
 
   // For this we use the last value read from the scale to avoid having to much
   // communication. The value will be updated regulary second in the main loop.
-  doc[PARAM_GLASS1] =
-      reduceFloatPrecision(myScale.getNoStableGlasses(UnitIndex::U1), 1);
-  doc[PARAM_GLASS2] =
-      reduceFloatPrecision(myScale.getNoStableGlasses(UnitIndex::U2), 1);
+  doc[PARAM_GLASS1] = reduceFloatPrecision(
+      myLevelDetection.getNoStableGlasses(UnitIndex::U1), 1);
+  doc[PARAM_GLASS2] = reduceFloatPrecision(
+      myLevelDetection.getNoStableGlasses(UnitIndex::U2), 1);
 
   doc[PARAM_KEG_VOLUME1] = convertOutgoingVolume(myConfig.getKegVolume(0));
   doc[PARAM_KEG_VOLUME2] = convertOutgoingVolume(myConfig.getKegVolume(1));
@@ -328,8 +333,8 @@ void KegWebHandler::webStability() {
 
   DynamicJsonDocument doc(500);
 
-  Stability* stability1 = myScale.getStability(UnitIndex::U1);
-  Stability* stability2 = myScale.getStability(UnitIndex::U2);
+  Stability* stability1 = myLevelDetection.getStability(UnitIndex::U1);
+  Stability* stability2 = myLevelDetection.getStability(UnitIndex::U2);
 
   doc[PARAM_WEIGHT_UNIT] = myConfig.getWeightUnit();
 
@@ -384,9 +389,8 @@ void KegWebHandler::webReset() {
 void KegWebHandler::webStabilityClear() {
   Log.notice(F("WEB : webServer callback /api/stability/clear." CR));
 
-  myScale.getStability(UnitIndex::U1)->clear();
-  myScale.getStability(UnitIndex::U2)->clear();
-
+  myLevelDetection.getStability(UnitIndex::U1)->clear();
+  myLevelDetection.getStability(UnitIndex::U2)->clear();
   _server->send(200, "application/json", "{}");
 }
 

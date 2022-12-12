@@ -34,8 +34,8 @@ class Brewspy {
  public:
   explicit Brewspy(BasePush *push) { _push = push; }
 
-  void sendTapInformation(UnitIndex idx);
-  void sendPourInformation(UnitIndex idx);
+  void sendTapInformation(UnitIndex idx, float stableVol, float pourVol);
+  void sendPourInformation(UnitIndex idx, float pourVol);
   void clearKegInformation(UnitIndex idx);
   String getTapInformation(const String &token);
 };

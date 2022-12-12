@@ -57,6 +57,7 @@ SOFTWARE.
 #define PARAM_SCALE_MAX_DEVIATION "scale-max-deviation"
 #define PARAM_SCALE_READ_COUNT "scale-read-count"
 #define PARAM_SCALE_READ_COUNT_CALIBRATION "scale-read-count-calibration"
+#define PARAM_LEVEL_DETECTION "level-detection"
 
 struct BeerInfo {
   String _name = "";
@@ -101,9 +102,11 @@ class KegConfig : public BaseConfig {
   BeerInfo _beer[2];
 
   float _scaleMaxDeviationValue = 0.1;
-  uint32_t _scaleStableCount = 6;
+  uint32_t _scaleStableCount = 10;
   int _scaleReadCount = 4;
   int _scaleReadCountCalibration = 30;
+
+  LevelDetectionType _levelDetection = LevelDetectionType::STATS;
 
  public:
   KegConfig(String baseMDNS, String fileName);
@@ -234,6 +237,17 @@ class KegConfig : public BaseConfig {
   int getScaleReadCountCalibration() { return _scaleReadCountCalibration; }
   void setScaleReadCountCalibration(uint32_t i) {
     _scaleReadCountCalibration = i;
+    _saveNeeded = true;
+  }
+
+  LevelDetectionType getLevelDetection() { return _levelDetection; }
+  int getLevelDetectionAsInt() { return _levelDetection; }
+  void setLevelDetection(LevelDetectionType l) {
+    _levelDetection = l;
+    _saveNeeded = true;
+  }
+  void setLevelDetection(int l) {
+    _levelDetection = (LevelDetectionType)l;
     _saveNeeded = true;
   }
 
