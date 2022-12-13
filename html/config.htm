@@ -279,7 +279,12 @@
               <div class="col-sm-2">
                 <input type="number" min=".05" max=".50" step=".05" class="form-control" name="scale-max-deviation" id="scale-max-deviation" placeholder="0.1"
                   data-bs-toggle="tooltip"
-                  title="Threashold for how much change in weight is needed for the scale to detect new level, i.e sensitivity of the scale. Default 0.1 kg">
+                  title="Default 0.1 kg">
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-sm-12">
+                <i>Threashold for how much change in weight is needed for the scale to detect new level, i.e sensitivity of the scale.</i>
               </div>
             </div>
 
@@ -288,7 +293,13 @@
               <div class="col-sm-2">
                 <input type="number" min="6" max="30" step="1" class="form-control" name="scale-stable-count" id="scale-stable-count" placeholder="10"
                   data-bs-toggle="tooltip"
-                  title="Defines the number of scale measurements are required for a new stable level to be determined, each reading takes 2 seconds. This is used for pour detection, should be longer than the time to pour a glass of beer.">
+                  title="">
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-sm-12">
+                <i>Defines the number of scale measurements are required for a new stable level to be determined, each 
+                reading takes 2 seconds. This is used for pour detection and should be longer than the time required to pour a glass of beer.</i>
               </div>
             </div>
 
