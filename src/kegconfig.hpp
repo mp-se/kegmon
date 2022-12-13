@@ -57,6 +57,7 @@ SOFTWARE.
 #define PARAM_SCALE_MAX_DEVIATION "scale-max-deviation"
 #define PARAM_SCALE_READ_COUNT "scale-read-count"
 #define PARAM_SCALE_READ_COUNT_CALIBRATION "scale-read-count-calibration"
+#define PARAM_SCALE_STABLE_COUNT "scale-stable-count"
 #define PARAM_LEVEL_DETECTION "level-detection"
 
 struct BeerInfo {
@@ -227,6 +228,10 @@ class KegConfig : public BaseConfig {
   // This is the number of values in the statistics for the average value to be
   // classifed as stable. Loop interval is 2s
   uint32_t getScaleStableCount() { return _scaleStableCount; }
+  void setScaleStableCount(uint32_t i) {
+    _scaleStableCount = i;
+    _saveNeeded = true;
+  }
 
   int getScaleReadCount() { return _scaleReadCount; }
   void setScaleReadCount(uint32_t i) {

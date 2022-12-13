@@ -77,6 +77,7 @@ void KegConfig::createJson(DynamicJsonDocument& doc, bool skipSecrets) {
   doc[PARAM_SCALE_MAX_DEVIATION] = getScaleMaxDeviationValue();
   doc[PARAM_SCALE_READ_COUNT] = getScaleReadCount();
   doc[PARAM_SCALE_READ_COUNT_CALIBRATION] = getScaleReadCountCalibration();
+  doc[PARAM_SCALE_STABLE_COUNT] = getScaleStableCount();
 }
 
 void KegConfig::parseJson(DynamicJsonDocument& doc) {
@@ -159,6 +160,8 @@ void KegConfig::parseJson(DynamicJsonDocument& doc) {
     setScaleReadCount(doc[PARAM_SCALE_READ_COUNT]);
   if (!doc[PARAM_SCALE_READ_COUNT_CALIBRATION].isNull())
     setScaleReadCountCalibration(doc[PARAM_SCALE_READ_COUNT_CALIBRATION]);
+  if (!doc[PARAM_SCALE_STABLE_COUNT].isNull())
+    setScaleStableCount(doc[PARAM_SCALE_STABLE_COUNT]);
 }
 
 float convertIncomingWeight(float w) {

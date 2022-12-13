@@ -189,7 +189,7 @@
               <div class="row mb-3">
                 <label for="brewfather-userkey" class="col-sm-2 col-form-label">Brewfather User Key</label>
                 <div class="col-sm-3">
-                  <input type="text" maxlength="80" class="form-control" name="brewfather-userkey"
+                  <input type="password" maxlength="80" class="form-control" name="brewfather-userkey"
                     id="brewfather-userkey" placeholder="" data-bs-toggle="tooltip"
                     title="User key obtained from the control panel in brewfather. Need access to batches.">
                 </div>
@@ -197,7 +197,7 @@
               <div class="row mb-3">
                 <label for="brewfather-apikey" class="col-sm-2 col-form-label">Brewfather API Key</label>
                 <div class="col-sm-3">
-                  <input type="text" maxlength="80" class="form-control" name="brewfather-apikey" id="brewfather-apikey"
+                  <input type="password" maxlength="80" class="form-control" name="brewfather-apikey" id="brewfather-apikey"
                     placeholder="" data-bs-toggle="tooltip"
                     title="API key obtained from the control panel in brewfather. Need access to batches.">
                 </div>
@@ -208,16 +208,42 @@
               <div class="row mb-3">
                 <label for="brewspy-token1" class="col-sm-2 col-form-label">Brewspy Token - Tap 1 & 2</label>
                 <div class="col-sm-3">
-                  <input type="text" maxlength="80" class="form-control" name="brewspy-token1"
+                  <input type="password" maxlength="80" class="form-control" name="brewspy-token1"
                     id="brewspy-token1" placeholder="" data-bs-toggle="tooltip"
                     title="Token for the first tap, can be found under the last part of the webhook URL.">
                 </div>
                 <div class="col-sm-3">
-                  <input type="text" maxlength="80" class="form-control" name="brewspy-token2" id="brewspy-token2"
+                  <input type="password" maxlength="80" class="form-control" name="brewspy-token2" id="brewspy-token2"
                     placeholder="" data-bs-toggle="tooltip"
                     title="Token for the second tap, can be found under the last part of the webhook URL.">
                 </div>
               </div>
+
+              <hr>
+
+              <div class="row mb-3">
+                <div class="col-sm-3">
+                  <input class="form-check-input" type="checkbox" name="password-toggle" id="password-toggle" checked data-bs-toggle="tooltip" title="Hide sensitive fields">
+                  <label class="form-check-label" for="gravity-temp-adjustment">Hide sensitive data</label>
+                </div>  
+              </div>  
+
+              <script>
+                function toggleElement(x) {
+                  if (x.type === "password") {
+                    x.type = "text";
+                  } else {
+                    x.type = "password";
+                  }
+                }                
+
+                $("#password-toggle").click(function(e){
+                  toggleElement( document.getElementById("brewfather-userkey") );
+                  toggleElement( document.getElementById("brewfather-apikey") );
+                  toggleElement( document.getElementById("brewspy-token1") );
+                  toggleElement( document.getElementById("brewspy-token2") );
+                });
+              </script>
 
               <div class="row mb-3">
                 <div class="col-sm-2 offset-sm-2">
@@ -257,16 +283,14 @@
               </div>
             </div>
 
-            <!--
             <div class="row mb-3">
               <label for="scale-stable-count" class="col-sm-2 col-form-label">Scale stable count</label>
               <div class="col-sm-2">
-                <input type="number" min="1" max="30" step="1" class="form-control" name="scale-stable-count" id="scale-stable-count" placeholder="0.1"
+                <input type="number" min="6" max="30" step="1" class="form-control" name="scale-stable-count" id="scale-stable-count" placeholder="10"
                   data-bs-toggle="tooltip"
-                  title="Defines the number of scale measurements are required for a new stable level to be determined, each reading takes 2 seconds">
+                  title="Defines the number of scale measurements are required for a new stable level to be determined, each reading takes 2 seconds. This is used for pour detection, should be longer than the time to pour a glass of beer.">
               </div>
             </div>
-            -->
 
             <div class="row mb-3">
               <label for="scale-read-count" class="col-sm-2 col-form-label">Scale read count</label>
@@ -315,7 +339,7 @@
       setButtonDisabled(true);
 
       var url = "/api/config";
-      //var url = "/test/config.json";
+      // var url = "/test/config.json";
       $('#spinner').show();
       $.getJSON(url, function (cfg) {
         console.log(cfg);
@@ -344,7 +368,7 @@
         else $("#volume-unit-cl").click();
 
         $("#scale-max-deviation").val(cfg["scale-max-deviation"]);
-        // $("#scale-stable-count").val(cfg["scale-stable-count"]);
+        $("#scale-stable-count").val(cfg["scale-stable-count"]);
         $("#scale-read-count").val(cfg["scale-read-count"]);
         $("#scale-read-count-calibration").val(cfg["scale-read-count-calibration"]);
       })
