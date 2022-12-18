@@ -104,7 +104,7 @@ class KegConfig : public BaseConfig {
 
   float _scaleMaxDeviationValue = 0.1;
   uint32_t _scaleStableCount = 10;
-  int _scaleReadCount = 4;
+  int _scaleReadCount = 6;
   int _scaleReadCountCalibration = 30;
 
   LevelDetectionType _levelDetection = LevelDetectionType::STATS;
@@ -280,15 +280,6 @@ class KegConfig : public BaseConfig {
   void setBucketInfluxDB2(String bucket) {}
   const char* getTokenInfluxDB2() { return ""; }
   void setTokenInfluxDB2(String token) {}
-
-  const char* getTargetMqtt() { return ""; }
-  void setTargetMqtt(String target) {}
-  int getPortMqtt() { return 0; }
-  void setPortMqtt(int port) {}
-  const char* getUserMqtt() { return ""; }
-  void setUserMqtt(String user) {}
-  const char* getPassMqtt() { return ""; }
-  void setPassMqtt(String pass) {}
 
   // These are helper function to assist with formatting of values
   int getWeightPrecision() { return 2; }  // 2 decimans for kg

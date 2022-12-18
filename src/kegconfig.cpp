@@ -34,6 +34,7 @@ void KegConfig::createJson(DynamicJsonDocument& doc, bool skipSecrets) {
   createJsonBase(doc, skipSecrets);
   createJsonWifi(doc, skipSecrets);
   createJsonOta(doc, skipSecrets);
+  createJsonPush(doc, skipSecrets);
 
   // Handle project specific config
   doc[PARAM_WEIGHT_UNIT] = getWeightUnit();
@@ -85,6 +86,7 @@ void KegConfig::parseJson(DynamicJsonDocument& doc) {
   parseJsonBase(doc);
   parseJsonWifi(doc);
   parseJsonOta(doc);
+  parseJsonPush(doc);
 
   // Handle project specific config
   if (!doc[PARAM_WEIGHT_UNIT].isNull()) setWeightUnit(doc[PARAM_WEIGHT_UNIT]);
