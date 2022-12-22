@@ -49,6 +49,12 @@ SOFTWARE.
 #define PIN_DH2 D7
 
 enum UnitIndex { U1 = 0, U2 = 1 };
-enum LevelDetectionType { RAW = 0, KALMAN = 1, STATS = 2 };
+/*
+ * RAW: Last value read
+ * AVERAGE: Average of last 5 raw values
+ * KALMAN: Kalmanfilter applied to raw values
+ * STATS: Statistics applied and average value used
+ */
+enum LevelDetectionType { RAW = 0, AVERAGE = 1, KALMAN = 2, STATS = 3 };
 
 #endif  // SRC_MAIN_HPP_

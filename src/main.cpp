@@ -149,8 +149,6 @@ void setup() {
   delay(3000);
 }
 
-bool showPints[2] = {false, false};
-
 void drawScreenHardwareStats(UnitIndex idx) {
   myDisplay.clear(idx);
   myDisplay.setFont(idx, FontSize::FONT_10);
@@ -179,6 +177,11 @@ void drawScreenHardwareStats(UnitIndex idx) {
   myDisplay.show(idx);
 }
 
+enum ScreenDefaultIter { ShowWeight = 0, ShowGlasses = 1, ShowPour = 2 };
+
+ScreenDefaultIter defaultScreenIter[2] = {ScreenDefaultIter::ShowWeight,
+                                          ScreenDefaultIter::ShowWeight};
+
 void drawScreenDefault(UnitIndex idx) {
   myDisplay.clear(idx);
   myDisplay.setFont(idx, FontSize::FONT_16);
@@ -188,47 +191,81 @@ void drawScreenDefault(UnitIndex idx) {
   snprintf(&buf[0], sizeof(buf), "%s", myConfig.getBeerName(idx));
   myDisplay.printPosition(idx, -1, 0, &buf[0]);
 
-  if (!(loopCounter % 10)) showPints[idx] = !showPints[idx];
+  if (!(loopCounter % 2)) {
+    switch (defaultScreenIter[idx]) {
+      case ScreenDefaultIter::ShowWeight:
+        defaultScreenIter[idx] = ScreenDefaultIter::ShowGlasses;
+        break;
+      case ScreenDefaultIter::ShowGlasses:
+        defaultScreenIter[idx] = ScreenDefaultIter::ShowPour;
+        break;
+      case ScreenDefaultIter::ShowPour:
+        defaultScreenIter[idx] = ScreenDefaultIter::ShowWeight;
+        break;
+    }
+  }
 
   if (myScale.isConnected(idx)) {
-    float glass = myLevelDetection.getNoGlasses(idx, LevelDetectionType::RAW);
-
-#if LOG_LEVEL == 6
-    // Log.verbose(F("LOOP: Weight=%F Glasses=%F [%d]." CR), weight, glass,
-    // idx);
-#endif
-
     snprintf(&buf[0], sizeof(buf), "%.1f%%", myConfig.getBeerABV(idx));
     myDisplay.printPosition(idx, -1, 16, &buf[0]);
 
-    if (!showPints[idx]) {
-      snprintf(&buf[0], sizeof(buf), "%.1f glasses", glass);
-      myDisplay.printPosition(idx, -1, 32, &buf[0]);
-    } else {
-      convertFloatToString(
-          myLevelDetection.getBeerWeight(idx, LevelDetectionType::RAW), &buf[0],
-          myConfig.getWeightPrecision());
-      String s(&buf[0]);
-      s += " " + String(myConfig.getWeightUnit());
-      myDisplay.printPosition(idx, -1, 32, s.c_str());
+    switch (defaultScreenIter[idx]) {
+      case ScreenDefaultIter::ShowWeight: {
+        convertFloatToString(
+            myLevelDetection.getBeerWeight(idx, LevelDetectionType::RAW),
+            &buf[0], myConfig.getWeightPrecision());
+        String s(&buf[0]);
+        s += " " + String(myConfig.getWeightUnit());
+        myDisplay.printPosition(idx, -1, 32, s.c_str());
+      } break;
+
+      case ScreenDefaultIter::ShowGlasses: {
+        float glass =
+            myLevelDetection.getNoGlasses(idx, LevelDetectionType::STATS);
+        snprintf(&buf[0], sizeof(buf), "%.1f glasses", glass);
+        myDisplay.printPosition(idx, -1, 32, &buf[0]);
+      } break;
+
+      case ScreenDefaultIter::ShowPour: {
+        float pour =
+            myLevelDetection.getPourVolume(idx, LevelDetectionType::STATS);
+        // if (isnan(pour)) pour = 0.0;
+        snprintf(&buf[0], sizeof(buf), "%.0f pour", pour * 100);
+        myDisplay.printPosition(idx, -1, 32, &buf[0]);
+      } break;
     }
+
   } else {
     myDisplay.printPosition(idx, -1, 32, "No scale");
   }
 
-  // Lets draw the footer here (only on display 1).
-  if (idx == UnitIndex::U1) {
-    myDisplay.setFont(idx, FontSize::FONT_10);
-    if (!showPints)
+  myDisplay.setFont(idx, FontSize::FONT_10);
+
+  switch (defaultScreenIter[idx]) {
+    case ScreenDefaultIter::ShowWeight:
       myDisplay.printPosition(
           idx, -1,
           myDisplay.getHeight(idx) - myDisplay.getCurrentFontSize(idx) - 1,
-          myWifi.getIPAddress());
-    else
-      myDisplay.printPosition(
-          idx, -1,
-          myDisplay.getHeight(idx) - myDisplay.getCurrentFontSize(idx) - 1,
-          WiFi.SSID());
+          myLevelDetection.hasStableWeight(idx, LevelDetectionType::STATS)
+              ? "stable level"
+              : "searching level");
+      break;
+    case ScreenDefaultIter::ShowGlasses:
+      if (idx == UnitIndex::U1) {
+        myDisplay.printPosition(
+            idx, -1,
+            myDisplay.getHeight(idx) - myDisplay.getCurrentFontSize(idx) - 1,
+            WiFi.SSID());
+      }
+      break;
+    case ScreenDefaultIter::ShowPour:
+      if (idx == UnitIndex::U1) {
+        myDisplay.printPosition(
+            idx, -1,
+            myDisplay.getHeight(idx) - myDisplay.getCurrentFontSize(idx) - 1,
+            myWifi.getIPAddress());
+      }
+      break;
   }
 
   myDisplay.show(idx);
@@ -301,11 +338,11 @@ void loop() {
         myScale.getPourWeight(UnitIndex::U2));*/
 
     Log.notice(
-        F("LOOP: Reading data raw1=%F,raw2=%F,stats1=%F, "
-          "stats2=%F,pour1=%F,"
+        F("LOOP: Reading data raw1=%F,raw2=%F,stable1=%F, "
+          "stable2=%F,pour1=%F,"
           "pour2=%F" CR),
-        myLevelDetection.getRawDetection(UnitIndex::U1)->getLastValue(),
-        myLevelDetection.getRawDetection(UnitIndex::U2)->getLastValue(),
+        myLevelDetection.getRawDetection(UnitIndex::U1)->getRawValue(),
+        myLevelDetection.getRawDetection(UnitIndex::U2)->getRawValue(),
         myLevelDetection.getStatsDetection(UnitIndex::U1)->getStableValue(),
         myLevelDetection.getStatsDetection(UnitIndex::U2)->getStableValue(),
         myLevelDetection.getStatsDetection(UnitIndex::U1)->getPourValue(),
@@ -316,24 +353,31 @@ void loop() {
     // scale stability/drift over time.
     char buf[250];
 
-    float raw1 =
-        myLevelDetection.getRawDetection(UnitIndex::U1)->getLastValue();
-    float raw2 =
-        myLevelDetection.getRawDetection(UnitIndex::U2)->getLastValue();
+    float raw1 = myLevelDetection.getRawDetection(UnitIndex::U1)->getRawValue();
+    float raw2 = myLevelDetection.getRawDetection(UnitIndex::U2)->getRawValue();
 
     String s;
     snprintf(&buf[0], sizeof(buf),
              "debug,host=%s,device=%s "
-             "raw1=%f,"
-             "raw2=%f",
+             "level-raw1=%f,"
+             "level-raw2=%f",
              myConfig.getMDNS(), myConfig.getID(), isnan(raw1) ? 0 : raw1,
              isnan(raw2) ? 0 : raw2);
     s = &buf[0];
 
+    float ave1 =
+        myLevelDetection.getRawDetection(UnitIndex::U1)->getAverageValue();
+    float ave2 =
+        myLevelDetection.getRawDetection(UnitIndex::U2)->getAverageValue();
+
+    snprintf(&buf[0], sizeof(buf), ",level-average1=%f,level-average2=%f",
+             isnan(ave1) ? 0 : ave1, isnan(ave2) ? 0 : ave2);
+    s += &buf[0];
+
     float kal1 = myLevelDetection.getKalmanDetection(UnitIndex::U1)->getValue();
     float kal2 = myLevelDetection.getKalmanDetection(UnitIndex::U2)->getValue();
 
-    snprintf(&buf[0], sizeof(buf), ",kalman1=%f,kalman2=%f",
+    snprintf(&buf[0], sizeof(buf), ",level-kalman1=%f,level-kalman2=%f",
              isnan(kal1) ? 0 : kal1, isnan(kal2) ? 0 : kal2);
     s += &buf[0];
 
@@ -342,7 +386,7 @@ void loop() {
     float stats2 =
         myLevelDetection.getStatsDetection(UnitIndex::U2)->getStableValue();
 
-    snprintf(&buf[0], sizeof(buf), ",stats1=%f,stats2=%f",
+    snprintf(&buf[0], sizeof(buf), ",level-stats1=%f,level-stats2=%f",
 
              isnan(stats1) ? 0 : stats1, isnan(stats2) ? 0 : stats2);
     s += &buf[0];

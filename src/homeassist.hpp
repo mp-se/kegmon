@@ -21,6 +21,23 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#include <levelraw.hpp>
+#ifndef SRC_HOMEASSIST_HPP_
+#define SRC_HOMEASSIST_HPP_
+
+#include <basepush.hpp>
+#include <main.hpp>
+
+class HomeAssist {
+ protected:
+  BasePush *_push;
+
+ public:
+  explicit HomeAssist(BasePush *push) { _push = push; }
+
+  void sendTapInformation(UnitIndex idx, float stableVol, float glasses);
+  void sendPourInformation(UnitIndex idx, float pourVol);
+};
+
+#endif  // SRC_HOMEASSIST_HPP_
 
 // EOF

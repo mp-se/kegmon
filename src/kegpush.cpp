@@ -28,11 +28,13 @@ SOFTWARE.
 
 void KegPushHandler::pushPourInformation(UnitIndex idx, float pourVol) {
   _brewspy->sendPourInformation(idx, pourVol);
+  _ha->sendPourInformation(idx, pourVol);
 }
 
 void KegPushHandler::pushKegInformation(UnitIndex idx, float stableVol,
-                                        float pourVol) {
+                                        float pourVol, float glasses) {
   _brewspy->sendTapInformation(idx, stableVol, pourVol);
+  _ha->sendTapInformation(idx, stableVol, glasses);
 }
 
 // EOF

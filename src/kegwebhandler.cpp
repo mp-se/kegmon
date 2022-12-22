@@ -263,7 +263,7 @@ void KegWebHandler::populateScaleJson(DynamicJsonDocument& doc) {
 
 #if LOG_LEVEL == 6
   serializeJson(doc, Serial);
-  Serial.print(CR);
+  EspSerial.print(CR);
 #endif
 }
 
@@ -301,7 +301,7 @@ void KegWebHandler::webStatus() {
 
 #if LOG_LEVEL == 6
   serializeJson(doc, Serial);
-  Serial.print(CR);
+  EspSerial.print(CR);
 #endif
 
   String out;
@@ -362,7 +362,7 @@ void KegWebHandler::webStability() {
 
 #if LOG_LEVEL == 6
   serializeJson(doc, Serial);
-  Serial.print(CR);
+  EspSerial.print(CR);
 #endif
 
   String out;
@@ -424,7 +424,7 @@ void KegWebHandler::webHandleBeerWrite() {
 
 #if LOG_LEVEL == 6
   serializeJson(doc, Serial);
-  Serial.print(CR);
+  EspSerial.print(CR);
 #endif
 
   _webConfig->parseJson(doc);

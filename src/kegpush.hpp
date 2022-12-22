@@ -26,15 +26,18 @@ SOFTWARE.
 
 #include <basepush.hpp>
 #include <brewspy.hpp>
+#include <homeassist.hpp>
 #include <kegconfig.hpp>
 
 class KegPushHandler : public BasePush {
  private:
-  Brewspy* _brewspy = 0;
+  Brewspy* _brewspy = NULL;
+  HomeAssist* _ha = NULL;
 
  public:
   explicit KegPushHandler(KegConfig* config) : BasePush(config) {
     _brewspy = new Brewspy(this);
+    _ha = new HomeAssist(this);
   }
 
   String requestTapInfoFromBrewspy(String& token) {
@@ -42,7 +45,8 @@ class KegPushHandler : public BasePush {
   }
 
   void pushPourInformation(UnitIndex idx, float pourVol);
-  void pushKegInformation(UnitIndex idx, float stableVol, float pourVol);
+  void pushKegInformation(UnitIndex idx, float stableVol, float pourVol,
+                          float glasses);
 };
 
 extern KegPushHandler myPush;

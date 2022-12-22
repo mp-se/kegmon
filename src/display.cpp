@@ -59,12 +59,12 @@ void Display::scanI2C() {
       error = Wire.endTransmission();
 
       if (error == 0) {
-        Serial.print(address, HEX);
-        Serial.print("\t");
+        EspSerial.print(address, HEX);
+        EspSerial.print("\t");
         n++;
       }
     }
-    Serial.print("\n");
+    EspSerial.print("\n");
   #endif
   */
 }

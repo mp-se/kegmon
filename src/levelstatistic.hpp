@@ -27,6 +27,7 @@ SOFTWARE.
 #include <Arduino.h>
 #include <Statistic.h>
 
+#include <kegconfig.hpp>
 #include <main.hpp>
 
 class StatsLevelDetection {
@@ -41,10 +42,68 @@ class StatsLevelDetection {
   StatsLevelDetection(const StatsLevelDetection &) = delete;
   void operator=(const StatsLevelDetection &) = delete;
 
-  // void checkForRefDeviation(float ref);
-  void checkForMaxDeviation(float ref);
-  void checkForStable(float ref);
-  void checkForLevelChange(float ref);
+  void checkForMaxDeviation(float ref) {
+    if (cnt() > 0) {
+      float delta = abs(ave() - ref);
+
+      if (delta > myConfig.getScaleMaxDeviationValue()) {
+        Log.notice(
+            F("LSTA: Average statistics deviates too much from raw values "
+              "%F, restarting stable level detection [%d]." CR),
+            delta, _idx);
+        clear();
+      }
+    }
+  }
+
+  void checkForStable(float ref) {
+    if (cnt() > myConfig.getScaleStableCount() && isnan(_stable)) {
+      _stable = ave();
+      _newStable = true;
+      Log.notice(F("LSTA: Found a new stable value %F [%d]." CR),
+                 getStableValue(), _idx);
+    }
+  }
+
+  void checkForLevelChange(float ref) {
+    // Check if the level has changed up or down. If its down we record the
+    // delta as the latest pour.
+    if (cnt() > myConfig.getScaleStableCount() && !isnan(_stable)) {
+      if ((_stable + myConfig.getScaleMaxDeviationValue()) < ave()) {
+        Log.notice(
+            F("LSTA: Level has increased, adjusting from %F to %F [%d]." CR),
+            _stable, ave(), _idx);
+        _stable = ave();
+        _newStable = true;
+      } else if ((_stable - myConfig.getScaleMaxDeviationValue()) > ave()) {
+        Log.notice(
+            F("LSTA: Level has decreased, adjusting from %F to %F [%d]." CR),
+            _stable, ave(), _idx);
+
+        float p = _stable - ave();
+        _stable = ave();
+        _newStable = true;
+
+        // Check if the keg was removed so we dont register a too large pour
+        if ((_stable - myConfig.getKegWeight(_idx)) < 0) {
+          _pour -= myConfig.getKegWeight(_idx);
+          if (p > 0.0) {
+            _pour = p;
+            Log.notice(F("LSTA: Keg removed and beer has been poured volume %F "
+                         "[%d]." CR),
+                       _pour, _idx);
+          }
+        } else {
+          _pour = p;
+          Log.notice(F("LSTA: Beer has been poured volume %F [%d]." CR), _pour,
+                     _idx);
+        }
+
+        // Notify registered endpoints and save to log
+        _newPour = true;
+      }
+    }
+  }
 
   // Implementation of statistics for determine a stable level and also pour
   // detection.
@@ -67,7 +126,22 @@ class StatsLevelDetection {
   float ave() { return _statistic.average(); }
   float cnt() { return _statistic.count(); }
 
-  float processValue(float v, float ref);
+  float processValue(float v, float ref) {
+    _newPour = false;
+    _newStable = false;
+    // checkForRefDeviation(ref);
+    _statistic.add(v);
+    checkForMaxDeviation(ref);
+    checkForStable(ref);
+    checkForLevelChange(ref);
+#if LOG_DEBUG == 6
+    Log.verbose(
+        F("LSTA: Update statistics filter value %F ave %F min %F max %F "
+          "[%d]." CR),
+        v, ave(), min(), max(), _idx);
+#endif
+    return ave();
+  }
 };
 
 #endif  // SRC_LEVELSTATISTIC_HPP_

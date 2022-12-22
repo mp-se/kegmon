@@ -40,11 +40,6 @@ class KalmanLevelDetection {
   KalmanLevelDetection(const KalmanLevelDetection &) = delete;
   void operator=(const KalmanLevelDetection &) = delete;
 
-  // void checkForRefDeviation(float ref);
-  void checkForMaxDeviation(float ref);
-  void checkForStable(float ref);
-  void checkForLevelChange(float ref);
-
   // Kalman filter implentation, helps to smooth out sudden changes in
   // measurements, however it takes time to react to changes.
  public:
@@ -54,16 +49,24 @@ class KalmanLevelDetection {
   }
 
   bool hasValue() { return !isnan(_value); }
-  bool hasPourValue() { return false; }
-  bool hasStableValue() { return false; }
 
   float getBaselineValue() { return _baseline; }
-  float getRawValue() { return _raw; }
   float getValue() { return _value; }
-  float getStableValue() { return NAN; }
-  float getPourValue() { return NAN; }
 
-  float processValue(float v, float ref);
+  float processValue(float v, float ref) {
+    _raw = v;
+    if (isnan(_baseline)) {
+      _baseline = v;
+      return v;
+    }
+    _value = _filter->updateEstimate(v);
+
+#if LOG_DEBUG == 6
+    Log.verbose(F("LKAL: Update kalman filter base %F value %F [%d]." CR),
+                _baseline, _value, _idx);
+#endif
+    return _value;
+  }
 };
 
 #endif  // SRC_LEVELKALMAN_HPP_

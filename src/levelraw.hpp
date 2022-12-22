@@ -38,14 +38,10 @@ class RawLevelDetection {
  public:
   RawLevelDetection() { clear(); }
 
-  bool hasValue() { return count() >= _validCnt ? true : false; }
-  bool hasPourValue() { return false; }
-  bool hasStableValue() { return false; }
-
-  float getLastValue() { return _last; }
-  float getValue() { return average(); }
-  float getStableValue() { return NAN; }
-  float getPourValue() { return NAN; }
+  bool hasRawValue() { return isnan(_last) ? false : true; }
+  bool hasAverageValue() { return count() >= _validCnt ? true : false; }
+  float getRawValue() { return _last; }
+  float getAverageValue() { return average(); }
 
   void clear() {
     for (int i = 0; i < _cnt; i++) _history[i] = NAN;

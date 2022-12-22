@@ -66,8 +66,8 @@ void Brewspy::sendTapInformation(UnitIndex idx, float stableVol,
   serializeJson(doc, out);
   doc.clear();
   // #if LOG_LEVEL == 6
-  Serial.print(out.c_str());
-  Serial.print(CR);
+  EspSerial.print(out.c_str());
+  EspSerial.print(CR);
   // #endif
   _push->sendHttpPost(out, "https://brew-spy.com/api/tap/keg/set", "", "");
 }
@@ -95,8 +95,8 @@ void Brewspy::sendPourInformation(UnitIndex idx, float pourVol) {
   serializeJson(doc, out);
   doc.clear();
   // #if LOG_LEVEL == 6
-  Serial.print(out.c_str());
-  Serial.print(CR);
+  EspSerial.print(out.c_str());
+  EspSerial.print(CR);
   // #endif
   _push->sendHttpPost(out, "https://brew-spy.com/api/tap/keg/pour", "", "");
 }
@@ -120,8 +120,8 @@ void Brewspy::clearKegInformation(UnitIndex idx) {
   serializeJson(doc, out);
   doc.clear();
   // #if LOG_LEVEL == 6
-  Serial.print(out.c_str());
-  Serial.print(CR);
+  EspSerial.print(out.c_str());
+  EspSerial.print(CR);
   // #endif
   _push->sendHttpPost(out, "https://brew-spy.com/api/tap/keg/clear", "", "");
 }
@@ -153,8 +153,8 @@ String Brewspy::getTapInformation(const String& token) {
   String resp =
       _push->sendHttpGet(payload, url.c_str(), "Accept: application/json", "");
   // #if LOG_LEVEL == 6
-  Serial.print(resp.c_str());
-  Serial.print(CR);
+  EspSerial.print(resp.c_str());
+  EspSerial.print(CR);
   // #endif
   return resp;
 }

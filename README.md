@@ -32,3 +32,8 @@ For docs see: https://mp-se.github.io/kegmon/index.html (Not yet updated to matc
 * Switching to larger display, 3-4" TFT (will require ESP32)
 * PCB and 3d printed case design
   
+# Changes to v0.5
+
+* Refactored the level detection code into separate classes. Level detection will be done using the statistics mathod since this is faster than a kalman filter to adapt to changes. This refactor will also allow for additional options for doing level detection in the future.
+* Updates on the display is done using last read scale values, it will not be accurate but show fast response when a beer is poured.
+* Added Home Assistant integration via MQTT
