@@ -3,8 +3,8 @@
 ![release](https://img.shields.io/github/v/release/mp-se/kegmon?label=latest%20release)
 ![issues](https://img.shields.io/github/issues/mp-se/kegmon)
 ![pr](https://img.shields.io/github/issues-pr/mp-se/kegmon)
-![dev_build](https://img.shields.io/github/workflow/status/mp-se/kegmon/PlatformIO%20CI/dev?label=dev%20build)
-![doc_build](https://img.shields.io/github/workflow/status/mp-se/kegmon/Sphinx%20Build/dev?label=doc%20build)
+![dev_build](https://img.shields.io/github/actions/workflow/status/mp-se/kegmon/pio-build.yaml?branch=dev)
+![doc_build](https://img.shields.io/github/actions/workflow/status/mp-se/kegmon/doc-build.yaml?branch=master)
 
 # KegMon - Monitoring the volume in your kegs
 
