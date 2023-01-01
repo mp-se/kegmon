@@ -59,6 +59,10 @@ SOFTWARE.
 #define PARAM_SCALE_READ_COUNT_CALIBRATION "scale-read-count-calibration"
 #define PARAM_SCALE_STABLE_COUNT "scale-stable-count"
 #define PARAM_LEVEL_DETECTION "level-detection"
+#define PARAM_KALMAN_NOISE "kalman-noise"
+#define PARAM_KALMAN_MEASUREMENT "kalman-measurement"
+#define PARAM_KALMAN_ESTIMATION "kalman-estimation"
+#define PARAM_KALMAN_ACTIVE "kalman-active"
 
 struct BeerInfo {
   String _name = "";
@@ -104,10 +108,15 @@ class KegConfig : public BaseConfig {
 
   float _scaleMaxDeviationValue = 0.1;
   uint32_t _scaleStableCount = 10;
-  int _scaleReadCount = 6;
+  int _scaleReadCount = 3;
   int _scaleReadCountCalibration = 30;
 
   LevelDetectionType _levelDetection = LevelDetectionType::STATS;
+
+  bool _kalmanActive = true;
+  float _kalmanMeasurement = 0.3;
+  float _kalmanEstimation = 2;
+  float _kalmanNoise = 0.01;
 
  public:
   KegConfig(String baseMDNS, String fileName);
@@ -253,6 +262,27 @@ class KegConfig : public BaseConfig {
   }
   void setLevelDetection(int l) {
     _levelDetection = (LevelDetectionType)l;
+    _saveNeeded = true;
+  }
+
+  float getKalmanEstimation() { return _kalmanEstimation; }
+  void setKalmanEstimation(float f) {
+    _kalmanEstimation = f;
+    _saveNeeded = true;
+  }
+  float getKalmanMeasurement() { return _kalmanMeasurement; }
+  void setKalmanMeasurement(float f) {
+    _kalmanMeasurement = f;
+    _saveNeeded = true;
+  }
+  float getKalmanNoise() { return _kalmanNoise; }
+  void setKalmanNoise(float f) {
+    _kalmanNoise = f;
+    _saveNeeded = true;
+  }
+  bool isKalmanActive() { return _kalmanActive; }
+  void setKalmanActive(bool b) {
+    _kalmanActive = b;
     _saveNeeded = true;
   }
 

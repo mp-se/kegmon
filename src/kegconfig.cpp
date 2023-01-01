@@ -79,6 +79,11 @@ void KegConfig::createJson(DynamicJsonDocument& doc, bool skipSecrets) {
   doc[PARAM_SCALE_READ_COUNT] = getScaleReadCount();
   doc[PARAM_SCALE_READ_COUNT_CALIBRATION] = getScaleReadCountCalibration();
   doc[PARAM_SCALE_STABLE_COUNT] = getScaleStableCount();
+
+  doc[PARAM_KALMAN_ACTIVE] = isKalmanActive();
+  doc[PARAM_KALMAN_MEASUREMENT] = getKalmanMeasurement();
+  doc[PARAM_KALMAN_ESTIMATION] = getKalmanEstimation();
+  doc[PARAM_KALMAN_NOISE] = getKalmanNoise();
 }
 
 void KegConfig::parseJson(DynamicJsonDocument& doc) {
@@ -164,6 +169,17 @@ void KegConfig::parseJson(DynamicJsonDocument& doc) {
     setScaleReadCountCalibration(doc[PARAM_SCALE_READ_COUNT_CALIBRATION]);
   if (!doc[PARAM_SCALE_STABLE_COUNT].isNull())
     setScaleStableCount(doc[PARAM_SCALE_STABLE_COUNT]);
+
+  if (!doc[PARAM_KALMAN_ESTIMATION].isNull())
+    setKalmanEstimation(doc[PARAM_KALMAN_ESTIMATION].as<float>());
+  if (!doc[PARAM_KALMAN_MEASUREMENT].isNull())
+    setKalmanMeasurement(doc[PARAM_KALMAN_MEASUREMENT].as<float>());
+  if (!doc[PARAM_KALMAN_NOISE].isNull())
+    setKalmanNoise(doc[PARAM_KALMAN_NOISE].as<float>());
+  if (!doc[PARAM_KALMAN_ACTIVE].isNull()) {
+    String s = doc[PARAM_KALMAN_ACTIVE];
+    setKalmanActive(s.equals("yes") ? true : false);
+  }
 }
 
 float convertIncomingWeight(float w) {
