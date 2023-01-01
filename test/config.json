@@ -41,5 +41,9 @@
   "scale-max-deviation": 0.1,
   "scale-stable-count": 10,
   "scale-read-count": 10,
-  "scale-read-count-calibration": 30
+  "scale-read-count-calibration": 30,
+  "kalman-active": false,
+  "kalman-measurement": 2.0,
+  "kalman-estimation": 3.0,
+  "kalman-noise": 0.03
 }
