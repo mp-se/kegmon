@@ -67,55 +67,6 @@ class LevelDetection {
     return _statsLevel[idx];
   }
 
-  // Shortcuts to subclasses....
-  /** REFACTOR
-    bool hasWeight(UnitIndex idx) { return getKalmanDetection(idx)->hasValue();
-    } float getTotalWeight(UnitIndex idx) { return
-    getKalmanDetection(idx)->getValue();
-    }
-    float getTotalRawWeight(UnitIndex idx) {
-      return getKalmanDetection(idx)->getRawValue();
-    }
-    float getBeerWeight(UnitIndex idx) {
-      return getKalmanDetection(idx)->hasValue()
-                 ? getKalmanDetection(idx)->getValue() -
-                       myConfig.getKegWeight(idx)
-                 : NAN;
-    }
-  bool hasWeight(UnitIndex idx) { return getRawDetection(idx)->hasValue(); }
-  float getTotalWeight(UnitIndex idx) {
-    return getRawDetection(idx)->getValue();
-  }
-  float getTotalRawWeight(UnitIndex idx) {
-    return getRawDetection(idx)->getValue();
-  }
-  float getBeerWeight(UnitIndex idx) {
-    return getRawDetection(idx)->hasValue()
-               ? getRawDetection(idx)->getValue() - myConfig.getKegWeight(idx)
-               : NAN;
-  }
-
-  bool hasStableWeight(UnitIndex idx) {
-    return getStatsDetection(idx)->hasStableValue();
-  }
-  bool hasPourWeight(UnitIndex idx) {
-    return getStatsDetection(idx)->hasPourValue();
-  }
-
-  float getTotalStableWeight(UnitIndex idx) {
-    return getStatsDetection(idx)->getStableValue();
-  }
-  float getBeerStableWeight(UnitIndex idx) {
-    return getStatsDetection(idx)->hasStableValue()
-               ? getStatsDetection(idx)->getStableValue() -
-                     myConfig.getKegWeight(idx)
-               : NAN;
-  }
-  float getPourWeight(UnitIndex idx) {
-    return getStatsDetection(idx)->getPourValue();
-  }
-  */
-
   // Return values based on the chosen algoritm
   bool hasStableWeight(UnitIndex idx,
                        LevelDetectionType type = myConfig.getLevelDetection());

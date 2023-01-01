@@ -45,7 +45,6 @@ class RawLevelDetection {
 
   void clear() {
     for (int i = 0; i < _cnt; i++) _history[i] = NAN;
-
     _last = NAN;
   }
   void add(float v) {

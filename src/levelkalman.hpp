@@ -45,7 +45,9 @@ class KalmanLevelDetection {
  public:
   explicit KalmanLevelDetection(UnitIndex idx) {
     _idx = idx;
-    _filter = new SimpleKalmanFilter(5, 3, 0.3);
+    _filter = new SimpleKalmanFilter(myConfig.getKalmanMeasurement(),
+                                     myConfig.getKalmanEstimation(),
+                                     myConfig.getKalmanNoise());
   }
 
   bool hasValue() { return !isnan(_value); }

@@ -43,6 +43,7 @@ void LevelDetection::update(UnitIndex idx, float raw) {
 
   PERF_BEGIN("level-filter-raw");
   _rawLevel[idx].add(raw);
+  float average = _rawLevel[idx].getAverageValue();
   PERF_END("level-filter-raw");
 
   PERF_BEGIN("level-filter-kalman");
@@ -51,8 +52,14 @@ void LevelDetection::update(UnitIndex idx, float raw) {
   PERF_END("level-filter-kalman");
 
   PERF_BEGIN("level-filter-stats");
-  float stats =
-      getStatsDetection(idx)->processValue(raw, _rawLevel[idx].average());
+  float stats;
+
+  if (myConfig.isKalmanActive()) {
+    stats =
+        getStatsDetection(idx)->processValue(kalman);
+  } else {
+    stats = getStatsDetection(idx)->processValue(raw);
+  }
 
   if (getStatsDetection(idx)->newPourValue())
     pushPourUpdate(idx, getBeerStableVolume(idx), getPourVolume(idx));
@@ -62,8 +69,8 @@ void LevelDetection::update(UnitIndex idx, float raw) {
                   getNoStableGlasses(idx));
 
   PERF_END("level-filter-stats");
-  // Log.notice(F("LEVL: raw=%F, kalman=%F, stats=%F [%d]." CR), raw, kalman,
-  //           stats, idx);
+  Log.verbose(F("LEVL: raw=%F, ave=%F, kalman=%F, stats=%F [%d]." CR), raw,
+              average, kalman, stats, idx);
 }
 
 void LevelDetection::pushKegUpdate(UnitIndex idx, float stableVol,

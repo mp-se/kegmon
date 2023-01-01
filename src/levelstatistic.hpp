@@ -42,43 +42,43 @@ class StatsLevelDetection {
   StatsLevelDetection(const StatsLevelDetection &) = delete;
   void operator=(const StatsLevelDetection &) = delete;
 
-  void checkForMaxDeviation(float ref) {
+  void checkForMaxDeviation(float raw) {
     if (cnt() > 0) {
-      float delta = abs(ave() - ref);
+      float delta = abs(ave() - raw);
 
       if (delta > myConfig.getScaleMaxDeviationValue()) {
         Log.notice(
             F("LSTA: Average statistics deviates too much from raw values "
-              "%F, restarting stable level detection [%d]." CR),
-            delta, _idx);
+              "%F, restarting stable level detection, ave=%F, cnt=%F [%d]." CR),
+            delta, ave(), cnt(), _idx);
         clear();
       }
     }
   }
 
-  void checkForStable(float ref) {
+  void checkForStable() {
     if (cnt() > myConfig.getScaleStableCount() && isnan(_stable)) {
       _stable = ave();
       _newStable = true;
-      Log.notice(F("LSTA: Found a new stable value %F [%d]." CR),
-                 getStableValue(), _idx);
+      Log.notice(F("LSTA: Found a new stable value %F, ave=%F, cnt=%F [%d]." CR),
+                 getStableValue(), ave(), cnt(), _idx);
     }
   }
 
-  void checkForLevelChange(float ref) {
+  void checkForLevelChange() {
     // Check if the level has changed up or down. If its down we record the
     // delta as the latest pour.
     if (cnt() > myConfig.getScaleStableCount() && !isnan(_stable)) {
       if ((_stable + myConfig.getScaleMaxDeviationValue()) < ave()) {
         Log.notice(
-            F("LSTA: Level has increased, adjusting from %F to %F [%d]." CR),
-            _stable, ave(), _idx);
+            F("LSTA: Level has increased, adjusting from %F to %F, cnt=%F [%d]." CR),
+            _stable, ave(), cnt(), _idx);
         _stable = ave();
         _newStable = true;
       } else if ((_stable - myConfig.getScaleMaxDeviationValue()) > ave()) {
         Log.notice(
-            F("LSTA: Level has decreased, adjusting from %F to %F [%d]." CR),
-            _stable, ave(), _idx);
+            F("LSTA: Level has decreased, adjusting from %F to %F, cnt=%F [%d]." CR),
+            _stable, ave(), cnt(), _idx);
 
         float p = _stable - ave();
         _stable = ave();
@@ -126,14 +126,13 @@ class StatsLevelDetection {
   float ave() { return _statistic.average(); }
   float cnt() { return _statistic.count(); }
 
-  float processValue(float v, float ref) {
+  float processValue(float v) {
     _newPour = false;
     _newStable = false;
-    // checkForRefDeviation(ref);
     _statistic.add(v);
-    checkForMaxDeviation(ref);
-    checkForStable(ref);
-    checkForLevelChange(ref);
+    checkForMaxDeviation(v);
+    checkForStable();
+    checkForLevelChange();
 #if LOG_DEBUG == 6
     Log.verbose(
         F("LSTA: Update statistics filter value %F ave %F min %F max %F "
