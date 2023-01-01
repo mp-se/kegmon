@@ -325,8 +325,8 @@
           <div class="accordion-body">
 
             <form action="/api/config" method="post">
-              <input type="text" name="id" id="id2" hidden>
-              <input type="text" name="section" value="#collapseAdvanced" hidden>
+              <input type="text" name="id" id="id3" hidden>
+              <input type="text" name="section" value="#collapseAdv" hidden>
   
               <div class="row mb-3">
                 <label for="scale-max-deviation" class="col-sm-2 col-form-label">Scale max deviation</label>
@@ -383,6 +383,60 @@
                 </div>
               </div>
   
+              <hr>
+  
+              <div class="row mb-3">
+                <label for="kalman-measurement" class="col-sm-2 col-form-label">Kalman - Measurement</label>
+                <div class="col-sm-2">
+                  <input type="number" min="0" max="10" step=".01" class="form-control" name="kalman-measurement" id="kalman-measurement" placeholder="1.0"
+                    data-bs-toggle="tooltip"
+                    title="Kalman filter measurement value">
+                </div>
+              </div>
+  
+              <div class="row mb-3">
+                <label for="kalman-estimation" class="col-sm-2 col-form-label">Kalman - Estimation</label>
+                <div class="col-sm-2">
+                  <input type="number" min="0" max="10" step=".01" class="form-control" name="kalman-estimation" id="kalman-estimation" placeholder="1.0"
+                    data-bs-toggle="tooltip"
+                    title="Kalman filter estimation value">
+                </div>
+              </div>
+  
+              <div class="row mb-3">
+                <label for="kalman-noise" class="col-sm-2 col-form-label">Kalman - Noise</label>
+                <div class="col-sm-2">
+                  <input type="number" min="0" max="10" step=".01" class="form-control" name="kalman-noise" id="kalman-noise" placeholder="0.01"
+                    data-bs-toggle="tooltip"
+                    title="Kalman filter noise value">
+                </div>
+              </div>
+  
+              <div class="row mb-3">
+                <fieldset class="form-group row">
+                  <legend class="col-form-label col-sm-2 float-sm-left pt-0">Kalman</legend>
+                  <div class="col-sm-2">
+                    <div class="form-check">
+                      <input class="form-check-input" text="yes" type="radio" name="kalman-active" id="kalman-active-yes"
+                        value="yes" checked data-bs-toggle="tooltip" title="Activate kalman filter">
+                      <label class="kalman-active" for="kalman-active-yes">yes</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="kalman-active" id="kalman-active-no"
+                        value="no" checked data-bs-toggle="tooltip"
+                        title="Disable kalman filter">
+                      <label class="form-check-label" for="kalman-active-no">no</label>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+  
+              <div class="row mb-3">
+                <div class="col-sm-12">
+                  <i>Defines the parameters for the kalman filter, if active this helps to smooth out peaks/disturbances in the scale measurements.</i>
+                </div>
+              </div>
+                
               <div class="row mb-3">
                 <div class="col-sm-2 offset-sm-2">
                   <button type="submit" class="btn btn-primary" id="advanced-btn" data-bs-toggle="tooltip"
@@ -417,6 +471,7 @@
 
         $("#id1").val(cfg["id"]);
         $("#id2").val(cfg["id"]);
+        $("#id3").val(cfg["id"]);
 
         $("#mdns").val(cfg["mdns"]);
 
@@ -447,6 +502,16 @@
         $("#scale-stable-count").val(cfg["scale-stable-count"]);
         $("#scale-read-count").val(cfg["scale-read-count"]);
         $("#scale-read-count-calibration").val(cfg["scale-read-count-calibration"]);
+
+        $("#kalman-measurement").val(cfg["kalman-measurement"]);
+        $("#kalman-estimation").val(cfg["kalman-estimation"]);
+        $("#kalman-noise").val(cfg["kalman-noise"]);
+
+        if (cfg["kalman-active"]) {
+          $("#kalman-active-yes").click();
+        } else {
+          $("#kalman-active-no").click();
+        }
       })
         .fail(function () {
           showError('Unable to get data from the device.');
