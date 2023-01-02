@@ -55,8 +55,7 @@ void LevelDetection::update(UnitIndex idx, float raw) {
   float stats;
 
   if (myConfig.isKalmanActive()) {
-    stats =
-        getStatsDetection(idx)->processValue(kalman);
+    stats = getStatsDetection(idx)->processValue(kalman);
   } else {
     stats = getStatsDetection(idx)->processValue(raw);
   }

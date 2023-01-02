@@ -60,8 +60,9 @@ class StatsLevelDetection {
     if (cnt() > myConfig.getScaleStableCount() && isnan(_stable)) {
       _stable = ave();
       _newStable = true;
-      Log.notice(F("LSTA: Found a new stable value %F, ave=%F, cnt=%F [%d]." CR),
-                 getStableValue(), ave(), cnt(), _idx);
+      Log.notice(
+          F("LSTA: Found a new stable value %F, ave=%F, cnt=%F [%d]." CR),
+          getStableValue(), ave(), cnt(), _idx);
     }
   }
 
@@ -70,15 +71,15 @@ class StatsLevelDetection {
     // delta as the latest pour.
     if (cnt() > myConfig.getScaleStableCount() && !isnan(_stable)) {
       if ((_stable + myConfig.getScaleMaxDeviationValue()) < ave()) {
-        Log.notice(
-            F("LSTA: Level has increased, adjusting from %F to %F, cnt=%F [%d]." CR),
-            _stable, ave(), cnt(), _idx);
+        Log.notice(F("LSTA: Level has increased, adjusting from %F to %F, "
+                     "cnt=%F [%d]." CR),
+                   _stable, ave(), cnt(), _idx);
         _stable = ave();
         _newStable = true;
       } else if ((_stable - myConfig.getScaleMaxDeviationValue()) > ave()) {
-        Log.notice(
-            F("LSTA: Level has decreased, adjusting from %F to %F, cnt=%F [%d]." CR),
-            _stable, ave(), cnt(), _idx);
+        Log.notice(F("LSTA: Level has decreased, adjusting from %F to %F, "
+                     "cnt=%F [%d]." CR),
+                   _stable, ave(), cnt(), _idx);
 
         float p = _stable - ave();
         _stable = ave();
