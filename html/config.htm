@@ -48,7 +48,7 @@
             <ul class="dropdown-menu">
               <li><a class="dropdown-item" href="#">Configuration</a></li>
               <li><a class="dropdown-item" href="/calibration.htm">Scale calibration</a></li>
-              <li><a class="dropdown-item" href="/stability.htm">Stability statistics</a></li>
+              <li><a class="dropdown-item" href="/stability.htm">Stability</a></li>
               <li><a class="dropdown-item" href="/graph.htm">History graph</a></li>
               <li><a class="dropdown-item" href="/upload.htm">Upload firmware</a></li>
             </ul>
@@ -383,6 +383,7 @@
                 </div>
               </div>
   
+              <!--
               <hr>
   
               <div class="row mb-3">
@@ -436,6 +437,7 @@
                   <i>Defines the parameters for the kalman filter, if active this helps to smooth out peaks/disturbances in the scale measurements.</i>
                 </div>
               </div>
+              -->
                 
               <div class="row mb-3">
                 <div class="col-sm-2 offset-sm-2">
@@ -503,6 +505,7 @@
         $("#scale-read-count").val(cfg["scale-read-count"]);
         $("#scale-read-count-calibration").val(cfg["scale-read-count-calibration"]);
 
+        /*
         $("#kalman-measurement").val(cfg["kalman-measurement"]);
         $("#kalman-estimation").val(cfg["kalman-estimation"]);
         $("#kalman-noise").val(cfg["kalman-noise"]);
@@ -511,7 +514,7 @@
           $("#kalman-active-yes").click();
         } else {
           $("#kalman-active-no").click();
-        }
+        }*/
       })
         .fail(function () {
           showError('Unable to get data from the device.');
