@@ -42,13 +42,30 @@ class StatsLevelDetection {
   StatsLevelDetection(const StatsLevelDetection &) = delete;
   void operator=(const StatsLevelDetection &) = delete;
 
-  void checkForMaxDeviation(float raw) {
+  bool checkForValidValue(float raw, float kalman) {
+    float delta = abs(kalman - raw);
+
+    Log.notice(
+        F("LVL : Valid delta %F [%d]." CR),
+        delta, _idx);
+
+    if (delta < myConfig.getKalmanMaxDeviationValue()) {
+      return true;
+    }
+
+    Log.notice(
+        F("LVL : Raw and Kalman values differ to much %F, not yet stable value [%d]." CR),
+        delta, _idx);
+    return false;
+  }
+
+  void checkForMaxDeviation(float v) {
     if (cnt() > 0) {
-      float delta = abs(ave() - raw);
+      float delta = abs(ave() - v);
 
       if (delta > myConfig.getScaleMaxDeviationValue()) {
         Log.notice(
-            F("LSTA: Average statistics deviates too much from raw values "
+            F("LVL : Average statistics deviates too much from raw values "
               "%F, restarting stable level detection, ave=%F, cnt=%F [%d]." CR),
             delta, ave(), cnt(), _idx);
         clear();
@@ -61,7 +78,7 @@ class StatsLevelDetection {
       _stable = ave();
       _newStable = true;
       Log.notice(
-          F("LSTA: Found a new stable value %F, ave=%F, cnt=%F [%d]." CR),
+          F("LVL : Found a new stable value %F, ave=%F, cnt=%F [%d]." CR),
           getStableValue(), ave(), cnt(), _idx);
     }
   }
@@ -71,13 +88,13 @@ class StatsLevelDetection {
     // delta as the latest pour.
     if (cnt() > myConfig.getScaleStableCount() && !isnan(_stable)) {
       if ((_stable + myConfig.getScaleMaxDeviationValue()) < ave()) {
-        Log.notice(F("LSTA: Level has increased, adjusting from %F to %F, "
+        Log.notice(F("LVL : Level has increased, adjusting from %F to %F, "
                      "cnt=%F [%d]." CR),
                    _stable, ave(), cnt(), _idx);
         _stable = ave();
         _newStable = true;
       } else if ((_stable - myConfig.getScaleMaxDeviationValue()) > ave()) {
-        Log.notice(F("LSTA: Level has decreased, adjusting from %F to %F, "
+        Log.notice(F("LVL : Level has decreased, adjusting from %F to %F, "
                      "cnt=%F [%d]." CR),
                    _stable, ave(), cnt(), _idx);
 
@@ -90,13 +107,13 @@ class StatsLevelDetection {
           _pour -= myConfig.getKegWeight(_idx);
           if (p > 0.0) {
             _pour = p;
-            Log.notice(F("LSTA: Keg removed and beer has been poured volume %F "
+            Log.notice(F("LVL : Keg removed and beer has been poured volume %F "
                          "[%d]." CR),
                        _pour, _idx);
           }
         } else {
           _pour = p;
-          Log.notice(F("LSTA: Beer has been poured volume %F [%d]." CR), _pour,
+          Log.notice(F("LVL : Beer has been poured volume %F [%d]." CR), _pour,
                      _idx);
         }
 
@@ -127,20 +144,28 @@ class StatsLevelDetection {
   float ave() { return _statistic.average(); }
   float cnt() { return _statistic.count(); }
 
-  float processValue(float v) {
+  float processValue(float raw, float kalman) {
     _newPour = false;
     _newStable = false;
-    _statistic.add(v);
-    checkForMaxDeviation(v);
-    checkForStable();
-    checkForLevelChange();
+  
+    if (isnan(raw) || isnan(kalman))
+      return NAN;
+
+    if (checkForValidValue(raw, kalman)) {
+      _statistic.add(kalman);
+      checkForMaxDeviation(kalman);
+      checkForStable();
+      checkForLevelChange();
 #if LOG_DEBUG == 6
-    Log.verbose(
-        F("LSTA: Update statistics filter value %F ave %F min %F max %F "
-          "[%d]." CR),
-        v, ave(), min(), max(), _idx);
+      Log.verbose(
+          F("LVL : Update statistics raw=%F kalman=%F ave=%F min=%F max=%F "
+            "[%d]." CR),
+          raw, kalman, ave(), min(), max(), _idx);
 #endif
-    return ave();
+      return ave();
+    }
+
+    return NAN;
   }
 };
 

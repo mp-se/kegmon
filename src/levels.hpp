@@ -27,7 +27,6 @@ SOFTWARE.
 #include <Arduino.h>
 
 #include <kegconfig.hpp>
-#include <levelkalman.hpp>
 #include <levelraw.hpp>
 #include <levelstatistic.hpp>
 #include <stability.hpp>
@@ -42,14 +41,12 @@ class LevelDetection {
   Stability _stability[2];
   RawLevelDetection _rawLevel[2];
   StatsLevelDetection* _statsLevel[2] = {0, 0};
-  KalmanLevelDetection* _kalmanLevel[2] = {0, 0};
 
   LevelDetection(const LevelDetection&) = delete;
   void operator=(const LevelDetection&) = delete;
 
   void logLevels(float kegVolume1, float kegVolume2, float pourVolume1,
                  float pourVolume2);
-
   void pushKegUpdate(UnitIndex idx, float stableVol, float pourVol,
                      float glasses);
   void pushPourUpdate(UnitIndex idx, float stableVol, float pourVol);
@@ -60,9 +57,6 @@ class LevelDetection {
 
   Stability* getStability(UnitIndex idx) { return &_stability[idx]; }
   RawLevelDetection* getRawDetection(UnitIndex idx) { return &_rawLevel[idx]; }
-  KalmanLevelDetection* getKalmanDetection(UnitIndex idx) {
-    return _kalmanLevel[idx];
-  }
   StatsLevelDetection* getStatsDetection(UnitIndex idx) {
     return _statsLevel[idx];
   }

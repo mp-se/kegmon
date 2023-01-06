@@ -26,18 +26,31 @@ SOFTWARE.
 #include <perf.hpp>
 #include <scale.hpp>
 
+// Used for introduce noise on the signal to see if it accurate enough 
+// #define ENABLE_ADDING_NOISE
+
 LevelDetection::LevelDetection() {
-  _kalmanLevel[0] = new KalmanLevelDetection(UnitIndex::U1);
-  _kalmanLevel[1] = new KalmanLevelDetection(UnitIndex::U2);
   _statsLevel[0] = new StatsLevelDetection(UnitIndex::U1);
   _statsLevel[1] = new StatsLevelDetection(UnitIndex::U2);
+#if defined( ENABLE_ADDING_NOISE )
+  randomSeed(12345L);
+#endif
 }
 
 void LevelDetection::update(UnitIndex idx, float raw) {
   if (isnan(raw)) {
-    Log.notice(F("LEVL: No valid value read [%d]." CR), idx);
+    Log.notice(F("LVL : No valid value read [%d]." CR), idx);
     return;
   }
+
+#if defined( ENABLE_ADDING_NOISE )
+  float max = raw;
+  float err = random(-max, max);
+  Log.notice(F("LVL : raw=%F, err=%F [%d]." CR), raw, err/10, idx);
+  // raw += err/5; // 20%
+  // raw += err/10; // 10%
+  raw += err/20; // 5%
+#endif
 
   _stability[idx].add(raw);
 
@@ -46,19 +59,8 @@ void LevelDetection::update(UnitIndex idx, float raw) {
   float average = _rawLevel[idx].getAverageValue();
   PERF_END("level-filter-raw");
 
-  PERF_BEGIN("level-filter-kalman");
-  float kalman =
-      getKalmanDetection(idx)->processValue(raw, _rawLevel[idx].average());
-  PERF_END("level-filter-kalman");
-
   PERF_BEGIN("level-filter-stats");
-  float stats;
-
-  if (myConfig.isKalmanActive()) {
-    stats = getStatsDetection(idx)->processValue(kalman);
-  } else {
-    stats = getStatsDetection(idx)->processValue(raw);
-  }
+  float stats = getStatsDetection(idx)->processValue(raw, getRawDetection(idx)->getKalmanValue());
 
   if (getStatsDetection(idx)->newPourValue())
     pushPourUpdate(idx, getBeerStableVolume(idx), getPourVolume(idx));
@@ -68,8 +70,8 @@ void LevelDetection::update(UnitIndex idx, float raw) {
                   getNoStableGlasses(idx));
 
   PERF_END("level-filter-stats");
-  Log.verbose(F("LEVL: raw=%F, ave=%F, kalman=%F, stats=%F [%d]." CR), raw,
-              average, kalman, stats, idx);
+  Log.verbose(F("LVL : raw=%F, ave=%F, stats=%F [%d]." CR), raw,
+              average, stats, idx);
 }
 
 void LevelDetection::pushKegUpdate(UnitIndex idx, float stableVol,
@@ -119,7 +121,7 @@ void LevelDetection::logLevels(float kegVolume1, float kegVolume2,
            pourVolume1 < 0 ? 0 : pourVolume1,
            pourVolume2 < 0 ? 0 : pourVolume2);
 
-  Log.notice(F("SCAL: Logging level change %s"), &s[0]);
+  Log.notice(F("LVL : Logging level change %s"), &s[0]);
 
   File f = LittleFS.open(LEVELS_FILENAME, "a");
 
@@ -140,10 +142,6 @@ bool LevelDetection::hasStableWeight(UnitIndex idx, LevelDetectionType type) {
   switch (type) {
     case LevelDetectionType::RAW:
       return true;
-    case LevelDetectionType::AVERAGE:
-      return getRawDetection(idx)->hasAverageValue();
-    case LevelDetectionType::KALMAN:
-      return getKalmanDetection(idx)->hasValue();
     case LevelDetectionType::STATS:
       return getStatsDetection(idx)->hasStableValue();
   }
@@ -153,9 +151,6 @@ bool LevelDetection::hasStableWeight(UnitIndex idx, LevelDetectionType type) {
 bool LevelDetection::hasPourWeight(UnitIndex idx, LevelDetectionType type) {
   switch (type) {
     case LevelDetectionType::RAW:
-    case LevelDetectionType::AVERAGE:
-      return false;
-    case LevelDetectionType::KALMAN:
       return false;
     case LevelDetectionType::STATS:
       return getStatsDetection(idx)->hasStableValue();
@@ -187,9 +182,6 @@ float LevelDetection::getBeerStableWeight(UnitIndex idx,
 float LevelDetection::getPourWeight(UnitIndex idx, LevelDetectionType type) {
   switch (type) {
     case LevelDetectionType::RAW:
-    case LevelDetectionType::AVERAGE:
-      return false;
-    case LevelDetectionType::KALMAN:
       return false;
     case LevelDetectionType::STATS:
       return getStatsDetection(idx)->getPourValue();
@@ -205,10 +197,6 @@ float LevelDetection::getTotalWeight(UnitIndex idx, LevelDetectionType type) {
   switch (type) {
     case LevelDetectionType::RAW:
       return getRawDetection(idx)->getRawValue();
-    case LevelDetectionType::AVERAGE:
-      return getRawDetection(idx)->getAverageValue();
-    case LevelDetectionType::KALMAN:
-      return getKalmanDetection(idx)->getValue();
     case LevelDetectionType::STATS:
       return getStatsDetection(idx)->getValue();
   }
@@ -220,10 +208,6 @@ float LevelDetection::getTotalStableWeight(UnitIndex idx,
   switch (type) {
     case LevelDetectionType::RAW:
       return getRawDetection(idx)->getRawValue();
-    case LevelDetectionType::AVERAGE:
-      return getRawDetection(idx)->getAverageValue();
-    case LevelDetectionType::KALMAN:
-      return getKalmanDetection(idx)->getValue();
     case LevelDetectionType::STATS:
       return getStatsDetection(idx)->getStableValue();
   }

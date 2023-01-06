@@ -107,16 +107,19 @@ class KegConfig : public BaseConfig {
   BeerInfo _beer[2];
 
   float _scaleMaxDeviationValue = 0.1;
+  float _scaleKalmanMaxDeviation = 0.04;
   uint32_t _scaleStableCount = 10;
   int _scaleReadCount = 3;
   int _scaleReadCountCalibration = 30;
 
   LevelDetectionType _levelDetection = LevelDetectionType::STATS;
 
+  /*
   bool _kalmanActive = true;
   float _kalmanMeasurement = 0.3;
   float _kalmanEstimation = 2;
   float _kalmanNoise = 0.01;
+  */
 
  public:
   KegConfig(String baseMDNS, String fileName);
@@ -234,6 +237,15 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }
 
+  // This is the maximum allowed deviation between kalman and raw value for level checking to work.
+  float getKalmanMaxDeviationValue() {
+    return _scaleKalmanMaxDeviation;
+  } 
+  /*void setKalmanMaxDeviationValue(float f) {
+    _scaleKalmanMaxDeviation = f;
+    _saveNeeded = true;
+  }*/
+
   // This is the number of values in the statistics for the average value to be
   // classifed as stable. Loop interval is 2s
   uint32_t getScaleStableCount() { return _scaleStableCount; }
@@ -265,6 +277,7 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }
 
+  /*
   float getKalmanEstimation() { return _kalmanEstimation; }
   void setKalmanEstimation(float f) {
     _kalmanEstimation = f;
@@ -285,6 +298,7 @@ class KegConfig : public BaseConfig {
     _kalmanActive = b;
     _saveNeeded = true;
   }
+  */
 
   // These settings are used for debugging and checking stability of the scales.
   // Only influx is used for now

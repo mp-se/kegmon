@@ -331,7 +331,7 @@ void KegWebHandler::webStability() {
 #define PARAM_STABILITY_UBIASDEV1 "stability-ubiasdev1"
 #define PARAM_STABILITY_UBIASDEV2 "stability-ubiasdev2"
 
-  DynamicJsonDocument doc(500);
+  DynamicJsonDocument doc(800);
 
   Stability* stability1 = myLevelDetection.getStability(UnitIndex::U1);
   Stability* stability2 = myLevelDetection.getStability(UnitIndex::U2);
@@ -359,6 +359,27 @@ void KegWebHandler::webStability() {
     doc[PARAM_STABILITY_POPDEV2] = stability2->popStdev();
     doc[PARAM_STABILITY_UBIASDEV2] = stability2->unbiasedStdev();
   }
+
+#define PARAM_LEVEL_RAW1 "level-raw1"
+#define PARAM_LEVEL_RAW2 "level-raw2"
+#define PARAM_LEVEL_KALMAN1 "level-kalman1"
+#define PARAM_LEVEL_KALMAN2 "level-kalman2"
+#define PARAM_LEVEL_STATISTIC1 "level-stable1"
+#define PARAM_LEVEL_STATISTIC2 "level-stable2"
+
+  if (myLevelDetection.getRawDetection(UnitIndex::U1)->hasRawValue() )
+    doc[PARAM_LEVEL_RAW1] = myLevelDetection.getRawDetection(UnitIndex::U1)->getRawValue();
+  if (myLevelDetection.getRawDetection(UnitIndex::U1)->hasKalmanValue())
+    doc[PARAM_LEVEL_KALMAN1] = myLevelDetection.getRawDetection(UnitIndex::U1)->getKalmanValue();
+  if (myLevelDetection.getStatsDetection(UnitIndex::U1)->hasStableValue())
+    doc[PARAM_LEVEL_STATISTIC1] = myLevelDetection.getStatsDetection(UnitIndex::U1)->getStableValue();
+
+  if (myLevelDetection.getRawDetection(UnitIndex::U2)->hasRawValue() )
+    doc[PARAM_LEVEL_RAW2] = myLevelDetection.getRawDetection(UnitIndex::U2)->getRawValue();
+  if (myLevelDetection.getRawDetection(UnitIndex::U2)->hasKalmanValue())
+    doc[PARAM_LEVEL_KALMAN2] = myLevelDetection.getRawDetection(UnitIndex::U2)->getKalmanValue();
+  if (myLevelDetection.getStatsDetection(UnitIndex::U2)->hasStableValue())
+    doc[PARAM_LEVEL_STATISTIC2] = myLevelDetection.getStatsDetection(UnitIndex::U2)->getStableValue();
 
 #if LOG_LEVEL == 6
   serializeJson(doc, Serial);

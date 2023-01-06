@@ -51,10 +51,8 @@ SOFTWARE.
 enum UnitIndex { U1 = 0, U2 = 1 };
 /*
  * RAW: Last value read
- * AVERAGE: Average of last 5 raw values
- * KALMAN: Kalmanfilter applied to raw values
- * STATS: Statistics applied and average value used
+ * STATS: Statistics applied and average value used over the last 20 seconds
  */
-enum LevelDetectionType { RAW = 0, AVERAGE = 1, KALMAN = 2, STATS = 3 };
+enum LevelDetectionType { RAW = 0, STATS = 1 };
 
 #endif  // SRC_MAIN_HPP_

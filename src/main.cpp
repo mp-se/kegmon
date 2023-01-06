@@ -374,8 +374,8 @@ void loop() {
              isnan(ave1) ? 0 : ave1, isnan(ave2) ? 0 : ave2);
     s += &buf[0];
 
-    float kal1 = myLevelDetection.getKalmanDetection(UnitIndex::U1)->getValue();
-    float kal2 = myLevelDetection.getKalmanDetection(UnitIndex::U2)->getValue();
+    float kal1 = myLevelDetection.getRawDetection(UnitIndex::U1)->getKalmanValue();
+    float kal2 = myLevelDetection.getRawDetection(UnitIndex::U2)->getKalmanValue();
 
     snprintf(&buf[0], sizeof(buf), ",level-kalman1=%f,level-kalman2=%f",
              isnan(kal1) ? 0 : kal1, isnan(kal2) ? 0 : kal2);

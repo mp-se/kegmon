@@ -25,32 +25,49 @@ SOFTWARE.
 #define SRC_LEVELRAW_HPP_
 
 #include <Arduino.h>
+#include <SimpleKalmanFilter.h>
 
 class RawLevelDetection {
  private:
-  static const int _cnt = 8;
-  static const int _validCnt = 3;
+  static const int _cnt = 10;
+  static const int _validCnt = 5;
   float _history[_cnt];
   float _last = NAN;
+  float _kalman = NAN;
+  SimpleKalmanFilter *_kalmanFilter = 0;
 
   // Stores the last n raw values to smooth out any faulty readings. Can be used
   // as a baseline/reference for other level detection methods.
  public:
-  RawLevelDetection() { clear(); }
+  RawLevelDetection() { 
+    clear(); 
+    _kalmanFilter = new SimpleKalmanFilter(0.001, 0.001, 0.001);
+    // _kalmanFilter = new SimpleKalmanFilter(myConfig.getKalmanMeasurement(), myConfig.getKalmanEstimation(), myConfig.getKalmanNoise());
+  }
 
   bool hasRawValue() { return isnan(_last) ? false : true; }
   bool hasAverageValue() { return count() >= _validCnt ? true : false; }
   float getRawValue() { return _last; }
   float getAverageValue() { return average(); }
 
+  bool hasKalmanValue() { return isnan(_kalman) ? false : true; }
+  float getKalmanValue() { return _kalman; }
+
   void clear() {
     for (int i = 0; i < _cnt; i++) _history[i] = NAN;
     _last = NAN;
+    _kalman = NAN;
   }
   void add(float v) {
     for (int i = _cnt - 1; i > 0; i--) _history[i] = _history[i - 1];
     _history[0] = v;
     _last = v;
+    float k = _kalmanFilter->updateEstimate(v);
+
+    if (hasAverageValue()) { // Only present value when we have enough sensor reads
+      _kalman = k;
+      Log.notice(F("LVL : Kalman value %F, esterr=%F, gain=%F" CR), k, _kalmanFilter->getEstimateError(), _kalmanFilter->getKalmanGain());
+    }
   }
   float sum() {
     float sum = 0;
