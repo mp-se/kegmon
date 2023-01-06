@@ -45,9 +45,9 @@ class StatsLevelDetection {
   bool checkForValidValue(float raw, float kalman) {
     float delta = abs(kalman - raw);
 
-    Log.notice(
-        F("LVL : Valid delta %F [%d]." CR),
-        delta, _idx);
+    // Log.notice(
+    //    F("LVL : Valid delta %F [%d]." CR),
+    //    delta, _idx);
 
     if (delta < myConfig.getKalmanMaxDeviationValue()) {
       return true;

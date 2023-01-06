@@ -66,7 +66,7 @@ class RawLevelDetection {
 
     if (hasAverageValue()) { // Only present value when we have enough sensor reads
       _kalman = k;
-      Log.notice(F("LVL : Kalman value %F, esterr=%F, gain=%F" CR), k, _kalmanFilter->getEstimateError(), _kalmanFilter->getKalmanGain());
+      // Log.notice(F("LVL : Kalman value %F, esterr=%F, gain=%F" CR), k, _kalmanFilter->getEstimateError(), _kalmanFilter->getKalmanGain());
     }
   }
   float sum() {
