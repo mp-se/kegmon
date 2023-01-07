@@ -36,13 +36,17 @@ class RawLevelDetection {
   float _kalman = NAN;
   SimpleKalmanFilter *_kalmanFilter = 0;
 
+  RawLevelDetection(const RawLevelDetection &) = delete;
+  void operator=(const RawLevelDetection &) = delete;
+
   // Stores the last n raw values to smooth out any faulty readings. Can be used
   // as a baseline/reference for other level detection methods.
  public:
-  RawLevelDetection() { 
-    clear(); 
+  RawLevelDetection() {
+    clear();
     _kalmanFilter = new SimpleKalmanFilter(0.001, 0.001, 0.001);
-    // _kalmanFilter = new SimpleKalmanFilter(myConfig.getKalmanMeasurement(), myConfig.getKalmanEstimation(), myConfig.getKalmanNoise());
+    // _kalmanFilter = new SimpleKalmanFilter(myConfig.getKalmanMeasurement(),
+    // myConfig.getKalmanEstimation(), myConfig.getKalmanNoise());
   }
 
   bool hasRawValue() { return isnan(_last) ? false : true; }
@@ -64,9 +68,11 @@ class RawLevelDetection {
     _last = v;
     float k = _kalmanFilter->updateEstimate(v);
 
-    if (hasAverageValue()) { // Only present value when we have enough sensor reads
+    if (hasAverageValue()) {  // Only present value when we have enough sensor
+                              // reads
       _kalman = k;
-      // Log.notice(F("LVL : Kalman value %F, esterr=%F, gain=%F" CR), k, _kalmanFilter->getEstimateError(), _kalmanFilter->getKalmanGain());
+      // Log.notice(F("LVL : Kalman value %F, esterr=%F, gain=%F" CR), k,
+      // _kalmanFilter->getEstimateError(), _kalmanFilter->getKalmanGain());
     }
   }
   float sum() {

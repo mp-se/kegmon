@@ -85,6 +85,10 @@ void Scale::setScaleFactor(UnitIndex idx) {
       fs);  // apply the saved scale factor so we get valid results
 }
 float Scale::read(UnitIndex idx) {
+#if defined(DEBUG_LINK_SCALES)
+  idx = UnitIndex::U1;
+#endif
+
   if (myConfig.getScaleFactor(idx) == 0 ||
       myConfig.getScaleOffset(idx) == 0)  // Not initialized, just return zero
     return 0;
@@ -136,6 +140,9 @@ void Scale::tare(UnitIndex idx) {
 }
 
 int32_t Scale::readRaw(UnitIndex idx) {
+#if defined(DEBUG_LINK_SCALES)
+  idx = UnitIndex::U1;
+#endif
   if (!_scale[idx]) return 0;
   PERF_BEGIN("scale-readraw");
   int32_t l = _scale[idx]->read_average(

@@ -288,7 +288,13 @@ void loop() {
           !myScale.isConnected(UnitIndex::U2)) {
         myScale.setup();  // Try to reconnect to scale
       }
+
+    // If the temp sensor is not responding, try to reset it and try again
+    if (isnan(myTemp.getTempC())) {
+      myTemp.reset();
+      myTemp.setup();
     }
+  }
 
     // Read the scales, only once per loop
     PERF_BEGIN("loop-scale-read1");
@@ -374,8 +380,10 @@ void loop() {
              isnan(ave1) ? 0 : ave1, isnan(ave2) ? 0 : ave2);
     s += &buf[0];
 
-    float kal1 = myLevelDetection.getRawDetection(UnitIndex::U1)->getKalmanValue();
-    float kal2 = myLevelDetection.getRawDetection(UnitIndex::U2)->getKalmanValue();
+    float kal1 =
+        myLevelDetection.getRawDetection(UnitIndex::U1)->getKalmanValue();
+    float kal2 =
+        myLevelDetection.getRawDetection(UnitIndex::U2)->getKalmanValue();
 
     snprintf(&buf[0], sizeof(buf), ",level-kalman1=%f,level-kalman2=%f",
              isnan(kal1) ? 0 : kal1, isnan(kal2) ? 0 : kal2);

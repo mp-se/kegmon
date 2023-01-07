@@ -26,13 +26,13 @@ SOFTWARE.
 #include <perf.hpp>
 #include <scale.hpp>
 
-// Used for introduce noise on the signal to see if it accurate enough 
+// Used for introduce noise on the signal to see if it accurate enough
 // #define ENABLE_ADDING_NOISE
 
 LevelDetection::LevelDetection() {
   _statsLevel[0] = new StatsLevelDetection(UnitIndex::U1);
   _statsLevel[1] = new StatsLevelDetection(UnitIndex::U2);
-#if defined( ENABLE_ADDING_NOISE )
+#if defined(ENABLE_ADDING_NOISE)
   randomSeed(12345L);
 #endif
 }
@@ -43,13 +43,13 @@ void LevelDetection::update(UnitIndex idx, float raw) {
     return;
   }
 
-#if defined( ENABLE_ADDING_NOISE )
+#if defined(ENABLE_ADDING_NOISE)
   float max = raw;
   float err = random(-max, max);
-  Log.notice(F("LVL : raw=%F, err=%F [%d]." CR), raw, err/10, idx);
+  Log.notice(F("LVL : raw=%F, err=%F [%d]." CR), raw, err / 10, idx);
   // raw += err/5; // 20%
   // raw += err/10; // 10%
-  raw += err/20; // 5%
+  raw += err / 20;  // 5%
 #endif
 
   _stability[idx].add(raw);
@@ -60,7 +60,8 @@ void LevelDetection::update(UnitIndex idx, float raw) {
   PERF_END("level-filter-raw");
 
   PERF_BEGIN("level-filter-stats");
-  float stats = getStatsDetection(idx)->processValue(raw, getRawDetection(idx)->getKalmanValue());
+  float stats = getStatsDetection(idx)->processValue(
+      raw, getRawDetection(idx)->getKalmanValue());
 
   if (getStatsDetection(idx)->newPourValue())
     pushPourUpdate(idx, getBeerStableVolume(idx), getPourVolume(idx));
@@ -70,8 +71,8 @@ void LevelDetection::update(UnitIndex idx, float raw) {
                   getNoStableGlasses(idx));
 
   PERF_END("level-filter-stats");
-  Log.verbose(F("LVL : raw=%F, ave=%F, stats=%F [%d]." CR), raw,
-              average, stats, idx);
+  Log.verbose(F("LVL : raw=%F, ave=%F, stats=%F [%d]." CR), raw, average, stats,
+              idx);
 }
 
 void LevelDetection::pushKegUpdate(UnitIndex idx, float stableVol,
@@ -139,27 +140,40 @@ void LevelDetection::logLevels(float kegVolume1, float kegVolume2,
 }
 
 bool LevelDetection::hasStableWeight(UnitIndex idx, LevelDetectionType type) {
+  bool f = false;
+
   switch (type) {
     case LevelDetectionType::RAW:
-      return true;
+      f = true;
+      break;
     case LevelDetectionType::STATS:
-      return getStatsDetection(idx)->hasStableValue();
+      f = getStatsDetection(idx)->hasStableValue();
+      break;
   }
-  return false;
+
+  // Log.notice(F("LVL : StableWeight %s [%d]" CR), f ? "true" : "false", idx);
+  return f;
 }
 
 bool LevelDetection::hasPourWeight(UnitIndex idx, LevelDetectionType type) {
+  bool f = false;
+
   switch (type) {
     case LevelDetectionType::RAW:
-      return false;
+      f = false;
+      break;
     case LevelDetectionType::STATS:
-      return getStatsDetection(idx)->hasStableValue();
+      f = getStatsDetection(idx)->hasStableValue();
+      break;
   }
-  return false;
+
+  // Log.notice(F("LVL : PourWeight %s [%d]" CR), f ? "true" : "false", idx);
+  return f;
 }
 
 float LevelDetection::getBeerWeight(UnitIndex idx, LevelDetectionType type) {
   float w = getTotalWeight(idx, type);
+  // Log.notice(F("LVL : BeerWeight %F [%d]" CR), w, idx);
 
   if (!isnan(w)) {
     return w - myConfig.getKegWeight(idx);
@@ -171,6 +185,7 @@ float LevelDetection::getBeerWeight(UnitIndex idx, LevelDetectionType type) {
 float LevelDetection::getBeerStableWeight(UnitIndex idx,
                                           LevelDetectionType type) {
   float w = getTotalStableWeight(idx, type);
+  // Log.notice(F("LVL : TotalStableWeight %F [%d]" CR), w, idx);
 
   if (!isnan(w)) {
     return w - myConfig.getKegWeight(idx);
@@ -180,13 +195,18 @@ float LevelDetection::getBeerStableWeight(UnitIndex idx,
 }
 
 float LevelDetection::getPourWeight(UnitIndex idx, LevelDetectionType type) {
+  float w = NAN;
+
   switch (type) {
     case LevelDetectionType::RAW:
-      return false;
+      break;
     case LevelDetectionType::STATS:
-      return getStatsDetection(idx)->getPourValue();
+      w = getStatsDetection(idx)->getPourValue();
+      break;
   }
-  return NAN;
+
+  // Log.notice(F("LVL : PourWeight %F [%d]" CR), w, idx);
+  return w;
 }
 
 float LevelDetection::getTotalRawWeight(UnitIndex idx) {
@@ -194,24 +214,36 @@ float LevelDetection::getTotalRawWeight(UnitIndex idx) {
 }
 
 float LevelDetection::getTotalWeight(UnitIndex idx, LevelDetectionType type) {
+  float w = NAN;
+
   switch (type) {
     case LevelDetectionType::RAW:
-      return getRawDetection(idx)->getRawValue();
+      w = getRawDetection(idx)->getRawValue();
+      break;
     case LevelDetectionType::STATS:
-      return getStatsDetection(idx)->getValue();
+      w = getStatsDetection(idx)->getValue();
+      break;
   }
-  return NAN;
+
+  // Log.notice(F("LVL : TotalWeight %F [%d]" CR), w, idx);
+  return w;
 }
 
 float LevelDetection::getTotalStableWeight(UnitIndex idx,
                                            LevelDetectionType type) {
+  float w = NAN;
+
   switch (type) {
     case LevelDetectionType::RAW:
-      return getRawDetection(idx)->getRawValue();
+      w = getRawDetection(idx)->getRawValue();
+      break;
     case LevelDetectionType::STATS:
-      return getStatsDetection(idx)->getStableValue();
+      w = getStatsDetection(idx)->getStableValue();
+      break;
   }
-  return NAN;
+
+  // Log.notice(F("LVL : TotalStableWeight %F [%d]" CR), w, idx);
+  return w;
 }
 
 // EOF

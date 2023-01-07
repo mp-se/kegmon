@@ -41,7 +41,7 @@ void KegConfig::createJson(DynamicJsonDocument& doc, bool skipSecrets) {
   doc[PARAM_VOLUME_UNIT] = getVolumeUnit();
 
   doc[PARAM_DISPLAY_LAYOUT] = getDisplayLayoutAsInt();
-  doc[PARAM_LEVEL_DETECTION] = getLevelDetectionAsInt();
+  // doc[PARAM_LEVEL_DETECTION] = getLevelDetectionAsInt();
 
   doc[PARAM_BREWFATHER_APIKEY] = getBrewfatherApiKey();
   doc[PARAM_BREWFATHER_USERKEY] = getBrewfatherUserKey();
@@ -112,8 +112,8 @@ void KegConfig::parseJson(DynamicJsonDocument& doc) {
   if (!doc[PARAM_DISPLAY_LAYOUT].isNull())
     setDisplayLayout(doc[PARAM_DISPLAY_LAYOUT].as<int>());
 
-  if (!doc[PARAM_LEVEL_DETECTION].isNull())
-    setLevelDetection(doc[PARAM_LEVEL_DETECTION].as<int>());
+  /*if (!doc[PARAM_LEVEL_DETECTION].isNull())
+    setLevelDetection(doc[PARAM_LEVEL_DETECTION].as<int>());*/
 
   if (!doc[PARAM_SCALE_FACTOR1].isNull())
     setScaleFactor(0, doc[PARAM_SCALE_FACTOR1].as<float>());

@@ -169,9 +169,6 @@
                 <option value="720">1 h</option>
                 <option value="1440">2 h</option>
                 <option value="2160">3 h</option>
-                <option value="4320">6 h</option>
-                <option value="8640">12 h</option>
-                <option value="17280">24 h</option>
               </select>            
             </div>
             <label for="scale-time1" class="col-sm-8 col-form-label">Values are only stored in the browser so changing the interval or refreshing browser will affect graphs.</label>
@@ -207,9 +204,6 @@
                 <option value="720">1 h</option>
                 <option value="1440">2 h</option>
                 <option value="2160">3 h</option>
-                <option value="4320">6 h</option>
-                <option value="8640">12 h</option>
-                <option value="17280">24 h</option>
               </select>            
             </div>
             <label for="scale-time2" class="col-sm-8 col-form-label">Values are only stored in the browser so changing the interval or refreshing browser will affect graphs.</label>
@@ -221,6 +215,36 @@
           </form>
           <div class="row mb-3">
             <canvas id="scale2"></canvas>
+          </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingTemp">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTemp"
+          aria-expanded="true" aria-controls="collapseScale2">
+          <b>Temperature</b>
+        </button>
+      </h2>
+      <div id="collapseTemp" class="accordion-collapse collapse show" aria-labelledby="headingTemp"
+        data-bs-parent="#accordion">
+        <div class="accordion-body">
+          <form action="" method="">
+          <div class="row mb-3">
+            <label for="display-layout" class="col-sm-2 col-form-label">Display layout</label>
+            <div class="col-sm-2">
+              <!-- update interval in script is 5 seconds -->
+              <select class="form-select" id="scale-time3" name="scale-time3" data-bs-toggle="tooltip"
+                title="How much data is to be shown in graph">
+                <option value="720">1 h</option>
+                <option value="1440">2 h</option>
+                <option value="2160">3 h</option>
+              </select>            
+            </div>
+            <label for="scale-time3" class="col-sm-8 col-form-label">Values are only stored in the browser so changing the interval or refreshing browser will affect graphs.</label>
+          </div>
+          </form>
+          <div class="row mb-3">
+            <canvas id="temp"></canvas>
           </div>
       </div>
     </div>
@@ -337,6 +361,51 @@
       }
     };
 
+    var chartTemp = [];
+    var chartHumidity = [];
+
+    const dataSetChart3 = {
+      datasets: [{
+        label: 'Temperature',
+        borderColor: 'blue',
+        backgroundColor: 'blue',
+        data: chartTemp,
+        pointStyle: false
+      }, {
+        label: 'Humidity',
+        borderColor: 'green',
+        backgroundColor: 'green',
+        data: chartHumidity,
+        pointStyle: false
+      }]
+    }
+
+    const configChart3 = {
+      type: 'line',
+      data: dataSetChart3,
+      options: {
+        responsive: true,
+        interaction: {
+          intersect: false,
+        },
+        scales: {
+          x: {
+            type: 'time',
+            title: {
+              display: true,
+              text: 'Date'
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Temperature/Humidity'
+            }
+          }
+        }
+      }
+    };
+
     var myChart1 = new Chart(
       document.getElementById('scale1'),
       configChart1
@@ -347,10 +416,16 @@
       configChart2
     );
 
+    var myChart3 = new Chart(
+      document.getElementById('temp'),
+      configChart3
+    );
+
     function processLevel(doc) {
       var dt = new Date().toISOString();
       var upd1 = false;
       var upd2 = false;
+      var upd3 = false;
 
       // Process values for scale 1
       if ("level-raw1" in doc) {
@@ -379,9 +454,20 @@
         chartStable2.push({ x: dt, y: doc["level-stable2"] });
         upd2 = true;
       }
-
+     
+      // Process values for temp
+      if ("temperature" in doc) {
+        chartTemp.push({ x: dt, y: doc["temperature"] });
+        upd3 = true;
+      }
+      if ("humidity" in doc) {
+        chartHumidity.push({ x: dt, y: doc["humidity"] });
+        upd3 = true;
+      }
+     
       var maxItems1 = parseInt( $("#scale-time1").val() );
       var maxItems2 = parseInt( $("#scale-time2").val() );
+      var maxItems3 = parseInt( $("#scale-time3").val() );
 
       while( chartRaw1.length > maxItems1 ) {
         chartRaw1.shift();
@@ -413,6 +499,15 @@
         upd2 = true;
       }
 
+      while( chartTemp.length > maxItems3 ) {
+        chartTemp.shift();
+        upd3 = true;
+      }
+      while( chartHumidity.length > maxItems3 ) {
+        chartHumidity.shift();
+        upd3 = true;
+      }
+
       if (upd1) {
         myChart1.update('resize');
       }
@@ -421,8 +516,9 @@
         myChart2.update('resize');
       }
 
-      console.log( lastStable1 );
-      console.log( doc["level-stable1"] );
+      if (upd3) {
+        myChart3.update('resize');
+      }
 
       if( lastStable1 != doc["level-stable1"]) {
         var delta = doc["level-stable1"] - lastStable1;

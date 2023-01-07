@@ -30,6 +30,8 @@ SOFTWARE.
 #include <levels.hpp>
 #include <main.hpp>
 
+// #define DEBUG_LINK_SCALES  // For test rig to use one scale for both...
+
 class Scale {
  private:
   HX711* _scale[2] = {0, 0};
@@ -44,7 +46,11 @@ class Scale {
   void setup(bool force = false);
   void tare(UnitIndex idx);
   void findFactor(UnitIndex idx, float weight);
+#if defined(DEBUG_LINK_SCALES)
+  bool isConnected(UnitIndex idx) { return true; }
+#else
   bool isConnected(UnitIndex idx) { return _scale[idx] != 0 ? true : false; }
+#endif
   int32_t readRaw(UnitIndex idx);
   float read(UnitIndex idx);
 };

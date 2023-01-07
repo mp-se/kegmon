@@ -237,10 +237,9 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }
 
-  // This is the maximum allowed deviation between kalman and raw value for level checking to work.
-  float getKalmanMaxDeviationValue() {
-    return _scaleKalmanMaxDeviation;
-  } 
+  // This is the maximum allowed deviation between kalman and raw value for
+  // level checking to work.
+  float getKalmanMaxDeviationValue() { return _scaleKalmanMaxDeviation; }
   /*void setKalmanMaxDeviationValue(float f) {
     _scaleKalmanMaxDeviation = f;
     _saveNeeded = true;
@@ -268,14 +267,14 @@ class KegConfig : public BaseConfig {
 
   LevelDetectionType getLevelDetection() { return _levelDetection; }
   int getLevelDetectionAsInt() { return _levelDetection; }
-  void setLevelDetection(LevelDetectionType l) {
+  /*void setLevelDetection(LevelDetectionType l) {
     _levelDetection = l;
     _saveNeeded = true;
   }
   void setLevelDetection(int l) {
     _levelDetection = (LevelDetectionType)l;
     _saveNeeded = true;
-  }
+  }*/
 
   /*
   float getKalmanEstimation() { return _kalmanEstimation; }

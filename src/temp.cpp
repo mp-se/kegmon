@@ -30,8 +30,19 @@ void TempHumidity::setup() {
 #if LOG_LEVEL == 6
   // Log.verbose(F("Temp: Initializing humidity sensor." CR));
 #endif
+  pinMode(PIN_DH2_PWR, OUTPUT);
+  digitalWrite(PIN_DH2_PWR, HIGH);
+  delay(100);
+
+  if (_temp)
+    delete _temp;
   _temp = new DHT(PIN_DH2, DHT22, 1);
   _temp->begin();
+}
+
+void TempHumidity::reset() {
+  digitalWrite(PIN_DH2_PWR, LOW);
+  delay(100);
 }
 
 float TempHumidity::getTempC() {

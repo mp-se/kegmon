@@ -53,9 +53,9 @@ class StatsLevelDetection {
       return true;
     }
 
-    Log.notice(
-        F("LVL : Raw and Kalman values differ to much %F, not yet stable value [%d]." CR),
-        delta, _idx);
+    Log.notice(F("LVL : Raw and Kalman values differ to much %F, not yet "
+                 "stable value [%d]." CR),
+               delta, _idx);
     return false;
   }
 
@@ -147,9 +147,8 @@ class StatsLevelDetection {
   float processValue(float raw, float kalman) {
     _newPour = false;
     _newStable = false;
-  
-    if (isnan(raw) || isnan(kalman))
-      return NAN;
+
+    if (isnan(raw) || isnan(kalman)) return NAN;
 
     if (checkForValidValue(raw, kalman)) {
       _statistic.add(kalman);

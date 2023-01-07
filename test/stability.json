@@ -21,5 +21,7 @@
   "level-stable1": 1.0,
   "level-raw2": 1.1,
   "level-kalman2": 0.9,
-  "level-stable2": 0.8
+  "level-stable2": 0.8,
+  "temperature": 10.0,
+  "humidity": 45.6
 }

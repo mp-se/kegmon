@@ -217,7 +217,7 @@ void KegWebHandler::populateScaleJson(DynamicJsonDocument& doc) {
   if (myScale.isConnected(UnitIndex::U2)) {
     doc[PARAM_SCALE_WEIGHT2] = reduceFloatPrecision(
         convertOutgoingWeight(
-            myLevelDetection.getTotalStableWeight(UnitIndex::U2)),
+            myLevelDetection.getTotalRawWeight(UnitIndex::U2)),
         myConfig.getWeightPrecision());
     doc[PARAM_SCALE_RAW2] = myScale.readRaw(UnitIndex::U2);
     doc[PARAM_SCALE_OFFSET2] = myConfig.getScaleOffset(1);
@@ -367,19 +367,32 @@ void KegWebHandler::webStability() {
 #define PARAM_LEVEL_STATISTIC1 "level-stable1"
 #define PARAM_LEVEL_STATISTIC2 "level-stable2"
 
-  if (myLevelDetection.getRawDetection(UnitIndex::U1)->hasRawValue() )
-    doc[PARAM_LEVEL_RAW1] = myLevelDetection.getRawDetection(UnitIndex::U1)->getRawValue();
+  if (myLevelDetection.getRawDetection(UnitIndex::U1)->hasRawValue())
+    doc[PARAM_LEVEL_RAW1] =
+        myLevelDetection.getRawDetection(UnitIndex::U1)->getRawValue();
   if (myLevelDetection.getRawDetection(UnitIndex::U1)->hasKalmanValue())
-    doc[PARAM_LEVEL_KALMAN1] = myLevelDetection.getRawDetection(UnitIndex::U1)->getKalmanValue();
+    doc[PARAM_LEVEL_KALMAN1] =
+        myLevelDetection.getRawDetection(UnitIndex::U1)->getKalmanValue();
   if (myLevelDetection.getStatsDetection(UnitIndex::U1)->hasStableValue())
-    doc[PARAM_LEVEL_STATISTIC1] = myLevelDetection.getStatsDetection(UnitIndex::U1)->getStableValue();
+    doc[PARAM_LEVEL_STATISTIC1] =
+        myLevelDetection.getStatsDetection(UnitIndex::U1)->getStableValue();
 
-  if (myLevelDetection.getRawDetection(UnitIndex::U2)->hasRawValue() )
-    doc[PARAM_LEVEL_RAW2] = myLevelDetection.getRawDetection(UnitIndex::U2)->getRawValue();
+  if (myLevelDetection.getRawDetection(UnitIndex::U2)->hasRawValue())
+    doc[PARAM_LEVEL_RAW2] =
+        myLevelDetection.getRawDetection(UnitIndex::U2)->getRawValue();
   if (myLevelDetection.getRawDetection(UnitIndex::U2)->hasKalmanValue())
-    doc[PARAM_LEVEL_KALMAN2] = myLevelDetection.getRawDetection(UnitIndex::U2)->getKalmanValue();
+    doc[PARAM_LEVEL_KALMAN2] =
+        myLevelDetection.getRawDetection(UnitIndex::U2)->getKalmanValue();
   if (myLevelDetection.getStatsDetection(UnitIndex::U2)->hasStableValue())
-    doc[PARAM_LEVEL_STATISTIC2] = myLevelDetection.getStatsDetection(UnitIndex::U2)->getStableValue();
+    doc[PARAM_LEVEL_STATISTIC2] =
+        myLevelDetection.getStatsDetection(UnitIndex::U2)->getStableValue();
+
+  float f = myTemp.getTempC();
+
+  if (!isnan(f)) {
+    doc[PARAM_TEMP] = convertOutgoingTemperature(f);
+    doc[PARAM_HUMIDITY] = myTemp.getHumidity();
+  }
 
 #if LOG_LEVEL == 6
   serializeJson(doc, Serial);
