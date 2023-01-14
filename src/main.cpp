@@ -289,19 +289,21 @@ void loop() {
         myScale.setup();  // Try to reconnect to scale
       }
 
-    // If the temp sensor is not responding, try to reset it and try again
-    if (isnan(myTemp.getTempC())) {
-      myTemp.reset();
-      myTemp.setup();
+      // If the temp sensor is not responding, try to reset it and try again
+      if (isnan(myTemp.getTempC())) {
+        myTemp.reset();
+        myTemp.setup();
+      }
     }
-  }
 
     // Read the scales, only once per loop
+    float t = myTemp.getTempC();
+
     PERF_BEGIN("loop-scale-read1");
-    myLevelDetection.update(UnitIndex::U1, myScale.read(UnitIndex::U1));
+    myLevelDetection.update(UnitIndex::U1, myScale.read(UnitIndex::U1), t);
     PERF_END("loop-scale-read1");
     PERF_BEGIN("loop-scale-read2");
-    myLevelDetection.update(UnitIndex::U2, myScale.read(UnitIndex::U2));
+    myLevelDetection.update(UnitIndex::U2, myScale.read(UnitIndex::U2), t);
     PERF_END("loop-scale-read2");
 
     // Update screens

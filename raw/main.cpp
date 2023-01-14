@@ -30,6 +30,7 @@ SOFTWARE.
 #include <temp.hpp>
 #include <utils.hpp>
 #include <wificonnection.hpp>
+#include "simulated.hpp"
 
 SerialDebug mySerial(115200L);
 KegConfig myConfig(CFG_MDNSNAME, CFG_FILENAME);
@@ -37,6 +38,7 @@ WifiConnection myWifi(&myConfig, CFG_APPNAME, "password", CFG_MDNSNAME);
 OtaUpdate myOta(&myConfig, CFG_APPVER);
 KegPushHandler myPush(&myConfig);
 Display myDisplay;
+TempHumidity myTemp;
 LevelDetection myLevelDetection;
 
 void setup() {
@@ -78,28 +80,27 @@ void setup() {
   myDisplay.show(UnitIndex::U1);
 
   // Change setting for the simulation
-  myConfig.setKalmanActive(true);
-
-  Log.notice(F("SETUP: Kalman %s, mea=%F, est=%F, noise=%F" CR), myConfig.isKalmanActive() ? "true" : "false",
-    myConfig.getKalmanMeasurement(), myConfig.getKalmanEstimation(), myConfig.getKalmanNoise());
   Log.notice(F("SETUP: Max deviation %F" CR), myConfig.getScaleMaxDeviationValue());
 }
 
-extern float simulatedData [];
 int simulatedIndex = 0;
 // int simulatedDelay = 1000;
 // int simulatedDelay = 500;
-int simulatedDelay = 50;
+int simulatedDelay = 200;
+// int simulatedDelay = 100;
+// int simulatedDelay = 50;
 
 void loop() {
   if (!myWifi.isConnected()) myWifi.connect();
 
   myWifi.loop();
 
-  if (simulatedData[simulatedIndex] > 0.0) {
-    float v = simulatedData[simulatedIndex];
+  if (simulatedData[simulatedIndex].scale1 > 0.0) {
+    float t = simulatedData[simulatedIndex].temp; 
+    // float v = simulatedData[simulatedIndex].scale1; 
+    float v = simulatedData[simulatedIndex].scale2; 
 
-    myLevelDetection.update(UnitIndex::U1, v);
+    myLevelDetection.update(UnitIndex::U1, v, t);
 
     Log.verbose(
         F("LOOP: Input: %F, output: raw1=%F,stable1=%F"
@@ -119,20 +120,22 @@ void loop() {
     String s;
     snprintf(&buf[0], sizeof(buf),
              "simulate,host=%s,device=%s "
-             "level-raw1=%f",
-             myConfig.getMDNS(), myConfig.getID(), isnan(raw1) ? 0 : raw1);
+             "level-raw1=%f,temp=%f",
+             myConfig.getMDNS(), myConfig.getID(), isnan(raw1) ? 0 : raw1, t);
     s = &buf[0];
 
     float ave1 =
         myLevelDetection.getRawDetection(UnitIndex::U1)->getAverageValue();
 
-    snprintf(&buf[0], sizeof(buf), ",level-average1=%f",
-             isnan(ave1) ? 0 : ave1);
-    s += &buf[0];
+    if (!isnan(ave1)) {
+      snprintf(&buf[0], sizeof(buf), ",level-average1=%f",
+              isnan(ave1) ? 0 : ave1);
+      s += &buf[0];
+    }
 
-    float kal1 = myLevelDetection.getKalmanDetection(UnitIndex::U1)->getValue();
+    float kal1 = myLevelDetection.getRawDetection(UnitIndex::U1)->getKalmanValue();
 
-    if (kal1>0.1) {
+    if (kal1 > 0.1  && !isnan(kal1)) {
       snprintf(&buf[0], sizeof(buf), ",level-kalman1=%f",
               isnan(kal1) ? 0 : kal1);
       s += &buf[0];
@@ -141,9 +144,27 @@ void loop() {
     float stats1 =
         myLevelDetection.getStatsDetection(UnitIndex::U1)->getStableValue();
 
-    if( stats1 > 0) { // Skip the 0 values to make focus the scale in influx.
+    if( stats1 > 0  && !isnan(stats1)) { // Skip the 0 values to make focus the scale in influx.
       snprintf(&buf[0], sizeof(buf), ",level-stats1=%f",
               isnan(stats1) ? 0 : stats1);
+      s += &buf[0];
+    }
+
+    float temp1 =
+        myLevelDetection.getRawDetection(UnitIndex::U1)->getTempCorrValue();
+
+    if( temp1 > 0 && !isnan(temp1)) { // Skip the 0 values to make focus the scale in influx.
+      snprintf(&buf[0], sizeof(buf), ",level-temp1=%f",
+              isnan(temp1) ? 0 : temp1);
+      s += &buf[0];
+    }
+
+    float slope1 =
+        myLevelDetection.getRawDetection(UnitIndex::U1)->getSlopeValue() + 15;
+
+    if(!isnan(slope1)) { 
+      snprintf(&buf[0], sizeof(buf), ",level-slope1=%f",
+              isnan(slope1) ? 0 : slope1);
       s += &buf[0];
     }
 

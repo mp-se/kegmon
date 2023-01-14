@@ -25,11 +25,22 @@ SOFTWARE.
 #include <levels.hpp>
 #include <perf.hpp>
 #include <scale.hpp>
+#include <temp.hpp>
 
 // Used for introduce noise on the signal to see if it accurate enough
 // #define ENABLE_ADDING_NOISE
 
 LevelDetection::LevelDetection() {
+  _rawLevel[0] = new RawLevelDetection(UnitIndex::U1, 0.01, 0.01, 0.001, "");
+  _rawLevel[1] = new RawLevelDetection(UnitIndex::U2, 0.01, 0.01, 0.001, "");
+  // _rawLevel[0] = new RawLevelDetection(UnitIndex::U1, 0.01, 0.01, 0.001,
+  // "weight-(tempC-4)*0.02"); _rawLevel[1] = new
+  // RawLevelDetection(UnitIndex::U2, 0.01, 0.01, 0.001,
+  // "weight-(tempC-4)*0.02"); _rawLevel[0] = new
+  // RawLevelDetection(UnitIndex::U1, 0.001, 0.001, 0.001,
+  // "weight*(1-0.0002*(20-tempC))"); _rawLevel[1] = new
+  // RawLevelDetection(UnitIndex::U2, 0.001, 0.001, 0.001,
+  // "weight*(1-0.0002*(20-tempC))");
   _statsLevel[0] = new StatsLevelDetection(UnitIndex::U1);
   _statsLevel[1] = new StatsLevelDetection(UnitIndex::U2);
 #if defined(ENABLE_ADDING_NOISE)
@@ -37,7 +48,9 @@ LevelDetection::LevelDetection() {
 #endif
 }
 
-void LevelDetection::update(UnitIndex idx, float raw) {
+// getRawValue() * (1.0 - coeff * (20.0-t));
+
+void LevelDetection::update(UnitIndex idx, float raw, float temp) {
   if (isnan(raw)) {
     Log.notice(F("LVL : No valid value read [%d]." CR), idx);
     return;
@@ -55,8 +68,10 @@ void LevelDetection::update(UnitIndex idx, float raw) {
   _stability[idx].add(raw);
 
   PERF_BEGIN("level-filter-raw");
-  _rawLevel[idx].add(raw);
-  float average = _rawLevel[idx].getAverageValue();
+  _rawLevel[idx]->add(raw, temp);
+  float average = _rawLevel[idx]->getAverageValue();
+  float tempCorr = _rawLevel[idx]->getTempCorrValue();
+  float slope = _rawLevel[idx]->getSlopeValue();
   PERF_END("level-filter-raw");
 
   PERF_BEGIN("level-filter-stats");
@@ -69,10 +84,10 @@ void LevelDetection::update(UnitIndex idx, float raw) {
   if (getStatsDetection(idx)->newStableValue())
     pushKegUpdate(idx, getBeerStableVolume(idx), getPourVolume(idx),
                   getNoStableGlasses(idx));
-
   PERF_END("level-filter-stats");
-  Log.verbose(F("LVL : raw=%F, ave=%F, stats=%F [%d]." CR), raw, average, stats,
-              idx);
+
+  Log.verbose(F("LVL : raw=%F, ave=%F, temp=%F, stat=%F, slope=%F [%d]." CR),
+              raw, average, tempCorr, stats, slope, idx);
 }
 
 void LevelDetection::pushKegUpdate(UnitIndex idx, float stableVol,

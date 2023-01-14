@@ -39,7 +39,7 @@ SOFTWARE.
 class LevelDetection {
  private:
   Stability _stability[2];
-  RawLevelDetection _rawLevel[2];
+  RawLevelDetection* _rawLevel[2] = {0, 0};
   StatsLevelDetection* _statsLevel[2] = {0, 0};
 
   LevelDetection(const LevelDetection&) = delete;
@@ -53,10 +53,10 @@ class LevelDetection {
 
  public:
   LevelDetection();
-  void update(UnitIndex idx, float raw);
+  void update(UnitIndex idx, float raw, float temp);
 
   Stability* getStability(UnitIndex idx) { return &_stability[idx]; }
-  RawLevelDetection* getRawDetection(UnitIndex idx) { return &_rawLevel[idx]; }
+  RawLevelDetection* getRawDetection(UnitIndex idx) { return _rawLevel[idx]; }
   StatsLevelDetection* getStatsDetection(UnitIndex idx) {
     return _statsLevel[idx];
   }

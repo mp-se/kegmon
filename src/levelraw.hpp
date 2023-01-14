@@ -26,15 +26,30 @@ SOFTWARE.
 
 #include <Arduino.h>
 #include <SimpleKalmanFilter.h>
+#include <tinyexpr.h>
+
+#include <utils.hpp>
 
 class RawLevelDetection {
  private:
+  UnitIndex _idx;
+
+  // Raw values
   static const int _cnt = 10;
   static const int _validCnt = 5;
   float _history[_cnt];
   float _last = NAN;
+
+  // Kalman filter
   float _kalman = NAN;
   SimpleKalmanFilter *_kalmanFilter = 0;
+
+  // Temperature correction filter
+  float _tempCorr = NAN;
+  const char *_tempCorrFormula = 0;
+
+  // Slope filter
+  float _slope = NAN;
 
   RawLevelDetection(const RawLevelDetection &) = delete;
   void operator=(const RawLevelDetection &) = delete;
@@ -42,11 +57,12 @@ class RawLevelDetection {
   // Stores the last n raw values to smooth out any faulty readings. Can be used
   // as a baseline/reference for other level detection methods.
  public:
-  RawLevelDetection() {
+  RawLevelDetection(UnitIndex idx, float kalmanMea, float _kalmanEst,
+                    float kalmanNoise, const char *tempCorrFormula) {
     clear();
-    _kalmanFilter = new SimpleKalmanFilter(0.001, 0.001, 0.001);
-    // _kalmanFilter = new SimpleKalmanFilter(myConfig.getKalmanMeasurement(),
-    // myConfig.getKalmanEstimation(), myConfig.getKalmanNoise());
+    _idx = idx;
+    _kalmanFilter = new SimpleKalmanFilter(kalmanMea, _kalmanEst, kalmanNoise);
+    _tempCorrFormula = tempCorrFormula;
   }
 
   bool hasRawValue() { return isnan(_last) ? false : true; }
@@ -57,17 +73,51 @@ class RawLevelDetection {
   bool hasKalmanValue() { return isnan(_kalman) ? false : true; }
   float getKalmanValue() { return _kalman; }
 
+  bool hasTempCorrValue() { return isnan(_tempCorr) ? false : true; }
+  float getTempCorrValue() { return _tempCorr; }
+
+  bool hasSlopeValue() { return isnan(_slope) ? false : true; }
+  float getSlopeValue() { return _slope; }
+  bool slopeRising() { return _slope > 0.0 ? true : false; }
+  bool slopeSinking() { return _slope < 0.0 ? true : false; }
+
   void clear() {
     for (int i = 0; i < _cnt; i++) _history[i] = NAN;
     _last = NAN;
     _kalman = NAN;
+    _tempCorr = NAN;
   }
-  void add(float v) {
+  void add(float v, float temp) {
+    // Raw values
     for (int i = _cnt - 1; i > 0; i--) _history[i] = _history[i - 1];
     _history[0] = v;
     _last = v;
-    float k = _kalmanFilter->updateEstimate(v);
 
+    // Temperature correction
+    _tempCorr = NAN;
+
+    if (strlen(_tempCorrFormula) > 0) {
+      double weight = v;
+      double tempC = temp;
+      double tempF = convertCtoF(tempC);
+      int err;
+      te_variable vars[] = {
+          {"weight", &weight}, {"tempC", &tempC}, {"tempF", &tempF}};
+      te_expr *expr = te_compile(_tempCorrFormula, vars, 3, &err);
+
+      if (expr) {
+        _tempCorr = te_eval(expr);
+        te_free(expr);
+      }
+    }
+
+    // Slope calculation
+    if (count() == _cnt) {
+      _slope = _history[0] - _history[_cnt - 1];
+    }
+
+    // Kalman filter
+    float k = _kalmanFilter->updateEstimate(isnan(_tempCorr) ? v : _tempCorr);
     if (hasAverageValue()) {  // Only present value when we have enough sensor
                               // reads
       _kalman = k;

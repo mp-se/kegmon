@@ -34,8 +34,7 @@ void TempHumidity::setup() {
   digitalWrite(PIN_DH2_PWR, HIGH);
   delay(100);
 
-  if (_temp)
-    delete _temp;
+  if (_temp) delete _temp;
   _temp = new DHT(PIN_DH2, DHT22, 1);
   _temp->begin();
 }
