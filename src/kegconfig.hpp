@@ -54,7 +54,9 @@ SOFTWARE.
 #define PARAM_SCALE_FACTOR2 "scale-factor2"
 #define PARAM_SCALE_OFFSET1 "scale-offset1"
 #define PARAM_SCALE_OFFSET2 "scale-offset2"
-#define PARAM_SCALE_MAX_DEVIATION "scale-max-deviation"
+#define PARAM_SCALE_DEVIATION_INCREASE "scale-deviation-increase"
+#define PARAM_SCALE_DEVIATION_DECREASE "scale-deviation-decrease"
+#define PARAM_SCALE_DEVIATION_KALMAN "scale-deviation-kalman"
 #define PARAM_SCALE_READ_COUNT "scale-read-count"
 #define PARAM_SCALE_READ_COUNT_CALIBRATION "scale-read-count-calibration"
 #define PARAM_SCALE_STABLE_COUNT "scale-stable-count"
@@ -106,9 +108,10 @@ class KegConfig : public BaseConfig {
   float _glassVolume[2] = {0.40, 0.40};  // Volume in liters
   BeerInfo _beer[2];
 
-  float _scaleMaxDeviationValue = 0.1;
-  float _scaleKalmanMaxDeviation = 0.04;
-  uint32_t _scaleStableCount = 10;
+  float _scaleDeviationIncreaseValue = 0.4; // kg
+  float _scaleDeviationDecreaseValue = 0.1; // kg
+  float _scaleKalmanDeviation = 0.05;
+  uint32_t _scaleStableCount = 8;
   int _scaleReadCount = 3;
   int _scaleReadCountCalibration = 30;
 
@@ -228,22 +231,30 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }
 
-  // This is the maximum allowed deviation from the current average.
-  float getScaleMaxDeviationValue() {
-    return _scaleMaxDeviationValue;
+  // This is the maximum allowed deviation 
+  float getScaleDeviationDecreaseValue() {
+    return _scaleDeviationDecreaseValue;
   }  // 0.1 kg
-  void setScaleMaxDeviationValue(float f) {
-    _scaleMaxDeviationValue = f;
+  void setScaleDeviationDecreaseValue(float f) {
+    _scaleDeviationDecreaseValue = f;
+    _saveNeeded = true;
+  }
+
+  float getScaleDeviationIncreaseValue() {
+    return _scaleDeviationIncreaseValue;
+  }  // 0.1 kg
+  void setScaleDeviationIncreaseValue(float f) {
+    _scaleDeviationIncreaseValue = f;
     _saveNeeded = true;
   }
 
   // This is the maximum allowed deviation between kalman and raw value for
   // level checking to work.
-  float getKalmanMaxDeviationValue() { return _scaleKalmanMaxDeviation; }
-  /*void setKalmanMaxDeviationValue(float f) {
-    _scaleKalmanMaxDeviation = f;
+  float getScaleKalmanDeviationValue() { return _scaleKalmanDeviation; }
+  void setScaleKalmanDeviationValue(float f) {
+    _scaleKalmanDeviation = f;
     _saveNeeded = true;
-  }*/
+  }
 
   // This is the number of values in the statistics for the average value to be
   // classifed as stable. Loop interval is 2s

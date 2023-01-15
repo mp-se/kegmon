@@ -329,19 +329,47 @@
               <input type="text" name="section" value="#headingAdv" hidden>
   
               <div class="row mb-3">
-                <label for="scale-max-deviation" class="col-sm-2 col-form-label">Scale max deviation</label>
+                <label for="scale-deviation-increase" class="col-sm-2 col-form-label">Scale deviation increase</label>
                 <div class="col-sm-2">
-                  <input type="number" min=".05" max=".50" step=".05" class="form-control" name="scale-max-deviation" id="scale-max-deviation" placeholder="0.1"
+                  <input type="number" min=".05" max="1.0" step=".05" class="form-control" name="scale-deviation-increase" id="scale-deviation-increase" placeholder="0.5"
+                    data-bs-toggle="tooltip"
+                    title="Default 0.5 kg">
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-sm-12">
+                  <i>Threashold for how much change in weight is needed for the scale to detect new increased level, i.e sensitivity of the scale.</i>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label for="scale-deviation-decrease" class="col-sm-2 col-form-label">Scale deviation decrease</label>
+                <div class="col-sm-2">
+                  <input type="number" min=".05" max="0.5" step=".05" class="form-control" name="scale-deviation-decrease" id="scale-deviation-decrease" placeholder="0.1"
                     data-bs-toggle="tooltip"
                     title="Default 0.1 kg">
                 </div>
               </div>
               <div class="row mb-3">
                 <div class="col-sm-12">
-                  <i>Threashold for how much change in weight is needed for the scale to detect new level, i.e sensitivity of the scale.</i>
+                  <i>Threashold for how much change in weight is needed for the scale to detect new decreased level, i.e sensitivity of the scale.</i>
                 </div>
               </div>
-  
+
+              <div class="row mb-3">
+                <label for="scale-deviation-kalman" class="col-sm-2 col-form-label">Scale deviation kalman</label>
+                <div class="col-sm-2">
+                  <input type="number" min=".01" max="0.1" step=".01" class="form-control" name="scale-deviation-kalman" id="scale-deviation-kalman" placeholder="0.04"
+                    data-bs-toggle="tooltip"
+                    title="Default 0.04 kg">
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-sm-12">
+                  <i>When the kalman value is within this range of the raw scale value we regard the level as stable.</i>
+                </div>
+              </div>
+
               <div class="row mb-3">
                 <label for="scale-stable-count" class="col-sm-2 col-form-label">Scale stable count</label>
                 <div class="col-sm-2">
@@ -500,7 +528,9 @@
         else if (cfg["volume-unit"] == "uk-oz") $("#volume-unit-ukoz").click();
         else $("#volume-unit-cl").click();
 
-        $("#scale-max-deviation").val(cfg["scale-max-deviation"]);
+        $("#scale-deviation-decrease").val(cfg["scale-deviation-decrease"]);
+        $("#scale-deviation-increase").val(cfg["scale-deviation-increase"]);
+        $("#scale-deviation-kalman").val(cfg["scale-deviation-kalman"]);
         $("#scale-stable-count").val(cfg["scale-stable-count"]);
         $("#scale-read-count").val(cfg["scale-read-count"]);
         $("#scale-read-count-calibration").val(cfg["scale-read-count-calibration"]);

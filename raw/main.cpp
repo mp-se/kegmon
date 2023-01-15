@@ -80,15 +80,16 @@ void setup() {
   myDisplay.show(UnitIndex::U1);
 
   // Change setting for the simulation
-  Log.notice(F("SETUP: Max deviation %F" CR), myConfig.getScaleMaxDeviationValue());
+  Log.notice(F("SETUP: Max deviation increase %F" CR), myConfig.getScaleMaxDeviationIncreaseValue());
+  Log.notice(F("SETUP: Max deviation decrease %F" CR), myConfig.getScaleMaxDeviationDecreaseValue());
 }
 
 int simulatedIndex = 0;
 // int simulatedDelay = 1000;
 // int simulatedDelay = 500;
-int simulatedDelay = 200;
+// int simulatedDelay = 200;
 // int simulatedDelay = 100;
-// int simulatedDelay = 50;
+int simulatedDelay = 50;
 
 void loop() {
   if (!myWifi.isConnected()) myWifi.connect();

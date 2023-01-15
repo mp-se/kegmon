@@ -31,8 +31,8 @@ SOFTWARE.
 // #define ENABLE_ADDING_NOISE
 
 LevelDetection::LevelDetection() {
-  _rawLevel[0] = new RawLevelDetection(UnitIndex::U1, 0.01, 0.01, 0.001, "");
-  _rawLevel[1] = new RawLevelDetection(UnitIndex::U2, 0.01, 0.01, 0.001, "");
+  _rawLevel[0] = new RawLevelDetection(UnitIndex::U1, 0.001, 0.001, 0.001, "");
+  _rawLevel[1] = new RawLevelDetection(UnitIndex::U2, 0.001, 0.001, 0.001, "");
   // _rawLevel[0] = new RawLevelDetection(UnitIndex::U1, 0.01, 0.01, 0.001,
   // "weight-(tempC-4)*0.02"); _rawLevel[1] = new
   // RawLevelDetection(UnitIndex::U2, 0.01, 0.01, 0.001,
