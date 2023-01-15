@@ -93,7 +93,8 @@ class StatsLevelDetection {
                    _stable, ave(), cnt(), _idx);
         _stable = ave();
         _newStable = true;
-      } else if ((_stable - myConfig.getScaleMaxDeviationDecreaseValue()) > ave()) {
+      } else if ((_stable - myConfig.getScaleMaxDeviationDecreaseValue()) >
+                 ave()) {
         Log.notice(F("LVL : Level has decreased, adjusting from %F to %F, "
                      "cnt=%F [%d]." CR),
                    _stable, ave(), cnt(), _idx);

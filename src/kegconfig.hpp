@@ -108,8 +108,8 @@ class KegConfig : public BaseConfig {
   float _glassVolume[2] = {0.40, 0.40};  // Volume in liters
   BeerInfo _beer[2];
 
-  float _scaleDeviationIncreaseValue = 0.4; // kg
-  float _scaleDeviationDecreaseValue = 0.1; // kg
+  float _scaleDeviationIncreaseValue = 0.4;  // kg
+  float _scaleDeviationDecreaseValue = 0.1;  // kg
   float _scaleKalmanDeviation = 0.05;
   uint32_t _scaleStableCount = 8;
   int _scaleReadCount = 3;
@@ -231,7 +231,7 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }
 
-  // This is the maximum allowed deviation 
+  // This is the maximum allowed deviation
   float getScaleDeviationDecreaseValue() {
     return _scaleDeviationDecreaseValue;
   }  // 0.1 kg
