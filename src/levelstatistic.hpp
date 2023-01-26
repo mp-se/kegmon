@@ -49,7 +49,7 @@ class StatsLevelDetection {
     //    F("LVL : Valid delta %F [%d]." CR),
     //    delta, _idx);
 
-    if (delta < myConfig.getKalmanMaxDeviationValue()) {
+    if (delta < myConfig.getScaleKalmanDeviationValue()) {
       return true;
     }
 
@@ -63,7 +63,7 @@ class StatsLevelDetection {
     if (cnt() > 0) {
       float delta = abs(ave() - v);
 
-      if (delta > myConfig.getScaleMaxDeviationDecreaseValue()) {
+      if (delta > myConfig.getScaleDeviationDecreaseValue()) {
         Log.notice(
             F("LVL : Average statistics deviates too much from raw values "
               "%F, restarting stable level detection, ave=%F, cnt=%F [%d]." CR),
@@ -87,13 +87,13 @@ class StatsLevelDetection {
     // Check if the level has changed up or down. If its down we record the
     // delta as the latest pour.
     if (cnt() > myConfig.getScaleStableCount() && !isnan(_stable)) {
-      if ((_stable + myConfig.getScaleMaxDeviationIncreaseValue()) < ave()) {
+      if ((_stable + myConfig.getScaleDeviationIncreaseValue()) < ave()) {
         Log.notice(F("LVL : Level has increased, adjusting from %F to %F, "
                      "cnt=%F [%d]." CR),
                    _stable, ave(), cnt(), _idx);
         _stable = ave();
         _newStable = true;
-      } else if ((_stable - myConfig.getScaleMaxDeviationDecreaseValue()) >
+      } else if ((_stable - myConfig.getScaleDeviationDecreaseValue()) >
                  ave()) {
         Log.notice(F("LVL : Level has decreased, adjusting from %F to %F, "
                      "cnt=%F [%d]." CR),
