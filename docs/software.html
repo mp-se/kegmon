@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Hardware" href="hardware.html" /><link rel="prev" title="Welcome to KegMon - Keezer Level Monitor" href="index.html" />
 
     <meta name="generator" content="sphinx-4.3.2, furo 2022.01.02"/>
-        <title>Software - KegMon v0.4.0</title>
+        <title>Software - KegMon v0.5.0</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=df49af52631e7917044a9c21a57f7b83170a6dd0" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">KegMon v0.4.0</div></a>
+      <a href="index.html"><div class="brand">KegMon v0.5.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -149,7 +149,7 @@
     <img class="sidebar-logo" src="_static/kegmon_logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">KegMon v0.4.0</span>
+  <span class="sidebar-brand-text">KegMon v0.5.0</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -192,12 +192,29 @@
         <article role="main">
           <div class="section" id="software">
 <span id="id1"></span><h1>Software<a class="headerlink" href="#software" title="Permalink to this headline">¶</a></h1>
-<p>THe software is tailored towards my personal needs and external service
-that I use. The software has two interfaces, one via the OLED displays and
-one via the web-browser.</p>
-<p>The scale seams to be much more stable now that I added a kalman filter as the first step,
-this eliminates the big changes in values. It takes a few seconds for the level to stabilize but
-that’s not a big issue.</p>
+<p>THe software is tailored towards my personal needs and external services
+that I use, but suggestions are always welcome. The software has two interfaces,
+one via the OLED displays and one via the web-browser.</p>
+<p>The cheap load cells are quite unpredicteble so it’s hard to get a fully accurate system, but they are really
+cheap.</p>
+<p>In order to compensate for this I have build in the possibility to add filters and clean up the read values,
+these filters include:</p>
+<ul class="simple">
+<li><p>raw average (makes an average over the last 10 readings)</p></li>
+<li><p>kalman (smooths out the peaks readings, but slows down level detection)</p></li>
+<li><p>formula adjustment (this is not yet active, but its possible to add an equation to adjust the weight, for instance compensate for temperature)</p></li>
+</ul>
+<p>Here are two views on the data change over time, the temperature in my keezer is
+between 4 and 5 degress Celcius. My two scales behave diffrently even though the
+load cells are from the same batch. I would guess that the peak in the first graph is due to
+interference from the compressor when it starts to cool.</p>
+<a class="reference internal image-reference" href="_images/temp_variation.png"><img alt="Scale variation" src="_images/temp_variation.png" style="width: 400px;"/></a>
+<a class="reference internal image-reference" href="_images/temp_variation2.png"><img alt="temp_variation" src="_images/temp_variation2.png" style="width: 400px;"/></a>
+<p>Since the level will vary slightly based on the temperature (on my scale +0.04 to -0.01 kg), I have added a level detection algorithm
+that uses the average level over time and done adjust unless the delta is larger than the defined threasholds (can be defined).</p>
+<p>I have prepared for adding a temperature correction option but I’m still working defining a formula for that weight compensation.</p>
+<p>In order to trigger a level change then both the raw values and the kalman value needs to be aligned and the minium level change
+needed to detect a pour is by default set to 10 cl. It can take up to 60 seconds for a new level to be detected and a pour registered.</p>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>If there is an interest let me know and I will add the project to brewflasher for easier flashing.</p>
@@ -210,6 +227,7 @@ that’s not a big issue.</p>
 <h2>OLED Screens<a class="headerlink" href="#oled-screens" title="Permalink to this headline">¶</a></h2>
 <p>The OLD screens will show the name of the beer, abv and alternate between weight and pours. The first
 screen will display values for keg 1 and the second for keg 2.</p>
+<p>The values presented on the screen is the raw values so that you can see directly if the level changes.</p>
 </div>
 <div class="section" id="index">
 <h2>Index<a class="headerlink" href="#index" title="Permalink to this headline">¶</a></h2>
@@ -340,6 +358,8 @@ check the measured value. If you are satisfied then you are done.</p>
 <a class="reference internal image-reference" href="_images/stability.png"><img alt="Statistics" src="_images/stability.png" style="width: 600px;"/></a>
 <p>I have found that some of my hardware builds was not really stable so I added this
 feature to check the scale build before doing the final assembly.</p>
+<p>If you keep the browser open you can also see the history of the values (raw, kalman &amp; stable). This can help to show
+how your scale varies over time. Data is only stored in the browser so any refresh or page change will delete the graphs.</p>
 </div>
 <div class="section" id="firmware-update">
 <h2>Firmware update<a class="headerlink" href="#firmware-update" title="Permalink to this headline">¶</a></h2>
@@ -377,7 +397,7 @@ on your computer.</p>
         </div>
 
         <div class="related-information">
-              Copyright &#169; 2022, Magnus Persson |
+              Copyright &#169; 2022-23, Magnus Persson |
           Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
           <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
         </div>
