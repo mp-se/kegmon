@@ -27,7 +27,8 @@ SOFTWARE.
 #include <scale.hpp>
 #include <utils.hpp>
 
-void Brewspy::sendTapInformation(UnitIndex idx) {
+void Brewspy::sendTapInformation(UnitIndex idx, float stableVol,
+                                 float pourVol) {
   //
   // API: https://brew-spy.com/api/tap/keg/set
   // Descr: This method just sets all the keg related fields.
@@ -55,25 +56,23 @@ void Brewspy::sendTapInformation(UnitIndex idx) {
   doc["token"] = myConfig.getBrewspyToken(idx);
   doc["unit"] = "l";
   doc["kegVolume"] = myConfig.getKegVolume(idx);
-  doc["beerLeft"] = myScale.getBeerStableVolume(idx);
-  doc["pour"] = myScale.getPourVolume(idx);
-  Log.notice(F("BSPY: Sending TAP information to brewspy, last %Fl / %Fkg, "
+  doc["beerLeft"] = stableVol;
+  doc["pour"] = pourVol;
+  Log.notice(F("BSPY: Sending TAP information to brewspy, last %Fl, "
                "pour %Fl  [%d]" CR),
-             myScale.getBeerStableVolume(idx), myScale.getBeerStableWeight(idx),
-             myScale.getPourVolume(idx), idx);
-
+             stableVol, pourVol);
   String out;
   out.reserve(100);
   serializeJson(doc, out);
   doc.clear();
   // #if LOG_LEVEL == 6
-  Serial.print(out.c_str());
-  Serial.print(CR);
+  EspSerial.print(out.c_str());
+  EspSerial.print(CR);
   // #endif
   _push->sendHttpPost(out, "https://brew-spy.com/api/tap/keg/set", "", "");
 }
 
-void Brewspy::sendPourInformation(UnitIndex idx) {
+void Brewspy::sendPourInformation(UnitIndex idx, float pourVol) {
   // API: https://brew-spy.com/api/tap/keg/pour
   // Descr: Sets the last pour field and subtracts the volume from the beer left
   // field Payload:
@@ -88,17 +87,16 @@ void Brewspy::sendPourInformation(UnitIndex idx) {
 
   doc["token"] = myConfig.getBrewspyToken(idx);
   doc["unit"] = "l";
-  doc["pour"] = myScale.getPourVolume(idx);
+  doc["pour"] = pourVol;
   Log.notice(F("BSPY: Sending POUR information to brewspy, pour %Fl [%d]." CR),
-             myScale.getPourVolume(idx), idx);
-
+             pourVol, idx);
   String out;
   out.reserve(100);
   serializeJson(doc, out);
   doc.clear();
   // #if LOG_LEVEL == 6
-  Serial.print(out.c_str());
-  Serial.print(CR);
+  EspSerial.print(out.c_str());
+  EspSerial.print(CR);
   // #endif
   _push->sendHttpPost(out, "https://brew-spy.com/api/tap/keg/pour", "", "");
 }
@@ -122,8 +120,8 @@ void Brewspy::clearKegInformation(UnitIndex idx) {
   serializeJson(doc, out);
   doc.clear();
   // #if LOG_LEVEL == 6
-  Serial.print(out.c_str());
-  Serial.print(CR);
+  EspSerial.print(out.c_str());
+  EspSerial.print(CR);
   // #endif
   _push->sendHttpPost(out, "https://brew-spy.com/api/tap/keg/clear", "", "");
 }
@@ -155,8 +153,8 @@ String Brewspy::getTapInformation(const String& token) {
   String resp =
       _push->sendHttpGet(payload, url.c_str(), "Accept: application/json", "");
   // #if LOG_LEVEL == 6
-  Serial.print(resp.c_str());
-  Serial.print(CR);
+  EspSerial.print(resp.c_str());
+  EspSerial.print(CR);
   // #endif
   return resp;
 }

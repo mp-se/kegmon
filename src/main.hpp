@@ -40,14 +40,15 @@ SOFTWARE.
 #define PIN_SCALE1_SDA D3
 #define PIN_SCALE1_SCL D4
 #define PIN_SCALE2_SDA D5
-#if defined(HARDWARE_REV1)
-#define PIN_SCALE2_SCL D4
-#warning "Configured for hardware rev1"
-#else
 #define PIN_SCALE2_SCL D8
-#endif
 #define PIN_DH2 D7
+#define PIN_DH2_PWR D6
 
 enum UnitIndex { U1 = 0, U2 = 1 };
+/*
+ * RAW: Last value read
+ * STATS: Statistics applied and average value used over the last 20 seconds
+ */
+enum LevelDetectionType { RAW = 0, STATS = 1 };
 
 #endif  // SRC_MAIN_HPP_

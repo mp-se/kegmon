@@ -21,36 +21,30 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#ifndef SRC_KEGPUSH_HPP_
-#define SRC_KEGPUSH_HPP_
+#ifndef SRC_STABILITY_HPP_
+#define SRC_STABILITY_HPP_
 
-#include <basepush.hpp>
-#include <brewspy.hpp>
-#include <homeassist.hpp>
-#include <kegconfig.hpp>
+#include <Statistic.h>
 
-class KegPushHandler : public BasePush {
+class Stability {
  private:
-  Brewspy* _brewspy = NULL;
-  HomeAssist* _ha = NULL;
+  statistic::Statistic<float, uint32_t, true> _stability;
 
+  // For viewing the stability of the scale over time. Uses raw / unfiltered
+  // values.
  public:
-  explicit KegPushHandler(KegConfig* config) : BasePush(config) {
-    _brewspy = new Brewspy(this);
-    _ha = new HomeAssist(this);
-  }
-
-  String requestTapInfoFromBrewspy(String& token) {
-    return _brewspy->getTapInformation(token);
-  }
-
-  void pushPourInformation(UnitIndex idx, float pourVol);
-  void pushKegInformation(UnitIndex idx, float stableVol, float pourVol,
-                          float glasses);
+  void clear() { _stability.clear(); }
+  void add(float v) { _stability.add(v); }
+  float sum() { return _stability.sum(); }
+  float min() { return _stability.minimum(); }
+  float max() { return _stability.maximum(); }
+  float average() { return _stability.average(); }
+  float variance() { return _stability.variance(); }
+  float popStdev() { return _stability.pop_stdev(); }
+  float unbiasedStdev() { return _stability.unbiased_stdev(); }
+  uint32_t count() { return _stability.count(); }
 };
 
-extern KegPushHandler myPush;
-
-#endif  // SRC_KEGPUSH_HPP_
+#endif  // SRC_STABILITY_HPP_
 
 // EOF

@@ -25,142 +25,96 @@ SOFTWARE.
 #define SRC_LEVELS_HPP_
 
 #include <Arduino.h>
-#include <SimpleKalmanFilter.h>
-#include <Statistic.h>
 
 #include <kegconfig.hpp>
+#include <levelraw.hpp>
+#include <levelstatistic.hpp>
+#include <stability.hpp>
+#include <weightvolume.hpp>
 
-class Stability {
+#define LEVELS_FILENAME "levels.log"
+#define LEVELS_FILENAME2 "levels2.log"
+#define LEVELS_FILEMAXSIZE 2000
+
+class LevelDetection {
  private:
-  statistic::Statistic<float, uint32_t, true> _stability;
+  Stability _stability[2];
+  RawLevelDetection* _rawLevel[2] = {0, 0};
+  StatsLevelDetection* _statsLevel[2] = {0, 0};
 
-  // For viewing the stability of the scale over time. Uses raw / unfiltered
-  // values.
- public:
-  void clear() { _stability.clear(); }
-  void add(float v) { _stability.add(v); }
-  float sum() { return _stability.sum(); }
-  float min() { return _stability.minimum(); }
-  float max() { return _stability.maximum(); }
-  float average() { return _stability.average(); }
-  float variance() { return _stability.variance(); }
-  float popStdev() { return _stability.pop_stdev(); }
-  float unbiasedStdev() { return _stability.unbiased_stdev(); }
-  uint32_t count() { return _stability.count(); }
-};
+  LevelDetection(const LevelDetection&) = delete;
+  void operator=(const LevelDetection&) = delete;
 
-class RawLevelDetection {
- private:
-  static const int _cnt = 8;
-  static const int _validCnt = 3;
-  float _history[_cnt];
-  float _last = NAN;
-
-  // Stores the last n raw values to smooth out any faulty readings. Can be used
-  // as a baseline/reference for other level detection methods.
- public:
-  RawLevelDetection() { clear(); }
-
-  bool hasValue() { return count() >= _validCnt ? true : false; }
-  float getLastValue() { return _last; }
-  float getValue() { return average(); }
-  void clear() {
-    for (int i = 0; i < _cnt; i++) _history[i] = NAN;
-
-    _last = NAN;
-  }
-  void add(float v) {
-    for (int i = _cnt - 1; i > 0; i--) _history[i] = _history[i - 1];
-    _history[0] = v;
-    _last = v;
-  }
-  float sum() {
-    float sum = 0;
-    for (int i = 0; i < _cnt; i++)
-      if (!isnan(_history[i])) sum += _history[i];
-    return sum;
-  }
-  float average() {
-    int cnt = count();
-    if (cnt == 0) return NAN;
-    return sum() / cnt;
-  }
-  int count() {
-    float cnt = 0;
-    for (int i = 0; i < _cnt; i++)
-      if (!isnan(_history[i])) cnt += 1;
-    return cnt;
-  }
-};
-
-#if defined ENABLE_KALMAN_LEVEL
-class KalmanLevelDetection {
- private:
-  UnitIndex _idx;
-  SimpleKalmanFilter *_filter;
-  float _baseline = NAN;
-  float _raw = NAN;
-  float _value = NAN;
-
-  KalmanLevelDetection(const KalmanLevelDetection &) = delete;
-  void operator=(const KalmanLevelDetection &) = delete;
-
-  void checkForRefDeviation(float ref);
-
-  // Kalman filter implentation, helps to smooth out sudden changes in
-  // measurements, however it takes time to react to changes.
- public:
-  explicit KalmanLevelDetection(UnitIndex idx) {
-    _idx = idx;
-    _filter = new SimpleKalmanFilter(1, 1, 0.01);
-  }
-
-  bool hasValue() { return !isnan(_value); }
-
-  float getBaselineValue() { return _baseline; }
-  float getRawValue() { return _raw; }
-  float getValue() { return _value; }
-
-  float processValue(float v, float ref);
-};
-#endif
-
-class StatsLevelDetection {
- private:
-  UnitIndex _idx;
-  statistic::Statistic<float, uint32_t, true> _statistic;
-  float _stable = NAN;
-  float _pour = NAN;
-
-  StatsLevelDetection(const StatsLevelDetection &) = delete;
-  void operator=(const StatsLevelDetection &) = delete;
-
-  void checkForMaxDeviation(float ref);
-  void checkForStable(float ref);
-  void checkForLevelChange(float ref);
-  // void checkForRefDeviation(float ref);
-
-  // Implementation of statistics for determine a stable level and also pour
-  // detection.
+  void logLevels(float kegVolume1, float kegVolume2, float pourVolume1,
+                 float pourVolume2);
+  void pushKegUpdate(UnitIndex idx, float stableVol, float pourVol,
+                     float glasses);
+  void pushPourUpdate(UnitIndex idx, float stableVol, float pourVol);
 
  public:
-  explicit StatsLevelDetection(UnitIndex idx) { _idx = idx; }
+  LevelDetection();
+  void update(UnitIndex idx, float raw, float temp);
 
-  bool hasStableValue() { return !isnan(_stable); }
-  bool hasPourValue() { return !isnan(_pour); }
+  Stability* getStability(UnitIndex idx) { return &_stability[idx]; }
+  RawLevelDetection* getRawDetection(UnitIndex idx) { return _rawLevel[idx]; }
+  StatsLevelDetection* getStatsDetection(UnitIndex idx) {
+    return _statsLevel[idx];
+  }
 
-  float getStableValue() { return _stable; }
-  float getPourValue() { return _pour; }
+  // Return values based on the chosen algoritm
+  bool hasStableWeight(UnitIndex idx,
+                       LevelDetectionType type = myConfig.getLevelDetection());
+  bool hasPourWeight(UnitIndex idx,
+                     LevelDetectionType type = myConfig.getLevelDetection());
 
-  void clear() { _statistic.clear(); }
+  float getBeerWeight(UnitIndex idx,
+                      LevelDetectionType type = myConfig.getLevelDetection());
+  float getBeerStableWeight(
+      UnitIndex idx, LevelDetectionType type = myConfig.getLevelDetection());
+  float getPourWeight(UnitIndex idx,
+                      LevelDetectionType type = myConfig.getLevelDetection());
 
-  float min() { return _statistic.minimum(); }
-  float max() { return _statistic.maximum(); }
-  float ave() { return _statistic.average(); }
-  float cnt() { return _statistic.count(); }
+  float getTotalWeight(UnitIndex idx,
+                       LevelDetectionType type = myConfig.getLevelDetection());
+  float getTotalStableWeight(
+      UnitIndex idx, LevelDetectionType type = myConfig.getLevelDetection());
 
-  float processValue(float v, float ref);
+  // Return the raw data (last value from scale)
+  float getTotalRawWeight(UnitIndex idx);
+
+  // Returns weights in liters
+  float getBeerVolume(UnitIndex idx,
+                      LevelDetectionType type = myConfig.getLevelDetection()) {
+    WeightVolumeConverter conv(idx);
+    return conv.weightToVolume(getBeerWeight(idx, type));
+  }
+
+  float getBeerStableVolume(
+      UnitIndex idx, LevelDetectionType type = myConfig.getLevelDetection()) {
+    WeightVolumeConverter conv(idx);
+    return conv.weightToVolume(getBeerStableWeight(idx, type));
+  }
+
+  float getPourVolume(UnitIndex idx,
+                      LevelDetectionType type = myConfig.getLevelDetection()) {
+    WeightVolumeConverter conv(idx);
+    return conv.weightToVolume(getPourWeight(idx, type));
+  }
+
+  float getNoGlasses(UnitIndex idx,
+                     LevelDetectionType type = myConfig.getLevelDetection()) {
+    WeightVolumeConverter conv(idx);
+    return conv.weightToGlasses(getBeerWeight(idx, type));
+  }
+
+  float getNoStableGlasses(
+      UnitIndex idx, LevelDetectionType type = myConfig.getLevelDetection()) {
+    WeightVolumeConverter conv(idx);
+    return conv.weightToGlasses(getBeerStableWeight(idx, type));
+  }
 };
+
+extern LevelDetection myLevelDetection;
 
 #endif  // SRC_LEVELS_HPP_
 

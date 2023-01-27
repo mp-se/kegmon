@@ -21,162 +21,244 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
+#include <kegpush.hpp>
 #include <levels.hpp>
+#include <perf.hpp>
 #include <scale.hpp>
+#include <temp.hpp>
 
-void StatsLevelDetection::checkForMaxDeviation(float ref) {
-  if (cnt() > 0) {
-    float delta = abs(ave() - ref);
+// Used for introduce noise on the signal to see if it accurate enough
+// #define ENABLE_ADDING_NOISE
 
-    if (delta > myConfig.getScaleMaxDeviationValue()) {
-      Log.notice(F("SCAL: Average statistics deviates too much from raw values "
-                   "%F, restarting stable level detection [%d]." CR),
-                 delta, _idx);
-      clear();
-    }
-  }
-
-  /*
-  // Check if the min/max are too far apart, then level has changed to much so
-  // the value is no longer stable.
-  if (cnt() > 0) {
-    if ((max() - myConfig.getScaleMaxDeviationValue()) > ave() &&
-        (min() + myConfig.getScaleMaxDeviationValue()) < ave()) {
-      Log.notice(
-          F("SCAL: Min/Max values deviates to much from average, restarting "
-            "statistics %F-%F-%F [%d]." CR),
-          min(), ave(), max(), _idx);
-      clear();
-    }
-  }
-  */
-}
-
-void StatsLevelDetection::checkForLevelChange(float ref) {
-  // Check if the level has changed up or down. If its down we record the delta
-  // as the latest pour.
-  if (cnt() > myConfig.getScaleStableCount() && hasStableValue()) {
-    if ((_stable + myConfig.getScaleMaxDeviationValue()) < ave()) {
-      Log.notice(
-          F("SCAL: Level has increased, adjusting from %F to %F [%d]." CR),
-          _stable, ave(), _idx);
-      _stable = ave();
-
-      myScale.pushKegUpdate(_idx);
-
-    } else if ((_stable - myConfig.getScaleMaxDeviationValue()) > ave()) {
-      Log.notice(
-          F("SCAL: Level has decreased, adjusting from %F to %F [%d]." CR),
-          _stable, ave(), _idx);
-
-      float p = _stable - ave();
-      _stable = ave();
-
-      // Check if the keg was removed so we dont register a too large pour
-      if ((_stable - myConfig.getKegWeight(_idx)) < 0) {
-        _pour -= myConfig.getKegWeight(_idx);
-        if (p > 0.0) {
-          _pour = p;
-          Log.notice(F("SCAL: Keg removed and beer has been poured volume %F "
-                       "[%d]." CR),
-                     _pour, _idx);
-        }
-      } else {
-        _pour = p;
-        Log.notice(F("SCAL: Beer has been poured volume %F [%d]." CR), _pour,
-                   _idx);
-      }
-
-      // Notify registered endpoints and save to log
-      myScale.pushPourUpdate(_idx);
-    }
-  }
-}
-
-void StatsLevelDetection::checkForStable(float ref) {
-  if (cnt() > myConfig.getScaleStableCount() && !hasStableValue()) {
-    _stable = ave();
-    Log.notice(F("SCAL: Found a new stable value %F [%d]." CR),
-               getStableValue(), _idx);
-    myScale.pushKegUpdate(_idx);
-  }
-
-  /*
-  const float maxRefDifferenceStable = 0.1;  // kg
-
-  // If we have enough values and last stable level if its NAN, then update the
-  // lastStable value
-  if (cnt() > myConfig.getScaleStableCount() && !hasStableValue()) {
-    float delta = abs(ave() - ref);
-
-    if (delta > maxRefDifferenceStable) {
-      Log.notice(F("SCAL: The proposed stable value differs to much from raw "
-                   "ref %F restarting stats [%d]." CR),
-                 delta, _idx);
-      clear();
-    } else {
-      _stable = ave();
-      Log.notice(F("SCAL: Found a new stable value %F [%d]." CR),
-                 getStableValue(), _idx);
-
-      myScale.pushKegUpdate(_idx);
-    }
-  }
-  */
-}
-
-/*void StatsLevelDetection::checkForRefDeviation(float ref) {
-  const float maxRefDifference = 0.6;  // kg
-
-  if (cnt()) {
-    if ((ave() + maxRefDifference) < ref) {
-      Log.notice(
-          F("SCAL: Level has jumped, from %F to %F restarting stats [%d]." CR),
-          ave(), ref, _idx);
-      clear();
-    } else if ((ave() - maxRefDifference) > ref) {
-      Log.notice(
-          F("SCAL: Level has jumped from %F to %F restarting stats [%d]." CR),
-          ave(), ref, _idx);
-
-      clear();
-    }
-  }
-}*/
-
-float StatsLevelDetection::processValue(float v, float ref) {
-  // checkForRefDeviation(ref);
-  _statistic.add(v);
-  checkForMaxDeviation(ref);
-  checkForStable(ref);
-  checkForLevelChange(ref);
-#if LOG_DEBUG == 6
-  Log.verbose(F("SCAL: Update statistics filter value %F ave %F min %F max %F "
-                "[%d]." CR),
-              v, ave(), min(), max(), _idx);
+LevelDetection::LevelDetection() {
+  _rawLevel[0] = new RawLevelDetection(UnitIndex::U1, 0.001, 0.001, 0.001, "");
+  _rawLevel[1] = new RawLevelDetection(UnitIndex::U2, 0.001, 0.001, 0.001, "");
+  // _rawLevel[0] = new RawLevelDetection(UnitIndex::U1, 0.01, 0.01, 0.001,
+  // "weight-(tempC-4)*0.02"); _rawLevel[1] = new
+  // RawLevelDetection(UnitIndex::U2, 0.01, 0.01, 0.001,
+  // "weight-(tempC-4)*0.02"); _rawLevel[0] = new
+  // RawLevelDetection(UnitIndex::U1, 0.001, 0.001, 0.001,
+  // "weight*(1-0.0002*(20-tempC))"); _rawLevel[1] = new
+  // RawLevelDetection(UnitIndex::U2, 0.001, 0.001, 0.001,
+  // "weight*(1-0.0002*(20-tempC))");
+  _statsLevel[0] = new StatsLevelDetection(UnitIndex::U1);
+  _statsLevel[1] = new StatsLevelDetection(UnitIndex::U2);
+#if defined(ENABLE_ADDING_NOISE)
+  randomSeed(12345L);
 #endif
-  return ave();
 }
 
-#if defined ENABLE_KALMAN_LEVEL
-float KalmanLevelDetection::processValue(float v, float ref) {
-  _raw = v;
-  if (isnan(_baseline)) {
-    _baseline = v;
-    return v;
+// getRawValue() * (1.0 - coeff * (20.0-t));
+
+void LevelDetection::update(UnitIndex idx, float raw, float temp) {
+  if (isnan(raw)) {
+    Log.notice(F("LVL : No valid value read [%d]." CR), idx);
+    return;
   }
-  _value = _filter->updateEstimate(v);
 
-#if LOG_DEBUG == 6
-  Log.verbose(F("SCAL: Update kalman filter base %F value %F [%d]." CR),
-              _baseline, _value, _idx);
+#if defined(ENABLE_ADDING_NOISE)
+  float max = raw;
+  float err = random(-max, max);
+  Log.notice(F("LVL : raw=%F, err=%F [%d]." CR), raw, err / 10, idx);
+  // raw += err/5; // 20%
+  // raw += err/10; // 10%
+  raw += err / 20;  // 5%
 #endif
-  return _value;
+
+  _stability[idx].add(raw);
+
+  PERF_BEGIN("level-filter-raw");
+  _rawLevel[idx]->add(raw, temp);
+  float average = _rawLevel[idx]->getAverageValue();
+  float tempCorr = _rawLevel[idx]->getTempCorrValue();
+  float slope = _rawLevel[idx]->getSlopeValue();
+  PERF_END("level-filter-raw");
+
+  PERF_BEGIN("level-filter-stats");
+  float stats = getStatsDetection(idx)->processValue(
+      raw, getRawDetection(idx)->getKalmanValue());
+
+  if (getStatsDetection(idx)->newPourValue())
+    pushPourUpdate(idx, getBeerStableVolume(idx), getPourVolume(idx));
+
+  if (getStatsDetection(idx)->newStableValue())
+    pushKegUpdate(idx, getBeerStableVolume(idx), getPourVolume(idx),
+                  getNoStableGlasses(idx));
+  PERF_END("level-filter-stats");
+
+  Log.verbose(F("LVL : raw=%F, ave=%F, temp=%F, stat=%F, slope=%F [%d]." CR),
+              raw, average, tempCorr, stats, slope, idx);
 }
 
-void KalmanLevelDetection::checkForRefDeviation(float ref) {
-  // for future reference
+void LevelDetection::pushKegUpdate(UnitIndex idx, float stableVol,
+                                   float pourVol, float glasses) {
+  myPush.pushKegInformation(idx, stableVol, pourVol, glasses);
+  // Log.notice(F("LEVL: New level found: vol=%F, pour=%F [%d]." CR), stableVol,
+  // pourVol, idx);
+
+  switch (idx) {
+    case UnitIndex::U1:
+      logLevels(stableVol, NAN, NAN, NAN);
+      break;
+
+    case UnitIndex::U2:
+      logLevels(NAN, stableVol, NAN, NAN);
+      break;
+  }
 }
-#endif
+
+void LevelDetection::pushPourUpdate(UnitIndex idx, float stableVol,
+                                    float pourVol) {
+  myPush.pushPourInformation(idx, pourVol);
+  // Log.notice(F("LEVL: New pour found: vol=%F, pour=%F [%d]." CR), stableVol,
+  // pourVol, idx);
+
+  switch (idx) {
+    case UnitIndex::U1:
+      logLevels(stableVol, NAN, pourVol, NAN);
+      break;
+
+    case UnitIndex::U2:
+      logLevels(NAN, stableVol, NAN, pourVol);
+      break;
+  }
+}
+
+void LevelDetection::logLevels(float kegVolume1, float kegVolume2,
+                               float pourVolume1, float pourVolume2) {
+  struct tm timeinfo;
+  time_t now = time(nullptr);
+  char s[100];
+  gmtime_r(&now, &timeinfo);
+  snprintf(&s[0], sizeof(s), "%04d-%02d-%02d %02d:%02d:%02d;%f;%f;%f;%f\n",
+           1900 + timeinfo.tm_year, timeinfo.tm_mon, timeinfo.tm_mday,
+           timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec,
+           kegVolume1 < 0 ? 0 : kegVolume1, kegVolume2 < 0 ? 0 : kegVolume2,
+           pourVolume1 < 0 ? 0 : pourVolume1,
+           pourVolume2 < 0 ? 0 : pourVolume2);
+
+  Log.notice(F("LVL : Logging level change %s"), &s[0]);
+
+  File f = LittleFS.open(LEVELS_FILENAME, "a");
+
+  if (f && f.size() > LEVELS_FILEMAXSIZE) {
+    f.close();
+    LittleFS.remove(LEVELS_FILENAME2);
+    LittleFS.rename(LEVELS_FILENAME, LEVELS_FILENAME2);
+    f = LittleFS.open(LEVELS_FILENAME, "a");
+  }
+
+  if (f) {
+    f.write(&s[0], strlen(&s[0]));
+    f.close();
+  }
+}
+
+bool LevelDetection::hasStableWeight(UnitIndex idx, LevelDetectionType type) {
+  bool f = false;
+
+  switch (type) {
+    case LevelDetectionType::RAW:
+      f = true;
+      break;
+    case LevelDetectionType::STATS:
+      f = getStatsDetection(idx)->hasStableValue();
+      break;
+  }
+
+  // Log.notice(F("LVL : StableWeight %s [%d]" CR), f ? "true" : "false", idx);
+  return f;
+}
+
+bool LevelDetection::hasPourWeight(UnitIndex idx, LevelDetectionType type) {
+  bool f = false;
+
+  switch (type) {
+    case LevelDetectionType::RAW:
+      f = false;
+      break;
+    case LevelDetectionType::STATS:
+      f = getStatsDetection(idx)->hasStableValue();
+      break;
+  }
+
+  // Log.notice(F("LVL : PourWeight %s [%d]" CR), f ? "true" : "false", idx);
+  return f;
+}
+
+float LevelDetection::getBeerWeight(UnitIndex idx, LevelDetectionType type) {
+  float w = getTotalWeight(idx, type);
+  // Log.notice(F("LVL : BeerWeight %F [%d]" CR), w, idx);
+
+  if (!isnan(w)) {
+    return w - myConfig.getKegWeight(idx);
+  }
+
+  return NAN;
+}
+
+float LevelDetection::getBeerStableWeight(UnitIndex idx,
+                                          LevelDetectionType type) {
+  float w = getTotalStableWeight(idx, type);
+  // Log.notice(F("LVL : TotalStableWeight %F [%d]" CR), w, idx);
+
+  if (!isnan(w)) {
+    return w - myConfig.getKegWeight(idx);
+  }
+
+  return NAN;
+}
+
+float LevelDetection::getPourWeight(UnitIndex idx, LevelDetectionType type) {
+  float w = NAN;
+
+  switch (type) {
+    case LevelDetectionType::RAW:
+      break;
+    case LevelDetectionType::STATS:
+      w = getStatsDetection(idx)->getPourValue();
+      break;
+  }
+
+  // Log.notice(F("LVL : PourWeight %F [%d]" CR), w, idx);
+  return w;
+}
+
+float LevelDetection::getTotalRawWeight(UnitIndex idx) {
+  return getRawDetection(idx)->getRawValue();
+}
+
+float LevelDetection::getTotalWeight(UnitIndex idx, LevelDetectionType type) {
+  float w = NAN;
+
+  switch (type) {
+    case LevelDetectionType::RAW:
+      w = getRawDetection(idx)->getRawValue();
+      break;
+    case LevelDetectionType::STATS:
+      w = getStatsDetection(idx)->getValue();
+      break;
+  }
+
+  // Log.notice(F("LVL : TotalWeight %F [%d]" CR), w, idx);
+  return w;
+}
+
+float LevelDetection::getTotalStableWeight(UnitIndex idx,
+                                           LevelDetectionType type) {
+  float w = NAN;
+
+  switch (type) {
+    case LevelDetectionType::RAW:
+      w = getRawDetection(idx)->getRawValue();
+      break;
+    case LevelDetectionType::STATS:
+      w = getStatsDetection(idx)->getStableValue();
+      break;
+  }
+
+  // Log.notice(F("LVL : TotalStableWeight %F [%d]" CR), w, idx);
+  return w;
+}
 
 // EOF

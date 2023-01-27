@@ -10,6 +10,10 @@
   "brewfather-apikey": "2kew78WzUbjY2Zt0Adsfi0S4FJsCh3FVLZusfaBXYbFYHNG",
   "brewspy-token1": "token1",
   "brewspy-token2": "token2",
+  "mqtt-target": "mqtt",
+  "mqtt-port": 1138,
+  "mqtt-user": "user",
+  "mqtt-pass": "pass",
   "beer-name1": "beer A",
   "beer-name2": "beer B",
   "beer-fg1": 1.014,
@@ -34,8 +38,14 @@
   "scale-factor2": -21284.12,
   "scale-offset1": -286557,
   "scale-offset2": -286557,
-  "scale-max-deviation": 0.1,
+  "scale-deviation-increase": 0.5,
+  "scale-deviation-decrease": 0.1,
+  "scale-deviation-kalman": 0.04,
   "scale-stable-count": 10,
   "scale-read-count": 10,
-  "scale-read-count-calibration": 30
+  "scale-read-count-calibration": 30,
+  "kalman-active": false,
+  "kalman-measurement": 2.0,
+  "kalman-estimation": 3.0,
+  "kalman-noise": 0.03
 }

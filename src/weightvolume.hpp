@@ -21,36 +21,38 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#ifndef SRC_KEGPUSH_HPP_
-#define SRC_KEGPUSH_HPP_
+#ifndef SRC_WEIGHTVOLUME_HPP_
+#define SRC_WEIGHTVOLUME_HPP_
 
-#include <basepush.hpp>
-#include <brewspy.hpp>
-#include <homeassist.hpp>
 #include <kegconfig.hpp>
 
-class KegPushHandler : public BasePush {
+// Note! Internally we assume that everything are in Metric formats, weights=Kg
+// and all volumes=Liters.
+class WeightVolumeConverter {
  private:
-  Brewspy* _brewspy = NULL;
-  HomeAssist* _ha = NULL;
+  float _fg;
+  UnitIndex _idx;
 
  public:
-  explicit KegPushHandler(KegConfig* config) : BasePush(config) {
-    _brewspy = new Brewspy(this);
-    _ha = new HomeAssist(this);
+  explicit WeightVolumeConverter(UnitIndex idx) {
+    _idx = idx;
+    _fg = myConfig.getBeerFG(idx);
+    if (_fg < 1) _fg = 1;
   }
 
-  String requestTapInfoFromBrewspy(String& token) {
-    return _brewspy->getTapInformation(token);
+  float weightToVolume(float kg) {
+    float liter = isnan(kg) || kg == 0 ? 0 : kg / _fg;
+    return liter;
   }
 
-  void pushPourInformation(UnitIndex idx, float pourVol);
-  void pushKegInformation(UnitIndex idx, float stableVol, float pourVol,
-                          float glasses);
+  float weightToGlasses(float kg) {
+    float glassVol = myConfig.getGlassVolume(_idx);
+    float glassWeight = glassVol * _fg;
+    float glass = kg / glassWeight;
+    return glass < 0 ? 0 : glass;
+  }
 };
 
-extern KegPushHandler myPush;
-
-#endif  // SRC_KEGPUSH_HPP_
+#endif  // SRC_WEIGHTVOLUME_HPP_
 
 // EOF

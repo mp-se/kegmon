@@ -21,36 +21,23 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#ifndef SRC_KEGPUSH_HPP_
-#define SRC_KEGPUSH_HPP_
+#ifndef SRC_HOMEASSIST_HPP_
+#define SRC_HOMEASSIST_HPP_
 
 #include <basepush.hpp>
-#include <brewspy.hpp>
-#include <homeassist.hpp>
-#include <kegconfig.hpp>
+#include <main.hpp>
 
-class KegPushHandler : public BasePush {
- private:
-  Brewspy* _brewspy = NULL;
-  HomeAssist* _ha = NULL;
+class HomeAssist {
+ protected:
+  BasePush *_push;
 
  public:
-  explicit KegPushHandler(KegConfig* config) : BasePush(config) {
-    _brewspy = new Brewspy(this);
-    _ha = new HomeAssist(this);
-  }
+  explicit HomeAssist(BasePush *push) { _push = push; }
 
-  String requestTapInfoFromBrewspy(String& token) {
-    return _brewspy->getTapInformation(token);
-  }
-
-  void pushPourInformation(UnitIndex idx, float pourVol);
-  void pushKegInformation(UnitIndex idx, float stableVol, float pourVol,
-                          float glasses);
+  void sendTapInformation(UnitIndex idx, float stableVol, float glasses);
+  void sendPourInformation(UnitIndex idx, float pourVol);
 };
 
-extern KegPushHandler myPush;
-
-#endif  // SRC_KEGPUSH_HPP_
+#endif  // SRC_HOMEASSIST_HPP_
 
 // EOF

@@ -54,9 +54,17 @@ SOFTWARE.
 #define PARAM_SCALE_FACTOR2 "scale-factor2"
 #define PARAM_SCALE_OFFSET1 "scale-offset1"
 #define PARAM_SCALE_OFFSET2 "scale-offset2"
-#define PARAM_SCALE_MAX_DEVIATION "scale-max-deviation"
+#define PARAM_SCALE_DEVIATION_INCREASE "scale-deviation-increase"
+#define PARAM_SCALE_DEVIATION_DECREASE "scale-deviation-decrease"
+#define PARAM_SCALE_DEVIATION_KALMAN "scale-deviation-kalman"
 #define PARAM_SCALE_READ_COUNT "scale-read-count"
 #define PARAM_SCALE_READ_COUNT_CALIBRATION "scale-read-count-calibration"
+#define PARAM_SCALE_STABLE_COUNT "scale-stable-count"
+#define PARAM_LEVEL_DETECTION "level-detection"
+#define PARAM_KALMAN_NOISE "kalman-noise"
+#define PARAM_KALMAN_MEASUREMENT "kalman-measurement"
+#define PARAM_KALMAN_ESTIMATION "kalman-estimation"
+#define PARAM_KALMAN_ACTIVE "kalman-active"
 
 struct BeerInfo {
   String _name = "";
@@ -100,10 +108,21 @@ class KegConfig : public BaseConfig {
   float _glassVolume[2] = {0.40, 0.40};  // Volume in liters
   BeerInfo _beer[2];
 
-  float _scaleMaxDeviationValue = 0.1;
-  uint32_t _scaleStableCount = 6;
-  int _scaleReadCount = 4;
+  float _scaleDeviationIncreaseValue = 0.4;  // kg
+  float _scaleDeviationDecreaseValue = 0.1;  // kg
+  float _scaleKalmanDeviation = 0.05;
+  uint32_t _scaleStableCount = 8;
+  int _scaleReadCount = 3;
   int _scaleReadCountCalibration = 30;
+
+  LevelDetectionType _levelDetection = LevelDetectionType::STATS;
+
+  /*
+  bool _kalmanActive = true;
+  float _kalmanMeasurement = 0.3;
+  float _kalmanEstimation = 2;
+  float _kalmanNoise = 0.01;
+  */
 
  public:
   KegConfig(String baseMDNS, String fileName);
@@ -212,18 +231,38 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }
 
-  // This is the maximum allowed deviation from the current average.
-  float getScaleMaxDeviationValue() {
-    return _scaleMaxDeviationValue;
+  // This is the maximum allowed deviation
+  float getScaleDeviationDecreaseValue() {
+    return _scaleDeviationDecreaseValue;
   }  // 0.1 kg
-  void setScaleMaxDeviationValue(float f) {
-    _scaleMaxDeviationValue = f;
+  void setScaleDeviationDecreaseValue(float f) {
+    _scaleDeviationDecreaseValue = f;
+    _saveNeeded = true;
+  }
+
+  float getScaleDeviationIncreaseValue() {
+    return _scaleDeviationIncreaseValue;
+  }  // 0.1 kg
+  void setScaleDeviationIncreaseValue(float f) {
+    _scaleDeviationIncreaseValue = f;
+    _saveNeeded = true;
+  }
+
+  // This is the maximum allowed deviation between kalman and raw value for
+  // level checking to work.
+  float getScaleKalmanDeviationValue() { return _scaleKalmanDeviation; }
+  void setScaleKalmanDeviationValue(float f) {
+    _scaleKalmanDeviation = f;
     _saveNeeded = true;
   }
 
   // This is the number of values in the statistics for the average value to be
   // classifed as stable. Loop interval is 2s
   uint32_t getScaleStableCount() { return _scaleStableCount; }
+  void setScaleStableCount(uint32_t i) {
+    _scaleStableCount = i;
+    _saveNeeded = true;
+  }
 
   int getScaleReadCount() { return _scaleReadCount; }
   void setScaleReadCount(uint32_t i) {
@@ -236,6 +275,40 @@ class KegConfig : public BaseConfig {
     _scaleReadCountCalibration = i;
     _saveNeeded = true;
   }
+
+  LevelDetectionType getLevelDetection() { return _levelDetection; }
+  int getLevelDetectionAsInt() { return _levelDetection; }
+  /*void setLevelDetection(LevelDetectionType l) {
+    _levelDetection = l;
+    _saveNeeded = true;
+  }
+  void setLevelDetection(int l) {
+    _levelDetection = (LevelDetectionType)l;
+    _saveNeeded = true;
+  }*/
+
+  /*
+  float getKalmanEstimation() { return _kalmanEstimation; }
+  void setKalmanEstimation(float f) {
+    _kalmanEstimation = f;
+    _saveNeeded = true;
+  }
+  float getKalmanMeasurement() { return _kalmanMeasurement; }
+  void setKalmanMeasurement(float f) {
+    _kalmanMeasurement = f;
+    _saveNeeded = true;
+  }
+  float getKalmanNoise() { return _kalmanNoise; }
+  void setKalmanNoise(float f) {
+    _kalmanNoise = f;
+    _saveNeeded = true;
+  }
+  bool isKalmanActive() { return _kalmanActive; }
+  void setKalmanActive(bool b) {
+    _kalmanActive = b;
+    _saveNeeded = true;
+  }
+  */
 
   // These settings are used for debugging and checking stability of the scales.
   // Only influx is used for now
@@ -261,15 +334,6 @@ class KegConfig : public BaseConfig {
   void setBucketInfluxDB2(String bucket) {}
   const char* getTokenInfluxDB2() { return ""; }
   void setTokenInfluxDB2(String token) {}
-
-  const char* getTargetMqtt() { return ""; }
-  void setTargetMqtt(String target) {}
-  int getPortMqtt() { return 0; }
-  void setPortMqtt(int port) {}
-  const char* getUserMqtt() { return ""; }
-  void setUserMqtt(String user) {}
-  const char* getPassMqtt() { return ""; }
-  void setPassMqtt(String pass) {}
 
   // These are helper function to assist with formatting of values
   int getWeightPrecision() { return 2; }  // 2 decimans for kg

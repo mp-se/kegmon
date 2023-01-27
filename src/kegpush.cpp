@@ -26,12 +26,15 @@ SOFTWARE.
 #include <scale.hpp>
 #include <utils.hpp>
 
-void KegPushHandler::pushPourInformation(UnitIndex idx) {
-  _brewspy->sendPourInformation(idx);
+void KegPushHandler::pushPourInformation(UnitIndex idx, float pourVol) {
+  _brewspy->sendPourInformation(idx, pourVol);
+  _ha->sendPourInformation(idx, pourVol);
 }
 
-void KegPushHandler::pushKegInformation(UnitIndex idx) {
-  _brewspy->sendTapInformation(idx);
+void KegPushHandler::pushKegInformation(UnitIndex idx, float stableVol,
+                                        float pourVol, float glasses) {
+  _brewspy->sendTapInformation(idx, stableVol, pourVol);
+  _ha->sendTapInformation(idx, stableVol, glasses);
 }
 
 // EOF

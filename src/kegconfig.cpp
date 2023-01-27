@@ -34,12 +34,14 @@ void KegConfig::createJson(DynamicJsonDocument& doc, bool skipSecrets) {
   createJsonBase(doc, skipSecrets);
   createJsonWifi(doc, skipSecrets);
   createJsonOta(doc, skipSecrets);
+  createJsonPush(doc, skipSecrets);
 
   // Handle project specific config
   doc[PARAM_WEIGHT_UNIT] = getWeightUnit();
   doc[PARAM_VOLUME_UNIT] = getVolumeUnit();
 
   doc[PARAM_DISPLAY_LAYOUT] = getDisplayLayoutAsInt();
+  // doc[PARAM_LEVEL_DETECTION] = getLevelDetectionAsInt();
 
   doc[PARAM_BREWFATHER_APIKEY] = getBrewfatherApiKey();
   doc[PARAM_BREWFATHER_USERKEY] = getBrewfatherUserKey();
@@ -73,9 +75,19 @@ void KegConfig::createJson(DynamicJsonDocument& doc, bool skipSecrets) {
   doc[PARAM_BEER_EBC2] = getBeerEBC(1);
   doc[PARAM_BEER_IBU2] = getBeerIBU(1);
 
-  doc[PARAM_SCALE_MAX_DEVIATION] = getScaleMaxDeviationValue();
+  doc[PARAM_SCALE_DEVIATION_INCREASE] = getScaleDeviationIncreaseValue();
+  doc[PARAM_SCALE_DEVIATION_DECREASE] = getScaleDeviationDecreaseValue();
+  doc[PARAM_SCALE_DEVIATION_KALMAN] = getScaleKalmanDeviationValue();
   doc[PARAM_SCALE_READ_COUNT] = getScaleReadCount();
   doc[PARAM_SCALE_READ_COUNT_CALIBRATION] = getScaleReadCountCalibration();
+  doc[PARAM_SCALE_STABLE_COUNT] = getScaleStableCount();
+
+  /*
+  doc[PARAM_KALMAN_ACTIVE] = isKalmanActive();
+  doc[PARAM_KALMAN_MEASUREMENT] = getKalmanMeasurement();
+  doc[PARAM_KALMAN_ESTIMATION] = getKalmanEstimation();
+  doc[PARAM_KALMAN_NOISE] = getKalmanNoise();
+  */
 }
 
 void KegConfig::parseJson(DynamicJsonDocument& doc) {
@@ -83,6 +95,7 @@ void KegConfig::parseJson(DynamicJsonDocument& doc) {
   parseJsonBase(doc);
   parseJsonWifi(doc);
   parseJsonOta(doc);
+  parseJsonPush(doc);
 
   // Handle project specific config
   if (!doc[PARAM_WEIGHT_UNIT].isNull()) setWeightUnit(doc[PARAM_WEIGHT_UNIT]);
@@ -100,6 +113,9 @@ void KegConfig::parseJson(DynamicJsonDocument& doc) {
 
   if (!doc[PARAM_DISPLAY_LAYOUT].isNull())
     setDisplayLayout(doc[PARAM_DISPLAY_LAYOUT].as<int>());
+
+  /*if (!doc[PARAM_LEVEL_DETECTION].isNull())
+    setLevelDetection(doc[PARAM_LEVEL_DETECTION].as<int>());*/
 
   if (!doc[PARAM_SCALE_FACTOR1].isNull())
     setScaleFactor(0, doc[PARAM_SCALE_FACTOR1].as<float>());
@@ -149,12 +165,30 @@ void KegConfig::parseJson(DynamicJsonDocument& doc) {
   if (!doc[PARAM_BEER_FG2].isNull())
     setBeerFG(1, doc[PARAM_BEER_FG2].as<float>());
 
-  if (!doc[PARAM_SCALE_MAX_DEVIATION].isNull())
-    setScaleMaxDeviationValue(doc[PARAM_SCALE_MAX_DEVIATION]);
+  if (!doc[PARAM_SCALE_DEVIATION_DECREASE].isNull())
+    setScaleDeviationDecreaseValue(doc[PARAM_SCALE_DEVIATION_DECREASE]);
+  if (!doc[PARAM_SCALE_DEVIATION_INCREASE].isNull())
+    setScaleDeviationIncreaseValue(doc[PARAM_SCALE_DEVIATION_INCREASE]);
+  if (!doc[PARAM_SCALE_DEVIATION_KALMAN].isNull())
+    setScaleKalmanDeviationValue(doc[PARAM_SCALE_DEVIATION_KALMAN]);
   if (!doc[PARAM_SCALE_READ_COUNT].isNull())
     setScaleReadCount(doc[PARAM_SCALE_READ_COUNT]);
   if (!doc[PARAM_SCALE_READ_COUNT_CALIBRATION].isNull())
     setScaleReadCountCalibration(doc[PARAM_SCALE_READ_COUNT_CALIBRATION]);
+  if (!doc[PARAM_SCALE_STABLE_COUNT].isNull())
+    setScaleStableCount(doc[PARAM_SCALE_STABLE_COUNT]);
+
+  /*
+  if (!doc[PARAM_KALMAN_ESTIMATION].isNull())
+    setKalmanEstimation(doc[PARAM_KALMAN_ESTIMATION].as<float>());
+  if (!doc[PARAM_KALMAN_MEASUREMENT].isNull())
+    setKalmanMeasurement(doc[PARAM_KALMAN_MEASUREMENT].as<float>());
+  if (!doc[PARAM_KALMAN_NOISE].isNull())
+    setKalmanNoise(doc[PARAM_KALMAN_NOISE].as<float>());
+  if (!doc[PARAM_KALMAN_ACTIVE].isNull()) {
+    String s = doc[PARAM_KALMAN_ACTIVE];
+    setKalmanActive(s.equals("yes") ? true : false);
+  }*/
 }
 
 float convertIncomingWeight(float w) {

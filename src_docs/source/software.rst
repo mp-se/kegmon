@@ -3,13 +3,40 @@
 Software
 --------
 
-THe software is tailored towards my personal needs and external service 
-that I use. The software has two interfaces, one via the OLED displays and 
-one via the web-browser.
+THe software is tailored towards my personal needs and external services 
+that I use, but suggestions are always welcome. The software has two interfaces, 
+one via the OLED displays and one via the web-browser.
 
-The scale seams to be much more stable now that I added a kalman filter as the first step,
-this eliminates the big changes in values. It takes a few seconds for the level to stabilize but
-that's not a big issue. 
+The cheap load cells are quite unpredicteble so it's hard to get a fully accurate system, but they are really
+cheap. 
+
+In order to compensate for this I have build in the possibility to add filters and clean up the read values, 
+these filters include:
+
+* raw average (makes an average over the last 10 readings)
+* kalman (smooths out the peaks readings, but slows down level detection)
+* formula adjustment (this is not yet active, but its possible to add an equation to adjust the weight, for instance compensate for temperature)
+
+Here are two views on the data change over time, the temperature in my keezer is 
+between 4 and 5 degress Celcius. My two scales behave diffrently even though the 
+load cells are from the same batch. I would guess that the peak in the first graph is due to 
+interference from the compressor when it starts to cool.
+
+.. image:: images/temp_variation.png
+  :width: 400
+  :alt: Scale variation
+
+.. image:: images/temp_variation2.png
+  :width: 400
+  :alt: temp_variation
+
+Since the level will vary slightly based on the temperature (on my scale +0.04 to -0.01 kg), I have added a level detection algorithm
+that uses the average level over time and done adjust unless the delta is larger than the defined threasholds (can be defined).
+
+I have prepared for adding a temperature correction option but I'm still working defining a formula for that weight compensation. 
+
+In order to trigger a level change then both the raw values and the kalman value needs to be aligned and the minium level change 
+needed to detect a pour is by default set to 10 cl. It can take up to 60 seconds for a new level to be detected and a pour registered.
 
 Installation
 ************
@@ -28,6 +55,7 @@ OLED Screens
 The OLD screens will show the name of the beer, abv and alternate between weight and pours. The first 
 screen will display values for keg 1 and the second for keg 2.
 
+The values presented on the screen is the raw values so that you can see directly if the level changes. 
 
 Index
 *****
@@ -187,6 +215,9 @@ Information page that can determine the stability of your hardware build.
 
 I have found that some of my hardware builds was not really stable so I added this 
 feature to check the scale build before doing the final assembly. 
+
+If you keep the browser open you can also see the history of the values (raw, kalman & stable). This can help to show
+how your scale varies over time. Data is only stored in the browser so any refresh or page change will delete the graphs.
 
 Firmware update
 ***************
