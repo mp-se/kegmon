@@ -7,7 +7,7 @@ Welcome to KegMon - Keezer Level Monitor
 ========================================
 
 .. note::
-  Reflects test version v0.5.0, Last updated 2023-01-07
+  Reflects test version v0.5.0, Last updated 2023-01-27
 
 This project is intended for my own use, I've have not really focused on making this reusable for others so the 
 documentation is not that extensive. 
@@ -28,7 +28,7 @@ Features
 
 * Measure the weight & volume of up to two kegs 
 * Eestimate the number of glasses are left in the keg
-* Level detection filters our faulty readings from the HX scales
+* Level detection filters out faulty readings from the HX scales
 * Define the size of a pour by selecting the beer glass volume
 * Volume of beer is determined by the FG and weight of the beer (total - keg)
 * Import beer information from brewfather (name, abv, ebc and ibu, fg)
@@ -43,11 +43,13 @@ Features
 * Display volumes in cl or fl. oz (uk & us)
 * Display weights in kg or lbs
 * Show a graph over scale changes and pours (last 40 data points)
+* Show the scale readings over time (history view) for up to 6 hours
 
-Options
-+++++++
+Todo list
+++++++++++
 * Validate stability of the hardware design and load cells
 * Switch to larger OLED displays (0.96 -> 1.3), this requires a different display driver (but I have a hard time to find the larger displays with the options to change I2C adress). 
+* Temperature compensation
 
 Credits to
 ----------
