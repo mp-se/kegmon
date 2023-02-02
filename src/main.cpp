@@ -172,15 +172,19 @@ void drawScreenHardwareStats(UnitIndex idx) {
     snprintf(&buf[0], sizeof(buf), "Max wgt: %.3f",
              myLevelDetection.getStatsDetection(idx)->max());
     myDisplay.printLine(idx, 4, &buf[0]);
-    snprintf(&buf[0], sizeof(buf), "Temp: %.3f",
-             myTemp.getTempC());
+    snprintf(&buf[0], sizeof(buf), "Temp: %.3f", myTemp.getTempC());
     myDisplay.printLine(idx, 5, &buf[0]);
   }
 
   myDisplay.show(idx);
 }
 
-enum ScreenDefaultIter { ShowWeight = 0, ShowGlasses = 1, ShowPour = 2, ShowTemp = 3 };
+enum ScreenDefaultIter {
+  ShowWeight = 0,
+  ShowGlasses = 1,
+  ShowPour = 2,
+  ShowTemp = 3
+};
 
 ScreenDefaultIter defaultScreenIter[2] = {ScreenDefaultIter::ShowWeight,
                                           ScreenDefaultIter::ShowWeight};
@@ -296,11 +300,12 @@ void loop() {
       }
     }
 
-    // The temp sensor should not be read too often. Reading every 10 seconds.  
+    // The temp sensor should not be read too often. Reading every 10 seconds.
     if (!(loopCounter % 5)) {
       myTemp.read();
 
-      // Log.notice(F("Loop: Current temp %FC %FF." CR), myTemp.getTempC(), myTemp.getTempF());
+      // Log.notice(F("Loop: Current temp %FC %FF." CR), myTemp.getTempC(),
+      // myTemp.getTempF());
 
       if (myTemp.hasSensor()) {
         myTemp.reset();

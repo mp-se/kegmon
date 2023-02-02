@@ -49,28 +49,30 @@ void KegConfig::createJson(DynamicJsonDocument& doc, bool skipSecrets) {
   doc[PARAM_BREWSPY_TOKEN1] = getBrewspyToken(UnitIndex::U1);
   doc[PARAM_BREWSPY_TOKEN2] = getBrewspyToken(UnitIndex::U2);
 
-  doc[PARAM_SCALE_TEMP_FORMULA1] = getScaleTempCompensationFormula(UnitIndex::U1);
+  doc[PARAM_SCALE_TEMP_FORMULA1] =
+      getScaleTempCompensationFormula(UnitIndex::U1);
   doc[PARAM_SCALE_FACTOR1] = getScaleFactor(UnitIndex::U1);
   doc[PARAM_SCALE_OFFSET1] = getScaleOffset(UnitIndex::U1);
   doc[PARAM_KEG_WEIGHT1] = convertOutgoingWeight(getKegWeight(UnitIndex::U1));
   doc[PARAM_KEG_VOLUME1] =
       getKegVolume(UnitIndex::U1);  // Dont convert this part (drop down in UI)
-  doc[PARAM_GLASS_VOLUME1] =
-      getGlassVolume(UnitIndex::U1);  // Dont convert this part (drop down in UI)
+  doc[PARAM_GLASS_VOLUME1] = getGlassVolume(
+      UnitIndex::U1);  // Dont convert this part (drop down in UI)
   doc[PARAM_BEER_NAME1] = getBeerName(UnitIndex::U1);
   doc[PARAM_BEER_ABV1] = getBeerABV(UnitIndex::U1);
   doc[PARAM_BEER_FG1] = getBeerFG(UnitIndex::U1);
   doc[PARAM_BEER_EBC1] = getBeerEBC(UnitIndex::U1);
   doc[PARAM_BEER_IBU1] = getBeerIBU(UnitIndex::U1);
 
-  doc[PARAM_SCALE_TEMP_FORMULA2] = getScaleTempCompensationFormula(UnitIndex::U2);
+  doc[PARAM_SCALE_TEMP_FORMULA2] =
+      getScaleTempCompensationFormula(UnitIndex::U2);
   doc[PARAM_SCALE_FACTOR2] = getScaleFactor(UnitIndex::U2);
   doc[PARAM_SCALE_OFFSET2] = getScaleOffset(UnitIndex::U2);
   doc[PARAM_KEG_WEIGHT2] = convertOutgoingWeight(getKegWeight(UnitIndex::U2));
   doc[PARAM_KEG_VOLUME2] =
       getKegVolume(UnitIndex::U2);  // Dont convert this part (drop down in UI)
-  doc[PARAM_GLASS_VOLUME2] =
-      getGlassVolume(UnitIndex::U2);  // Dont convert this part (drop down in UI)
+  doc[PARAM_GLASS_VOLUME2] = getGlassVolume(
+      UnitIndex::U2);  // Dont convert this part (drop down in UI)
   doc[PARAM_BEER_NAME2] = getBeerName(UnitIndex::U2);
   doc[PARAM_BEER_ABV2] = getBeerABV(UnitIndex::U2);
   doc[PARAM_BEER_FG2] = getBeerFG(UnitIndex::U2);
@@ -120,22 +122,27 @@ void KegConfig::parseJson(DynamicJsonDocument& doc) {
     setLevelDetection(doc[PARAM_LEVEL_DETECTION].as<int>());*/
 
   if (!doc[PARAM_SCALE_TEMP_FORMULA1].isNull())
-    setScaleTempCompensationFormula(UnitIndex::U1, doc[PARAM_SCALE_TEMP_FORMULA1]);
+    setScaleTempCompensationFormula(UnitIndex::U1,
+                                    doc[PARAM_SCALE_TEMP_FORMULA1]);
   if (!doc[PARAM_SCALE_FACTOR1].isNull())
     setScaleFactor(UnitIndex::U1, doc[PARAM_SCALE_FACTOR1].as<float>());
   if (!doc[PARAM_SCALE_OFFSET1].isNull())
     setScaleOffset(UnitIndex::U1, doc[PARAM_SCALE_OFFSET1].as<float>());
   if (!doc[PARAM_KEG_WEIGHT1].isNull())
-    setKegWeight(UnitIndex::U1, convertIncomingWeight(doc[PARAM_KEG_WEIGHT1].as<float>()));
+    setKegWeight(UnitIndex::U1,
+                 convertIncomingWeight(doc[PARAM_KEG_WEIGHT1].as<float>()));
   if (!doc[PARAM_KEG_VOLUME1].isNull())
     setKegVolume(
-        UnitIndex::U1, doc[PARAM_KEG_VOLUME1]
-               .as<float>());  // No need to convert this, always in Liters
+        UnitIndex::U1,
+        doc[PARAM_KEG_VOLUME1]
+            .as<float>());  // No need to convert this, always in Liters
   if (!doc[PARAM_GLASS_VOLUME1].isNull())
     setGlassVolume(
-        UnitIndex::U1, doc[PARAM_GLASS_VOLUME1]
-               .as<float>());  // No need to convert this, always in Liters
-  if (!doc[PARAM_BEER_NAME1].isNull()) setBeerName(UnitIndex::U1, doc[PARAM_BEER_NAME1]);
+        UnitIndex::U1,
+        doc[PARAM_GLASS_VOLUME1]
+            .as<float>());  // No need to convert this, always in Liters
+  if (!doc[PARAM_BEER_NAME1].isNull())
+    setBeerName(UnitIndex::U1, doc[PARAM_BEER_NAME1]);
   if (!doc[PARAM_BEER_EBC1].isNull())
     setBeerEBC(UnitIndex::U1, doc[PARAM_BEER_EBC1].as<int>());
   if (!doc[PARAM_BEER_ABV1].isNull())
@@ -146,22 +153,27 @@ void KegConfig::parseJson(DynamicJsonDocument& doc) {
     setBeerFG(UnitIndex::U1, doc[PARAM_BEER_FG1].as<float>());
 
   if (!doc[PARAM_SCALE_TEMP_FORMULA2].isNull())
-    setScaleTempCompensationFormula(UnitIndex::U2, doc[PARAM_SCALE_TEMP_FORMULA2]);
+    setScaleTempCompensationFormula(UnitIndex::U2,
+                                    doc[PARAM_SCALE_TEMP_FORMULA2]);
   if (!doc[PARAM_SCALE_FACTOR2].isNull())
     setScaleFactor(UnitIndex::U2, doc[PARAM_SCALE_FACTOR2].as<float>());
   if (!doc[PARAM_SCALE_OFFSET2].isNull())
     setScaleOffset(UnitIndex::U2, doc[PARAM_SCALE_OFFSET2].as<float>());
   if (!doc[PARAM_KEG_WEIGHT2].isNull())
-    setKegWeight(UnitIndex::U2, convertIncomingWeight(doc[PARAM_KEG_WEIGHT2].as<float>()));
+    setKegWeight(UnitIndex::U2,
+                 convertIncomingWeight(doc[PARAM_KEG_WEIGHT2].as<float>()));
   if (!doc[PARAM_KEG_VOLUME2].isNull())
     setKegVolume(
-        UnitIndex::U2, doc[PARAM_KEG_VOLUME2]
-               .as<float>());  // No need to convert this, always in Liters
+        UnitIndex::U2,
+        doc[PARAM_KEG_VOLUME2]
+            .as<float>());  // No need to convert this, always in Liters
   if (!doc[PARAM_GLASS_VOLUME2].isNull())
     setGlassVolume(
-        UnitIndex::U2, doc[PARAM_GLASS_VOLUME2]
-               .as<float>());  // No need to convert this, always in Liters
-  if (!doc[PARAM_BEER_NAME2].isNull()) setBeerName(UnitIndex::U2, doc[PARAM_BEER_NAME2]);
+        UnitIndex::U2,
+        doc[PARAM_GLASS_VOLUME2]
+            .as<float>());  // No need to convert this, always in Liters
+  if (!doc[PARAM_BEER_NAME2].isNull())
+    setBeerName(UnitIndex::U2, doc[PARAM_BEER_NAME2]);
   if (!doc[PARAM_BEER_EBC2].isNull())
     setBeerEBC(UnitIndex::U2, doc[PARAM_BEER_EBC2].as<int>());
   if (!doc[PARAM_BEER_ABV2].isNull())

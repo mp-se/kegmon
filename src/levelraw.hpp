@@ -93,7 +93,7 @@ class RawLevelDetection {
 
     // Temperature correction
     _tempCorr = NAN;
-    const char* formula = myConfig.getScaleTempCompensationFormula(_idx);
+    const char *formula = myConfig.getScaleTempCompensationFormula(_idx);
 
     if (strlen(formula) > 0) {
       double weight = v;

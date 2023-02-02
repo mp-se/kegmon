@@ -303,8 +303,10 @@ void KegWebHandler::webStatus() {
   doc[PARAM_GLASS2] = reduceFloatPrecision(
       myLevelDetection.getNoStableGlasses(UnitIndex::U2), 1);
 
-  doc[PARAM_KEG_VOLUME1] = convertOutgoingVolume(myConfig.getKegVolume(UnitIndex::U1));
-  doc[PARAM_KEG_VOLUME2] = convertOutgoingVolume(myConfig.getKegVolume(UnitIndex::U2));
+  doc[PARAM_KEG_VOLUME1] =
+      convertOutgoingVolume(myConfig.getKegVolume(UnitIndex::U1));
+  doc[PARAM_KEG_VOLUME2] =
+      convertOutgoingVolume(myConfig.getKegVolume(UnitIndex::U2));
 
   float f = myTemp.getTempC();
 

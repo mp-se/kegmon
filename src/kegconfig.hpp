@@ -116,7 +116,7 @@ class KegConfig : public BaseConfig {
   uint32_t _scaleStableCount = 8;
   int _scaleReadCount = 3;
   int _scaleReadCountCalibration = 30;
-  String _scaleTempCompensationFormula[2] = { "", ""};
+  String _scaleTempCompensationFormula[2] = {"", ""};
 
   LevelDetectionType _levelDetection = LevelDetectionType::STATS;
 
@@ -144,7 +144,9 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }
 
-  const char* getBrewspyToken(UnitIndex idx) { return _brewspyToken[idx].c_str(); }
+  const char* getBrewspyToken(UnitIndex idx) {
+    return _brewspyToken[idx].c_str();
+  }
   void setBrewspyToken(UnitIndex idx, String s) {
     _brewspyToken[idx] = s;
     _saveNeeded = true;
@@ -313,12 +315,13 @@ class KegConfig : public BaseConfig {
   }
   */
 
-  const char* getScaleTempCompensationFormula(UnitIndex idx) { return _scaleTempCompensationFormula[idx].c_str(); }
+  const char* getScaleTempCompensationFormula(UnitIndex idx) {
+    return _scaleTempCompensationFormula[idx].c_str();
+  }
   void setScaleTempCompensationFormula(UnitIndex idx, String s) {
     _scaleTempCompensationFormula[idx] = s;
     _saveNeeded = true;
   }
-
 
   // These settings are used for debugging and checking stability of the scales.
   // Only influx is used for now
