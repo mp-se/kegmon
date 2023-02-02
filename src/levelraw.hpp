@@ -29,6 +29,8 @@ SOFTWARE.
 #include <tinyexpr.h>
 
 #include <utils.hpp>
+#include <main.hpp>
+#include <kegconfig.hpp>
 
 class RawLevelDetection {
  private:

@@ -31,7 +31,7 @@ void Scale::setup(bool force) {
 
 #if LOG_LEVEL == 6
     Log.verbose(F("SCAL: Initializing scale [0], using offset %l." CR),
-                myConfig.getScaleOffset(0));
+                myConfig.getScaleOffset(UnitIndex::U1));
 #endif
     _scale[0] = new HX711();
     _scale[0]->begin(PIN_SCALE1_SDA, PIN_SCALE1_SCL);
@@ -53,7 +53,7 @@ void Scale::setup(bool force) {
 
 #if LOG_LEVEL == 6
     Log.verbose(F("SCAL: Initializing scale [1], using offset %l." CR),
-                myConfig.getScaleOffset(1));
+                myConfig.getScaleOffset(UnitIndex::U2));
 #endif
     _scale[1] = new HX711();
     _scale[1]->begin(PIN_SCALE2_SDA, PIN_SCALE2_SCL);
