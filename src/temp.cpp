@@ -30,6 +30,9 @@ void TempHumidity::setup() {
 #if LOG_LEVEL == 6
   // Log.verbose(F("Temp: Initializing humidity sensor." CR));
 #endif
+
+  // Log.notice(F("Temp: Setup." CR));
+
   pinMode(PIN_DH2_PWR, OUTPUT);
   digitalWrite(PIN_DH2_PWR, HIGH);
   delay(100);
@@ -40,62 +43,25 @@ void TempHumidity::setup() {
 }
 
 void TempHumidity::reset() {
+  // Log.notice(F("Temp: Reset." CR));
+
   digitalWrite(PIN_DH2_PWR, LOW);
   delay(100);
 }
 
-float TempHumidity::getTempC() {
-  if (!_temp) return NAN;
+void TempHumidity::read() {
+  if (!_temp) return;
 
-  float f = _temp->readTemperature();
-#if LOG_LEVEL == 6
-  // Log.verbose(F("Temp: Reading temp %F C." CR), f);
-#endif
+  _lastTempC = _temp->readTemperature(false, false);
+  _lastHumidity = _temp->readHumidity(false);
 
-  if (isnan(f)) {
+  // Log.notice(F("Temp: Reading temp %F C." CR), _lastTempC);
+
+  if (isnan(_lastTempC)) {
     Log.error(F("Temp: Error reading temperature, disable sensor." CR));
     delete _temp;
     _temp = 0;
-    return NAN;
   }
-
-  return f;
-}
-
-float TempHumidity::getTempF() {
-  if (!_temp) return NAN;
-
-  float f = _temp->readTemperature(true);
-#if LOG_LEVEL == 6
-  // Log.verbose(F("Temp: Reading temp %F F." CR), f);
-#endif
-
-  if (isnan(f)) {
-    Log.error(F("Temp: Error reading temperature, disable sensor." CR));
-    delete _temp;
-    _temp = 0;
-    return NAN;
-  }
-
-  return f;
-}
-
-float TempHumidity::getHumidity() {
-  if (!_temp) return NAN;
-
-  float h = _temp->readHumidity();
-#if LOG_LEVEL == 6
-  // Log.verbose(F("Temp: Reading humidity %F." CR), h);
-#endif
-
-  if (isnan(h)) {
-    Log.error(F("Temp: Error reading humidity, disable sensor." CR));
-    delete _temp;
-    _temp = 0;
-    return NAN;
-  }
-
-  return h;
 }
 
 // EOF

@@ -54,6 +54,8 @@ SOFTWARE.
 #define PARAM_SCALE_FACTOR2 "scale-factor2"
 #define PARAM_SCALE_OFFSET1 "scale-offset1"
 #define PARAM_SCALE_OFFSET2 "scale-offset2"
+#define PARAM_SCALE_TEMP_FORMULA1 "scale-temp-formula1"
+#define PARAM_SCALE_TEMP_FORMULA2 "scale-temp-formula2"
 #define PARAM_SCALE_DEVIATION_INCREASE "scale-deviation-increase"
 #define PARAM_SCALE_DEVIATION_DECREASE "scale-deviation-decrease"
 #define PARAM_SCALE_DEVIATION_KALMAN "scale-deviation-kalman"
@@ -114,6 +116,7 @@ class KegConfig : public BaseConfig {
   uint32_t _scaleStableCount = 8;
   int _scaleReadCount = 3;
   int _scaleReadCountCalibration = 30;
+  String _scaleTempCompensationFormula[2] = { "", ""};
 
   LevelDetectionType _levelDetection = LevelDetectionType::STATS;
 
@@ -141,52 +144,52 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }
 
-  const char* getBrewspyToken(int idx) { return _brewspyToken[idx].c_str(); }
-  void setBrewspyToken(int idx, String s) {
+  const char* getBrewspyToken(UnitIndex idx) { return _brewspyToken[idx].c_str(); }
+  void setBrewspyToken(UnitIndex idx, String s) {
     _brewspyToken[idx] = s;
     _saveNeeded = true;
   }
 
-  const char* getBeerName(int idx) { return _beer[idx]._name.c_str(); }
-  void setBeerName(int idx, String s) {
+  const char* getBeerName(UnitIndex idx) { return _beer[idx]._name.c_str(); }
+  void setBeerName(UnitIndex idx, String s) {
     _beer[idx]._name = s;
     _saveNeeded = true;
   }
-  float getBeerABV(int idx) { return _beer[idx]._abv; }
-  void setBeerABV(int idx, float f) {
+  float getBeerABV(UnitIndex idx) { return _beer[idx]._abv; }
+  void setBeerABV(UnitIndex idx, float f) {
     _beer[idx]._abv = f;
     _saveNeeded = true;
   }
-  float getBeerFG(int idx) { return _beer[idx]._fg; }
-  void setBeerFG(int idx, float f) {
+  float getBeerFG(UnitIndex idx) { return _beer[idx]._fg; }
+  void setBeerFG(UnitIndex idx, float f) {
     _beer[idx]._fg = f;
     _saveNeeded = true;
   }
-  int getBeerEBC(int idx) { return _beer[idx]._ebc; }
-  void setBeerEBC(int idx, int i) {
+  int getBeerEBC(UnitIndex idx) { return _beer[idx]._ebc; }
+  void setBeerEBC(UnitIndex idx, int i) {
     _beer[idx]._ebc = i;
     _saveNeeded = true;
   }
-  int getBeerIBU(int idx) { return _beer[idx]._ibu; }
-  void setBeerIBU(int idx, int i) {
+  int getBeerIBU(UnitIndex idx) { return _beer[idx]._ibu; }
+  void setBeerIBU(UnitIndex idx, int i) {
     _beer[idx]._ibu = i;
     _saveNeeded = true;
   }
 
-  float getKegWeight(int idx) { return _kegWeight[idx]; }
-  void setKegWeight(int idx, float f) {
+  float getKegWeight(UnitIndex idx) { return _kegWeight[idx]; }
+  void setKegWeight(UnitIndex idx, float f) {
     _kegWeight[idx] = f;
     _saveNeeded = true;
   }
 
-  float getKegVolume(int idx) { return _kegVolume[idx]; }
-  void setKegVolume(int idx, float f) {
+  float getKegVolume(UnitIndex idx) { return _kegVolume[idx]; }
+  void setKegVolume(UnitIndex idx, float f) {
     _kegVolume[idx] = f;
     _saveNeeded = true;
   }
 
-  float getGlassVolume(int idx) { return _glassVolume[idx]; }
-  void setGlassVolume(int idx, float f) {
+  float getGlassVolume(UnitIndex idx) { return _glassVolume[idx]; }
+  void setGlassVolume(UnitIndex idx, float f) {
     _glassVolume[idx] = f;
     _saveNeeded = true;
   }
@@ -208,14 +211,14 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }
 
-  int32_t getScaleOffset(int idx) { return _scaleOffset[idx]; }
-  void setScaleOffset(int idx, int32_t l) {
+  int32_t getScaleOffset(UnitIndex idx) { return _scaleOffset[idx]; }
+  void setScaleOffset(UnitIndex idx, int32_t l) {
     _scaleOffset[idx] = l;
     _saveNeeded = true;
   }
 
-  float getScaleFactor(int idx) { return _scaleFactor[idx]; }
-  void setScaleFactor(int idx, float f) {
+  float getScaleFactor(UnitIndex idx) { return _scaleFactor[idx]; }
+  void setScaleFactor(UnitIndex idx, float f) {
     _scaleFactor[idx] = f;
     _saveNeeded = true;
   }
@@ -309,6 +312,13 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }
   */
+
+  const char* getScaleTempCompensationFormula(UnitIndex idx) { return _scaleTempCompensationFormula[idx].c_str(); }
+  void setScaleTempCompensationFormula(UnitIndex idx, String s) {
+    _scaleTempCompensationFormula[idx] = s;
+    _saveNeeded = true;
+  }
+
 
   // These settings are used for debugging and checking stability of the scales.
   // Only influx is used for now

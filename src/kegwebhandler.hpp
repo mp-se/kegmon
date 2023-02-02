@@ -55,6 +55,7 @@ class KegWebHandler : public BaseWebHandler {
   void webHandleBeerWrite();
   void webHandleBrewspy();
   void webHandleLogsClear();
+  void webHandleTempReset();
 
   void webCalibrateHtm() {
     _server->send_P(200, "text/html", (const char*)gCalibrateHtmData,

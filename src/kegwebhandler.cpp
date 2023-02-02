@@ -95,6 +95,20 @@ void KegWebHandler::setupWebHandlers() {
               std::bind(&KegWebHandler::webHandleBeerWrite, this));
   _server->on("/api/logs/clear", HTTP_GET,
               std::bind(&KegWebHandler::webHandleLogsClear, this));
+  _server->on("/api/temp/reset", HTTP_GET,
+              std::bind(&KegWebHandler::webHandleTempReset, this));
+}
+
+void KegWebHandler::webHandleTempReset() {
+  Log.notice(F("WEB : webServer callback for /api/temp/reset." CR));
+
+  myTemp.reset();
+  myTemp.setup();
+  float f = myTemp.getTempC();
+  char buf[40];
+  snprintf(&buf[0], sizeof(buf), "Reset temp sensor, value=%f", f);
+
+  _server->send(200, "text/plain", &buf[0]);
 }
 
 void KegWebHandler::webHandleLogsClear() {
@@ -197,15 +211,15 @@ void KegWebHandler::webScaleFactor() {
 
 void KegWebHandler::populateScaleJson(DynamicJsonDocument& doc) {
   // This will return the raw weight so that that we get the actual values.
-  doc[PARAM_SCALE_FACTOR1] = myConfig.getScaleFactor(0);
-  doc[PARAM_SCALE_FACTOR2] = myConfig.getScaleFactor(1);
+  doc[PARAM_SCALE_FACTOR1] = myConfig.getScaleFactor(UnitIndex::U1);
+  doc[PARAM_SCALE_FACTOR2] = myConfig.getScaleFactor(UnitIndex::U2);
   if (myScale.isConnected(UnitIndex::U1)) {
     doc[PARAM_SCALE_WEIGHT1] = reduceFloatPrecision(
         convertOutgoingWeight(
             myLevelDetection.getTotalRawWeight(UnitIndex::U1)),
         myConfig.getWeightPrecision());
     doc[PARAM_SCALE_RAW1] = myScale.readRaw(UnitIndex::U1);
-    doc[PARAM_SCALE_OFFSET1] = myConfig.getScaleOffset(0);
+    doc[PARAM_SCALE_OFFSET1] = myConfig.getScaleOffset(UnitIndex::U1);
     doc[PARAM_BEER_WEIGHT1] = reduceFloatPrecision(
         convertOutgoingWeight(myLevelDetection.getBeerWeight(UnitIndex::U1)),
         myConfig.getWeightPrecision());
@@ -220,7 +234,7 @@ void KegWebHandler::populateScaleJson(DynamicJsonDocument& doc) {
             myLevelDetection.getTotalRawWeight(UnitIndex::U2)),
         myConfig.getWeightPrecision());
     doc[PARAM_SCALE_RAW2] = myScale.readRaw(UnitIndex::U2);
-    doc[PARAM_SCALE_OFFSET2] = myConfig.getScaleOffset(1);
+    doc[PARAM_SCALE_OFFSET2] = myConfig.getScaleOffset(UnitIndex::U2);
     doc[PARAM_BEER_WEIGHT2] = reduceFloatPrecision(
         convertOutgoingWeight(myLevelDetection.getBeerWeight(UnitIndex::U2)),
         myConfig.getWeightPrecision());
@@ -289,8 +303,8 @@ void KegWebHandler::webStatus() {
   doc[PARAM_GLASS2] = reduceFloatPrecision(
       myLevelDetection.getNoStableGlasses(UnitIndex::U2), 1);
 
-  doc[PARAM_KEG_VOLUME1] = convertOutgoingVolume(myConfig.getKegVolume(0));
-  doc[PARAM_KEG_VOLUME2] = convertOutgoingVolume(myConfig.getKegVolume(1));
+  doc[PARAM_KEG_VOLUME1] = convertOutgoingVolume(myConfig.getKegVolume(UnitIndex::U1));
+  doc[PARAM_KEG_VOLUME2] = convertOutgoingVolume(myConfig.getKegVolume(UnitIndex::U2));
 
   float f = myTemp.getTempC();
 

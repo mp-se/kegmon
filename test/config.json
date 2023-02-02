@@ -44,6 +44,8 @@
   "scale-stable-count": 10,
   "scale-read-count": 10,
   "scale-read-count-calibration": 30,
+  "scale-temp-formula1": "test1",
+  "scale-temp-formula2": "test2",
   "kalman-active": false,
   "kalman-measurement": 2.0,
   "kalman-estimation": 3.0,
