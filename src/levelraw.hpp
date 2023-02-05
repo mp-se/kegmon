@@ -111,7 +111,7 @@ class RawLevelDetection {
         te_free(expr);
       }
 
-      // Log.notice(F("LVL : Temp correction value %F" CR), _tempCorr);
+      Log.notice(F("LVL : %F -> %F" CR), v, _tempCorr);
     }
 
     // Slope calculation
