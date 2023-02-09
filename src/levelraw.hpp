@@ -28,9 +28,9 @@ SOFTWARE.
 #include <SimpleKalmanFilter.h>
 #include <tinyexpr.h>
 
-#include <utils.hpp>
-#include <main.hpp>
 #include <kegconfig.hpp>
+#include <main.hpp>
+#include <utils.hpp>
 
 class RawLevelDetection {
  private:
