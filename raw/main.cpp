@@ -57,8 +57,10 @@ void setup() {
   myConfig.setBrewspyToken(UnitIndex::U1, "");
   myConfig.setBrewspyToken(UnitIndex::U1, "");
 
-  // String formula = "";
-  String formula = "weight*(1.0-0.025*(tempC-3.0))";
+  String formula = "";
+  // String formula = "weight*(1.0-0.025*(tempC-3.0))";
+  // String formula = "weight*(1+(0.004*(tempC-5)))";
+  // String formula = "weight-(1+0.004*(tempC-5))";
   myConfig.setScaleTempCompensationFormula(UnitIndex::U1, formula);
   myConfig.setScaleTempCompensationFormula(UnitIndex::U2, formula);
 
