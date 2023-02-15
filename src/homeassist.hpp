@@ -34,6 +34,7 @@ class HomeAssist {
  public:
   explicit HomeAssist(BasePush *push) { _push = push; }
 
+  void sendTempInformation(float tempC);
   void sendTapInformation(UnitIndex idx, float stableVol, float glasses);
   void sendPourInformation(UnitIndex idx, float pourVol);
 };

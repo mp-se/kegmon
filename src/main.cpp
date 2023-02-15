@@ -292,7 +292,24 @@ void loop() {
     loopMillis = millis();
     loopCounter++;
 
-    // Try to reconnect to scales if they are missing
+    // Send updates to push targets at regular intervals (300 seconds / 5min)
+    if (!(loopCounter % 300)) {
+      myPush.pushTempInformation(myTemp.getTempC(), true);
+
+      if (myLevelDetection.hasStableWeight(UnitIndex::U1))
+        myPush.pushKegInformation(
+            UnitIndex::U1, myLevelDetection.getBeerStableVolume(UnitIndex::U1),
+            myLevelDetection.getPourVolume(UnitIndex::U1),
+            myLevelDetection.getNoStableGlasses(UnitIndex::U1), true);
+
+      if (myLevelDetection.hasStableWeight(UnitIndex::U2))
+        myPush.pushKegInformation(
+            UnitIndex::U2, myLevelDetection.getBeerStableVolume(UnitIndex::U2),
+            myLevelDetection.getPourVolume(UnitIndex::U2),
+            myLevelDetection.getNoStableGlasses(UnitIndex::U2), true);
+    }
+
+    // Try to reconnect to scales if they are missing (60 seconds)
     if (!(loopCounter % 30)) {
       if (!myScale.isConnected(UnitIndex::U1) ||
           !myScale.isConnected(UnitIndex::U2)) {
