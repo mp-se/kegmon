@@ -47,7 +47,8 @@ const char *beerTemplate =
     "attr\",\"unique_id\":\"${mdns}_beer${tap}\"}|"
     "homeassistant/sensor/${mdns}_beer${tap}/state:${beer-name}|"
     "homeassistant/sensor/${mdns}_beer${tap}/"
-    "attr:{\"abv\":${beer-abv},\"abv\":${beer-abv},\"ibu\":${beer-ibu},\"ebc\":${beer-"
+    "attr:{\"abv\":${beer-abv},\"abv\":${beer-abv},\"ibu\":${beer-ibu},\"ebc\":"
+    "${beer-"
     "ebc}}|";
 
 const char *pourTemplate =
@@ -72,8 +73,8 @@ void HomeAssist::sendTempInformation(float tempC) {
   tpl.setVal("${mdns}", myConfig.getMDNS());
 
   // if (myConfig.isTempFormatC()) {
-    tpl.setVal("${temp}", tempC);
-    tpl.setVal("${temp-format}", "°C");
+  tpl.setVal("${temp}", tempC);
+  tpl.setVal("${temp-format}", "°C");
   // } else {
   //  tpl.setVal("${temp}", convertCtoF(tempC));
   //  tpl.setVal("${temp-format}", "°F");

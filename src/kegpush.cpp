@@ -32,16 +32,18 @@ void KegPushHandler::pushTempInformation(float tempC, bool isLoop) {
   _ha->sendTempInformation(tempC);
 }
 
-void KegPushHandler::pushPourInformation(UnitIndex idx, float pourVol, bool isLoop) {
-  if (!isLoop) // Limit calls to brewspy
+void KegPushHandler::pushPourInformation(UnitIndex idx, float pourVol,
+                                         bool isLoop) {
+  if (!isLoop)  // Limit calls to brewspy
     _brewspy->sendPourInformation(idx, pourVol);
 
   _ha->sendPourInformation(idx, pourVol);
 }
 
 void KegPushHandler::pushKegInformation(UnitIndex idx, float stableVol,
-                                        float pourVol, float glasses, bool isLoop) {
-  if (!isLoop) // Limit calls to brewspy
+                                        float pourVol, float glasses,
+                                        bool isLoop) {
+  if (!isLoop)  // Limit calls to brewspy
     _brewspy->sendTapInformation(idx, stableVol, pourVol);
 
   _ha->sendTapInformation(idx, stableVol, glasses);
