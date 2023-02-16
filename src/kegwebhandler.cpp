@@ -57,84 +57,70 @@ SOFTWARE.
 #define PARAM_LAST_POUR_VOLUME1 "last-pour-volume1"
 #define PARAM_LAST_POUR_VOLUME2 "last-pour-volume2"
 
+#if defined(USE_ASYNC_WEB)
+KegWebHandler::KegWebHandler(KegConfig* config) : BaseAsyncWebHandler(config) {
+  _config = config;
+}
+#else
 KegWebHandler::KegWebHandler(KegConfig* config) : BaseWebHandler(config) {
   _config = config;
 }
+#endif
+
+void KegWebHandler::setupAsyncWebHandlers() { setupWebHandlers(); }
 
 void KegWebHandler::setupWebHandlers() {
   Log.notice(F("WEB : Setting up keg web handlers." CR));
+
+#if defined(USE_ASYNC_WEB)
+  BaseAsyncWebHandler::setupAsyncWebHandlers();
+#else
   BaseWebHandler::setupWebHandlers();
+#endif
 
   _server->serveStatic("/levels", LittleFS, LEVELS_FILENAME);
   _server->serveStatic("/levels2", LittleFS, LEVELS_FILENAME2);
-  _server->on("/api/reset", HTTP_GET,
-              std::bind(&KegWebHandler::webReset, this));
-  _server->on("/api/scale", HTTP_GET,
-              std::bind(&KegWebHandler::webScale, this));
-  _server->on("/api/stability", HTTP_GET,
-              std::bind(&KegWebHandler::webStability, this));
-  _server->on("/api/stability/clear", HTTP_GET,
-              std::bind(&KegWebHandler::webStabilityClear, this));
-  _server->on("/api/scale/tare", HTTP_GET,
-              std::bind(&KegWebHandler::webScaleTare, this));
-  _server->on("/api/scale/factor", HTTP_GET,
-              std::bind(&KegWebHandler::webScaleFactor, this));
-  _server->on("/api/status", HTTP_GET,
-              std::bind(&KegWebHandler::webStatus, this));
-  _server->on("/calibration.htm", HTTP_GET,
-              std::bind(&KegWebHandler::webCalibrateHtm, this));
-  _server->on("/beer.htm", HTTP_GET,
-              std::bind(&KegWebHandler::webBeerHtm, this));
-  _server->on("/stability.htm", HTTP_GET,
-              std::bind(&KegWebHandler::webStabilityHtm, this));
-  _server->on("/graph.htm", HTTP_GET,
-              std::bind(&KegWebHandler::webGraphHtm, this));
-  _server->on("/api/brewspy/tap", HTTP_GET,
-              std::bind(&KegWebHandler::webHandleBrewspy, this));
-  _server->on("/api/beer", HTTP_POST,
-              std::bind(&KegWebHandler::webHandleBeerWrite, this));
-  _server->on("/api/logs/clear", HTTP_GET,
-              std::bind(&KegWebHandler::webHandleLogsClear, this));
-  _server->on("/api/temp/reset", HTTP_GET,
-              std::bind(&KegWebHandler::webHandleTempReset, this));
+  WS_BIND_URL("/api/reset", HTTP_GET, &KegWebHandler::webReset);
+  WS_BIND_URL("/api/scale", HTTP_GET, &KegWebHandler::webScale);
+  WS_BIND_URL("/api/stability", HTTP_GET, &KegWebHandler::webStability);
+  WS_BIND_URL("/api/stability/clear", HTTP_GET,
+              &KegWebHandler::webStabilityClear);
+  WS_BIND_URL("/api/scale/tare", HTTP_GET, &KegWebHandler::webScaleTare);
+  WS_BIND_URL("/api/scale/factor", HTTP_GET, &KegWebHandler::webScaleFactor);
+  WS_BIND_URL("/api/status", HTTP_GET, &KegWebHandler::webStatus);
+  WS_BIND_URL("/calibration.htm", HTTP_GET, &KegWebHandler::webCalibrateHtm);
+  WS_BIND_URL("/beer.htm", HTTP_GET, &KegWebHandler::webBeerHtm);
+  WS_BIND_URL("/stability.htm", HTTP_GET, &KegWebHandler::webStabilityHtm);
+  WS_BIND_URL("/graph.htm", HTTP_GET, &KegWebHandler::webGraphHtm);
+  WS_BIND_URL("/api/brewspy/tap", HTTP_GET, &KegWebHandler::webHandleBrewspy);
+  WS_BIND_URL("/api/beer", HTTP_POST, &KegWebHandler::webHandleBeerWrite);
+  WS_BIND_URL("/api/logs/clear", HTTP_GET, &KegWebHandler::webHandleLogsClear);
 }
 
-void KegWebHandler::webHandleTempReset() {
-  Log.notice(F("WEB : webServer callback for /api/temp/reset." CR));
-
-  myTemp.reset();
-  myTemp.setup();
-  float f = myTemp.getTempC();
-  char buf[40];
-  snprintf(&buf[0], sizeof(buf), "Reset temp sensor, value=%f", f);
-
-  _server->send(200, "text/plain", &buf[0]);
-}
-
-void KegWebHandler::webHandleLogsClear() {
-  String id = _server->arg(PARAM_ID);
+void KegWebHandler::webHandleLogsClear(WS_PARAM) {
+  String id = WS_REQ_ARG(PARAM_ID);
   Log.notice(F("WEB : webServer callback for /api/logs/clear." CR));
 
   if (!id.compareTo(myConfig.getID())) {
-    _server->send(200, "text/plain", "Removing logfiles...");
+    WS_SEND(200, "text/plain", "Removing logfiles...");
     LittleFS.remove(LEVELS_FILENAME);
     LittleFS.remove(LEVELS_FILENAME2);
-    _server->send(200, "text/plain", "Level logfiles cleared.");
+    WS_SEND(200, "text/plain", "Level logfiles cleared.");
   } else {
-    _server->send(400, "text/plain", "Unknown ID.");
+    WS_SEND(400, "text/plain", "Unknown ID.");
   }
 }
 
-void KegWebHandler::webHandleBrewspy() {
-  String token = _server->arg("token");
+void KegWebHandler::webHandleBrewspy(WS_PARAM) {
+  String token = WS_REQ_ARG("token");
   Log.notice(F("WEB : webServer callback /api/brewspy/tap %s." CR),
              token.c_str());
 
   String json = myPush.requestTapInfoFromBrewspy(token);
-  _server->send(200, "application/json", json.c_str());
+  WS_SEND(200, "application/json", json.c_str());
 }
 
-void KegWebHandler::webScale() {
+void KegWebHandler::webScale(WS_PARAM) {
   Log.notice(F("WEB : webServer callback /api/scale." CR));
 
   DynamicJsonDocument doc(300);
@@ -147,14 +133,14 @@ void KegWebHandler::webScale() {
   out.reserve(300);
   serializeJson(doc, out);
   doc.clear();
-  _server->send(200, "application/json", out.c_str());
+  WS_SEND(200, "application/json", out.c_str());
 }
 
-void KegWebHandler::webScaleTare() {
+void KegWebHandler::webScaleTare(WS_PARAM) {
   UnitIndex idx;
 
   // Request will contain 1 or 2, but we need 0 or 1 for indexing.
-  if (_server->arg(PARAM_SCALE).toInt() == 1)
+  if (WS_REQ_ARG(PARAM_SCALE).toInt() == 1)
     idx = UnitIndex::U1;
   else
     idx = UnitIndex::U2;
@@ -173,15 +159,15 @@ void KegWebHandler::webScaleTare() {
   out.reserve(300);
   serializeJson(doc, out);
   doc.clear();
-  _server->send(200, "application/json", out.c_str());
+  WS_SEND(200, "application/json", out.c_str());
 }
 
-void KegWebHandler::webScaleFactor() {
-  float weight = convertIncomingWeight(_server->arg(PARAM_WEIGHT).toFloat());
+void KegWebHandler::webScaleFactor(WS_PARAM) {
+  float weight = convertIncomingWeight(WS_REQ_ARG(PARAM_WEIGHT).toFloat());
   UnitIndex idx;
 
   // Request will contain 1 or 2, but we need 0 or 1 for indexing.
-  if (_server->arg(PARAM_SCALE).toInt() == 1)
+  if (WS_REQ_ARG(PARAM_SCALE).toInt() == 1)
     idx = UnitIndex::U1;
   else
     idx = UnitIndex::U2;
@@ -206,7 +192,7 @@ void KegWebHandler::webScaleFactor() {
   out.reserve(300);
   serializeJson(doc, out);
   doc.clear();
-  _server->send(200, "application/json", out.c_str());
+  WS_SEND(200, "application/json", out.c_str());
 }
 
 void KegWebHandler::populateScaleJson(DynamicJsonDocument& doc) {
@@ -281,7 +267,7 @@ void KegWebHandler::populateScaleJson(DynamicJsonDocument& doc) {
 #endif
 }
 
-void KegWebHandler::webStatus() {
+void KegWebHandler::webStatus(WS_PARAM) {
   Log.notice(F("WEB : webServer callback /api/status." CR));
 
   DynamicJsonDocument doc(1000);
@@ -324,10 +310,10 @@ void KegWebHandler::webStatus() {
   out.reserve(1000);
   serializeJson(doc, out);
   doc.clear();
-  _server->send(200, "application/json", out.c_str());
+  WS_SEND(200, "application/json", out.c_str());
 }
 
-void KegWebHandler::webStability() {
+void KegWebHandler::webStability(WS_PARAM) {
   Log.notice(F("WEB : webServer callback /api/stability." CR));
 
 #define PARAM_STABILITY_COUNT1 "stability-count1"
@@ -419,47 +405,47 @@ void KegWebHandler::webStability() {
   out.reserve(500);
   serializeJson(doc, out);
   doc.clear();
-  _server->send(200, "application/json", out.c_str());
+  WS_SEND(200, "application/json", out.c_str());
 }
 
-void KegWebHandler::webReset() {
-  String id = _server->arg(PARAM_ID);
+void KegWebHandler::webReset(WS_PARAM) {
+  String id = WS_REQ_ARG(PARAM_ID);
   Log.notice(F("WEB : webServer callback /api/reset." CR));
 
   if (!id.compareTo(myConfig.getID())) {
-    _server->send(200, "text/plain", "Performing reset...");
+    WS_SEND(200, "text/plain", "Performing reset...");
     LittleFS.end();
     delay(500);
     ESP_RESET();
   } else {
-    _server->send(400, "text/plain", "Unknown ID.");
+    WS_SEND(400, "text/plain", "Unknown ID.");
   }
 }
 
-void KegWebHandler::webStabilityClear() {
+void KegWebHandler::webStabilityClear(WS_PARAM) {
   Log.notice(F("WEB : webServer callback /api/stability/clear." CR));
 
   myLevelDetection.getStability(UnitIndex::U1)->clear();
   myLevelDetection.getStability(UnitIndex::U2)->clear();
-  _server->send(200, "application/json", "{}");
+  WS_SEND(200, "application/json", "{}");
 }
 
-void KegWebHandler::webHandleBeerWrite() {
-  String id = _server->arg(PARAM_ID);
+void KegWebHandler::webHandleBeerWrite(WS_PARAM) {
+  String id = WS_REQ_ARG(PARAM_ID);
   Log.notice(F("WEB : webServer callback for /api/beer." CR));
 
   if (!id.equalsIgnoreCase(_webConfig->getID())) {
     Log.error(F("WEB : Wrong ID received %s, expected %s" CR), id.c_str(),
               _webConfig->getID());
-    _server->send(400, "text/plain", "Invalid ID.");
+    WS_SEND(400, "text/plain", "Invalid ID.");
     return;
   }
 
   DynamicJsonDocument doc(2000);
 
   // Mapping post format to json for parsing in config class
-  for (int i = 0; i < _server->args(); i++) {
-    String arg = _server->argName(i);
+  for (int i = 0; i < WS_REQ_ARG_CNT(); i++) {
+    String arg = WS_REQ_ARG_NAME(i);
 
     if (!arg.compareTo("plain") || !arg.compareTo(PARAM_ID) ||
         !arg.compareTo(PARAM_PASS) || !arg.compareTo(PARAM_PASS2) ||
@@ -467,8 +453,8 @@ void KegWebHandler::webHandleBeerWrite() {
       Log.verbose(F("WEB : Skipping param %ss" CR), arg.c_str());
     } else {
       Log.verbose(F("WEB : Adding param %s=%s" CR), arg.c_str(),
-                  _server->arg(i).c_str());
-      doc[arg] = _server->arg(i);
+                  WS_REQ_ARG(i).c_str());
+      doc[arg] = WS_REQ_ARG(i);
     }
   }
 
@@ -482,10 +468,14 @@ void KegWebHandler::webHandleBeerWrite() {
 
   String path = "/beer.htm";
 
-  if (_server->hasArg("section")) path += _server->arg("section").c_str();
+  if (WS_REQ_HAS_ARG("section")) path += WS_REQ_ARG("section").c_str();
 
+#if defined(USE_ASYNC_WEB)
+  request->redirect(path);
+#else
   _server->sendHeader("Location", path, true);
-  _server->send(302, "text/plain", "Config saved");
+  WS_SEND(302, "text/plain", "Config saved");
+#endif
 }
 
 // EOF

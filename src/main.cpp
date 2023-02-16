@@ -114,7 +114,11 @@ void setup() {
   PERF_END("setup-timesync");
 
   PERF_BEGIN("setup-webserver");
+#if defined(USE_ASYNC_WEB)
+  myWebHandler.setupAsyncWebServer();
+#else
   myWebHandler.setupWebServer();
+#endif
   PERF_END("setup-webserver");
 
   Log.notice(F("Main: Setup completed." CR));
