@@ -35,17 +35,20 @@ SOFTWARE.
 class Scale {
  private:
   class Schedule {
-    public:
-      bool tare = false;
-      bool findFactor = false;
-      float factorWeight = 0;
-      void clear() { tare = false; findFactor = false; }
+   public:
+    bool tare = false;
+    bool findFactor = false;
+    float factorWeight = 0;
+    void clear() {
+      tare = false;
+      findFactor = false;
+    }
   };
 
   HX711* _scale[2] = {0, 0};
   Schedule _sched[2];
-  int32_t _lastRaw[2] = { 0, 0 };
- 
+  int32_t _lastRaw[2] = {0, 0};
+
   Scale(const Scale&) = delete;
   void operator=(const Scale&) = delete;
   void setScaleFactor(UnitIndex idx);
@@ -59,7 +62,10 @@ class Scale {
   void setup(bool force = false);
   void loop(UnitIndex idx);
   void scheduleTare(UnitIndex idx) { _sched[idx].tare = true; }
-  void scheduleFindFactor(UnitIndex idx, float weight) { _sched[idx].findFactor = true; _sched[idx].factorWeight = weight; }
+  void scheduleFindFactor(UnitIndex idx, float weight) {
+    _sched[idx].findFactor = true;
+    _sched[idx].factorWeight = weight;
+  }
   int32_t readLastRaw(UnitIndex idx) { return _lastRaw[idx]; }
 
 #if defined(DEBUG_LINK_SCALES)

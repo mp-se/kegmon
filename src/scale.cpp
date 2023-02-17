@@ -126,7 +126,7 @@ void Scale::tare(UnitIndex idx) {
   if (!_scale[idx]) return;
 
   Log.notice(F("SCAL: Set scale to zero, prepare for calibration [%d]." CR),
-              idx);
+             idx);
 
   _scale[idx]->set_scale();  // set scale factor to 1
   _scale[idx]->tare(myConfig.getScaleReadCountCalibration());  // zero weight
@@ -157,7 +157,7 @@ void Scale::findFactor(UnitIndex idx, float weight) {
   float l = _scale[idx]->get_units(myConfig.getScaleReadCountCalibration());
   float f = l / weight;
   Log.notice(F("SCAL: Detecting factor for weight %F, raw %l %F [%d]." CR),
-              weight, l, f, idx);
+             weight, l, f, idx);
 
   myConfig.setScaleFactor(idx, f);
   myConfig.saveFile();  // save the factor to file
@@ -167,7 +167,6 @@ void Scale::findFactor(UnitIndex idx, float weight) {
 }
 
 void Scale::loop(UnitIndex idx) {
-
   if (_sched[idx].tare) {
     tare(idx);
     readRaw(idx);

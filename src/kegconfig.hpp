@@ -211,7 +211,8 @@ class KegConfig : public BaseConfig {
   bool isVolumeUnitUSOZ() { return _volumeUnit.equals(VOLUME_US); }
   bool isVolumeUnitUKOZ() { return _volumeUnit.equals(VOLUME_UK); }
   void setVolumeUnit(String s) {
-    if (!s.compareTo(VOLUME_CL) || !s.compareTo(VOLUME_UK) || !s.compareTo(VOLUME_US)) {
+    if (!s.compareTo(VOLUME_CL) || !s.compareTo(VOLUME_UK) ||
+        !s.compareTo(VOLUME_US)) {
       _volumeUnit = s;
       _saveNeeded = true;
     }

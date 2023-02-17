@@ -384,7 +384,7 @@ void loop() {
         myScale.getStatsDetection(UnitIndex::U2)->max(),
         myScale.getPourWeight(UnitIndex::U1),
         myScale.getPourWeight(UnitIndex::U2));*/
-    /*    
+    /*
     Log.notice(
         F("LOOP: Reading data raw1=%F,raw2=%F,stable1=%F, "
           "stable2=%F,pour1=%F,"

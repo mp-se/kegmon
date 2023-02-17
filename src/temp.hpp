@@ -44,7 +44,9 @@ class TempHumidity {
   void read();
   float hasSensor() { return isnan(_lastTempC); }
   float getLastTempC() { return _lastTempC; }
-  float getLastTempF() { return isnan(_lastTempC) ? NAN : convertCtoF(_lastTempC); }
+  float getLastTempF() {
+    return isnan(_lastTempC) ? NAN : convertCtoF(_lastTempC);
+  }
   float getLastHumidity() { return _lastHumidity; }
 };
 
