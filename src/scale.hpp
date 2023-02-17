@@ -34,24 +34,39 @@ SOFTWARE.
 
 class Scale {
  private:
-  HX711* _scale[2] = {0, 0};
+  class Schedule {
+    public:
+      bool tare = false;
+      bool findFactor = false;
+      float factorWeight = 0;
+      void clear() { tare = false; findFactor = false; }
+  };
 
+  HX711* _scale[2] = {0, 0};
+  Schedule _sched[2];
+  int32_t _lastRaw[2] = { 0, 0 };
+ 
   Scale(const Scale&) = delete;
   void operator=(const Scale&) = delete;
   void setScaleFactor(UnitIndex idx);
+  void tare(UnitIndex idx);
+  void findFactor(UnitIndex idx, float weight);
+  int32_t readRaw(UnitIndex idx);
 
  public:
   Scale() {}
 
   void setup(bool force = false);
-  void tare(UnitIndex idx);
-  void findFactor(UnitIndex idx, float weight);
+  void loop(UnitIndex idx);
+  void scheduleTare(UnitIndex idx) { _sched[idx].tare = true; }
+  void scheduleFindFactor(UnitIndex idx, float weight) { _sched[idx].findFactor = true; _sched[idx].factorWeight = weight; }
+  int32_t readLastRaw(UnitIndex idx) { return _lastRaw[idx]; }
+
 #if defined(DEBUG_LINK_SCALES)
   bool isConnected(UnitIndex idx) { return true; }
 #else
   bool isConnected(UnitIndex idx) { return _scale[idx] != 0 ? true : false; }
 #endif
-  int32_t readRaw(UnitIndex idx);
   float read(UnitIndex idx);
 };
 

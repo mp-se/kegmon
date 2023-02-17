@@ -23,6 +23,12 @@ def after_build(source, target, env):
         print( "Copy file : " + source + " -> " + target )
         shutil.copyfile( source, target )
 
+    if name == "kegmon-async-release" :
+        target = dir + "/bin/firmware_async.bin"
+        source = dir + "/.pio/build/" + name + "/firmware.bin"
+        print( "Copy file : " + source + " -> " + target )
+        shutil.copyfile( source, target )
+
     if name == "kegmon-rev1-release" :
         target = dir + "/bin/firmware_rev1.bin"
         source = dir + "/.pio/build/" + name + "/firmware.bin"

@@ -135,7 +135,7 @@ void setup() {
            myScale.isConnected(UnitIndex::U2) ? "Yes" : "No");
   myDisplay.printLine(UnitIndex::U1, 1, &buf[0]);
   snprintf(&buf[0], sizeof(buf), "Temp : %s",
-           !isnan(myTemp.getTempC()) ? "Yes" : "No");
+           !isnan(myTemp.getLastTempC()) ? "Yes" : "No");
   myDisplay.printLine(UnitIndex::U1, 2, &buf[0]);
   snprintf(&buf[0], sizeof(buf), "Version: %s", CFG_APPVER);
   myDisplay.printLine(UnitIndex::U1, 3, &buf[0]);
@@ -176,7 +176,7 @@ void drawScreenHardwareStats(UnitIndex idx) {
     snprintf(&buf[0], sizeof(buf), "Max wgt: %.3f",
              myLevelDetection.getStatsDetection(idx)->max());
     myDisplay.printLine(idx, 4, &buf[0]);
-    snprintf(&buf[0], sizeof(buf), "Temp: %.3f", myTemp.getTempC());
+    snprintf(&buf[0], sizeof(buf), "Temp: %.3f", myTemp.getLastTempC());
     myDisplay.printLine(idx, 5, &buf[0]);
   }
 
@@ -290,6 +290,8 @@ void loop() {
 
   myWebHandler.loop();
   myWifi.loop();
+  myScale.loop(UnitIndex::U1);
+  myScale.loop(UnitIndex::U2);
 
   if (abs((int32_t)(millis() - loopMillis)) >
       loopInterval) {  // 2 seconds loop interval
@@ -298,7 +300,7 @@ void loop() {
 
     // Send updates to push targets at regular intervals (300 seconds / 5min)
     if (!(loopCounter % 300)) {
-      myPush.pushTempInformation(myTemp.getTempC(), true);
+      myPush.pushTempInformation(myTemp.getLastTempC(), true);
 
       if (myLevelDetection.hasStableWeight(UnitIndex::U1))
         myPush.pushKegInformation(
@@ -335,7 +337,7 @@ void loop() {
     }
 
     // Read the scales, only once per loop
-    float t = myTemp.getTempC();
+    float t = myTemp.getLastTempC();
 
     PERF_BEGIN("loop-scale-read1");
     myLevelDetection.update(UnitIndex::U1, myScale.read(UnitIndex::U1), t);
@@ -382,6 +384,7 @@ void loop() {
         myScale.getStatsDetection(UnitIndex::U2)->max(),
         myScale.getPourWeight(UnitIndex::U1),
         myScale.getPourWeight(UnitIndex::U2));*/
+    /*    
     Log.notice(
         F("LOOP: Reading data raw1=%F,raw2=%F,stable1=%F, "
           "stable2=%F,pour1=%F,"
@@ -391,7 +394,7 @@ void loop() {
         myLevelDetection.getStatsDetection(UnitIndex::U1)->getStableValue(),
         myLevelDetection.getStatsDetection(UnitIndex::U2)->getStableValue(),
         myLevelDetection.getStatsDetection(UnitIndex::U1)->getPourValue(),
-        myLevelDetection.getStatsDetection(UnitIndex::U2)->getPourValue());
+        myLevelDetection.getStatsDetection(UnitIndex::U2)->getPourValue());*/
 
 #if defined(ENABLE_INFLUX_DEBUG)
     // This part is used to send data to an influxdb in order to get data on

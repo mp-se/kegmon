@@ -200,8 +200,10 @@ class KegConfig : public BaseConfig {
   bool isWeightUnitKG() { return _weightUnit.equals(WEIGHT_KG); }
   bool isWeightUnitLBS() { return _weightUnit.equals(WEIGHT_LBS); }
   void setWeightUnit(String s) {
-    _weightUnit = s;
-    _saveNeeded = true;
+    if (!s.compareTo(WEIGHT_KG) || !s.compareTo(WEIGHT_LBS)) {
+      _weightUnit = s;
+      _saveNeeded = true;
+    }
   }
 
   const char* getVolumeUnit() { return _volumeUnit.c_str(); }
@@ -209,8 +211,10 @@ class KegConfig : public BaseConfig {
   bool isVolumeUnitUSOZ() { return _volumeUnit.equals(VOLUME_US); }
   bool isVolumeUnitUKOZ() { return _volumeUnit.equals(VOLUME_UK); }
   void setVolumeUnit(String s) {
-    _volumeUnit = s;
-    _saveNeeded = true;
+    if (!s.compareTo(VOLUME_CL) || !s.compareTo(VOLUME_UK) || !s.compareTo(VOLUME_US)) {
+      _volumeUnit = s;
+      _saveNeeded = true;
+    }
   }
 
   int32_t getScaleOffset(UnitIndex idx) { return _scaleOffset[idx]; }

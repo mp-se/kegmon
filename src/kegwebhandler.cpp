@@ -78,15 +78,16 @@ void KegWebHandler::setupWebHandlers() {
   BaseWebHandler::setupWebHandlers();
 #endif
 
+  // Note! For the async implementation the order matters
   _server->serveStatic("/levels", LittleFS, LEVELS_FILENAME);
   _server->serveStatic("/levels2", LittleFS, LEVELS_FILENAME2);
   WS_BIND_URL("/api/reset", HTTP_GET, &KegWebHandler::webReset);
-  WS_BIND_URL("/api/scale", HTTP_GET, &KegWebHandler::webScale);
-  WS_BIND_URL("/api/stability", HTTP_GET, &KegWebHandler::webStability);
-  WS_BIND_URL("/api/stability/clear", HTTP_GET,
-              &KegWebHandler::webStabilityClear);
   WS_BIND_URL("/api/scale/tare", HTTP_GET, &KegWebHandler::webScaleTare);
   WS_BIND_URL("/api/scale/factor", HTTP_GET, &KegWebHandler::webScaleFactor);
+  WS_BIND_URL("/api/scale", HTTP_GET, &KegWebHandler::webScale);
+  WS_BIND_URL("/api/stability/clear", HTTP_GET,
+              &KegWebHandler::webStabilityClear);
+  WS_BIND_URL("/api/stability", HTTP_GET, &KegWebHandler::webStability);
   WS_BIND_URL("/api/status", HTTP_GET, &KegWebHandler::webStatus);
   WS_BIND_URL("/calibration.htm", HTTP_GET, &KegWebHandler::webCalibrateHtm);
   WS_BIND_URL("/beer.htm", HTTP_GET, &KegWebHandler::webBeerHtm);
@@ -146,12 +147,18 @@ void KegWebHandler::webScaleTare(WS_PARAM) {
     idx = UnitIndex::U2;
 
   Log.notice(F("WEB : webServer callback /api/scale/tare." CR));
+
+  myScale.scheduleTare(idx);
+  WS_SEND(200, "text/plain", "");
+
+  /* BEFORE ASYNC
   myScale.tare(idx);
 
   Log.notice(
       F("WEB : webServer callback /api/scale/factor, offset=%d [%d]." CR),
       myConfig.getScaleOffset(idx), idx);
 
+  // REFACTOR for ASYNC
   DynamicJsonDocument doc(300);
   populateScaleJson(doc);
 
@@ -159,7 +166,7 @@ void KegWebHandler::webScaleTare(WS_PARAM) {
   out.reserve(300);
   serializeJson(doc, out);
   doc.clear();
-  WS_SEND(200, "application/json", out.c_str());
+  WS_SEND(200, "application/json", out.c_str());*/
 }
 
 void KegWebHandler::webScaleFactor(WS_PARAM) {
@@ -176,12 +183,17 @@ void KegWebHandler::webScaleFactor(WS_PARAM) {
       F("WEB : webServer callback /api/scale/factor, weight=%Fkg [%d]." CR),
       weight, idx);
 
+  myScale.scheduleTare(idx);
+  WS_SEND(200, "text/plain", "");
+
+  /* BEFORE ASYNC
   myScale.findFactor(idx, weight);
 
   Log.notice(
       F("WEB : webServer callback /api/scale/factor, factor=%F [%d]." CR),
       myConfig.getScaleFactor(idx), idx);
 
+  // REFACTOR for ASYNC
   DynamicJsonDocument doc(300);
   populateScaleJson(doc);
 
@@ -192,7 +204,7 @@ void KegWebHandler::webScaleFactor(WS_PARAM) {
   out.reserve(300);
   serializeJson(doc, out);
   doc.clear();
-  WS_SEND(200, "application/json", out.c_str());
+  WS_SEND(200, "application/json", out.c_str());*/
 }
 
 void KegWebHandler::populateScaleJson(DynamicJsonDocument& doc) {
@@ -204,7 +216,9 @@ void KegWebHandler::populateScaleJson(DynamicJsonDocument& doc) {
         convertOutgoingWeight(
             myLevelDetection.getTotalRawWeight(UnitIndex::U1)),
         myConfig.getWeightPrecision());
-    doc[PARAM_SCALE_RAW1] = myScale.readRaw(UnitIndex::U1);
+    doc[PARAM_SCALE_RAW1] = myScale.readLastRaw(UnitIndex::U1);
+    /* BEFORE ASYNC
+    doc[PARAM_SCALE_RAW1] = myScale.readRaw(UnitIndex::U1);*/
     doc[PARAM_SCALE_OFFSET1] = myConfig.getScaleOffset(UnitIndex::U1);
     doc[PARAM_BEER_WEIGHT1] = reduceFloatPrecision(
         convertOutgoingWeight(myLevelDetection.getBeerWeight(UnitIndex::U1)),
@@ -219,7 +233,9 @@ void KegWebHandler::populateScaleJson(DynamicJsonDocument& doc) {
         convertOutgoingWeight(
             myLevelDetection.getTotalRawWeight(UnitIndex::U2)),
         myConfig.getWeightPrecision());
-    doc[PARAM_SCALE_RAW2] = myScale.readRaw(UnitIndex::U2);
+    doc[PARAM_SCALE_RAW2] = myScale.readLastRaw(UnitIndex::U2);
+    /* BEFORE ASYNC
+    doc[PARAM_SCALE_RAW2] = myScale.readRaw(UnitIndex::U2);*/
     doc[PARAM_SCALE_OFFSET2] = myConfig.getScaleOffset(UnitIndex::U2);
     doc[PARAM_BEER_WEIGHT2] = reduceFloatPrecision(
         convertOutgoingWeight(myLevelDetection.getBeerWeight(UnitIndex::U2)),
@@ -294,11 +310,11 @@ void KegWebHandler::webStatus(WS_PARAM) {
   doc[PARAM_KEG_VOLUME2] =
       convertOutgoingVolume(myConfig.getKegVolume(UnitIndex::U2));
 
-  float f = myTemp.getTempC();
+  float f = myTemp.getLastTempC();
 
   if (!isnan(f)) {
     doc[PARAM_TEMP] = convertOutgoingTemperature(f);
-    doc[PARAM_HUMIDITY] = myTemp.getHumidity();
+    doc[PARAM_HUMIDITY] = myTemp.getLastHumidity();
   }
 
 #if LOG_LEVEL == 6
@@ -389,11 +405,11 @@ void KegWebHandler::webStability(WS_PARAM) {
     doc[PARAM_LEVEL_STATISTIC2] =
         myLevelDetection.getStatsDetection(UnitIndex::U2)->getStableValue();
 
-  float f = myTemp.getTempC();
+  float f = myTemp.getLastTempC();
 
   if (!isnan(f)) {
     doc[PARAM_TEMP] = convertOutgoingTemperature(f);
-    doc[PARAM_HUMIDITY] = myTemp.getHumidity();
+    doc[PARAM_HUMIDITY] = myTemp.getLastHumidity();
   }
 
 #if LOG_LEVEL == 6

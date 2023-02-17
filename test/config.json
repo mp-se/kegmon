@@ -30,7 +30,6 @@
   "keg-volume2": 10,
   "glass-volume1": 0.40, 
   "glass-volume2": 0.33, 
-  "weight-precision": 2,
   "weight-unit": "kg",
   "volume-unit": "cl",
   "display-layout": 0,
