@@ -168,16 +168,18 @@ void Scale::findFactor(UnitIndex idx, float weight) {
 
 void Scale::loop(UnitIndex idx) {
   if (_sched[idx].tare) {
+    // Log.notice(F("SCAL: Tare triggered [%d]." CR), idx);
     tare(idx);
     readRaw(idx);
+    _sched[idx].tare = false;
   }
 
   if (_sched[idx].findFactor) {
+    // Log.notice(F("SCAL: Find factor triggered [%d]." CR), idx);
     findFactor(idx, _sched[idx].factorWeight);
     readRaw(idx);
+    _sched[idx].findFactor = false;
   }
-
-  _sched[idx].clear();
 }
 
 // EOF

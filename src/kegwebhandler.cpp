@@ -150,23 +150,6 @@ void KegWebHandler::webScaleTare(WS_PARAM) {
 
   myScale.scheduleTare(idx);
   WS_SEND(200, "text/plain", "");
-
-  /* BEFORE ASYNC
-  myScale.tare(idx);
-
-  Log.notice(
-      F("WEB : webServer callback /api/scale/factor, offset=%d [%d]." CR),
-      myConfig.getScaleOffset(idx), idx);
-
-  // REFACTOR for ASYNC
-  DynamicJsonDocument doc(300);
-  populateScaleJson(doc);
-
-  String out;
-  out.reserve(300);
-  serializeJson(doc, out);
-  doc.clear();
-  WS_SEND(200, "application/json", out.c_str());*/
 }
 
 void KegWebHandler::webScaleFactor(WS_PARAM) {
@@ -183,28 +166,8 @@ void KegWebHandler::webScaleFactor(WS_PARAM) {
       F("WEB : webServer callback /api/scale/factor, weight=%Fkg [%d]." CR),
       weight, idx);
 
-  myScale.scheduleTare(idx);
+  myScale.scheduleFindFactor(idx, weight);
   WS_SEND(200, "text/plain", "");
-
-  /* BEFORE ASYNC
-  myScale.findFactor(idx, weight);
-
-  Log.notice(
-      F("WEB : webServer callback /api/scale/factor, factor=%F [%d]." CR),
-      myConfig.getScaleFactor(idx), idx);
-
-  // REFACTOR for ASYNC
-  DynamicJsonDocument doc(300);
-  populateScaleJson(doc);
-
-  doc[PARAM_WEIGHT_UNIT] = myConfig.getWeightUnit();
-  doc[PARAM_VOLUME_UNIT] = myConfig.getVolumeUnit();
-
-  String out;
-  out.reserve(300);
-  serializeJson(doc, out);
-  doc.clear();
-  WS_SEND(200, "application/json", out.c_str());*/
 }
 
 void KegWebHandler::populateScaleJson(DynamicJsonDocument& doc) {
@@ -217,8 +180,6 @@ void KegWebHandler::populateScaleJson(DynamicJsonDocument& doc) {
             myLevelDetection.getTotalRawWeight(UnitIndex::U1)),
         myConfig.getWeightPrecision());
     doc[PARAM_SCALE_RAW1] = myScale.readLastRaw(UnitIndex::U1);
-    /* BEFORE ASYNC
-    doc[PARAM_SCALE_RAW1] = myScale.readRaw(UnitIndex::U1);*/
     doc[PARAM_SCALE_OFFSET1] = myConfig.getScaleOffset(UnitIndex::U1);
     doc[PARAM_BEER_WEIGHT1] = reduceFloatPrecision(
         convertOutgoingWeight(myLevelDetection.getBeerWeight(UnitIndex::U1)),
@@ -234,8 +195,6 @@ void KegWebHandler::populateScaleJson(DynamicJsonDocument& doc) {
             myLevelDetection.getTotalRawWeight(UnitIndex::U2)),
         myConfig.getWeightPrecision());
     doc[PARAM_SCALE_RAW2] = myScale.readLastRaw(UnitIndex::U2);
-    /* BEFORE ASYNC
-    doc[PARAM_SCALE_RAW2] = myScale.readRaw(UnitIndex::U2);*/
     doc[PARAM_SCALE_OFFSET2] = myConfig.getScaleOffset(UnitIndex::U2);
     doc[PARAM_BEER_WEIGHT2] = reduceFloatPrecision(
         convertOutgoingWeight(myLevelDetection.getBeerWeight(UnitIndex::U2)),

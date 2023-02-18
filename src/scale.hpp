@@ -39,10 +39,6 @@ class Scale {
     bool tare = false;
     bool findFactor = false;
     float factorWeight = 0;
-    void clear() {
-      tare = false;
-      findFactor = false;
-    }
   };
 
   HX711* _scale[2] = {0, 0};

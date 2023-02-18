@@ -161,6 +161,8 @@
 
     function getScale() {
       console.log( "Fetching scale data" );
+      $('#spinner').show();
+      setButtonDisabled(true);
 
       $.ajax( { 
         type: "GET",
@@ -169,9 +171,13 @@
         data: { }, 
         success: function(result) { 
           showScaleJson(result);
+          setButtonDisabled(false);
+          $('#spinner').hide();
         },
         error: function(result) { 
-          showError('Unable read scale.'); }
+          showError('Unable read scale.'); 
+          setButtonDisabled(false);
+          $('#spinner').hide(); }
       } );
     }
 
@@ -187,8 +193,8 @@
         success: function(result) { 
           setTimeout(() => { getScale(); }, 1000);
           setTimeout(() => { showSuccess('Scale is now reset to zero weight, procceed to step 2.'); }, 2000);
-          setButtonDisabled(false);
-          $('#spinner').hide();
+          // setButtonDisabled(false);
+          // $('#spinner').hide();
         },
         error: function(result) { 
           showError('Unable reset scale to zero weight.'); 
@@ -209,8 +215,8 @@
         success: function(result) { 
           setTimeout(() => { getScale(); }, 1000);
           setTimeout(() => { showSuccess('Scale is now calibrated...'); }, 2000); 
-          setButtonDisabled(false);
-          $('#spinner').hide();
+          // setButtonDisabled(false);
+          // $('#spinner').hide();
         },
         error: function(result) { 
           showError('Unable calculate factor.'); 
@@ -223,9 +229,7 @@
       console.log( "Reading scale #" + $("#scale-index").val());
       $('#spinner').show();
       setButtonDisabled(true);
-      getScale();
-      setButtonDisabled(false);
-      $('#spinner').hide();
+      setTimeout(() => { getScale(); }, 2000);
     });
 
     function showScaleJson(result) {

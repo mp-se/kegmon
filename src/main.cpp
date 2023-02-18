@@ -384,7 +384,6 @@ void loop() {
         myScale.getStatsDetection(UnitIndex::U2)->max(),
         myScale.getPourWeight(UnitIndex::U1),
         myScale.getPourWeight(UnitIndex::U2));*/
-    /*
     Log.notice(
         F("LOOP: Reading data raw1=%F,raw2=%F,stable1=%F, "
           "stable2=%F,pour1=%F,"
@@ -394,7 +393,7 @@ void loop() {
         myLevelDetection.getStatsDetection(UnitIndex::U1)->getStableValue(),
         myLevelDetection.getStatsDetection(UnitIndex::U2)->getStableValue(),
         myLevelDetection.getStatsDetection(UnitIndex::U1)->getPourValue(),
-        myLevelDetection.getStatsDetection(UnitIndex::U2)->getPourValue());*/
+        myLevelDetection.getStatsDetection(UnitIndex::U2)->getPourValue());
 
 #if defined(ENABLE_INFLUX_DEBUG)
     // This part is used to send data to an influxdb in order to get data on
