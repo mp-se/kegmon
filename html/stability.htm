@@ -362,7 +362,7 @@
     };
 
     var chartTemp = [];
-    var chartHumidity = [];
+    /*var chartHumidity = [];*/
 
     const dataSetChart3 = {
       datasets: [{
@@ -371,13 +371,13 @@
         backgroundColor: 'blue',
         data: chartTemp,
         pointStyle: false
-      }, {
+      }/*, {
         label: 'Humidity',
         borderColor: 'green',
         backgroundColor: 'green',
         data: chartHumidity,
         pointStyle: false
-      }]
+      }*/]
     }
 
     const configChart3 = {
@@ -399,7 +399,8 @@
           y: {
             title: {
               display: true,
-              text: 'Temperature/Humidity'
+              text: 'Temperature'
+              /*text: 'Temperature/Humidity'*/
             }
           }
         }
@@ -460,10 +461,10 @@
         chartTemp.push({ x: dt, y: doc["temperature"] });
         upd3 = true;
       }
-      if ("humidity" in doc) {
+      /*if ("humidity" in doc) {
         chartHumidity.push({ x: dt, y: doc["humidity"] });
         upd3 = true;
-      }
+      }*/
      
       var maxItems1 = parseInt( $("#scale-time1").val() );
       var maxItems2 = parseInt( $("#scale-time2").val() );
@@ -503,10 +504,10 @@
         chartTemp.shift();
         upd3 = true;
       }
-      while( chartHumidity.length > maxItems3 ) {
+      /*while( chartHumidity.length > maxItems3 ) {
         chartHumidity.shift();
         upd3 = true;
-      }
+      }*/
 
       if (upd1) {
         myChart1.update('resize');

@@ -28,6 +28,8 @@ SOFTWARE.
 #include <SimpleKalmanFilter.h>
 #include <tinyexpr.h>
 
+#include <kegconfig.hpp>
+#include <main.hpp>
 #include <utils.hpp>
 
 class RawLevelDetection {
@@ -46,7 +48,6 @@ class RawLevelDetection {
 
   // Temperature correction filter
   float _tempCorr = NAN;
-  const char *_tempCorrFormula = 0;
 
   // Slope filter
   float _slope = NAN;
@@ -58,11 +59,10 @@ class RawLevelDetection {
   // as a baseline/reference for other level detection methods.
  public:
   RawLevelDetection(UnitIndex idx, float kalmanMea, float _kalmanEst,
-                    float kalmanNoise, const char *tempCorrFormula) {
+                    float kalmanNoise) {
     clear();
     _idx = idx;
     _kalmanFilter = new SimpleKalmanFilter(kalmanMea, _kalmanEst, kalmanNoise);
-    _tempCorrFormula = tempCorrFormula;
   }
 
   bool hasRawValue() { return isnan(_last) ? false : true; }
@@ -95,20 +95,23 @@ class RawLevelDetection {
 
     // Temperature correction
     _tempCorr = NAN;
+    const char *formula = myConfig.getScaleTempCompensationFormula(_idx);
 
-    if (strlen(_tempCorrFormula) > 0) {
+    if (strlen(formula) > 0) {
       double weight = v;
       double tempC = temp;
       double tempF = convertCtoF(tempC);
       int err;
       te_variable vars[] = {
           {"weight", &weight}, {"tempC", &tempC}, {"tempF", &tempF}};
-      te_expr *expr = te_compile(_tempCorrFormula, vars, 3, &err);
+      te_expr *expr = te_compile(formula, vars, 3, &err);
 
       if (expr) {
         _tempCorr = te_eval(expr);
         te_free(expr);
       }
+
+      Log.notice(F("LVL : %F -> %F" CR), v, _tempCorr);
     }
 
     // Slope calculation

@@ -27,10 +27,13 @@ SOFTWARE.
 #include <DHT.h>
 
 #include <main.hpp>
+#include <utils.hpp>
 
 class TempHumidity {
  private:
   DHT* _temp = 0;
+  float _lastTempC = NAN;
+  float _lastHumidity = NAN;
 
  public:
   TempHumidity();
@@ -38,9 +41,13 @@ class TempHumidity {
   TempHumidity& operator=(const TempHumidity&);
   void setup();
   void reset();
-  float getTempC();
-  float getTempF();
-  float getHumidity();
+  void read();
+  float hasSensor() { return isnan(_lastTempC); }
+  float getLastTempC() { return _lastTempC; }
+  float getLastTempF() {
+    return isnan(_lastTempC) ? NAN : convertCtoF(_lastTempC);
+  }
+  float getLastHumidity() { return _lastHumidity; }
 };
 
 extern TempHumidity myTemp;

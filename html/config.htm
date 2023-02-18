@@ -410,7 +410,27 @@
                   <i>These are used to determine how many reads done towards the HX711. Since we filter the values we should not need that many for normal operations but when doing calibration its important to have an accurate value.</i>
                 </div>
               </div>
+
+              <div class="row mb-3">
+                <label for="scale-temp-formula1" class="col-sm-2 col-form-label">Scale temp compensation</label>
+                <div class="col-sm-5">
+                  <input type="text" size="100" class="form-control" name="scale-temp-formula1" id="scale-temp-formula1" placeholder=""
+                    data-bs-toggle="tooltip"
+                    title="Formula to compensate for temperature (scale 1)">
+                </div>
+                <div class="col-sm-5">
+                  <input type="text" size="100" class="form-control" name="scale-temp-formula2" id="scale-temp-formula2" placeholder=""
+                    data-bs-toggle="tooltip"
+                    title="Formula to compensate for temperature (scale 2)">
+                </div>
+              </div>
   
+              <div class="row mb-3">
+                <div class="col-sm-12">
+                  <i>Formula for compensating for temperature. Empty disables feature. See documentation for examples.</i>
+                </div>
+              </div>
+              
               <!--
               <hr>
   
@@ -510,6 +530,9 @@
 
         $("#brewspy-token1").val(cfg["brewspy-token1"]);
         $("#brewspy-token2").val(cfg["brewspy-token2"]);
+
+        $("#scale-temp-formula1").val(cfg["scale-temp-formula1"]);
+        $("#scale-temp-formula2").val(cfg["scale-temp-formula2"]);
 
         $("#mqtt-target").val(cfg["mqtt-target"]);
         $("#mqtt-port").val(cfg["mqtt-port"]);

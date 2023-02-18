@@ -4,10 +4,10 @@
 import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
 
-bucket = "<bucket>"
-org = "<org>"
-token = "<token>"
-url="<url>"
+bucket = ""
+org = ""
+token = ""
+url=""
 cppOutName = "simulated.hpp"
 csvOutName = "simulated.csv"
 interval = 0 # Will skip this amount of values, needed if the data is too much for the arduino
@@ -28,16 +28,14 @@ if __name__ == "__main__":
 
     # change the query to include your device id and time-frame
     query = 'from(bucket: "keezer")\
-        |> range(start: -4h)\
+        |> range(start: -3h)\
         |> filter(fn: (r) => r["_measurement"] == "debug")\
         |> filter(fn: (r) => r["device"] == "1f04ac")\
         |> filter(fn: (r) => r["_field"] == "level-raw2" or r["_field"] == "level-raw1" or r["_field"] == "tempC")\
         |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")'
-    #   |> filter(fn: (r) => r["device"] == "7376ef")'
 
     cnt = 0
     line = 0
-    # lastTemp = ""
     result = query_api.query(org=org, query=query)
     for table in result:
         for record in table.records:
@@ -45,17 +43,15 @@ if __name__ == "__main__":
             line += 1
 
             if record.values.get("tempC") != None: # Ignore values without temp data
-                # if str(record.values.get("tempC")) != lastTemp:
-                #    lastTemp = str(record.values.get("tempC"))
-                #        csvOut.write(record.get_time().isoformat() + "," + str(record.values.get("level-raw1")) + "," + str(record.values.get("level-raw2")) + "," + str(record.values.get("tempC")) + "\n")
-
-                # Limit the amount of data we use for the tests. Skip the number of values defined in interval. 1 = reduce by 50%
                 if cnt >= interval:
                     cppOut.write("{ " + str(record.values.get("level-raw1")) + ", " + str(record.values.get("level-raw2")) + ", " + str(record.values.get("tempC")) + " },\n")
                     csvOut.write(record.get_time().isoformat() + "," + str(record.values.get("level-raw1")) + "," + str(record.values.get("level-raw2")) + "," + str(record.values.get("tempC")) + "\n")
                     cnt = 0
+                    print(".", end="\r")
                 else:
                     cnt += 1
+            else:
+                print("Missing temperature data")
 
     print("")
     cppOut.write( "{ -1.0, -1.0, -1.0 } };\n\n") # Mark end of data structure

@@ -36,7 +36,7 @@ jobs:
           git config --global advice.detachedHead false
 
       - name: Run PlatformIO
-        run: pio run -e kegmon-release 
+        run: pio run -e kegmon-release -e kegmon-async-release
 
       - uses: EndBug/add-and-commit@v7 # You can change this to use a specific version. https://github.com/marketplace/actions/add-commit
         with:

@@ -31,24 +31,14 @@ SOFTWARE.
 // #define ENABLE_ADDING_NOISE
 
 LevelDetection::LevelDetection() {
-  _rawLevel[0] = new RawLevelDetection(UnitIndex::U1, 0.001, 0.001, 0.001, "");
-  _rawLevel[1] = new RawLevelDetection(UnitIndex::U2, 0.001, 0.001, 0.001, "");
-  // _rawLevel[0] = new RawLevelDetection(UnitIndex::U1, 0.01, 0.01, 0.001,
-  // "weight-(tempC-4)*0.02"); _rawLevel[1] = new
-  // RawLevelDetection(UnitIndex::U2, 0.01, 0.01, 0.001,
-  // "weight-(tempC-4)*0.02"); _rawLevel[0] = new
-  // RawLevelDetection(UnitIndex::U1, 0.001, 0.001, 0.001,
-  // "weight*(1-0.0002*(20-tempC))"); _rawLevel[1] = new
-  // RawLevelDetection(UnitIndex::U2, 0.001, 0.001, 0.001,
-  // "weight*(1-0.0002*(20-tempC))");
+  _rawLevel[0] = new RawLevelDetection(UnitIndex::U1, 0.001, 0.001, 0.001);
+  _rawLevel[1] = new RawLevelDetection(UnitIndex::U2, 0.001, 0.001, 0.001);
   _statsLevel[0] = new StatsLevelDetection(UnitIndex::U1);
   _statsLevel[1] = new StatsLevelDetection(UnitIndex::U2);
 #if defined(ENABLE_ADDING_NOISE)
   randomSeed(12345L);
 #endif
 }
-
-// getRawValue() * (1.0 - coeff * (20.0-t));
 
 void LevelDetection::update(UnitIndex idx, float raw, float temp) {
   if (isnan(raw)) {

@@ -114,7 +114,11 @@ void setup() {
   PERF_END("setup-timesync");
 
   PERF_BEGIN("setup-webserver");
+#if defined(USE_ASYNC_WEB)
+  myWebHandler.setupAsyncWebServer();
+#else
   myWebHandler.setupWebServer();
+#endif
   PERF_END("setup-webserver");
 
   Log.notice(F("Main: Setup completed." CR));
@@ -131,7 +135,7 @@ void setup() {
            myScale.isConnected(UnitIndex::U2) ? "Yes" : "No");
   myDisplay.printLine(UnitIndex::U1, 1, &buf[0]);
   snprintf(&buf[0], sizeof(buf), "Temp : %s",
-           !isnan(myTemp.getTempC()) ? "Yes" : "No");
+           !isnan(myTemp.getLastTempC()) ? "Yes" : "No");
   myDisplay.printLine(UnitIndex::U1, 2, &buf[0]);
   snprintf(&buf[0], sizeof(buf), "Version: %s", CFG_APPVER);
   myDisplay.printLine(UnitIndex::U1, 3, &buf[0]);
@@ -146,6 +150,7 @@ void setup() {
 
   PERF_END("main-setup");
   PERF_PUSH();
+  myTemp.read();
   delay(3000);
 }
 
@@ -171,13 +176,19 @@ void drawScreenHardwareStats(UnitIndex idx) {
     snprintf(&buf[0], sizeof(buf), "Max wgt: %.3f",
              myLevelDetection.getStatsDetection(idx)->max());
     myDisplay.printLine(idx, 4, &buf[0]);
+    snprintf(&buf[0], sizeof(buf), "Temp: %.3f", myTemp.getLastTempC());
     myDisplay.printLine(idx, 5, &buf[0]);
   }
 
   myDisplay.show(idx);
 }
 
-enum ScreenDefaultIter { ShowWeight = 0, ShowGlasses = 1, ShowPour = 2 };
+enum ScreenDefaultIter {
+  ShowWeight = 0,
+  ShowGlasses = 1,
+  ShowPour = 2,
+  ShowTemp = 3
+};
 
 ScreenDefaultIter defaultScreenIter[2] = {ScreenDefaultIter::ShowWeight,
                                           ScreenDefaultIter::ShowWeight};
@@ -201,6 +212,9 @@ void drawScreenDefault(UnitIndex idx) {
         break;
       case ScreenDefaultIter::ShowPour:
         defaultScreenIter[idx] = ScreenDefaultIter::ShowWeight;
+        break;
+      case ScreenDefaultIter::ShowTemp:
+        defaultScreenIter[idx] = ScreenDefaultIter::ShowTemp;
         break;
     }
   }
@@ -276,28 +290,54 @@ void loop() {
 
   myWebHandler.loop();
   myWifi.loop();
+  myScale.loop(UnitIndex::U1);
+  myScale.loop(UnitIndex::U2);
 
   if (abs((int32_t)(millis() - loopMillis)) >
       loopInterval) {  // 2 seconds loop interval
     loopMillis = millis();
     loopCounter++;
 
-    // Try to reconnect to scales if they are missing
+    // Send updates to push targets at regular intervals (300 seconds / 5min)
+    if (!(loopCounter % 300)) {
+      myPush.pushTempInformation(myTemp.getLastTempC(), true);
+
+      if (myLevelDetection.hasStableWeight(UnitIndex::U1))
+        myPush.pushKegInformation(
+            UnitIndex::U1, myLevelDetection.getBeerStableVolume(UnitIndex::U1),
+            myLevelDetection.getPourVolume(UnitIndex::U1),
+            myLevelDetection.getNoStableGlasses(UnitIndex::U1), true);
+
+      if (myLevelDetection.hasStableWeight(UnitIndex::U2))
+        myPush.pushKegInformation(
+            UnitIndex::U2, myLevelDetection.getBeerStableVolume(UnitIndex::U2),
+            myLevelDetection.getPourVolume(UnitIndex::U2),
+            myLevelDetection.getNoStableGlasses(UnitIndex::U2), true);
+    }
+
+    // Try to reconnect to scales if they are missing (60 seconds)
     if (!(loopCounter % 30)) {
       if (!myScale.isConnected(UnitIndex::U1) ||
           !myScale.isConnected(UnitIndex::U2)) {
         myScale.setup();  // Try to reconnect to scale
       }
+    }
 
-      // If the temp sensor is not responding, try to reset it and try again
-      if (isnan(myTemp.getTempC())) {
+    // The temp sensor should not be read too often. Reading every 10 seconds.
+    if (!(loopCounter % 5)) {
+      myTemp.read();
+
+      // Log.notice(F("Loop: Current temp %FC %FF." CR), myTemp.getTempC(),
+      // myTemp.getTempF());
+
+      if (myTemp.hasSensor()) {
         myTemp.reset();
         myTemp.setup();
       }
     }
 
     // Read the scales, only once per loop
-    float t = myTemp.getTempC();
+    float t = myTemp.getLastTempC();
 
     PERF_BEGIN("loop-scale-read1");
     myLevelDetection.update(UnitIndex::U1, myScale.read(UnitIndex::U1), t);
@@ -344,7 +384,6 @@ void loop() {
         myScale.getStatsDetection(UnitIndex::U2)->max(),
         myScale.getPourWeight(UnitIndex::U1),
         myScale.getPourWeight(UnitIndex::U2));*/
-
     Log.notice(
         F("LOOP: Reading data raw1=%F,raw2=%F,stable1=%F, "
           "stable2=%F,pour1=%F,"

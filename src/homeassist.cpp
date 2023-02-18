@@ -37,18 +37,19 @@ const char *volumeTemplate =
     "attr\",\"unique_id\":\"${mdns}_volume${tap}\"}|"
     "homeassistant/sensor/${mdns}_volume${tap}/state:${volume}|"
     "homeassistant/sensor/${mdns}_volume${tap}/"
-    "attr:{\"glasses\":\"${glasses}\"}|";
+    "attr:{\"glasses\":${glasses}}|";
 
 const char *beerTemplate =
     "homeassistant/sensor/${mdns}_beer${tap}/config:"
     "{\"name\":\"${mdns}_beer${tap}\",\"state_topic\":\"homeassistant/sensor/"
     "${mdns}_beer${tap}/state\",\"json_attributes_topic\":\"homeassistant/"
     "sensor/${mdns}_beer${tap}/"
-    "attr\",\"unique_id\":\"${mdns}_beer${beer-tap}\"}|"
+    "attr\",\"unique_id\":\"${mdns}_beer${tap}\"}|"
     "homeassistant/sensor/${mdns}_beer${tap}/state:${beer-name}|"
     "homeassistant/sensor/${mdns}_beer${tap}/"
-    "attr:{\"abv\":\"${beer-abv}\",\"ibu\":\"${beer-ibu}\",\"ebc\":\"${beer-"
-    "ebc}\"}|";
+    "attr:{\"abv\":${beer-abv},\"abv\":${beer-abv},\"ibu\":${beer-ibu},\"ebc\":"
+    "${beer-"
+    "ebc}}|";
 
 const char *pourTemplate =
     "homeassistant/sensor/${mdns}_pour${tap}/config:"
@@ -56,6 +57,39 @@ const char *pourTemplate =
     "measurement\":\"L\",\"state_topic\":\"homeassistant/sensor/"
     "${mdns}_pour${tap}/state\",\"unique_id\":\"${mdns}_pour${tap}\"}|"
     "homeassistant/sensor/${mdns}_pour${tap}/state:${pour}|";
+
+const char *tempTemplate =
+    "homeassistant/sensor/${mdns}_temp/config:"
+    "{\"device_class\":\"temperature\",\"name\":\"${mdns}_temp\",\"unit_of_"
+    "measurement\":\"${temp-format}\",\"state_topic\":\"homeassistant/sensor/"
+    "${mdns}_temp/state\",\"unique_id\":\"${mdns}_temp\"}|"
+    "homeassistant/sensor/${mdns}_temp/state:${temp}|";
+
+void HomeAssist::sendTempInformation(float tempC) {
+  if (!myConfig.hasTargetMqtt()) return;
+
+  TemplatingEngine tpl;
+
+  tpl.setVal("${mdns}", myConfig.getMDNS());
+
+  // if (myConfig.isTempFormatC()) {
+  tpl.setVal("${temp}", tempC);
+  tpl.setVal("${temp-format}", "°C");
+  // } else {
+  //  tpl.setVal("${temp}", convertCtoF(tempC));
+  //  tpl.setVal("${temp-format}", "°F");
+  // }
+
+  const char *out = tpl.create(tempTemplate);
+  EspSerial.print(out);
+  EspSerial.print(CR);
+  String outStr(out);
+  _push->sendMqtt(outStr);
+
+  Log.notice(F("HA  : Sending temp information to HA, last %FC" CR), tempC);
+
+  tpl.freeMemory();
+}
 
 void HomeAssist::sendTapInformation(UnitIndex idx, float stableVol,
                                     float glasses) {

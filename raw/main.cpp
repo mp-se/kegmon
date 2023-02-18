@@ -54,8 +54,15 @@ void setup() {
   myConfig.setTargetMqtt("");
   myConfig.setPassMqtt("");
   myConfig.setUserMqtt("");
-  myConfig.setBrewspyToken(0, "");
-  myConfig.setBrewspyToken(1, "");
+  myConfig.setBrewspyToken(UnitIndex::U1, "");
+  myConfig.setBrewspyToken(UnitIndex::U1, "");
+
+  String formula = "";
+  // String formula = "weight*(1.0-0.025*(tempC-3.0))";
+  // String formula = "weight*(1+(0.004*(tempC-5)))";
+  // String formula = "weight-(1+0.004*(tempC-5))";
+  myConfig.setScaleTempCompensationFormula(UnitIndex::U1, formula);
+  myConfig.setScaleTempCompensationFormula(UnitIndex::U2, formula);
 
   if (!myWifi.hasConfig() || myWifi.isDoubleResetDetected()) {
     Log.notice(
@@ -80,16 +87,16 @@ void setup() {
   myDisplay.show(UnitIndex::U1);
 
   // Change setting for the simulation
-  Log.notice(F("SETUP: Max deviation increase %F" CR), myConfig.getScaleMaxDeviationIncreaseValue());
-  Log.notice(F("SETUP: Max deviation decrease %F" CR), myConfig.getScaleMaxDeviationDecreaseValue());
+  Log.notice(F("SETUP: Max deviation increase %F" CR), myConfig.getScaleDeviationIncreaseValue());
+  Log.notice(F("SETUP: Max deviation decrease %F" CR), myConfig.getScaleDeviationDecreaseValue());
 }
 
 int simulatedIndex = 0;
 // int simulatedDelay = 1000;
 // int simulatedDelay = 500;
 // int simulatedDelay = 200;
-// int simulatedDelay = 100;
-int simulatedDelay = 50;
+int simulatedDelay = 100;
+// int simulatedDelay = 50;
 
 void loop() {
   if (!myWifi.isConnected()) myWifi.connect();
@@ -161,11 +168,20 @@ void loop() {
     }
 
     float slope1 =
-        myLevelDetection.getRawDetection(UnitIndex::U1)->getSlopeValue() + 15;
+        myLevelDetection.getRawDetection(UnitIndex::U1)->getSlopeValue();
 
     if(!isnan(slope1)) { 
       snprintf(&buf[0], sizeof(buf), ",level-slope1=%f",
               isnan(slope1) ? 0 : slope1);
+      s += &buf[0];
+    }
+
+    float tempCorr1 =
+        myLevelDetection.getRawDetection(UnitIndex::U1)->getTempCorrValue();
+
+    if(!isnan(tempCorr1)) { 
+      snprintf(&buf[0], sizeof(buf), ",level-temp=%f",
+              isnan(tempCorr1) ? 0 : tempCorr1);
       s += &buf[0];
     }
 

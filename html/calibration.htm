@@ -159,6 +159,28 @@
   <script type="text/javascript">
     window.onload = start;
 
+    function getScale() {
+      console.log( "Fetching scale data" );
+      $('#spinner').show();
+      setButtonDisabled(true);
+
+      $.ajax( { 
+        type: "GET",
+        url: "/api/scale", 
+        //url: "../test/scale.json", 
+        data: { }, 
+        success: function(result) { 
+          showScaleJson(result);
+          setButtonDisabled(false);
+          $('#spinner').hide();
+        },
+        error: function(result) { 
+          showError('Unable read scale.'); 
+          setButtonDisabled(false);
+          $('#spinner').hide(); }
+      } );
+    }
+
     $("#tare-btn").click(function(e){
       console.log( "Resetting scale #" + $("#scale-index").val() );
       setButtonDisabled(true);
@@ -169,10 +191,10 @@
         //url: "../test/scale.json", 
         data: { "scale-index": $("#scale-index").val() }, 
         success: function(result) { 
-          showSuccess('Scale is now reset to zero weight, procceed to step 2.');  
-          showScaleJson(result);
-          setButtonDisabled(false);
-          $('#spinner').hide();
+          setTimeout(() => { getScale(); }, 1000);
+          setTimeout(() => { showSuccess('Scale is now reset to zero weight, procceed to step 2.'); }, 2000);
+          // setButtonDisabled(false);
+          // $('#spinner').hide();
         },
         error: function(result) { 
           showError('Unable reset scale to zero weight.'); 
@@ -191,10 +213,10 @@
         //url: "../test/scale.json", 
         data: { weight: $("#weight").val(), "scale-index": $("#scale-index").val() }, 
         success: function(result) { 
-          showSuccess('Scale is now calibrated...');  
-          showScaleJson(result);
-          setButtonDisabled(false);
-          $('#spinner').hide();
+          setTimeout(() => { getScale(); }, 1000);
+          setTimeout(() => { showSuccess('Scale is now calibrated...'); }, 2000); 
+          // setButtonDisabled(false);
+          // $('#spinner').hide();
         },
         error: function(result) { 
           showError('Unable calculate factor.'); 
@@ -205,23 +227,9 @@
 
     $("#test-btn").click(function(e){
       console.log( "Reading scale #" + $("#scale-index").val());
-      setButtonDisabled(true);
       $('#spinner').show();
-      $.ajax( { 
-        type: "GET",
-        url: "/api/scale", 
-        //url: "../test/scale.json", 
-        data: { }, 
-        success: function(result) { 
-          showScaleJson(result);
-          setButtonDisabled(false);
-          $('#spinner').hide();
-        },
-        error: function(result) { 
-          showError('Unable read scale.'); 
-          setButtonDisabled(false); 
-          $('#spinner').hide(); }
-      } );
+      setButtonDisabled(true);
+      setTimeout(() => { getScale(); }, 2000);
     });
 
     function showScaleJson(result) {
@@ -249,22 +257,11 @@
     }
 
     function start() {
-      setButtonDisabled(true);
-
-      var url = "/api/scale";
-      //var url = "/test/scale.json";
       $('#spinner').show();
-      $.getJSON(url, function (result) {
-        console.log(result);
-        showScaleJson(result);        
-      })
-        .fail(function () {
-          showError('Unable to get data from the device.');
-        })
-        .always(function () {
-          $('#spinner').hide();
-          setButtonDisabled(false);
-        });
+      setButtonDisabled(true);
+      getScale();
+      setButtonDisabled(false);
+      $('#spinner').hide();
     }
   </script>
 
