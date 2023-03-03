@@ -159,6 +159,10 @@
               <div class="col-md-6 bg-light" id="id">Loading...</div>
             </div>
             <div class="row mb-3">
+              <div class="col-md-2 bg-light">Platform</div>
+              <div class="col-md-6 bg-light" id="platform">Loading...</div>
+            </div>
+            <div class="row mb-3">
               <div class="col-md-2 bg-light">SSID</div>
               <div class="col-md-6 bg-light" id="wifi-ssid">Loading...</div>
             </div>
@@ -188,6 +192,7 @@
         $("#app-ver").text(cfg["app-ver"] + " (" + cfg["app-build"] + ")");
         $("#mdns").text(cfg["mdns"]);
         $("#id").text(cfg["id"]);
+        $("#platform").text(cfg["platform"]);
         $("#wifi-ssid").text(cfg["wifi-ssid"]); 
 
         var weight_unit = " " + cfg["weight-unit"];

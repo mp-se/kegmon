@@ -55,9 +55,19 @@ void setup() {
 #endif
 
   PERF_BEGIN("setup");
+#if defined(ESP8266)
   Log.notice(F("Main: Reset reason %s." CR), ESP.getResetInfo().c_str());
   Log.notice(F("Main: Started setup for %s." CR),
              String(ESP.getChipId(), HEX).c_str());
+#else
+  char cbuf[20];
+  uint32_t chipId = 0;
+  for (int i = 0; i < 17; i = i + 8) {
+    chipId |= ((ESP.getEfuseMac() >> (40 - i)) & 0xff) << i;
+  }
+  snprintf(&cbuf[0], sizeof(cbuf), "%6x", chipId);
+  Log.notice(F("Main: Started setup for %s." CR), &cbuf[0]);
+#endif
   Log.notice(F("Main: Build options: %s (%s) LOGLEVEL %d " CR), CFG_APPVER,
              CFG_GITREV, LOG_LEVEL);
 
@@ -88,8 +98,10 @@ void setup() {
   myTemp.setup();
   PERF_END("setup-temp");
 
+#if defined(ESP8266)
   ESP.wdtDisable();
   ESP.wdtEnable(5000);
+#endif
 
   // No stored config, move to portal
   if (!myWifi.hasConfig() || myWifi.isDoubleResetDetected()) {

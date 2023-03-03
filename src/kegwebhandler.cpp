@@ -32,6 +32,7 @@ SOFTWARE.
 // Configuration or api params
 #define PARAM_APP_VER "app-ver"
 #define PARAM_APP_BUILD "app-build"
+#define PARAM_PLATFORM "platform"
 #define PARAM_TEMP "temperature"
 #define PARAM_HUMIDITY "humidity"
 
@@ -251,6 +252,15 @@ void KegWebHandler::webStatus(WS_PARAM) {
   doc[PARAM_MDNS] = myConfig.getMDNS();
   doc[PARAM_ID] = myConfig.getID();
   doc[PARAM_SSID] = myConfig.getWifiSSID(0);
+#if defined(ESP8266) && defined(USE_ASYNC_WEB)
+  doc[PARAM_PLATFORM] = "esp8266 async";
+#elif defined(ESP8266)
+  doc[PARAM_PLATFORM] = "esp8266";
+#elif defined(ESP32S2) && defined(USE_ASYNC_WEB)
+  doc[PARAM_PLATFORM] = "esp32s2 async";
+#elif defined(ESP32S2)
+  doc[PARAM_PLATFORM] = "esp32s2";
+#endif
   doc[PARAM_APP_VER] = CFG_APPVER;
   doc[PARAM_APP_BUILD] = CFG_GITREV;
   doc[PARAM_WEIGHT_UNIT] = myConfig.getWeightUnit();

@@ -24,23 +24,48 @@ SOFTWARE.
 #ifndef SRC_KEGWEBHANDLER_HPP_
 #define SRC_KEGWEBHANDLER_HPP_
 
+#if defined(ESP8266)
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
-#include <incbin.h>
+#elif defined(ESP32S2)
+#include <WiFi.h>
+#endif
 
-#if defined(USE_ASYNC_WEB)
+#if defined(ESP8266) && defined(USE_ASYNC_WEB)
 #include <baseasyncwebhandler.hpp>
-#else
+#elif defined(ESP8266)
 #include <ESP8266WebServer.h>
-
+#include <basewebhandler.hpp>
+#elif defined(ESP32S2) && defined(USE_ASYNC_WEB)
+#include <WebServer.h>
+#include <baseasyncwebhandler.hpp>
+#elif defined(ESP32S2)
+#include <WebServer.h>
 #include <basewebhandler.hpp>
 #endif
+
 #include <kegconfig.hpp>
 
+#if defined(ESP8266)
+#include <incbin.h>
 INCBIN_EXTERN(CalibrateHtm);
 INCBIN_EXTERN(BeerHtm);
 INCBIN_EXTERN(StabilityHtm);
 INCBIN_EXTERN(GraphHtm);
+#else
+extern const uint8_t calibrationHtmStart[] asm(
+    "_binary_html_calibration_min_htm_start");
+extern const uint8_t calibrationHtmEnd[] asm(
+    "_binary_html_calibration_min_htm_end");
+extern const uint8_t beerHtmStart[] asm("_binary_html_beer_min_htm_start");
+extern const uint8_t beerHtmEnd[] asm("_binary_html_beer_min_htm_end");
+extern const uint8_t stabilityHtmStart[] asm(
+    "_binary_html_stability_min_htm_start");
+extern const uint8_t stabilityHtmEnd[] asm(
+    "_binary_html_stability_min_htm_end");
+extern const uint8_t graphHtmStart[] asm("_binary_html_graph_min_htm_start");
+extern const uint8_t graphHtmEnd[] asm("_binary_html_graph_min_htm_end");
+#endif
 
 #if defined(USE_ASYNC_WEB)
 #define WS_BIND_URL(url, http, func) \
@@ -92,6 +117,7 @@ class KegWebHandler :
   void webHandleBrewspy(WS_PARAM);
   void webHandleLogsClear(WS_PARAM);
 
+#if defined(ESP8266)
   void webCalibrateHtm(WS_PARAM) {
     WS_SEND_STATIC(gCalibrateHtmData, gCalibrateHtmSize);
   }
@@ -100,6 +126,26 @@ class KegWebHandler :
     WS_SEND_STATIC(gStabilityHtmData, gStabilityHtmSize);
   }
   void webGraphHtm(WS_PARAM) { WS_SEND_STATIC(gGraphHtmData, gGraphHtmSize); }
+#else
+  void webCalibrateHtm(WS_PARAM) {
+    WS_SEND_STATIC(
+        (const char*)calibrationHtmStart,
+        strlen(reinterpret_cast<const char*>(&calibrationHtmStart[0])));
+  }
+  void webBeerHtm(WS_PARAM) {
+    WS_SEND_STATIC((const char*)beerHtmStart,
+                   strlen(reinterpret_cast<const char*>(&beerHtmStart[0])));
+  }
+  void webStabilityHtm(WS_PARAM) {
+    WS_SEND_STATIC(
+        (const char*)stabilityHtmStart,
+        strlen(reinterpret_cast<const char*>(&stabilityHtmStart[0])));
+  }
+  void webGraphHtm(WS_PARAM) {
+    WS_SEND_STATIC((const char*)graphHtmStart,
+                   strlen(reinterpret_cast<const char*>(&graphHtmStart[0])));
+  }
+#endif
 
  public:
   explicit KegWebHandler(KegConfig* config);

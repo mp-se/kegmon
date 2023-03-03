@@ -33,6 +33,7 @@ SOFTWARE.
 #define CFG_MDNSNAME "KegMon"        // Network name
 #define CFG_FILENAME "/kegmon.json"  // Name of config file
 
+#if defined(ESP8266)
 #define ESP_RESET ESP.reset
 #define PIN_LED 2
 #define PIN_OLED_SDA D2
@@ -43,6 +44,20 @@ SOFTWARE.
 #define PIN_SCALE2_SCL D8
 #define PIN_DH2 D7
 #define PIN_DH2_PWR D6
+#elif defined(ESP32S2)
+#define ESP_RESET ESP.restart
+#define PIN_LED BUILTIN_LED
+#define PIN_OLED_SDA SDA
+#define PIN_OLED_SCL SCL
+#define PIN_SCALE1_SDA A17
+#define PIN_SCALE1_SCL A15
+#define PIN_SCALE2_SDA A6
+#define PIN_SCALE2_SCL A11
+#define PIN_DH2 A10
+#define PIN_DH2_PWR A8
+#else
+#error "Undefined target platform"
+#endif
 
 enum UnitIndex { U1 = 0, U2 = 1 };
 /*
