@@ -40,6 +40,13 @@ void TempHumidity::setup() {
   if (_temp) delete _temp;
   _temp = new DHT(PIN_DH2, DHT22, 1);
   _temp->begin();
+  read();
+
+  if(hasSensor()) {
+    Log.notice(F("Temp: Temp sensor found." CR));
+  } else {
+    Log.warning(F("Temp: Temp sensor NOT found." CR));
+  }
 }
 
 void TempHumidity::reset() {
