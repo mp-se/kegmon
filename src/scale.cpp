@@ -96,7 +96,7 @@ float Scale::read(UnitIndex idx) {
 
   if (myConfig.getScaleFactor(idx) == 0 ||
       myConfig.getScaleOffset(idx) == 0) { // Not initialized, just return zero 
-    Log.warning(F("SCAL: Scale not initialized [%d]." CR), idx);
+    Log.verbose(F("SCAL: Scale not initialized [%d]." CR), idx);
     return 0;
   } 
 
