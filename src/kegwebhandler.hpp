@@ -52,6 +52,7 @@ INCBIN_EXTERN(CalibrateHtm);
 INCBIN_EXTERN(BeerHtm);
 INCBIN_EXTERN(StabilityHtm);
 INCBIN_EXTERN(GraphHtm);
+INCBIN_EXTERN(BackupHtm);
 #else
 extern const uint8_t calibrationHtmStart[] asm(
     "_binary_html_calibration_min_htm_start");
@@ -65,6 +66,8 @@ extern const uint8_t stabilityHtmEnd[] asm(
     "_binary_html_stability_min_htm_end");
 extern const uint8_t graphHtmStart[] asm("_binary_html_graph_min_htm_start");
 extern const uint8_t graphHtmEnd[] asm("_binary_html_graph_min_htm_end");
+extern const uint8_t backupHtmStart[] asm("_binary_html_backup_min_htm_start");
+extern const uint8_t backupHtmEnd[] asm("_binary_html_backup_min_htm_end");
 #endif
 
 #if defined(USE_ASYNC_WEB)
@@ -126,6 +129,7 @@ class KegWebHandler :
     WS_SEND_STATIC(gStabilityHtmData, gStabilityHtmSize);
   }
   void webGraphHtm(WS_PARAM) { WS_SEND_STATIC(gGraphHtmData, gGraphHtmSize); }
+  void webBackupHtm(WS_PARAM) { WS_SEND_STATIC(gBackupHtmData, gBackupHtmSize); }
 #else
   void webCalibrateHtm(WS_PARAM) {
     WS_SEND_STATIC(
@@ -144,6 +148,10 @@ class KegWebHandler :
   void webGraphHtm(WS_PARAM) {
     WS_SEND_STATIC((const char*)graphHtmStart,
                    strlen(reinterpret_cast<const char*>(&graphHtmStart[0])));
+  }
+  void webBackupHtm(WS_PARAM) {
+    WS_SEND_STATIC((const char*)backupHtmStart,
+                   strlen(reinterpret_cast<const char*>(&backupHtmStart[0])));
   }
 #endif
 
