@@ -2,9 +2,11 @@
 <html class="no-js">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="#" />
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Software" href="configuration.html" /><link rel="prev" title="3D Models" href="3dmodels.html" />
 
-    <meta name="generator" content="sphinx-4.3.2, furo 2022.01.02"/><title>Search - KegMon v0.6.0</title><link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <meta name="generator" content="sphinx-4.3.2, furo 2022.01.02"/>
+        <title>Software Installation - KegMon v0.6.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=df49af52631e7917044a9c21a57f7b83170a6dd0" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=fade93df149f7c5fedb3ff897f799dc7d283b420" />
@@ -132,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -149,20 +151,20 @@
   
   <span class="sidebar-brand-text">KegMon v0.6.0</span>
   
-</a><form class="sidebar-search-container" method="get" action="#" role="search">
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="functionality.html">Functionality</a></li>
 <li class="toctree-l1"><a class="reference internal" href="releases.html">Releases</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware</a></li>
 <li class="toctree-l1"><a class="reference internal" href="3dmodels.html">3D Models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Software Installation</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Software Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Software</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">Licence</a></li>
 <li class="toctree-l1"><a class="reference internal" href="q_and_a.html">Q &amp; A</a></li>
@@ -186,31 +188,114 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          
-<noscript>
-<div class="admonition error">
-  <p class="admonition-title">Error</p>
-  <p>
-    Please activate JavaScript to enable the search functionality.
-  </p>
+          <div class="section" id="software-installation">
+<span id="installation"></span><h1>Software Installation<a class="headerlink" href="#software-installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="checklist-for-configuring-the-device">
+<h2>Checklist for configuring the device<a class="headerlink" href="#checklist-for-configuring-the-device" title="Permalink to this headline">¶</a></h2>
+<p>Install the firmware using one of the following options:</p>
+<ul class="simple">
+<li><p>Brewflasher via USB serial</p></li>
+<li><p>Brewflasher WEB via USB serial</p></li>
+</ul>
 </div>
-</noscript>
-
-<div id="search-results"></div>
+<div class="section" id="brewflasher">
+<h2>Brewflasher<a class="headerlink" href="#brewflasher" title="Permalink to this headline">¶</a></h2>
+<p>The preferred option for flashing KegMon is using BrewFlasher, its a tools that support many brewing related firmwares for ESP8266 and ESP32. This works
+on both Windows and Mac. You can download the latest version from here: <a class="reference external" href="https://www.brewflasher.com/">Brewflasher</a> there is also a web based version
+available here <a class="reference external" href="https://web.brewflasher.com/">Brewflasher WEB</a>.</p>
+<a class="reference internal image-reference" href="_images/brewflasher.png"><img alt="Serial output" src="_images/brewflasher.png" style="width: 600px;"/></a>
+<div class="section" id="binaries">
+<h3>Binaries<a class="headerlink" href="#binaries" title="Permalink to this headline">¶</a></h3>
+<p>In the /bin directory you will find 2 different firmware builds;</p>
+<ul>
+<li><p><strong>firmware.bin</strong></p>
+<p>This is the standard release build for esp8266</p>
+</li>
+<li><p><strong>firmware32s2.bin</strong></p>
+<p>This is the release build for an esp32s2 variant.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="updating-firmware">
+<h2>Updating firmware<a class="headerlink" href="#updating-firmware" title="Permalink to this headline">¶</a></h2>
+<p>You can use the above options for updating the firmware as well. But if you want to do updates without connecting the USB cable these
+are your options.</p>
+<div class="section" id="manual-update">
+<h3>Manual update<a class="headerlink" href="#manual-update" title="Permalink to this headline">¶</a></h3>
+<p>When the device in is configuration mode you can manually update with a new firmware. Just navigate to configuration -&gt; fimware select the firmware.bin or firmware32s2.bin file
+that corresponds to the version you want to flash.</p>
+</div>
+</div>
+<div class="section" id="serial-monitoring">
+<span id="id2"></span><h2>Serial Monitoring<a class="headerlink" href="#serial-monitoring" title="Permalink to this headline">¶</a></h2>
+<p>To check output from the device (logs) there are several tools out there. I found this simple tool in the Windows Store called <code class="docutils literal notranslate"><span class="pre">Serial</span> <span class="pre">Port</span> <span class="pre">Monitoring</span></code>.
+Just select a baud rate of 115200, 8N1.</p>
+</div>
+<div class="section" id="configuring-wifi">
+<span id="setup-wifi"></span><h2>Configuring WIFI<a class="headerlink" href="#configuring-wifi" title="Permalink to this headline">¶</a></h2>
+<p>When the device is flashed it will need to have WIFI configuration in order to work. If you have used other software on
+the device its possible that wifi settings already exist.</p>
+<p>If you have difficulties to connect to the create Access Point then try to do a reset and try again. Every time the AP
+is create it chooses a random channel.</p>
+<p>If this is not configured in the device it will create an wireless access point called <cite>KegMon</cite>. The default password is <cite>password</cite>.</p>
+<p>Connect to this AP and enter the SSID and password you want to use. If the web page don’t open automatically you can enter the following address
+in the browser: <strong>http://192.168.4.1</strong></p>
+<p>Before pressing save on the network information, make a note of the devicename that is shown on the screen, this will be the name that is used
+in the next step to access the configuration pages. The link would look like this: <strong>http://kegmon56EA34.local</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When selecting a SSID in the list this will be populated in both wifi fields. This is the behaviour of the wifi manager library that I’m using,
+in the future this is planned to be moved to the normal UI.</p>
+</div>
+<p>Under wifi settings you can define a primary and secondary wifi SSID. The secondary will be used in case the primary fails. If the secondary is
+successful then it will be used as primary. <em>The second wifi setting is optional and not needed.</em></p>
+<a class="reference internal image-reference" href="_images/wifi.png"><img alt="Wifi page" src="_images/wifi.png" style="width: 300px;"/></a>
+</div>
+<div class="section" id="finding-the-device-adress">
+<span id="setup-ip"></span><h2>Finding the device adress<a class="headerlink" href="#finding-the-device-adress" title="Permalink to this headline">¶</a></h2>
+<p>Once the wifi network settings have been added then the device will reboot and connect to your network. If the blue led is flashing then it’s up and running and is ready to be configured.</p>
+<p>If your computer supports mDNS the address you saw before can be used in your web browser to connect to the device. Windows does not have the best support for mDNS so if you are having issues
+with finding the network name you can try the following:</p>
+<ul class="simple">
+<li><p>Check your wireless router for the IP address and use that to connect instead, for example; <a class="reference external" href="http://192.168.1.56">http://192.168.1.56</a></p></li>
+<li><p>Download an IP scanner / Port Scanner on your Windows computer or mobile device and use that to find what devices are listening on port 80.</p></li>
+</ul>
+<p>Once you can access the user interface then proceed to the next step.</p>
+</div>
+</div>
 
         </article>
       </div>
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="configuration.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Software</div>
+              </div>
+              <svg><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="3dmodels.html">
+              <svg><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">3D Models</div>
+                
+              </div>
+            </a>
         </div>
 
         <div class="related-information">
@@ -221,8 +306,38 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Software Installation</a><ul>
+<li><a class="reference internal" href="#checklist-for-configuring-the-device">Checklist for configuring the device</a></li>
+<li><a class="reference internal" href="#brewflasher">Brewflasher</a><ul>
+<li><a class="reference internal" href="#binaries">Binaries</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#updating-firmware">Updating firmware</a><ul>
+<li><a class="reference internal" href="#manual-update">Manual update</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#serial-monitoring">Serial Monitoring</a></li>
+<li><a class="reference internal" href="#configuring-wifi">Configuring WIFI</a></li>
+<li><a class="reference internal" href="#finding-the-device-adress">Finding the device adress</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
@@ -234,8 +349,5 @@
     <script src="_static/scripts/furo.js"></script>
     <script src="_static/clipboard.min.js"></script>
     <script src="_static/copybutton.js"></script>
-    
-<script src="_static/searchtools.js"></script>
-<script src="_static/language_data.js"></script>
-<script src="searchindex.js"></script></body>
+    </body>
 </html>

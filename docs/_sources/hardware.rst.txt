@@ -3,6 +3,9 @@
 Hardware 
 --------
 
+Introduction
+============
+
 This is the hardware schema that I have used in my build. 
 
 .. note::
@@ -50,7 +53,7 @@ errors in the accuracy. So in v0.4.0 I changes the CLK signal on the second scal
 
 
 Schema
-******
+======
 
 .. image:: images/schema.jpg
   :width: 600
@@ -59,7 +62,7 @@ Schema
 Part list:
 
 Case
-----
+====
 In this version the HX711 boards are moved to the case with the displays. The hope is that 
 this would stabilize the sensor readings and also make it easier to replace a faulty scale. 
 
@@ -96,8 +99,43 @@ so the digital interface is compatible with the ESP.
   :width: 300
   :alt: RJ45 board
 
+Building the display case
+*************************
+
+.. warning::
+  This part will be updated since in my new prototype im using two connections, one for each keg. 
+  
+First step is to print the case parts and mount the OLED displays to the front. I use hot glue to fix the displays in place. 
+
+.. image:: images/oled_mount.jpg
+  :width: 600
+  :alt: Mounting displays
+
+
+The next step is to build the PCB where I used a standard experiment board with wire to build that up. I didnt want to spend time 
+on creating a PCB for the prototype. Might be something for the future. Just follow the schematic and validate your connections.
+
+To make the connection easy with the scales I put on a rj45 (standard network connector) which I can just plug in to the display case.
+There are other options available on the internet for both 1 and 2 displays. 
+
+.. image:: images/rj45_esp.jpg
+  :width: 600
+  :alt: ESP and network
+
+This is the side which is mounted to the displays.
+
+.. image:: images/front.jpg
+  :width: 600
+  :alt: Front pcb
+
+This is the finished part. (have not wired in the power supply yet)
+
+.. image:: images/display_case.jpg
+  :width: 600
+  :alt: Display build
+
 Base (for one)
---------------
+==============
 In this version the base is just a frame for the load cells and the temperature sensor. 
 Each base will have the same build process but only the temperature sensor of one will be used.
 
@@ -186,37 +224,3 @@ combinator board.
      - Not used
 
 
-Building the display case
-*************************
-
-.. warning::
-  This part will be updated since in my new prototype im using two connections, one for each keg. 
-  
-First step is to print the case parts and mount the OLED displays to the front. I use hot glue to fix the displays in place. 
-
-.. image:: images/oled_mount.jpg
-  :width: 600
-  :alt: Mounting displays
-
-
-The next step is to build the PCB where I used a standard experiment board with wire to build that up. I didnt want to spend time 
-on creating a PCB for the prototype. Might be something for the future. Just follow the schematic and validate your connections.
-
-To make the connection easy with the scales I put on a rj45 (standard network connector) which I can just plug in to the display case.
-There are other options available on the internet for both 1 and 2 displays. 
-
-.. image:: images/rj45_esp.jpg
-  :width: 600
-  :alt: ESP and network
-
-This is the side which is mounted to the displays.
-
-.. image:: images/front.jpg
-  :width: 600
-  :alt: Front pcb
-
-This is the finished part. (have not wired in the power supply yet)
-
-.. image:: images/display_case.jpg
-  :width: 600
-  :alt: Display build

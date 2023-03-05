@@ -2,10 +2,10 @@
 <html class="no-js">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="3D Models" href="3d.html" /><link rel="prev" title="Software" href="software.html" />
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="3D Models" href="3dmodels.html" /><link rel="prev" title="Getting started" href="intro.html" />
 
     <meta name="generator" content="sphinx-4.3.2, furo 2022.01.02"/>
-        <title>Hardware - KegMon v0.5.0</title>
+        <title>Hardware - KegMon v0.6.0</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=df49af52631e7917044a9c21a57f7b83170a6dd0" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">KegMon v0.5.0</div></a>
+      <a href="index.html"><div class="brand">KegMon v0.6.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -149,7 +149,7 @@
     <img class="sidebar-logo" src="_static/kegmon_logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">KegMon v0.5.0</span>
+  <span class="sidebar-brand-text">KegMon v0.6.0</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -159,11 +159,15 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="software.html">Software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functionality.html">Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html">Releases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Getting started</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Hardware</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#case">Case</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#base-for-one">Base (for one)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="3d.html">3D Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3dmodels.html">3D Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Software Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">Licence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="q_and_a.html">Q &amp; A</a></li>
 </ul>
 
 </div>
@@ -192,6 +196,8 @@
         <article role="main">
           <div class="section" id="hardware">
 <span id="id1"></span><h1>Hardware<a class="headerlink" href="#hardware" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>This is the hardware schema that I have used in my build.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -226,14 +232,14 @@ errors in the accuracy. So in v0.4.0 I changes the CLK signal on the second scal
 <p class="admonition-title">Note</p>
 <p>I’m currently updating the 3d model for the display case to fit the larger board.</p>
 </div>
+</div>
 <div class="section" id="schema">
 <h2>Schema<a class="headerlink" href="#schema" title="Permalink to this headline">¶</a></h2>
 <a class="reference internal image-reference" href="_images/schema.jpg"><img alt="Schema" src="_images/schema.jpg" style="width: 600px;"/></a>
 <p>Part list:</p>
 </div>
-</div>
 <div class="section" id="case">
-<h1>Case<a class="headerlink" href="#case" title="Permalink to this headline">¶</a></h1>
+<h2>Case<a class="headerlink" href="#case" title="Permalink to this headline">¶</a></h2>
 <p>In this version the HX711 boards are moved to the case with the displays. The hope is that
 this would stabilize the sensor readings and also make it easier to replace a faulty scale.</p>
 <div class="admonition note">
@@ -262,9 +268,27 @@ havent yet created my own PCB, I want to stabilize the hardware design first.</p
 <p>If you are using the Sparkfun board I suggest that you power the HX711 board with +5V (VCC) and +3.3V (VDD)
 so the digital interface is compatible with the ESP.</p>
 <a class="reference internal image-reference" href="_images/rj45_board.jpg"><img alt="RJ45 board" src="_images/rj45_board.jpg" style="width: 300px;"/></a>
+<div class="section" id="building-the-display-case">
+<h3>Building the display case<a class="headerlink" href="#building-the-display-case" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This part will be updated since in my new prototype im using two connections, one for each keg.</p>
+</div>
+<p>First step is to print the case parts and mount the OLED displays to the front. I use hot glue to fix the displays in place.</p>
+<a class="reference internal image-reference" href="_images/oled_mount.jpg"><img alt="Mounting displays" src="_images/oled_mount.jpg" style="width: 600px;"/></a>
+<p>The next step is to build the PCB where I used a standard experiment board with wire to build that up. I didnt want to spend time
+on creating a PCB for the prototype. Might be something for the future. Just follow the schematic and validate your connections.</p>
+<p>To make the connection easy with the scales I put on a rj45 (standard network connector) which I can just plug in to the display case.
+There are other options available on the internet for both 1 and 2 displays.</p>
+<a class="reference internal image-reference" href="_images/rj45_esp.jpg"><img alt="ESP and network" src="_images/rj45_esp.jpg" style="width: 600px;"/></a>
+<p>This is the side which is mounted to the displays.</p>
+<a class="reference internal image-reference" href="_images/front.jpg"><img alt="Front pcb" src="_images/front.jpg" style="width: 600px;"/></a>
+<p>This is the finished part. (have not wired in the power supply yet)</p>
+<a class="reference internal image-reference" href="_images/display_case.jpg"><img alt="Display build" src="_images/display_case.jpg" style="width: 600px;"/></a>
+</div>
 </div>
 <div class="section" id="base-for-one">
-<h1>Base (for one)<a class="headerlink" href="#base-for-one" title="Permalink to this headline">¶</a></h1>
+<h2>Base (for one)<a class="headerlink" href="#base-for-one" title="Permalink to this headline">¶</a></h2>
 <p>In this version the base is just a frame for the load cells and the temperature sensor.
 Each base will have the same build process but only the temperature sensor of one will be used.</p>
 <ul class="simple">
@@ -277,7 +301,7 @@ Each base will have the same build process but only the temperature sensor of on
 </ul>
 <a class="reference internal image-reference" href="_images/loadcombinator_board.jpg"><img alt="Load Combinator board" src="_images/loadcombinator_board.jpg" style="width: 300px;"/></a>
 <div class="section" id="building-the-base">
-<h2>Building the base<a class="headerlink" href="#building-the-base" title="Permalink to this headline">¶</a></h2>
+<h3>Building the base<a class="headerlink" href="#building-the-base" title="Permalink to this headline">¶</a></h3>
 <p>Print the 2 base models and 2 covers. Files can be found in the sub-model directory.
 These models are designed to be printed on my Prusa MK3s+ and support a Cornelius
 kegs of 9, 18 or 19 l.</p>
@@ -301,7 +325,7 @@ stability over time (Config-&gt;Stability). Once you have calibrated and placed 
 be reset at startup or when pressing the button.</p>
 </div>
 <div class="section" id="cat6-wire-usage">
-<h2>CAT6 Wire Usage<a class="headerlink" href="#cat6-wire-usage" title="Permalink to this headline">¶</a></h2>
+<h3>CAT6 Wire Usage<a class="headerlink" href="#cat6-wire-usage" title="Permalink to this headline">¶</a></h3>
 <p>I used the following wires in the network cable to connect to each base. I used the combinator board to hook
 up all the cables from the load cells. You dont need that but I found it easier to keep track of what goes where.
 The base is quite thin so I cannot fit an RJ45 connector on the board so i’m connecting the cable wires directly to the
@@ -345,23 +369,6 @@ combinator board.</p>
 </tbody>
 </table></div>
 </div>
-<div class="section" id="building-the-display-case">
-<h2>Building the display case<a class="headerlink" href="#building-the-display-case" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This part will be updated since in my new prototype im using two connections, one for each keg.</p>
-</div>
-<p>First step is to print the case parts and mount the OLED displays to the front. I use hot glue to fix the displays in place.</p>
-<a class="reference internal image-reference" href="_images/oled_mount.jpg"><img alt="Mounting displays" src="_images/oled_mount.jpg" style="width: 600px;"/></a>
-<p>The next step is to build the PCB where I used a standard experiment board with wire to build that up. I didnt want to spend time
-on creating a PCB for the prototype. Might be something for the future. Just follow the schematic and validate your connections.</p>
-<p>To make the connection easy with the scales I put on a rj45 (standard network connector) which I can just plug in to the display case.
-There are other options available on the internet for both 1 and 2 displays.</p>
-<a class="reference internal image-reference" href="_images/rj45_esp.jpg"><img alt="ESP and network" src="_images/rj45_esp.jpg" style="width: 600px;"/></a>
-<p>This is the side which is mounted to the displays.</p>
-<a class="reference internal image-reference" href="_images/front.jpg"><img alt="Front pcb" src="_images/front.jpg" style="width: 600px;"/></a>
-<p>This is the finished part. (have not wired in the power supply yet)</p>
-<a class="reference internal image-reference" href="_images/display_case.jpg"><img alt="Display build" src="_images/display_case.jpg" style="width: 600px;"/></a>
 </div>
 </div>
 
@@ -370,7 +377,7 @@ There are other options available on the internet for both 1 and 2 displays.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="3d.html">
+          <a class="next-page" href="3dmodels.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
@@ -379,14 +386,14 @@ There are other options available on the internet for both 1 and 2 displays.</p>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="software.html">
+          <a class="prev-page" href="intro.html">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Software</div>
+                <div class="title">Getting started</div>
                 
               </div>
             </a>
@@ -413,14 +420,17 @@ There are other options available on the internet for both 1 and 2 displays.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Hardware</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
 <li><a class="reference internal" href="#schema">Schema</a></li>
+<li><a class="reference internal" href="#case">Case</a><ul>
+<li><a class="reference internal" href="#building-the-display-case">Building the display case</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#case">Case</a></li>
 <li><a class="reference internal" href="#base-for-one">Base (for one)</a><ul>
 <li><a class="reference internal" href="#building-the-base">Building the base</a></li>
 <li><a class="reference internal" href="#cat6-wire-usage">CAT6 Wire Usage</a></li>
-<li><a class="reference internal" href="#building-the-display-case">Building the display case</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
