@@ -22,7 +22,7 @@ copyright = '2022-23, Magnus Persson'
 author = 'Magnus Persson'
 
 # The full version, including alpha/beta/rc tags
-release = '0.5.0'
+release = '0.6.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -49,7 +49,7 @@ exclude_patterns = []
 #
 html_theme = 'furo'
 html_logo = "images/kegmon_logo.png"
-html_title = "KegMon v0.5.0"
+html_title = "KegMon v0.6.0"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

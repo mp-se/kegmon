@@ -32,6 +32,7 @@ SOFTWARE.
 // Configuration or api params
 #define PARAM_APP_VER "app-ver"
 #define PARAM_APP_BUILD "app-build"
+#define PARAM_PLATFORM "platform"
 #define PARAM_TEMP "temperature"
 #define PARAM_HUMIDITY "humidity"
 
@@ -93,6 +94,7 @@ void KegWebHandler::setupWebHandlers() {
   WS_BIND_URL("/beer.htm", HTTP_GET, &KegWebHandler::webBeerHtm);
   WS_BIND_URL("/stability.htm", HTTP_GET, &KegWebHandler::webStabilityHtm);
   WS_BIND_URL("/graph.htm", HTTP_GET, &KegWebHandler::webGraphHtm);
+  WS_BIND_URL("/backup.htm", HTTP_GET, &KegWebHandler::webBackupHtm);
   WS_BIND_URL("/api/brewspy/tap", HTTP_GET, &KegWebHandler::webHandleBrewspy);
   WS_BIND_URL("/api/beer", HTTP_POST, &KegWebHandler::webHandleBeerWrite);
   WS_BIND_URL("/api/logs/clear", HTTP_GET, &KegWebHandler::webHandleLogsClear);
@@ -251,6 +253,15 @@ void KegWebHandler::webStatus(WS_PARAM) {
   doc[PARAM_MDNS] = myConfig.getMDNS();
   doc[PARAM_ID] = myConfig.getID();
   doc[PARAM_SSID] = myConfig.getWifiSSID(0);
+#if defined(ESP8266) && defined(USE_ASYNC_WEB)
+  doc[PARAM_PLATFORM] = "esp8266 async";
+#elif defined(ESP8266)
+  doc[PARAM_PLATFORM] = "esp8266";
+#elif defined(ESP32S2) && defined(USE_ASYNC_WEB)
+  doc[PARAM_PLATFORM] = "esp32s2 async";
+#elif defined(ESP32S2)
+  doc[PARAM_PLATFORM] = "esp32s2";
+#endif
   doc[PARAM_APP_VER] = CFG_APPVER;
   doc[PARAM_APP_BUILD] = CFG_GITREV;
   doc[PARAM_WEIGHT_UNIT] = myConfig.getWeightUnit();

@@ -47,12 +47,12 @@ This is a model for the cover that is placed on top of the wires to protect them
    </div>
 
 
-Display Base
-************
+Case
+****
 
 To be defined.
 
-Display Top
-***********
+Case Top
+********
 
 To be defined.

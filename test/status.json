@@ -30,5 +30,6 @@
   "app-build": "build",
   "mdns": "hostname",
   "id": "0A3ED3",
+  "platform": "esp32",
   "wifi-ssid": "wifi"
 }

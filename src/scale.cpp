@@ -84,22 +84,28 @@ void Scale::setScaleFactor(UnitIndex idx) {
   _scale[idx]->set_scale(
       fs);  // apply the saved scale factor so we get valid results
 }
+
 float Scale::read(UnitIndex idx) {
 #if defined(DEBUG_LINK_SCALES)
   idx = UnitIndex::U1;
 #endif
 
+#if LOG_LEVEL == 6
+  Log.verbose(F("SCAL: Reading scale for [%d]." CR), idx);
+#endif
+
   if (myConfig.getScaleFactor(idx) == 0 ||
-      myConfig.getScaleOffset(idx) == 0)  // Not initialized, just return zero
+      myConfig.getScaleOffset(idx) == 0) {  // Not initialized, just return zero
+    Log.verbose(F("SCAL: Scale not initialized [%d]." CR), idx);
     return 0;
+  }
 
   if (!_scale[idx]) return 0;
 
   PERF_BEGIN("scale-read");
   float raw = _scale[idx]->get_units(myConfig.getScaleReadCount());
 #if LOG_LEVEL == 6
-  // Log.verbose(F("SCAL: Reading weight=%F, updating stats %s [%d]" CR), f,
-  //            updateStats ? "true" : "false", idx);
+  Log.verbose(F("SCAL: Reading weight=%F [%d]" CR), raw, idx);
 #endif
 
   // If the value is higher/lower than 100 kb/lbs then the reading is proably
@@ -125,11 +131,11 @@ float Scale::read(UnitIndex idx) {
 void Scale::tare(UnitIndex idx) {
   if (!_scale[idx]) return;
 
-  Log.notice(F("SCAL: Set scale to zero, prepare for calibration [%d]." CR),
-             idx);
+  Log.notice(F("SCAL: Set scale to zero, prepare for calibration %d [%d]." CR),
+             myConfig.getScaleReadCountCalibration(), idx);
 
-  _scale[idx]->set_scale();  // set scale factor to 1
-  _scale[idx]->tare(myConfig.getScaleReadCountCalibration());  // zero weight
+  _scale[idx]->set_scale(1.0);
+  _scale[idx]->tare(myConfig.getScaleReadCountCalibration());
   int32_t l = _scale[idx]->get_offset();
   Log.verbose(F("SCAL: New scale offset found %l [%d]." CR), l, idx);
 
@@ -141,12 +147,18 @@ int32_t Scale::readRaw(UnitIndex idx) {
 #if defined(DEBUG_LINK_SCALES)
   idx = UnitIndex::U1;
 #endif
+#if LOG_LEVEL == 6
+  Log.verbose(F("SCAL: Reading raw scale for [%d]." CR), idx);
+#endif
   if (!_scale[idx]) return 0;
   PERF_BEGIN("scale-readraw");
   int32_t l = _scale[idx]->read_average(
       myConfig.getScaleReadCountCalibration());  // get the raw value without
                                                  // applying scaling factor
   _lastRaw[idx] = l;
+#if LOG_LEVEL == 6
+  Log.verbose(F("SCAL: Reading raw weight=%d [%d]" CR), l, idx);
+#endif
   PERF_END("scale-readraw");
   return l;
 }
@@ -168,14 +180,18 @@ void Scale::findFactor(UnitIndex idx, float weight) {
 
 void Scale::loop(UnitIndex idx) {
   if (_sched[idx].tare) {
-    // Log.notice(F("SCAL: Tare triggered [%d]." CR), idx);
+#if LOG_LEVEL == 6
+    Log.verbose(F("SCAL: Tare triggered [%d]." CR), idx);
+#endif
     tare(idx);
     readRaw(idx);
     _sched[idx].tare = false;
   }
 
   if (_sched[idx].findFactor) {
-    // Log.notice(F("SCAL: Find factor triggered [%d]." CR), idx);
+#if LOG_LEVEL == 6
+    Log.verbose(F("SCAL: Find factor triggered [%d]." CR), idx);
+#endif
     findFactor(idx, _sched[idx].factorWeight);
     readRaw(idx);
     _sched[idx].findFactor = false;

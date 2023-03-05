@@ -32,6 +32,7 @@ SOFTWARE.
 #define PARAM_BREWSPY_TOKEN1 "brewspy-token1"
 #define PARAM_BREWSPY_TOKEN2 "brewspy-token2"
 #define PARAM_DISPLAY_LAYOUT "display-layout"
+#define PARAM_TEMP_SENSOR "temp-sensor"
 #define PARAM_WEIGHT_UNIT "weight-unit"
 #define PARAM_VOLUME_UNIT "volume-unit"
 #define PARAM_KEG_WEIGHT1 "keg-weight1"
@@ -83,7 +84,8 @@ struct BeerInfo {
 #define VOLUME_US "us-oz"
 #define VOLUME_UK "uk-oz"
 
-enum DisplayLayout { Default = 0, HardwareStats = 9 };
+enum DisplayLayoutType { Default = 0, HardwareStats = 9 };
+enum TempSensorType { SensorDHT22 = 0, SensorDS18B20 = 1 };
 
 float convertIncomingWeight(float w);
 float convertIncomingVolume(float v);
@@ -101,7 +103,8 @@ class KegConfig : public BaseConfig {
 
   String _brewspyToken[2] = {"", ""};
 
-  DisplayLayout _displayLayout = DisplayLayout::Default;
+  DisplayLayoutType _displayLayout = DisplayLayoutType::Default;
+  TempSensorType _tempSensor = TempSensorType::SensorDHT22;
 
   float _scaleFactor[2] = {0, 0};
   int32_t _scaleOffset[2] = {0, 0};
@@ -230,14 +233,25 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }
 
-  DisplayLayout getDisplayLayout() { return _displayLayout; }
-  int getDisplayLayoutAsInt() { return _displayLayout; }
-  void setDisplayLayout(DisplayLayout d) {
+  DisplayLayoutType getDisplayLayoutType() { return _displayLayout; }
+  int getDisplayLayoutTypeAsInt() { return _displayLayout; }
+  void setDisplayLayoutType(DisplayLayoutType d) {
     _displayLayout = d;
     _saveNeeded = true;
   }
-  void setDisplayLayout(int d) {
-    _displayLayout = (DisplayLayout)d;
+  void setDisplayLayoutType(int d) {
+    _displayLayout = (DisplayLayoutType)d;
+    _saveNeeded = true;
+  }
+
+  TempSensorType getTempSensorType() { return _tempSensor; }
+  int getTempSensorTypeAsInt() { return _tempSensor; }
+  void setTempSensorType(TempSensorType t) {
+    _tempSensor = t;
+    _saveNeeded = true;
+  }
+  void setTempSensorType(int t) {
+    _tempSensor = (TempSensorType)t;
     _saveNeeded = true;
   }
 

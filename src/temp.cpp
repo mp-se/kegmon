@@ -28,37 +28,86 @@ TempHumidity::TempHumidity() {}
 
 void TempHumidity::setup() {
 #if LOG_LEVEL == 6
-  // Log.verbose(F("Temp: Initializing humidity sensor." CR));
+  // Log.verbose(F("Temp: Initializing temperature/humidity sensor." CR));
 #endif
-
-  // Log.notice(F("Temp: Setup." CR));
 
   pinMode(PIN_DH2_PWR, OUTPUT);
   digitalWrite(PIN_DH2_PWR, HIGH);
   delay(100);
 
-  if (_temp) delete _temp;
-  _temp = new DHT(PIN_DH2, DHT22, 1);
-  _temp->begin();
+  switch (myConfig.getTempSensorType()) {
+    case SensorDHT22:
+      dhtSetup();
+      break;
+    case SensorDS18B20:
+      dsSetup();
+      break;
+  }
+
+  _lastTempC = NAN;
+  _lastHumidity = NAN;
+  read();
 }
 
 void TempHumidity::reset() {
-  // Log.notice(F("Temp: Reset." CR));
+  Log.notice(F("TEMP: Reset temp sensor." CR));
 
   digitalWrite(PIN_DH2_PWR, LOW);
   delay(100);
 }
 
 void TempHumidity::read() {
+  switch (myConfig.getTempSensorType()) {
+    case SensorDHT22:
+      dhtRead();
+      break;
+    case SensorDS18B20:
+      dsRead();
+      break;
+  }
+}
+
+void TempHumidity::dhtSetup() {
+  Log.notice(F("TEMP: Initializing DHT22 sensor." CR));
+  if (_temp) delete _temp;
+  _temp = new DHT(PIN_DH2, DHT22, 1);
+  _temp->begin();
+}
+
+void TempHumidity::dsSetup() {
+  Log.notice(F("TEMP: Initializing DS18B20 sensor." CR));
+  if (_oneWire) delete _oneWire;
+  if (_dallas) delete _dallas;
+
+  _oneWire = new OneWire(PIN_DH2);
+  _dallas = new DallasTemperature(_oneWire);
+  _dallas->setResolution(12);
+  _dallas->begin();
+}
+
+void TempHumidity::dhtRead() {
   if (!_temp) return;
 
   _lastTempC = _temp->readTemperature(false, false);
   _lastHumidity = _temp->readHumidity(false);
 
-  // Log.notice(F("Temp: Reading temp %F C." CR), _lastTempC);
+  if (isnan(_lastTempC)) {
+    Log.error(F("TEMP: Error reading temperature, disable sensor." CR));
+    delete _temp;
+    _temp = 0;
+  }
+}
+
+void TempHumidity::dsRead() {
+  if (!_dallas) return;
+
+  if (_dallas->getDS18Count()) {
+    _dallas->requestTemperatures();
+    _lastTempC = _dallas->getTempCByIndex(0);
+  }
 
   if (isnan(_lastTempC)) {
-    Log.error(F("Temp: Error reading temperature, disable sensor." CR));
+    Log.error(F("TEMP: Error reading temperature, disable sensor." CR));
     delete _temp;
     _temp = 0;
   }

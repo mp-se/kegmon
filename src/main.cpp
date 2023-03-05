@@ -55,9 +55,19 @@ void setup() {
 #endif
 
   PERF_BEGIN("setup");
+#if defined(ESP8266)
   Log.notice(F("Main: Reset reason %s." CR), ESP.getResetInfo().c_str());
   Log.notice(F("Main: Started setup for %s." CR),
              String(ESP.getChipId(), HEX).c_str());
+#else
+  char cbuf[20];
+  uint32_t chipId = 0;
+  for (int i = 0; i < 17; i = i + 8) {
+    chipId |= ((ESP.getEfuseMac() >> (40 - i)) & 0xff) << i;
+  }
+  snprintf(&cbuf[0], sizeof(cbuf), "%6x", chipId);
+  Log.notice(F("Main: Started setup for %s." CR), &cbuf[0]);
+#endif
   Log.notice(F("Main: Build options: %s (%s) LOGLEVEL %d " CR), CFG_APPVER,
              CFG_GITREV, LOG_LEVEL);
 
@@ -88,8 +98,10 @@ void setup() {
   myTemp.setup();
   PERF_END("setup-temp");
 
+#if defined(ESP8266)
   ESP.wdtDisable();
   ESP.wdtEnable(5000);
+#endif
 
   // No stored config, move to portal
   if (!myWifi.hasConfig() || myWifi.isDoubleResetDetected()) {
@@ -247,6 +259,9 @@ void drawScreenDefault(UnitIndex idx) {
         snprintf(&buf[0], sizeof(buf), "%.0f pour", pour * 100);
         myDisplay.printPosition(idx, -1, 32, &buf[0]);
       } break;
+
+      case ScreenDefaultIter::ShowTemp: {
+      } break;
     }
 
   } else {
@@ -279,6 +294,8 @@ void drawScreenDefault(UnitIndex idx) {
             myDisplay.getHeight(idx) - myDisplay.getCurrentFontSize(idx) - 1,
             myWifi.getIPAddress());
       }
+      break;
+    case ScreenDefaultIter::ShowTemp:
       break;
   }
 
@@ -326,11 +343,11 @@ void loop() {
     // The temp sensor should not be read too often. Reading every 10 seconds.
     if (!(loopCounter % 5)) {
       myTemp.read();
+    }
 
-      // Log.notice(F("Loop: Current temp %FC %FF." CR), myTemp.getTempC(),
-      // myTemp.getTempF());
-
-      if (myTemp.hasSensor()) {
+    // Check if the temp sensor exist and try to reinitialize
+    if (!(loopCounter % 10)) {
+      if (!myTemp.hasSensor()) {
         myTemp.reset();
         myTemp.setup();
       }
@@ -347,16 +364,16 @@ void loop() {
     PERF_END("loop-scale-read2");
 
     // Update screens
-    switch (myConfig.getDisplayLayout()) {
+    switch (myConfig.getDisplayLayoutType()) {
       default:
-      case DisplayLayout::Default:
+      case DisplayLayoutType::Default:
         PERF_BEGIN("loop-display-default");
         drawScreenDefault(UnitIndex::U1);
         drawScreenDefault(UnitIndex::U2);
         PERF_END("loop-display-default");
         break;
 
-      case DisplayLayout::HardwareStats:
+      case DisplayLayoutType::HardwareStats:
         PERF_BEGIN("loop-display-hardware");
         drawScreenHardwareStats(UnitIndex::U1);
         drawScreenHardwareStats(UnitIndex::U2);

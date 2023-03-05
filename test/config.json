@@ -48,5 +48,6 @@
   "kalman-active": false,
   "kalman-measurement": 2.0,
   "kalman-estimation": 3.0,
-  "kalman-noise": 0.03
+  "kalman-noise": 0.03,
+  "temp-sensor": 0
 }

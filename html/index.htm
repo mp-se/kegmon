@@ -44,6 +44,7 @@
               <li><a class="dropdown-item" href="/graph.htm">History graph</a></li>
               <li><a class="dropdown-item" href="/stability.htm">Stability</a></li>
               <li><a class="dropdown-item" href="/upload.htm">Upload firmware</a></li>
+              <li><a class="dropdown-item" href="/backup.htm">Backup & Restore</a></li>
             </ul>
           </li>
           <li class="nav-item">
@@ -139,6 +140,7 @@
               <div class="col-md-2 bg-light">Temperature</div>
               <div class="col-md-6 bg-light" id="temperature">Loading...</div>
             </div>
+
             <div class="row mb-3" id="toggle2">
               <div class="col-md-2 bg-light">Humidity</div>
               <div class="col-md-6 bg-light" id="humidity">Loading...</div>
@@ -157,6 +159,10 @@
             <div class="row mb-3">
               <div class="col-md-2 bg-light">Device ID</div>
               <div class="col-md-6 bg-light" id="id">Loading...</div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-2 bg-light">Platform</div>
+              <div class="col-md-6 bg-light" id="platform">Loading...</div>
             </div>
             <div class="row mb-3">
               <div class="col-md-2 bg-light">SSID</div>
@@ -179,7 +185,7 @@
 
     function getStatus() {
       var url = "/api/status";
-      //var url = "/test/status.json";
+      // var url = "/test/status.json";
       $('#spinner').show(); 
 
       $.getJSON(url, function (cfg) {
@@ -188,6 +194,7 @@
         $("#app-ver").text(cfg["app-ver"] + " (" + cfg["app-build"] + ")");
         $("#mdns").text(cfg["mdns"]);
         $("#id").text(cfg["id"]);
+        $("#platform").text(cfg["platform"]);
         $("#wifi-ssid").text(cfg["wifi-ssid"]); 
 
         var weight_unit = " " + cfg["weight-unit"];
@@ -203,7 +210,12 @@
           $('#toggle3').addClass('hide').removeClass('show').addClass('d-none');
         } else {
           $("#temperature").text(cfg["temperature"] + " " + temp_unit); 
-          $("#humidity").text(cfg["humidity"] + " %"); 
+
+          if( cfg["humidity"] === undefined ) {
+            $('#toggle2').addClass('hide').removeClass('show').addClass('d-none');
+          } else {
+            $("#humidity").text(cfg["humidity"] + " %"); 
+          }        
         }
 
         if( cfg["scale-weight1"] === undefined ) {
