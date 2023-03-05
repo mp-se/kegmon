@@ -35,12 +35,15 @@ SOFTWARE.
 #include <baseasyncwebhandler.hpp>
 #elif defined(ESP8266)
 #include <ESP8266WebServer.h>
+
 #include <basewebhandler.hpp>
 #elif defined(ESP32S2) && defined(USE_ASYNC_WEB)
 #include <WebServer.h>
+
 #include <baseasyncwebhandler.hpp>
 #elif defined(ESP32S2)
 #include <WebServer.h>
+
 #include <basewebhandler.hpp>
 #endif
 
@@ -129,7 +132,9 @@ class KegWebHandler :
     WS_SEND_STATIC(gStabilityHtmData, gStabilityHtmSize);
   }
   void webGraphHtm(WS_PARAM) { WS_SEND_STATIC(gGraphHtmData, gGraphHtmSize); }
-  void webBackupHtm(WS_PARAM) { WS_SEND_STATIC(gBackupHtmData, gBackupHtmSize); }
+  void webBackupHtm(WS_PARAM) {
+    WS_SEND_STATIC(gBackupHtmData, gBackupHtmSize);
+  }
 #else
   void webCalibrateHtm(WS_PARAM) {
     WS_SEND_STATIC(

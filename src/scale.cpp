@@ -95,10 +95,10 @@ float Scale::read(UnitIndex idx) {
 #endif
 
   if (myConfig.getScaleFactor(idx) == 0 ||
-      myConfig.getScaleOffset(idx) == 0) { // Not initialized, just return zero 
+      myConfig.getScaleOffset(idx) == 0) {  // Not initialized, just return zero
     Log.verbose(F("SCAL: Scale not initialized [%d]." CR), idx);
     return 0;
-  } 
+  }
 
   if (!_scale[idx]) return 0;
 
@@ -131,8 +131,8 @@ float Scale::read(UnitIndex idx) {
 void Scale::tare(UnitIndex idx) {
   if (!_scale[idx]) return;
 
-  Log.notice(F("SCAL: Set scale to zero, prepare for calibration %d [%d]." CR), myConfig.getScaleReadCountCalibration(),
-             idx);
+  Log.notice(F("SCAL: Set scale to zero, prepare for calibration %d [%d]." CR),
+             myConfig.getScaleReadCountCalibration(), idx);
 
   _scale[idx]->set_scale(1.0);
   _scale[idx]->tare(myConfig.getScaleReadCountCalibration());

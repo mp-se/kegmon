@@ -140,6 +140,7 @@
               <div class="col-md-2 bg-light">Temperature</div>
               <div class="col-md-6 bg-light" id="temperature">Loading...</div>
             </div>
+
             <div class="row mb-3" id="toggle2">
               <div class="col-md-2 bg-light">Humidity</div>
               <div class="col-md-6 bg-light" id="humidity">Loading...</div>
@@ -184,7 +185,7 @@
 
     function getStatus() {
       var url = "/api/status";
-      //var url = "/test/status.json";
+      // var url = "/test/status.json";
       $('#spinner').show(); 
 
       $.getJSON(url, function (cfg) {
@@ -209,7 +210,12 @@
           $('#toggle3').addClass('hide').removeClass('show').addClass('d-none');
         } else {
           $("#temperature").text(cfg["temperature"] + " " + temp_unit); 
-          $("#humidity").text(cfg["humidity"] + " %"); 
+
+          if( cfg["humidity"] === undefined ) {
+            $('#toggle2').addClass('hide').removeClass('show').addClass('d-none');
+          } else {
+            $("#humidity").text(cfg["humidity"] + " %"); 
+          }        
         }
 
         if( cfg["scale-weight1"] === undefined ) {

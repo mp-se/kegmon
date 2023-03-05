@@ -184,6 +184,17 @@
               </div>
 
               <div class="row mb-3">
+                <label for="display-layout" class="col-sm-2 col-form-label">Temperature sensor</label>
+                <div class="col-sm-3">
+                  <select class="form-select" id="temp-sensor" name="temp-sensor" data-bs-toggle="tooltip"
+                    title="select type of temperature sensor">
+                    <option value="0">DHT22</option>
+                    <option value="1">DS18B20</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row mb-3">
                 <div class="col-sm-2 offset-sm-2">
                   <button type="submit" class="btn btn-primary" id="device-btn" data-bs-toggle="tooltip"
                     title="Save changes in this section">Save</button>
@@ -541,6 +552,7 @@
         $("#mqtt-pass").val(cfg["mqtt-pass"]);
 
         $("#display-layout").val(cfg["display-layout"]);
+        $("#temp-sensor").val(cfg["temp-sensor"]);
 
         if (cfg["temp-format"] == "C") $("#temp-format-c").click();
         else $("#temp-format-f").click();
