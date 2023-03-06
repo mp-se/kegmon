@@ -201,7 +201,7 @@
 <p>This is the hardware schema that I have used in my build.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The software will adopt to what external sensors  are connected and will work with
+<p>The software will adopt to what external sensors are connected and will work with
 one, two scales, one or two displays and with/without a temperature sensor.</p>
 </div>
 <p>I noticed that my first build was really unsable, it could vary +/- 2kg over time. I’ve already
@@ -296,7 +296,8 @@ Each base will have the same build process but only the temperature sensor of on
 <li><p>3D printed cover</p></li>
 <li><p>4 load cells</p></li>
 <li><p>CAT6 network cable</p></li>
-<li><p>U4 - DHT22 temp and humidity sensor (optional)</p></li>
+<li><p>U4 - DHT22 temp and humidity sensor (optional, alternative 1)</p></li>
+<li><p>U4 - DS18B20 temp sensor (optional, alternative 2)</p></li>
 <li><p>Load Combinator PCB (Optional)</p></li>
 </ul>
 <a class="reference internal image-reference" href="_images/loadcombinator_board.jpg"><img alt="Load Combinator board" src="_images/loadcombinator_board.jpg" style="width: 300px;"/></a>
@@ -361,7 +362,7 @@ combinator board.</p>
 <td><p>E- (or BLK on HX711)</p></td>
 </tr>
 <tr class="row-even"><td><p>Brown</p></td>
-<td><p>Signal from DHT22</p></td>
+<td><p>Signal from DHT22 or DS18B20</p></td>
 </tr>
 <tr class="row-odd"><td><p>Brown-White</p></td>
 <td><p>Not used</p></td>

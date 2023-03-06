@@ -198,38 +198,44 @@
 <h1>Welcome to KegMon - Keezer Level Monitor<a class="headerlink" href="#welcome-to-kegmon-keezer-level-monitor" title="Permalink to this headline">¶</a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Reflects test version <strong>v0.6.0 beta 1</strong>, Last updated 2023-03-05</p>
+<p>Reflects test version <strong>v0.6.0 beta 1</strong>, Last updated 2023-03-06</p>
 </div>
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>The software is tailored towards my personal needs and external services that I use, but suggestions are always
-welcome. The software has two interfaces, one via the OLED displays and one via the web-browser.</p>
-<p>The cheap load cells are quite unpredicteble so it’s hard to get a fully accurate system, but they are really
-cheap. In order to compensate for this I have build in the possibility to add filters and clean up the read values,
-these filters include:</p>
+welcome.</p>
+<p>The software has two interfaces, one via the OLED displays and one via the web-browser, integrations with external
+services is available, currently BrewFather, BrewSpy and Home Assistant. If you have requests for other services
+raise a request on github.</p>
+<p>The cheap load cells are quite unpredicteble so it’s hard to get a fully accurate and stable system. In order to
+compensate for this I have built in the possibility to add filters and clean up the values, these filters include:</p>
 <ul class="simple">
 <li><p>raw average (makes an average over the last 10 readings)</p></li>
 <li><p>kalman (smooths out the peaks readings, but slows down level detection)</p></li>
-<li><p>formula adjustment (this is not yet active, but its possible to add an equation to adjust the weight, for instance compensate for temperature)</p></li>
+<li><p>temperature adjustment (this is not yet active, but its possible to add a formula and adjust the weight, for instance compensate for temperature)</p></li>
 </ul>
 <p>Here are two views on the data change over time, the temperature in my keezer is between 4 and 5 degress Celcius. My two
-scales behave diffrently even though the load cells are from the same batch. I would guess that the peak in the first
-graph is due to interference from the compressor when it starts to cool.</p>
+scales behave diffrently even though the load cells are from the same batch. I guess that the peak in the first
+graph is due to interference from the compressor when it starts to cool. The orange line shows the stable level that
+is used. Level change is triggered by a change up or down of more than the threasholds. In the image below the peak
+is approx 16-20 cl above the stable level, so its not a big difference.</p>
 <a class="reference internal image-reference" href="_images/temp_variation.png"><img alt="Scale variation" src="_images/temp_variation.png" style="width: 400px;"/></a>
 <a class="reference internal image-reference" href="_images/temp_variation2.png"><img alt="temp_variation" src="_images/temp_variation2.png" style="width: 400px;"/></a>
 <p>Since the level will vary slightly based on the temperature (on my scale +0.04 to -0.01 kg), I have added a level detection algorithm
-that uses the average level over time and done adjust unless the delta is larger than the defined threasholds (can be defined).</p>
-<p>I have prepared for adding a temperature correction option but I’m still working defining a formula for that weight compensation.</p>
+that uses the average level over time and dont adjust unless the delta is larger than the defined threasholds (can be set in configuration).</p>
 <p>In order to trigger a level change then both the raw values and the kalman value needs to be aligned and the minium level change
-needed to detect a pour is by default set to 10 cl. It can take up to 60 seconds for a new level to be detected and a pour registered.</p>
+must exceed 10 cl. This means that a pour needs to be more than this level. It can take up to 60 seconds for a new level to
+be detected and a pour registered. This means that if you pour a number of glasses quickly, this will be detected as
+one large pour.</p>
 <p>The design is created for 2 kegs but it will work if you only use one (make sure to use the pins for scale 1 in that case).</p>
-<p>The OLD screens will show the name of the beer, abv and alternate between weight and pours. The first
-screen will display values for keg 1 and the second for keg 2.</p>
-<p>The values presented on the screen is the raw values so that you can see directly if the level changes.</p>
-<p>The software will detect how many hx711 are connected and if there is a tempsensor.</p>
+<p>The OLED screens will show the name of the beer, abv and alternate between weight and pours. The first screen will display
+values for keg 1 and the second for keg 2.</p>
+<p>The values presented on the OLED screen is the raw values so that you can see directly if the level changes. Stable values can be screen
+at the web UI or via the external integrations.</p>
+<p>The software will detect how many hx711 boards are connected and if there is a temperature sensor.</p>
 <p>The project contains the following parts:
 * Software that manage the scale and present the readings
-* Hardware design based on standard HX711 AD converter with load cells and temperature sensor
+* Hardware design based on standard HX711 AD converter with load cells and temperature sensor (PCB is work in progress)
 * 3D models for the base
 * 3D models for display case (work in progress)</p>
 </div>
@@ -247,11 +253,14 @@ screen will display values for keg 1 and the second for keg 2.</p>
 <p>Thanks to the following projects.</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/mp-se/gravitymon">https://github.com/mp-se/gravitymon</a></p></li>
+<li><p><a class="reference external" href="https://github.com/mp-se/espframework">https://github.com/mp-se/espframework</a></p></li>
 <li><p><a class="reference external" href="https://github.com/graphitemaster/incbin">https://github.com/graphitemaster/incbin</a></p></li>
 <li><p><a class="reference external" href="https://github.com/khoih-prog/ESP_WiFiManager">https://github.com/khoih-prog/ESP_WiFiManager</a></p></li>
 <li><p><a class="reference external" href="https://github.com/thijse/Arduino-Log">https://github.com/thijse/Arduino-Log</a></p></li>
 <li><p><a class="reference external" href="https://github.com/bblanchon/ArduinoJson">https://github.com/bblanchon/ArduinoJson</a></p></li>
 <li><p><a class="reference external" href="https://getbootstrap.com">https://getbootstrap.com</a></p></li>
+<li><p><a class="reference external" href="https://jquery.com">https://jquery.com</a></p></li>
+<li><p><a class="reference external" href="https://chartjs.org">https://chartjs.org</a></p></li>
 <li><p><a class="reference external" href="https://github.com/bogde/HX711">https://github.com/bogde/HX711</a></p></li>
 <li><p><a class="reference external" href="https://github.com/ThingPulse/esp8266-oled-ssd1306">https://github.com/ThingPulse/esp8266-oled-ssd1306</a></p></li>
 <li><p><a class="reference external" href="https://modelviewer.dev/">https://modelviewer.dev/</a></p></li>
@@ -277,6 +286,7 @@ screen will display values for keg 1 and the second for keg 2.</p>
 <li class="toctree-l2"><a class="reference internal" href="intro.html#step-3-flash-the-device">Step 3 - Flash the device</a></li>
 <li class="toctree-l2"><a class="reference internal" href="intro.html#step-4-setup-wifi">Step 4 - Setup WIFI</a></li>
 <li class="toctree-l2"><a class="reference internal" href="intro.html#step-5-configuration">Step 5 - Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#step-4-completed">Step 4 - Completed</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware</a><ul>

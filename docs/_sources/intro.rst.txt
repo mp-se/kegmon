@@ -36,10 +36,10 @@ can be configured. The instructions for that can be found here :ref:`setup_wifi`
 Step 5 - Configuration
 ----------------------
 
-Once the device can connect to WIFI it will go into `configuration mode` and start a web server for 
+Once the device can connect to WIFI it will go into `wifi setup mode` and start a web server for 
 doing the initial configuration. In order to access the device you will need to find its name or ip address.
 
-It will broadcast a name like gravitymonXXXXXX.local over mDNS. Where the XXXXXX is the unique device id. You can 
+It will broadcast a name like kegmonXXXXXX.local over mDNS. Where the XXXXXX is the unique device id. You can 
 find the name via an mDNS browser, check your router or connect the device to a serial monitor. On windows mDNS 
 might not work so then use the IP address instead. Once connected you will meet a web interface that looks like this.
 
@@ -64,7 +64,8 @@ a quite heavy weight for best result.
 Configuration - Beer
 ++++++++++++++++++++
 
-Enter the infomration on what beer you have in the kegs.
+Enter the information on what beer you have in the kegs.
+
 Step 4 - Completed
 ------------------
 
