@@ -9,7 +9,7 @@ Introduction
 This is the hardware schema that I have used in my build. 
 
 .. note::
-  The software will adopt to what external sensors  are connected and will work with 
+  The software will adopt to what external sensors are connected and will work with 
   one, two scales, one or two displays and with/without a temperature sensor. 
 
 I noticed that my first build was really unsable, it could vary +/- 2kg over time. I've already
@@ -143,7 +143,8 @@ Each base will have the same build process but only the temperature sensor of on
 * 3D printed cover
 * 4 load cells 
 * CAT6 network cable
-* U4 - DHT22 temp and humidity sensor (optional)
+* U4 - DHT22 temp and humidity sensor (optional, alternative 1)
+* U4 - DS18B20 temp sensor (optional, alternative 2)
 * Load Combinator PCB (Optional)
 
 .. image:: images/loadcombinator_board.jpg
@@ -219,7 +220,7 @@ combinator board.
    * - Green-White
      - E- (or BLK on HX711)
    * - Brown
-     - Signal from DHT22
+     - Signal from DHT22 or DS18B20
    * - Brown-White
      - Not used
 
