@@ -54,6 +54,11 @@ void setup() {
   perf.getInstance().setBaseConfig(&myConfig);
 #endif
 
+#if defined(ESP32S2)
+  delay(1000);  // Insert a wait so the serial port can be started or we will
+                // miss the first log outputs
+#endif
+
   PERF_BEGIN("setup");
 #if defined(ESP8266)
   Log.notice(F("Main: Reset reason %s." CR), ESP.getResetInfo().c_str());
