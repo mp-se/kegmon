@@ -184,12 +184,23 @@
               </div>
 
               <div class="row mb-3">
-                <label for="display-layout" class="col-sm-2 col-form-label">Temperature sensor</label>
+                <label for="temp-layout" class="col-sm-2 col-form-label">Temperature sensor</label>
                 <div class="col-sm-3">
                   <select class="form-select" id="temp-sensor" name="temp-sensor" data-bs-toggle="tooltip"
                     title="select type of temperature sensor">
                     <option value="0">DHT22</option>
                     <option value="1">DS18B20</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label for="scale-layout" class="col-sm-2 col-form-label">Scale sensor</label>
+                <div class="col-sm-3">
+                  <select class="form-select" id="scale-sensor" name="scale-sensor" data-bs-toggle="tooltip"
+                    title="select type of scale sensor">
+                    <option value="0">HX711</option>
+                    <option value="1">NAU7802</option>
                   </select>
                 </div>
               </div>
@@ -553,6 +564,7 @@
 
         $("#display-layout").val(cfg["display-layout"]);
         $("#temp-sensor").val(cfg["temp-sensor"]);
+        $("#scale-sensor").val(cfg["scale-sensor"]);
 
         if (cfg["temp-format"] == "C") $("#temp-format-c").click();
         else $("#temp-format-f").click();

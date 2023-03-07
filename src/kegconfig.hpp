@@ -33,6 +33,7 @@ constexpr auto PARAM_BREWSPY_TOKEN1 = "brewspy-token1";
 constexpr auto PARAM_BREWSPY_TOKEN2 = "brewspy-token2";
 constexpr auto PARAM_DISPLAY_LAYOUT = "display-layout";
 constexpr auto PARAM_TEMP_SENSOR = "temp-sensor";
+constexpr auto PARAM_SCALE_SENSOR = "scale-sensor";
 constexpr auto PARAM_WEIGHT_UNIT = "weight-unit";
 constexpr auto PARAM_VOLUME_UNIT = "volume-unit";
 constexpr auto PARAM_KEG_WEIGHT1 = "keg-weight1";
@@ -87,6 +88,7 @@ constexpr auto VOLUME_UK = "uk-oz";
 
 enum DisplayLayoutType { Default = 0, HardwareStats = 9 };
 enum TempSensorType { SensorDHT22 = 0, SensorDS18B20 = 1 };
+enum ScaleSensorType { ScaleHX711 = 0, ScaleNAU7802 = 1 };
 
 float convertIncomingWeight(float w);
 float convertIncomingVolume(float v);
@@ -106,6 +108,7 @@ class KegConfig : public BaseConfig {
 
   DisplayLayoutType _displayLayout = DisplayLayoutType::Default;
   TempSensorType _tempSensor = TempSensorType::SensorDHT22;
+  ScaleSensorType _scaleSensor = ScaleSensorType::ScaleHX711;
 
   float _scaleFactor[2] = {0, 0};
   int32_t _scaleOffset[2] = {0, 0};
@@ -253,6 +256,17 @@ class KegConfig : public BaseConfig {
   }
   void setTempSensorType(int t) {
     _tempSensor = (TempSensorType)t;
+    _saveNeeded = true;
+  }
+
+  ScaleSensorType getScaleSensorType() { return _scaleSensor; }
+  int getScaleSensorTypeAsInt() { return _scaleSensor; }
+  void setScaleSensorType(ScaleSensorType t) {
+    _scaleSensor = t;
+    _saveNeeded = true;
+  }
+  void setScaleSensorType(int t) {
+    _scaleSensor = (ScaleSensorType)t;
     _saveNeeded = true;
   }
 
