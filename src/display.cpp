@@ -26,11 +26,7 @@ SOFTWARE.
 #include <display.hpp>
 #include <kegconfig.hpp>
 
-#define DISPLAY_ADR1 0x3c
-#define DISPLAY_ADR2 0x3d
-
 Display::Display() {
-  scanI2C();
 #if defined(DRIVER_1106)
   _display[0] = new SH1106Wire(DISPLAY_ADR1, PIN_OLED_SDA, PIN_OLED_SCL);
   _display[1] = new SH1106Wire(DISPLAY_ADR2, PIN_OLED_SDA, PIN_OLED_SCL);
@@ -38,35 +34,6 @@ Display::Display() {
   _display[0] = new SSD1306Wire(DISPLAY_ADR1, PIN_OLED_SDA, PIN_OLED_SCL);
   _display[1] = new SSD1306Wire(DISPLAY_ADR2, PIN_OLED_SDA, PIN_OLED_SCL);
 #endif
-}
-
-void Display::scanI2C() {
-  /*
-  #if LOG_LEVEL == 6
-    Wire.begin();
-
-    byte error, address;
-    int n = 0;
-
-    Log.verbose(F("Scanning I2C bus for devices: "));
-
-    for (address = 1; address < 127; address++) {
-      // The i2c_scanner uses the return value of
-      // the Write.endTransmisstion to see if
-      // a device did acknowledge to the address.
-
-      Wire.beginTransmission(address);
-      error = Wire.endTransmission();
-
-      if (error == 0) {
-        EspSerial.print(address, HEX);
-        EspSerial.print("\t");
-        n++;
-      }
-    }
-    EspSerial.print("\n");
-  #endif
-  */
 }
 
 void Display::setup(UnitIndex idx) {

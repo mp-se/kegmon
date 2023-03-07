@@ -48,6 +48,8 @@ const int loopInterval = 2000;
 int loopCounter = 0;
 uint32_t loopMillis = 0;
 
+void scanI2C(int sda, int scl);
+
 void setup() {
 #if defined(PERF_ENABLE)
   PerfLogging perf;
@@ -75,6 +77,10 @@ void setup() {
 #endif
   Log.notice(F("Main: Build options: %s (%s) LOGLEVEL %d " CR), CFG_APPVER,
              CFG_GITREV, LOG_LEVEL);
+
+  scanI2C(PIN_OLED_SDA, PIN_OLED_SCL);
+  scanI2C(PIN_SCALE1_SDA, PIN_SCALE1_SCL);
+  scanI2C(PIN_SCALE2_SDA, PIN_SCALE2_SCL);
 
   PERF_BEGIN("setup-display");
   myDisplay.setup(UnitIndex::U1);
@@ -475,6 +481,37 @@ void loop() {
                          PUSH_INFLUX_BUCKET, PUSH_INFLUX_TOKEN);
 #endif  // ENABLE_INFLUX_DEBUG
   }
+}
+
+void scanI2C(int sda, int scl) {
+#if defined(ESP8266)
+  Wire.begin(sda, scl);
+#else  // ESP32
+  Wire.setPins(sda, scl);
+  Wire.begin();
+#endif
+
+  byte error, address;
+  int n = 0;
+
+  Log.notice(F("Scanning I2C bus on pins %d:%d for devices: "), sda, scl);
+
+  for (address = 1; address < 127; address++) {
+    // The i2c_scanner uses the return value of
+    // the Write.endTransmisstion to see if
+    // a device did acknowledge to the address.
+
+    Wire.beginTransmission(address);
+    error = Wire.endTransmission();
+
+    if (error == 0) {
+      EspSerial.print(address, HEX);
+      EspSerial.print("\t");
+      n++;
+    }
+  }
+  EspSerial.print("\n");
+  Wire.end();
 }
 
 // EOF

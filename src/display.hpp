@@ -50,8 +50,6 @@ class Display {
   int _height[2] = {64, 64};
   FontSize _fontSize[2] = {FontSize::FONT_10, FontSize::FONT_10};
 
-  void scanI2C();
-
  public:
   Display();
   void setup(UnitIndex idx);
