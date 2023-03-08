@@ -7,7 +7,8 @@ v0.6.0 beta 2
 =============
 
 * NOTE! Updating from the 0.5 async version requires a manual reset after upload is finished to apply the new software.
-* Added support for NAU7802 AD converter from sparkfun. Uses I2C bus. Will require ESP32S2 for two scales. 
+
+* Added support for NAU7802 AD converter from sparkfun. Uses I2C bus. Will require ESP32S2 for two scales. This is EXPERIMENTAL!
 
 v0.6.0 beta 1
 =============
