@@ -56,11 +56,6 @@ void setup() {
   perf.getInstance().setBaseConfig(&myConfig);
 #endif
 
-#if defined(ESP32S2)
-  delay(1000);  // Insert a wait so the serial port can be started or we will
-                // miss the first log outputs
-#endif
-
   PERF_BEGIN("setup");
 #if defined(ESP8266)
   Log.notice(F("Main: Reset reason %s." CR), ESP.getResetInfo().c_str());
@@ -78,9 +73,9 @@ void setup() {
   Log.notice(F("Main: Build options: %s (%s) LOGLEVEL %d " CR), CFG_APPVER,
              CFG_GITREV, LOG_LEVEL);
 
-  scanI2C(PIN_OLED_SDA, PIN_OLED_SCL);
+  /*scanI2C(PIN_OLED_SDA, PIN_OLED_SCL);
   scanI2C(PIN_SCALE1_SDA, PIN_SCALE1_SCL);
-  scanI2C(PIN_SCALE2_SDA, PIN_SCALE2_SCL);
+  scanI2C(PIN_SCALE2_SDA, PIN_SCALE2_SCL);*/
 
   PERF_BEGIN("setup-display");
   myDisplay.setup(UnitIndex::U1);
@@ -89,6 +84,7 @@ void setup() {
   myConfig.checkFileSystem();
 
   // Temporary for migrating due to namechange of configuration file.
+  // @TODO Remove this code in next version
   File f = LittleFS.open(CFG_FILENAME, "r");
   if (!f)
     LittleFS.rename("/kegscale.json", CFG_FILENAME);
@@ -511,7 +507,9 @@ void scanI2C(int sda, int scl) {
     }
   }
   EspSerial.print("\n");
+#if defined(ESP32)
   Wire.end();
+#endif
 }
 
 // EOF

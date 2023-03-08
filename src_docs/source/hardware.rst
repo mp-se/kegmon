@@ -206,22 +206,31 @@ combinator board.
    :header-rows: 1
 
    * - Wire
-     - Function
+     - HX711
+     - NAU7802
    * - Orange
+     - Power to DHT22 (+3.3V)
      - Power to DHT22 (+3.3V)
    * - Orange-White
      - GND to DHT22 (GND)
+     - GND to DHT22 (GND)
    * - Blue
      - A+ (or GRN on HX711)
+     - A+ (or GREEN on NAU7802)
    * - Blue-White
      - A- (or WHT on HX711)
+     - A- (or WHITE on NAU7802)
    * - Green
      - E+ (or RED on HX711)
+     - E+ (or RED on NAU7802)
    * - Green-White
      - E- (or BLK on HX711)
+     - E- (or BLACK on NAU7802)
    * - Brown
      - Signal from DHT22 or DS18B20
+     - Signal from DHT22 or DS18B20
    * - Brown-White
+     - Not used
      - Not used
 
 
