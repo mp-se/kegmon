@@ -68,14 +68,14 @@
       try {
         await $.ajax({ url: url, type: 'POST', data: form, 
           success: function() { showSuccess("Restore completed, please check the values."); },
-          error: function() { showError('Unable to save data to device.'); } 
+          error: function() { showError('Unable to save data to device. Check that device ID matches!'); } 
         });
 
         console.log( "Data posted to: " + url );
         updateProgress();
       } catch(error) {
         console.log(error);
-        showError('Unable to save data to device.');
+        showError('Unable to save data to device. Check that device ID matches!');
         updateProgress();
       }
     }
