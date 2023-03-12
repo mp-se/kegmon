@@ -198,23 +198,46 @@
 <span id="id1"></span><h1>Hardware<a class="headerlink" href="#hardware" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p>This is the hardware schema that I have used in my build.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
 <p>The software will adopt to what external sensors are connected and will work with
 one, two scales, one or two displays and with/without a temperature sensor.</p>
-</div>
-<p>I noticed that my first build was really unsable, it could vary +/- 2kg over time. I’ve already
-added some features to the software to filter out the varying readings but these large changes are difficult
-to fix with software. So I need to determine if this is related to software or hardware.</p>
 <p>The graph here shows two of my scales in my keezer where the second one (lower graph) is quite
 stable over time. The first one is not. The difference is over 2 kg and it goes back to the previous
 weight after a few hours.</p>
 <a class="reference internal image-reference" href="_images/hx_drift.png"><img alt="Scale drift" src="_images/hx_drift.png" style="width: 600px;"/></a>
+<p>There are a few options for building the scales and controller, the options are shown here:</p>
+<div class="table-wrapper"><table class="colwidths-given docutils align-default" id="id2">
+<caption><span class="caption-text">Hardware options</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 25%"/>
+<col style="width: 38%"/>
+<col style="width: 38%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Category</p></th>
+<th class="head"><p>Option A</p></th>
+<th class="head"><p>Option B</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Chip</p></td>
+<td><p>ESP8266 D1 mini</p></td>
+<td><p>ESP32S2 mini</p></td>
+</tr>
+<tr class="row-odd"><td><p>ADC</p></td>
+<td><p>HX711</p></td>
+<td><p>NAU7802 (Only with ESP32S2)</p></td>
+</tr>
+<tr class="row-even"><td><p>Sensor</p></td>
+<td><p>DHT22 (Temp &amp; Humidity)</p></td>
+<td><p>DS18B20 (Temp)</p></td>
+</tr>
+</tbody>
+</table></div>
 </div>
 <div class="section" id="hx711">
 <h2>HX711<a class="headerlink" href="#hx711" title="Permalink to this headline">¶</a></h2>
-<p>I found 3 main types of HX711 boards.</p>
+<p>I found 3 main types of HX711 boards and the green board has a different pin configuration compared to the
+other boards.</p>
 <a class="reference internal image-reference" href="_images/hx711-options.png"><img alt="HX711 boards" src="_images/hx711-options.png" style="width: 600px;"/></a>
 <ul class="simple">
 <li><p>Green: Most common board when searching for HX711</p></li>
@@ -223,44 +246,42 @@ weight after a few hours.</p>
 </ul>
 <p>The SparkFun board is the most expensive one but has one major advantage. You can power it on +5V and
 configure it to use 3.3V digital signal levels (using VCC and VDD pins).</p>
-<p>1. For my first build I used the Green board and placed that in the base of the scale. With this approach I
-had issues with drift and varying readings. I built two scales and one had issues,the other not.</p>
-<p>2. For the second build I moved the hx711 to the display case only keeping the load cells in the scale
-base. I also changed to the purple board powered by 3.3V, currently that option works perfect with my
-two first scales.</p>
-<p>3. I discovered when running 2 scales that sharing the CLK signal to the HX711 was not a good idea, that introduced
-errors in the accuracy. So in v0.4.0 I changes the CLK signal on the second scale to D8.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>I’m currently updating the 3d model for the display case to fit the larger board.</p>
-</div>
+<p>I’m currently using the Purple board which and I have not had any issues with stability.</p>
 </div>
 <div class="section" id="nau7802">
 <h2>NAU7802<a class="headerlink" href="#nau7802" title="Permalink to this headline">¶</a></h2>
 <p>This is the alternative ADC which is quite new and I have not had the time yet to validate the long term stability.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>If you are using this you need to change this in the configuration menu and restart the device for it to work properly.</p>
+<p>If you are using this you need to change this in the configuration menu and restart the device for it to work
+properly. The default option is the HX711 boaard.</p>
 </div>
 <a class="reference internal image-reference" href="_images/nau7802.jpg"><img alt="NAU7802" src="_images/nau7802.jpg" style="width: 300px;"/></a>
 </div>
-<div class="section" id="schema">
-<h2>Schema<a class="headerlink" href="#schema" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="schema-for-hx711">
+<h2>Schema for HX711<a class="headerlink" href="#schema-for-hx711" title="Permalink to this headline">¶</a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The temperature sensor is installed in the scale base and you can use either a DHT22 or DS18B20. I would recommend the DS18B20 since that is more stable and
-cheaper than the DHT22. Some users also have had issues with ESP32S2 and DHT22, unclear what causes this.</p>
+<p>The temperature sensor is installed in the scale base and you can use either a DHT22 or DS18B20. I would recommend
+the DS18B20 since that is more stable and cheaper than the DHT22. Some users also have had issues with ESP32S2
+and DHT22, unclear what causes this.</p>
 </div>
 <p>This is the schema used for the HX711 boards.</p>
 <a class="reference internal image-reference" href="_images/schema.jpg"><img alt="Schema HX711" src="_images/schema.jpg" style="width: 600px;"/></a>
-<p>This is the schema used for the NAU7802 boards. Scale 1 uses the same pins as the OLED displays. Scale 2 uses the same pins as for the HX711. So D3/D4 is unused in this variant.</p>
+</div>
+<div class="section" id="schema-for-nau7802">
+<h2>Schema for NAU7802<a class="headerlink" href="#schema-for-nau7802" title="Permalink to this headline">¶</a></h2>
+<p>This is the schema used for the NAU7802 boards. Scale 1 uses the same pins as the OLED displays. Scale 2 uses the same pins as
+for the HX711. So D3/D4 is unused in this variant.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>I’m considering to update the hardware design to fit a larger OLED display 1.3” and multiple NAU7802 on the ESP8266 platform but this will require an i2c extender to avoid adress overlap.</p>
+<p>I’m considering to update the hardware design to fit a larger OLED display 1.3” and multiple NAU7802 on the ESP8266 platform but
+this will require an i2c extender to avoid adress overlap.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Note that the ESP8266 only supports one I2C bus so with that processor only one scale can be used. Recommend to use ESP32S2 which can support both NAU7802 scales.</p>
+<p>Note that the ESP8266 only supports one I2C bus so with that processor only one scale can be used. Recommend to use ESP32S2 which
+can support both NAU7802 scales.</p>
 </div>
 <a class="reference internal image-reference" href="_images/schema2.jpg"><img alt="Schema NAU7802" src="_images/schema2.jpg" style="width: 600px;"/></a>
 </div>
@@ -270,33 +291,32 @@ cheaper than the DHT22. Some users also have had issues with ESP32S2 and DHT22, 
 this would stabilize the sensor readings and also make it easier to replace a faulty scale.</p>
 <p>Part list:</p>
 <ul class="simple">
-<li><p>U1 - Wemos ESP8266 D1 mini (option 1)</p></li>
-<li><p>U1 - Wemos ESP32 S2 mini (option 2)</p></li>
-<li><p>U2 - 0.96” 128x64 I2C OLED display (with option to change i2c adress, 0x3c)</p></li>
-<li><p>U3 - 0.96” 128x64 I2C OLED display (with option to change i2c adress, 0x3d)</p></li>
+<li><p>U1 - Wemos ESP8266 D1 mini (option 1) or U1 - Wemos ESP32 S2 mini (option 2)</p></li>
+<li><p>U2/U3 - 0.96” 128x64 I2C OLED display (i2c adresses, 0x3c + 0x3d)</p></li>
 <li><p>R1 - 4.7k (only used with HX711)</p></li>
 <li><p>R2 - 4.7k (only used with HX711)</p></li>
-<li><p>R3 - 4.7k</p></li>
+<li><p>R3 - 3.3k</p></li>
 <li><p>2 x HX711 boards</p></li>
-<li><p>3D printed case for displays and esp8266</p></li>
 <li><p>5V power supply</p></li>
-<li><p>RJ45 connectors (optional)</p></li>
+<li><p>RJ45 connectors if you want to remove the scales</p></li>
+<li><p>PCB (work in progress)</p></li>
+<li><p>3D printed case for displays and esp8266 (work in progress)</p></li>
 </ul>
 <p>R1 and R2 are just used to pull the CLK to +3.3V or the code will not detect
 that scales are missing (floating input). You can use most values between
 2k and 5k for that.</p>
-<p>It’s possible to use the NAU7802 boards to replace the HX711 ADC. Two scales is only supported on the ESP32 platform since it requires two i2c instances. The wiring is different if you choose this option.</p>
+<p>It’s possible to use the NAU7802 boards to replace the HX711 ADC. Two scales is only supported on the ESP32 platform since it requires
+two i2c instances. The wiring is different if you choose this option.</p>
 <ul class="simple">
 <li><p>2 x NAU7802 boards (require the ESP32S2 for two scales)</p></li>
 </ul>
-<p>Images below shows examples of a HX711 board and RJ45 breakout board. I use the breakout board since I
-havent yet created my own PCB, I want to stabilize the hardware design first.</p>
+<p>Images below shows examples of a HX711 board and RJ45 breakout board.</p>
 <a class="reference internal image-reference" href="_images/HX711_component.jpg"><img alt="HX711 board" src="_images/HX711_component.jpg" style="width: 300px;"/></a>
 <p>If you are using the Sparkfun board I suggest that you power the HX711 board with +5V (VCC) and +3.3V (VDD)
 so the digital interface is compatible with the ESP.</p>
 <a class="reference internal image-reference" href="_images/rj45_board.jpg"><img alt="RJ45 board" src="_images/rj45_board.jpg" style="width: 300px;"/></a>
-<div class="table-wrapper"><table class="docutils align-default" id="id2">
-<caption><span class="caption-text">ESP pins</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<div class="table-wrapper"><table class="docutils align-default" id="id3">
+<caption><span class="caption-text">ESP pins</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 33%"/>
 <col style="width: 33%"/>
@@ -362,8 +382,8 @@ There are other options available on the internet for both 1 and 2 displays.</p>
 <a class="reference internal image-reference" href="_images/display_case.jpg"><img alt="Display build" src="_images/display_case.jpg" style="width: 600px;"/></a>
 </div>
 </div>
-<div class="section" id="base-for-one">
-<h2>Base (for one)<a class="headerlink" href="#base-for-one" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="scale-base">
+<h2>Scale Base<a class="headerlink" href="#scale-base" title="Permalink to this headline">¶</a></h2>
 <p>In this version the base is just a frame for the load cells and the temperature sensor.
 Each base will have the same build process but only the temperature sensor of one will be used.</p>
 <ul class="simple">
@@ -385,7 +405,9 @@ kegs of 9, 18 or 19 l.</p>
 internet and you will find several options. Mount the load cells in the base and wire
 the HX711 board to the load cells as shown in the next picture. Excellent guide on how to
 <a class="reference external" href="https://learn.sparkfun.com/tutorials/load-cell-amplifier-hx711-breakout-hookup-guide/all">hook up loadcells and use the combinator board</a></p>
-<p>First I start with soldering some wires to the DHT22 sensor so I can mount that in the base together with the load cells.</p>
+<p>First I start with soldering some wires to the DHT22 sensor so I can mount that in
+the base together with the load cells. You can also use a DS18B20 sensor which is wired
+in the same way (Power, GND, Data).</p>
 <a class="reference internal image-reference" href="_images/dht22.jpg"><img alt="dht22" src="_images/dht22.jpg" style="width: 300px;"/></a>
 <a class="reference internal image-reference" href="_images/keg_base_loadcell.jpg"><img alt="Load cells mounting" src="_images/keg_base_loadcell.jpg" style="width: 600px;"/></a>
 <p>When you shorten the cables, make sure all of them are of the same length. Since the HX711 AD Converter will go in the display case the
@@ -393,7 +415,8 @@ network cable will extend these cables anyway.</p>
 <a class="reference internal image-reference" href="_images/hx711.jpg"><img alt="HX711" src="_images/hx711.jpg" style="width: 600px;"/></a>
 <p>I used a flat network cable (CAT6) for the connection between the bases and the HX711/ESP8266 and this is
 what the result looked like. The cover will be glued on top of this at a later stage (preferably
-when it works correcly).</p>
+when it works correcly). You can also use a shielded cable that would be more resistent too external
+interferece.</p>
 <a class="reference internal image-reference" href="_images/keg_base_wired.jpg"><img alt="Wired base" src="_images/keg_base_wired.jpg" style="width: 600px;"/></a>
 <p>Now the base is built and the next step is to test the stability over time. I hook up the base and calibrate it to so I’m happy with the base load. Then I
 let the weight rest on the scale for a couple of days to see how much deviation there is. In the software there is a feature for measuring the
@@ -406,8 +429,8 @@ be reset at startup or when pressing the button.</p>
 up all the cables from the load cells. You dont need that but I found it easier to keep track of what goes where.
 The base is quite thin so I cannot fit an RJ45 connector on the board so i’m connecting the cable wires directly to the
 combinator board.</p>
-<div class="table-wrapper"><table class="docutils align-default" id="id3">
-<caption><span class="caption-text">CAT Wiring</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<div class="table-wrapper"><table class="docutils align-default" id="id4">
+<caption><span class="caption-text">CAT Wiring</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 33%"/>
 <col style="width: 33%"/>
@@ -509,12 +532,13 @@ combinator board.</p>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
 <li><a class="reference internal" href="#hx711">HX711</a></li>
 <li><a class="reference internal" href="#nau7802">NAU7802</a></li>
-<li><a class="reference internal" href="#schema">Schema</a></li>
+<li><a class="reference internal" href="#schema-for-hx711">Schema for HX711</a></li>
+<li><a class="reference internal" href="#schema-for-nau7802">Schema for NAU7802</a></li>
 <li><a class="reference internal" href="#case">Case</a><ul>
 <li><a class="reference internal" href="#building-the-display-case">Building the display case</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#base-for-one">Base (for one)</a><ul>
+<li><a class="reference internal" href="#scale-base">Scale Base</a><ul>
 <li><a class="reference internal" href="#building-the-base">Building the base</a></li>
 <li><a class="reference internal" href="#cat6-wire-usage">CAT6 Wire Usage</a></li>
 </ul>
