@@ -69,6 +69,8 @@ This is where the software is configured.
 
 * **Temp sensor**: Choose the what temp sensor is used.
 
+* **Scale sensor**: Choose the what ADC is used. Note that these require different wiring and connections.
+
 .. image:: images/config2.png
   :width: 600
   :alt: Configuration (2)

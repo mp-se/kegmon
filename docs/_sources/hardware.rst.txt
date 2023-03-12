@@ -24,8 +24,10 @@ weight after a few hours.
   :width: 600
   :alt: Scale drift
 
-So I'm currently trying to change the hardware setup in order to determine the source of the error. I found 3 main 
-types of HX711 boards. 
+HX711
+=====
+
+I found 3 main types of HX711 boards. 
 
 .. image:: images/hx711-options.png
   :width: 600
@@ -51,31 +53,58 @@ errors in the accuracy. So in v0.4.0 I changes the CLK signal on the second scal
 .. note::
   I'm currently updating the 3d model for the display case to fit the larger board. 
 
+NAU7802
+=======
+
+This is the alternative ADC which is quite new and I have not had the time yet to validate the long term stability. 
+
+.. note::
+
+  If you are using this you need to change this in the configuration menu and restart the device for it to work properly.
+
+.. image:: images/nau7802.jpg
+  :width: 300
+  :alt: NAU7802
 
 Schema
 ======
 
+.. note::
+  The temperature sensor is installed in the scale base and you can use either a DHT22 or DS18B20. I would recommend the DS18B20 since that is more stable and 
+  cheaper than the DHT22. Some users also have had issues with ESP32S2 and DHT22, unclear what causes this.
+
+This is the schema used for the HX711 boards. 
+
 .. image:: images/schema.jpg
   :width: 600
-  :alt: Schema
+  :alt: Schema HX711
 
-Part list:
+This is the schema used for the NAU7802 boards. Scale 1 uses the same pins as the OLED displays. Scale 2 uses the same pins as for the HX711. So D3/D4 is unused in this variant. 
+
+.. note::
+  I'm considering to update the hardware design to fit a larger OLED display 1.3" and multiple NAU7802 on the ESP8266 platform but this will require an i2c extender to avoid adress overlap. 
+
+.. note::
+  Note that the ESP8266 only supports one I2C bus so with that processor only one scale can be used. Recommend to use ESP32S2 which can support both NAU7802 scales.
+
+.. image:: images/schema2.jpg
+  :width: 600
+  :alt: Schema NAU7802
 
 Case
 ====
 In this version the HX711 boards are moved to the case with the displays. The hope is that 
 this would stabilize the sensor readings and also make it easier to replace a faulty scale. 
 
-.. note::
-  I will update the hardware design to fit a larger OLED display 1.3". This will require a different
-  display driver on the software side. I'm also considering to update the software/design to an 
-  ESP32 for more processing power. 
+Part list:
 
-* U1 - Wemos D1 mini (I used the v3.0 version)
+* U1 - Wemos ESP8266 D1 mini (option 1)
+* U1 - Wemos ESP32 S2 mini (option 2)
 * U2 - 0.96" 128x64 I2C OLED display (with option to change i2c adress, 0x3c)
 * U3 - 0.96" 128x64 I2C OLED display (with option to change i2c adress, 0x3d)
-* R1 - 4.7k
-* R2 - 4.7k
+* R1 - 4.7k (only used with HX711)
+* R2 - 4.7k (only used with HX711)
+* R3 - 4.7k
 * 2 x HX711 boards
 * 3D printed case for displays and esp8266
 * 5V power supply
@@ -84,6 +113,10 @@ this would stabilize the sensor readings and also make it easier to replace a fa
 R1 and R2 are just used to pull the CLK to +3.3V or the code will not detect 
 that scales are missing (floating input). You can use most values between 
 2k and 5k for that.  
+
+It's possible to use the NAU7802 boards to replace the HX711 ADC. Two scales is only supported on the ESP32 platform since it requires two i2c instances. The wiring is different if you choose this option. 
+
+* 2 x NAU7802 boards (require the ESP32S2 for two scales)
 
 Images below shows examples of a HX711 board and RJ45 breakout board. I use the breakout board since I 
 havent yet created my own PCB, I want to stabilize the hardware design first.
@@ -98,6 +131,38 @@ so the digital interface is compatible with the ESP.
 .. image:: images/rj45_board.jpg
   :width: 300
   :alt: RJ45 board
+
+.. list-table:: ESP pins
+   :header-rows: 1
+
+   * - Function
+     - ESP8266
+     - ESP32S2
+   * - OLED SDA #1/#2 & NAU7802 #1
+     - D2
+     - 33
+   * - OLED SCL #1/#2 & NAU7802 #1
+     - D1
+     - 35
+   * - HX711 DATA #1
+     - D3
+     - 18
+   * - HX711 CLK #1
+     - D4
+     - 16
+   * - HX711 DATA #2 & NAU7802 SDA #2
+     - D5
+     - 7
+   * - HX711 CLK #2 & NAU7802 SCL #2
+     - D8
+     - 12
+   * - DHT22 + DS18B2 Power
+     - D6
+     - 9
+   * - DHT22 + DS18B2 Data
+     - D7
+     - 11
+
 
 Building the display case
 *************************
@@ -206,22 +271,31 @@ combinator board.
    :header-rows: 1
 
    * - Wire
-     - Function
+     - HX711
+     - NAU7802
    * - Orange
+     - Power to DHT22 (+3.3V)
      - Power to DHT22 (+3.3V)
    * - Orange-White
      - GND to DHT22 (GND)
+     - GND to DHT22 (GND)
    * - Blue
      - A+ (or GRN on HX711)
+     - A+ (or GREEN on NAU7802)
    * - Blue-White
      - A- (or WHT on HX711)
+     - A- (or WHITE on NAU7802)
    * - Green
      - E+ (or RED on HX711)
+     - E+ (or RED on NAU7802)
    * - Green-White
      - E- (or BLK on HX711)
+     - E- (or BLACK on NAU7802)
    * - Brown
      - Signal from DHT22 or DS18B20
+     - Signal from DHT22 or DS18B20
    * - Brown-White
-     - Not used
+     - GND
+     - GND
 
 

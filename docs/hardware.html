@@ -211,8 +211,10 @@ to fix with software. So I need to determine if this is related to software or h
 stable over time. The first one is not. The difference is over 2 kg and it goes back to the previous
 weight after a few hours.</p>
 <a class="reference internal image-reference" href="_images/hx_drift.png"><img alt="Scale drift" src="_images/hx_drift.png" style="width: 600px;"/></a>
-<p>So I’m currently trying to change the hardware setup in order to determine the source of the error. I found 3 main
-types of HX711 boards.</p>
+</div>
+<div class="section" id="hx711">
+<h2>HX711<a class="headerlink" href="#hx711" title="Permalink to this headline">¶</a></h2>
+<p>I found 3 main types of HX711 boards.</p>
 <a class="reference internal image-reference" href="_images/hx711-options.png"><img alt="HX711 boards" src="_images/hx711-options.png" style="width: 600px;"/></a>
 <ul class="simple">
 <li><p>Green: Most common board when searching for HX711</p></li>
@@ -233,27 +235,48 @@ errors in the accuracy. So in v0.4.0 I changes the CLK signal on the second scal
 <p>I’m currently updating the 3d model for the display case to fit the larger board.</p>
 </div>
 </div>
+<div class="section" id="nau7802">
+<h2>NAU7802<a class="headerlink" href="#nau7802" title="Permalink to this headline">¶</a></h2>
+<p>This is the alternative ADC which is quite new and I have not had the time yet to validate the long term stability.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you are using this you need to change this in the configuration menu and restart the device for it to work properly.</p>
+</div>
+<a class="reference internal image-reference" href="_images/nau7802.jpg"><img alt="NAU7802" src="_images/nau7802.jpg" style="width: 300px;"/></a>
+</div>
 <div class="section" id="schema">
 <h2>Schema<a class="headerlink" href="#schema" title="Permalink to this headline">¶</a></h2>
-<a class="reference internal image-reference" href="_images/schema.jpg"><img alt="Schema" src="_images/schema.jpg" style="width: 600px;"/></a>
-<p>Part list:</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The temperature sensor is installed in the scale base and you can use either a DHT22 or DS18B20. I would recommend the DS18B20 since that is more stable and
+cheaper than the DHT22. Some users also have had issues with ESP32S2 and DHT22, unclear what causes this.</p>
+</div>
+<p>This is the schema used for the HX711 boards.</p>
+<a class="reference internal image-reference" href="_images/schema.jpg"><img alt="Schema HX711" src="_images/schema.jpg" style="width: 600px;"/></a>
+<p>This is the schema used for the NAU7802 boards. Scale 1 uses the same pins as the OLED displays. Scale 2 uses the same pins as for the HX711. So D3/D4 is unused in this variant.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>I’m considering to update the hardware design to fit a larger OLED display 1.3” and multiple NAU7802 on the ESP8266 platform but this will require an i2c extender to avoid adress overlap.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that the ESP8266 only supports one I2C bus so with that processor only one scale can be used. Recommend to use ESP32S2 which can support both NAU7802 scales.</p>
+</div>
+<a class="reference internal image-reference" href="_images/schema2.jpg"><img alt="Schema NAU7802" src="_images/schema2.jpg" style="width: 600px;"/></a>
 </div>
 <div class="section" id="case">
 <h2>Case<a class="headerlink" href="#case" title="Permalink to this headline">¶</a></h2>
 <p>In this version the HX711 boards are moved to the case with the displays. The hope is that
 this would stabilize the sensor readings and also make it easier to replace a faulty scale.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>I will update the hardware design to fit a larger OLED display 1.3”. This will require a different
-display driver on the software side. I’m also considering to update the software/design to an
-ESP32 for more processing power.</p>
-</div>
+<p>Part list:</p>
 <ul class="simple">
-<li><p>U1 - Wemos D1 mini (I used the v3.0 version)</p></li>
+<li><p>U1 - Wemos ESP8266 D1 mini (option 1)</p></li>
+<li><p>U1 - Wemos ESP32 S2 mini (option 2)</p></li>
 <li><p>U2 - 0.96” 128x64 I2C OLED display (with option to change i2c adress, 0x3c)</p></li>
 <li><p>U3 - 0.96” 128x64 I2C OLED display (with option to change i2c adress, 0x3d)</p></li>
-<li><p>R1 - 4.7k</p></li>
-<li><p>R2 - 4.7k</p></li>
+<li><p>R1 - 4.7k (only used with HX711)</p></li>
+<li><p>R2 - 4.7k (only used with HX711)</p></li>
+<li><p>R3 - 4.7k</p></li>
 <li><p>2 x HX711 boards</p></li>
 <li><p>3D printed case for displays and esp8266</p></li>
 <li><p>5V power supply</p></li>
@@ -262,12 +285,64 @@ ESP32 for more processing power.</p>
 <p>R1 and R2 are just used to pull the CLK to +3.3V or the code will not detect
 that scales are missing (floating input). You can use most values between
 2k and 5k for that.</p>
+<p>It’s possible to use the NAU7802 boards to replace the HX711 ADC. Two scales is only supported on the ESP32 platform since it requires two i2c instances. The wiring is different if you choose this option.</p>
+<ul class="simple">
+<li><p>2 x NAU7802 boards (require the ESP32S2 for two scales)</p></li>
+</ul>
 <p>Images below shows examples of a HX711 board and RJ45 breakout board. I use the breakout board since I
 havent yet created my own PCB, I want to stabilize the hardware design first.</p>
 <a class="reference internal image-reference" href="_images/HX711_component.jpg"><img alt="HX711 board" src="_images/HX711_component.jpg" style="width: 300px;"/></a>
 <p>If you are using the Sparkfun board I suggest that you power the HX711 board with +5V (VCC) and +3.3V (VDD)
 so the digital interface is compatible with the ESP.</p>
 <a class="reference internal image-reference" href="_images/rj45_board.jpg"><img alt="RJ45 board" src="_images/rj45_board.jpg" style="width: 300px;"/></a>
+<div class="table-wrapper"><table class="docutils align-default" id="id2">
+<caption><span class="caption-text">ESP pins</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Function</p></th>
+<th class="head"><p>ESP8266</p></th>
+<th class="head"><p>ESP32S2</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>OLED SDA #1/#2 &amp; NAU7802 #1</p></td>
+<td><p>D2</p></td>
+<td><p>33</p></td>
+</tr>
+<tr class="row-odd"><td><p>OLED SCL #1/#2 &amp; NAU7802 #1</p></td>
+<td><p>D1</p></td>
+<td><p>35</p></td>
+</tr>
+<tr class="row-even"><td><p>HX711 DATA #1</p></td>
+<td><p>D3</p></td>
+<td><p>18</p></td>
+</tr>
+<tr class="row-odd"><td><p>HX711 CLK #1</p></td>
+<td><p>D4</p></td>
+<td><p>16</p></td>
+</tr>
+<tr class="row-even"><td><p>HX711 DATA #2 &amp; NAU7802 SDA #2</p></td>
+<td><p>D5</p></td>
+<td><p>7</p></td>
+</tr>
+<tr class="row-odd"><td><p>HX711 CLK #2 &amp; NAU7802 SCL #2</p></td>
+<td><p>D8</p></td>
+<td><p>12</p></td>
+</tr>
+<tr class="row-even"><td><p>DHT22 + DS18B2 Power</p></td>
+<td><p>D6</p></td>
+<td><p>9</p></td>
+</tr>
+<tr class="row-odd"><td><p>DHT22 + DS18B2 Data</p></td>
+<td><p>D7</p></td>
+<td><p>11</p></td>
+</tr>
+</tbody>
+</table></div>
 <div class="section" id="building-the-display-case">
 <h3>Building the display case<a class="headerlink" href="#building-the-display-case" title="Permalink to this headline">¶</a></h3>
 <div class="admonition warning">
@@ -331,41 +406,51 @@ be reset at startup or when pressing the button.</p>
 up all the cables from the load cells. You dont need that but I found it easier to keep track of what goes where.
 The base is quite thin so I cannot fit an RJ45 connector on the board so i’m connecting the cable wires directly to the
 combinator board.</p>
-<div class="table-wrapper"><table class="docutils align-default" id="id2">
-<caption><span class="caption-text">CAT Wiring</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<div class="table-wrapper"><table class="docutils align-default" id="id3">
+<caption><span class="caption-text">CAT Wiring</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
 <colgroup>
-<col style="width: 50%"/>
-<col style="width: 50%"/>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Wire</p></th>
-<th class="head"><p>Function</p></th>
+<th class="head"><p>HX711</p></th>
+<th class="head"><p>NAU7802</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>Orange</p></td>
 <td><p>Power to DHT22 (+3.3V)</p></td>
+<td><p>Power to DHT22 (+3.3V)</p></td>
 </tr>
 <tr class="row-odd"><td><p>Orange-White</p></td>
+<td><p>GND to DHT22 (GND)</p></td>
 <td><p>GND to DHT22 (GND)</p></td>
 </tr>
 <tr class="row-even"><td><p>Blue</p></td>
 <td><p>A+ (or GRN on HX711)</p></td>
+<td><p>A+ (or GREEN on NAU7802)</p></td>
 </tr>
 <tr class="row-odd"><td><p>Blue-White</p></td>
 <td><p>A- (or WHT on HX711)</p></td>
+<td><p>A- (or WHITE on NAU7802)</p></td>
 </tr>
 <tr class="row-even"><td><p>Green</p></td>
 <td><p>E+ (or RED on HX711)</p></td>
+<td><p>E+ (or RED on NAU7802)</p></td>
 </tr>
 <tr class="row-odd"><td><p>Green-White</p></td>
 <td><p>E- (or BLK on HX711)</p></td>
+<td><p>E- (or BLACK on NAU7802)</p></td>
 </tr>
 <tr class="row-even"><td><p>Brown</p></td>
 <td><p>Signal from DHT22 or DS18B20</p></td>
+<td><p>Signal from DHT22 or DS18B20</p></td>
 </tr>
 <tr class="row-odd"><td><p>Brown-White</p></td>
-<td><p>Not used</p></td>
+<td><p>GND</p></td>
+<td><p>GND</p></td>
 </tr>
 </tbody>
 </table></div>
@@ -422,6 +507,8 @@ combinator board.</p>
             <ul>
 <li><a class="reference internal" href="#">Hardware</a><ul>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#hx711">HX711</a></li>
+<li><a class="reference internal" href="#nau7802">NAU7802</a></li>
 <li><a class="reference internal" href="#schema">Schema</a></li>
 <li><a class="reference internal" href="#case">Case</a><ul>
 <li><a class="reference internal" href="#building-the-display-case">Building the display case</a></li>
