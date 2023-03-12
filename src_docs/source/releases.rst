@@ -6,11 +6,13 @@ Releases
 v0.6.0 beta 2
 =============
 
-* NOTE! Updating from the 0.5 async version requires a manual reset after upload is finished to apply the new software.
+.. note::
+    Updating from the 0.5 async version requires a manual reset after upload is finished to apply the new software.
 
-* NOTE! Issues with connecting to DHT22 sensor on ESP32S2 variant over long cables. Uncertain what causes this. Recommendation is to use DS18B20 instead on ESP32S2.
+.. warning::
+    Issues with connecting to DHT22 sensor on ESP32S2 variant over long cables. Uncertain what causes this. Recommendation is to use DS18B20 instead on ESP32S2.
 
-* Added support for NAU7802 AD converter from sparkfun. Uses I2C bus. Will require ESP32S2 for two scales. This is EXPERIMENTAL!
+* Added support for NAU7802 AD converter from sparkfun. Uses I2C bus. Will require ESP32S2 for two scales and different wiring. This is EXPERIMENTAL!
 * Added error message to restore configuration feature in case the ID did not match.
 * Added pull-up resistor to temperature sensor data line (applies to both DS18B20 and DHT22)
 
