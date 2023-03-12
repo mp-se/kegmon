@@ -27,47 +27,49 @@ SOFTWARE.
 #include <baseconfig.hpp>
 #include <main.hpp>
 
-#define PARAM_BREWFATHER_USERKEY "brewfather-userkey"
-#define PARAM_BREWFATHER_APIKEY "brewfather-apikey"
-#define PARAM_BREWSPY_TOKEN1 "brewspy-token1"
-#define PARAM_BREWSPY_TOKEN2 "brewspy-token2"
-#define PARAM_DISPLAY_LAYOUT "display-layout"
-#define PARAM_TEMP_SENSOR "temp-sensor"
-#define PARAM_WEIGHT_UNIT "weight-unit"
-#define PARAM_VOLUME_UNIT "volume-unit"
-#define PARAM_KEG_WEIGHT1 "keg-weight1"
-#define PARAM_KEG_WEIGHT2 "keg-weight2"
-#define PARAM_KEG_VOLUME1 "keg-volume1"
-#define PARAM_KEG_VOLUME2 "keg-volume2"
-#define PARAM_GLASS_VOLUME1 "glass-volume1"
-#define PARAM_GLASS_VOLUME2 "glass-volume2"
-#define PARAM_BEER_NAME1 "beer-name1"
-#define PARAM_BEER_NAME2 "beer-name2"
-#define PARAM_BEER_ABV1 "beer-abv1"
-#define PARAM_BEER_ABV2 "beer-abv2"
-#define PARAM_BEER_IBU1 "beer-ibu1"
-#define PARAM_BEER_IBU2 "beer-ibu2"
-#define PARAM_BEER_EBC1 "beer-ebc1"
-#define PARAM_BEER_EBC2 "beer-ebc2"
-#define PARAM_BEER_FG1 "beer-fg1"
-#define PARAM_BEER_FG2 "beer-fg2"
-#define PARAM_SCALE_FACTOR1 "scale-factor1"
-#define PARAM_SCALE_FACTOR2 "scale-factor2"
-#define PARAM_SCALE_OFFSET1 "scale-offset1"
-#define PARAM_SCALE_OFFSET2 "scale-offset2"
-#define PARAM_SCALE_TEMP_FORMULA1 "scale-temp-formula1"
-#define PARAM_SCALE_TEMP_FORMULA2 "scale-temp-formula2"
-#define PARAM_SCALE_DEVIATION_INCREASE "scale-deviation-increase"
-#define PARAM_SCALE_DEVIATION_DECREASE "scale-deviation-decrease"
-#define PARAM_SCALE_DEVIATION_KALMAN "scale-deviation-kalman"
-#define PARAM_SCALE_READ_COUNT "scale-read-count"
-#define PARAM_SCALE_READ_COUNT_CALIBRATION "scale-read-count-calibration"
-#define PARAM_SCALE_STABLE_COUNT "scale-stable-count"
-#define PARAM_LEVEL_DETECTION "level-detection"
-#define PARAM_KALMAN_NOISE "kalman-noise"
-#define PARAM_KALMAN_MEASUREMENT "kalman-measurement"
-#define PARAM_KALMAN_ESTIMATION "kalman-estimation"
-#define PARAM_KALMAN_ACTIVE "kalman-active"
+constexpr auto PARAM_BREWFATHER_USERKEY = "brewfather-userkey";
+constexpr auto PARAM_BREWFATHER_APIKEY = "brewfather-apikey";
+constexpr auto PARAM_BREWSPY_TOKEN1 = "brewspy-token1";
+constexpr auto PARAM_BREWSPY_TOKEN2 = "brewspy-token2";
+constexpr auto PARAM_DISPLAY_LAYOUT = "display-layout";
+constexpr auto PARAM_TEMP_SENSOR = "temp-sensor";
+constexpr auto PARAM_SCALE_SENSOR = "scale-sensor";
+constexpr auto PARAM_WEIGHT_UNIT = "weight-unit";
+constexpr auto PARAM_VOLUME_UNIT = "volume-unit";
+constexpr auto PARAM_KEG_WEIGHT1 = "keg-weight1";
+constexpr auto PARAM_KEG_WEIGHT2 = "keg-weight2";
+constexpr auto PARAM_KEG_VOLUME1 = "keg-volume1";
+constexpr auto PARAM_KEG_VOLUME2 = "keg-volume2";
+constexpr auto PARAM_GLASS_VOLUME1 = "glass-volume1";
+constexpr auto PARAM_GLASS_VOLUME2 = "glass-volume2";
+constexpr auto PARAM_BEER_NAME1 = "beer-name1";
+constexpr auto PARAM_BEER_NAME2 = "beer-name2";
+constexpr auto PARAM_BEER_ABV1 = "beer-abv1";
+constexpr auto PARAM_BEER_ABV2 = "beer-abv2";
+constexpr auto PARAM_BEER_IBU1 = "beer-ibu1";
+constexpr auto PARAM_BEER_IBU2 = "beer-ibu2";
+constexpr auto PARAM_BEER_EBC1 = "beer-ebc1";
+constexpr auto PARAM_BEER_EBC2 = "beer-ebc2";
+constexpr auto PARAM_BEER_FG1 = "beer-fg1";
+constexpr auto PARAM_BEER_FG2 = "beer-fg2";
+constexpr auto PARAM_SCALE_FACTOR1 = "scale-factor1";
+constexpr auto PARAM_SCALE_FACTOR2 = "scale-factor2";
+constexpr auto PARAM_SCALE_OFFSET1 = "scale-offset1";
+constexpr auto PARAM_SCALE_OFFSET2 = "scale-offset2";
+constexpr auto PARAM_SCALE_TEMP_FORMULA1 = "scale-temp-formula1";
+constexpr auto PARAM_SCALE_TEMP_FORMULA2 = "scale-temp-formula2";
+constexpr auto PARAM_SCALE_DEVIATION_INCREASE = "scale-deviation-increase";
+constexpr auto PARAM_SCALE_DEVIATION_DECREASE = "scale-deviation-decrease";
+constexpr auto PARAM_SCALE_DEVIATION_KALMAN = "scale-deviation-kalman";
+constexpr auto PARAM_SCALE_READ_COUNT = "scale-read-count";
+constexpr auto PARAM_SCALE_READ_COUNT_CALIBRATION =
+    "scale-read-count-calibration";
+constexpr auto PARAM_SCALE_STABLE_COUNT = "scale-stable-count";
+constexpr auto PARAM_LEVEL_DETECTION = "level-detection";
+constexpr auto PARAM_KALMAN_NOISE = "kalman-noise";
+constexpr auto PARAM_KALMAN_MEASUREMENT = "kalman-measurement";
+constexpr auto PARAM_KALMAN_ESTIMATION = "kalman-estimation";
+constexpr auto PARAM_KALMAN_ACTIVE = "kalman-active";
 
 struct BeerInfo {
   String _name = "";
@@ -77,15 +79,16 @@ struct BeerInfo {
   float _fg = 1;
 };
 
-#define WEIGHT_KG "kg"
-#define WEIGHT_LBS "lbs"
+constexpr auto WEIGHT_KG = "kg";
+constexpr auto WEIGHT_LBS = "lbs";
 
-#define VOLUME_CL "cl"
-#define VOLUME_US "us-oz"
-#define VOLUME_UK "uk-oz"
+constexpr auto VOLUME_CL = "cl";
+constexpr auto VOLUME_US = "us-oz";
+constexpr auto VOLUME_UK = "uk-oz";
 
 enum DisplayLayoutType { Default = 0, HardwareStats = 9 };
 enum TempSensorType { SensorDHT22 = 0, SensorDS18B20 = 1 };
+enum ScaleSensorType { ScaleHX711 = 0, ScaleNAU7802 = 1 };
 
 float convertIncomingWeight(float w);
 float convertIncomingVolume(float v);
@@ -105,6 +108,7 @@ class KegConfig : public BaseConfig {
 
   DisplayLayoutType _displayLayout = DisplayLayoutType::Default;
   TempSensorType _tempSensor = TempSensorType::SensorDHT22;
+  ScaleSensorType _scaleSensor = ScaleSensorType::ScaleHX711;
 
   float _scaleFactor[2] = {0, 0};
   int32_t _scaleOffset[2] = {0, 0};
@@ -252,6 +256,17 @@ class KegConfig : public BaseConfig {
   }
   void setTempSensorType(int t) {
     _tempSensor = (TempSensorType)t;
+    _saveNeeded = true;
+  }
+
+  ScaleSensorType getScaleSensorType() { return _scaleSensor; }
+  int getScaleSensorTypeAsInt() { return _scaleSensor; }
+  void setScaleSensorType(ScaleSensorType t) {
+    _scaleSensor = t;
+    _saveNeeded = true;
+  }
+  void setScaleSensorType(int t) {
+    _scaleSensor = (ScaleSensorType)t;
     _saveNeeded = true;
   }
 

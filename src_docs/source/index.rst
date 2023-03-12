@@ -7,7 +7,7 @@ Welcome to KegMon - Keezer Level Monitor
 ----------------------------------------
 
 .. note::
-  Reflects test version **v0.6.0 beta 1**, Last updated 2023-03-06
+  Reflects test version **v0.6.0 beta 2**, Last updated 2023-03-08
 
 Introduction
 ============
@@ -18,6 +18,8 @@ welcome.
 The software has two interfaces, one via the OLED displays and one via the web-browser, integrations with external 
 services is available, currently BrewFather, BrewSpy and Home Assistant. If you have requests for other services 
 raise a request on github. 
+
+Two ADC types are supported, the HX711 and the NAU7802 (requires ESP32S2 for two scales).
 
 The cheap load cells are quite unpredicteble so it's hard to get a fully accurate and stable system. In order to 
 compensate for this I have built in the possibility to add filters and clean up the values, these filters include:
@@ -67,7 +69,6 @@ The project contains the following parts:
 TODO list
 =========
 * Complete compensation formula for temperature compensation
-* Test alternatives to HX711 board
 * Create PCB 
 * Finalize 3D model for case
 

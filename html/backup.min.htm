@@ -66,12 +66,16 @@
       console.log( form );
     
       try {
-        await $.ajax({ url: url, type: 'POST', data: form});
+        await $.ajax({ url: url, type: 'POST', data: form, 
+          success: function() { showSuccess("Restore completed, please check the values."); },
+          error: function() { showError('Unable to save data to device. Check that device ID matches!'); } 
+        });
+
         console.log( "Data posted to: " + url );
         updateProgress();
       } catch(error) {
         console.log(error);
-        showError('Unable to save data to device.');
+        showError('Unable to save data to device. Check that device ID matches!');
         updateProgress();
       }
     }
@@ -83,10 +87,8 @@
       progress = 0;
       id = json["config"]["id"];
 
-      // Update settings
       await postData("/api/config", json["config"]);
-    
-      showSuccess("Restore completed, please check the values.");
+
       setButtonDisabled( false );
       $('#spinner').hide(); 
     }

@@ -30,33 +30,33 @@ SOFTWARE.
 #include <utils.hpp>
 
 // Configuration or api params
-#define PARAM_APP_VER "app-ver"
-#define PARAM_APP_BUILD "app-build"
-#define PARAM_PLATFORM "platform"
-#define PARAM_TEMP "temperature"
-#define PARAM_HUMIDITY "humidity"
+constexpr auto PARAM_APP_VER = "app-ver";
+constexpr auto PARAM_APP_BUILD = "app-build";
+constexpr auto PARAM_PLATFORM = "platform";
+constexpr auto PARAM_TEMP = "temperature";
+constexpr auto PARAM_HUMIDITY = "humidity";
 
 // Calibration input
-#define PARAM_WEIGHT "weight"
-#define PARAM_SCALE "scale-index"
+constexpr auto PARAM_WEIGHT = "weight";
+constexpr auto PARAM_SCALE = "scale-index";
 
 // Additional scale values
-#define PARAM_SCALE_WEIGHT1 "scale-weight1"
-#define PARAM_SCALE_WEIGHT2 "scale-weight2"
-#define PARAM_BEER_WEIGHT1 "beer-weight1"
-#define PARAM_BEER_WEIGHT2 "beer-weight2"
-#define PARAM_BEER_VOLUME1 "beer-volume1"
-#define PARAM_BEER_VOLUME2 "beer-volume2"
-#define PARAM_SCALE_RAW1 "scale-raw1"
-#define PARAM_SCALE_RAW2 "scale-raw2"
-#define PARAM_GLASS1 "glass1"
-#define PARAM_GLASS2 "glass2"
-#define PARAM_SCALE_STABLE_WEIGHT1 "scale-stable-weight1"
-#define PARAM_SCALE_STABLE_WEIGHT2 "scale-stable-weight2"
-#define PARAM_LAST_POUR_WEIGHT1 "last-pour-weight1"
-#define PARAM_LAST_POUR_WEIGHT2 "last-pour-weight2"
-#define PARAM_LAST_POUR_VOLUME1 "last-pour-volume1"
-#define PARAM_LAST_POUR_VOLUME2 "last-pour-volume2"
+constexpr auto PARAM_SCALE_WEIGHT1 = "scale-weight1";
+constexpr auto PARAM_SCALE_WEIGHT2 = "scale-weight2";
+constexpr auto PARAM_BEER_WEIGHT1 = "beer-weight1";
+constexpr auto PARAM_BEER_WEIGHT2 = "beer-weight2";
+constexpr auto PARAM_BEER_VOLUME1 = "beer-volume1";
+constexpr auto PARAM_BEER_VOLUME2 = "beer-volume2";
+constexpr auto PARAM_SCALE_RAW1 = "scale-raw1";
+constexpr auto PARAM_SCALE_RAW2 = "scale-raw2";
+constexpr auto PARAM_GLASS1 = "glass1";
+constexpr auto PARAM_GLASS2 = "glass2";
+constexpr auto PARAM_SCALE_STABLE_WEIGHT1 = "scale-stable-weight1";
+constexpr auto PARAM_SCALE_STABLE_WEIGHT2 = "scale-stable-weight2";
+constexpr auto PARAM_LAST_POUR_WEIGHT1 = "last-pour-weight1";
+constexpr auto PARAM_LAST_POUR_WEIGHT2 = "last-pour-weight2";
+constexpr auto PARAM_LAST_POUR_VOLUME1 = "last-pour-volume1";
+constexpr auto PARAM_LAST_POUR_VOLUME2 = "last-pour-volume2";
 
 #if defined(USE_ASYNC_WEB)
 KegWebHandler::KegWebHandler(KegConfig* config) : BaseAsyncWebHandler(config) {
@@ -80,8 +80,8 @@ void KegWebHandler::setupWebHandlers() {
 #endif
 
   // Note! For the async implementation the order matters
-  _server->serveStatic("/levels", LittleFS, LEVELS_FILENAME);
   _server->serveStatic("/levels2", LittleFS, LEVELS_FILENAME2);
+  _server->serveStatic("/levels", LittleFS, LEVELS_FILENAME);
   WS_BIND_URL("/api/reset", HTTP_GET, &KegWebHandler::webReset);
   WS_BIND_URL("/api/scale/tare", HTTP_GET, &KegWebHandler::webScaleTare);
   WS_BIND_URL("/api/scale/factor", HTTP_GET, &KegWebHandler::webScaleFactor);
@@ -302,22 +302,22 @@ void KegWebHandler::webStatus(WS_PARAM) {
 void KegWebHandler::webStability(WS_PARAM) {
   Log.notice(F("WEB : webServer callback /api/stability." CR));
 
-#define PARAM_STABILITY_COUNT1 "stability-count1"
-#define PARAM_STABILITY_COUNT2 "stability-count2"
-#define PARAM_STABILITY_SUM1 "stability-sum1"
-#define PARAM_STABILITY_SUM2 "stability-sum2"
-#define PARAM_STABILITY_MIN1 "stability-min1"
-#define PARAM_STABILITY_MIN2 "stability-min2"
-#define PARAM_STABILITY_MAX1 "stability-max1"
-#define PARAM_STABILITY_MAX2 "stability-max2"
-#define PARAM_STABILITY_AVE1 "stability-ave1"
-#define PARAM_STABILITY_AVE2 "stability-ave2"
-#define PARAM_STABILITY_VAR1 "stability-var1"
-#define PARAM_STABILITY_VAR2 "stability-var2"
-#define PARAM_STABILITY_POPDEV1 "stability-popdev1"
-#define PARAM_STABILITY_POPDEV2 "stability-popdev2"
-#define PARAM_STABILITY_UBIASDEV1 "stability-ubiasdev1"
-#define PARAM_STABILITY_UBIASDEV2 "stability-ubiasdev2"
+  constexpr auto PARAM_STABILITY_COUNT1 = "stability-count1";
+  constexpr auto PARAM_STABILITY_COUNT2 = "stability-count2";
+  constexpr auto PARAM_STABILITY_SUM1 = "stability-sum1";
+  constexpr auto PARAM_STABILITY_SUM2 = "stability-sum2";
+  constexpr auto PARAM_STABILITY_MIN1 = "stability-min1";
+  constexpr auto PARAM_STABILITY_MIN2 = "stability-min2";
+  constexpr auto PARAM_STABILITY_MAX1 = "stability-max1";
+  constexpr auto PARAM_STABILITY_MAX2 = "stability-max2";
+  constexpr auto PARAM_STABILITY_AVE1 = "stability-ave1";
+  constexpr auto PARAM_STABILITY_AVE2 = "stability-ave2";
+  constexpr auto PARAM_STABILITY_VAR1 = "stability-var1";
+  constexpr auto PARAM_STABILITY_VAR2 = "stability-var2";
+  constexpr auto PARAM_STABILITY_POPDEV1 = "stability-popdev1";
+  constexpr auto PARAM_STABILITY_POPDEV2 = "stability-popdev2";
+  constexpr auto PARAM_STABILITY_UBIASDEV1 = "stability-ubiasdev1";
+  constexpr auto PARAM_STABILITY_UBIASDEV2 = "stability-ubiasdev2";
 
   DynamicJsonDocument doc(800);
 
@@ -348,12 +348,12 @@ void KegWebHandler::webStability(WS_PARAM) {
     doc[PARAM_STABILITY_UBIASDEV2] = stability2->unbiasedStdev();
   }
 
-#define PARAM_LEVEL_RAW1 "level-raw1"
-#define PARAM_LEVEL_RAW2 "level-raw2"
-#define PARAM_LEVEL_KALMAN1 "level-kalman1"
-#define PARAM_LEVEL_KALMAN2 "level-kalman2"
-#define PARAM_LEVEL_STATISTIC1 "level-stable1"
-#define PARAM_LEVEL_STATISTIC2 "level-stable2"
+  constexpr auto PARAM_LEVEL_RAW1 = "level-raw1";
+  constexpr auto PARAM_LEVEL_RAW2 = "level-raw2";
+  constexpr auto PARAM_LEVEL_KALMAN1 = "level-kalman1";
+  constexpr auto PARAM_LEVEL_KALMAN2 = "level-kalman2";
+  constexpr auto PARAM_LEVEL_STATISTIC1 = "level-stable1";
+  constexpr auto PARAM_LEVEL_STATISTIC2 = "level-stable2";
 
   if (myLevelDetection.getRawDetection(UnitIndex::U1)->hasRawValue())
     doc[PARAM_LEVEL_RAW1] =

@@ -327,14 +327,14 @@
           });
         })
         .fail(function () {
-          showError("Failed to load level history from device");
+          showError("Failed to load level history from device, can be that no data has been logged.");
           $('#spinner').hide(); 
         })
         .always(function() {
         });
       })
       .fail(function () {
-        showError("Failed to load level history from device");
+        showError("Failed to load level history from device, can be that no data has been logged.");
         $('#spinner').hide(); 
       })
       .always(function() {

@@ -29,32 +29,35 @@ SOFTWARE.
 
 #include <log.hpp>
 
-#define CFG_APPNAME "KegMon"         // Name of firmware
-#define CFG_MDNSNAME "KegMon"        // Network name
-#define CFG_FILENAME "/kegmon.json"  // Name of config file
+constexpr auto CFG_APPNAME = "KegMon";         // Name of firmware
+constexpr auto CFG_MDNSNAME = "KegMon";        // Network name
+constexpr auto CFG_FILENAME = "/kegmon.json";  // Name of config file
+
+constexpr auto DISPLAY_ADR1 = 0x3c;
+constexpr auto DISPLAY_ADR2 = 0x3d;
 
 #if defined(ESP8266)
 #define ESP_RESET ESP.reset
-#define PIN_LED 2
-#define PIN_OLED_SDA D2
-#define PIN_OLED_SCL D1
-#define PIN_SCALE1_SDA D3
-#define PIN_SCALE1_SCL D4
-#define PIN_SCALE2_SDA D5
-#define PIN_SCALE2_SCL D8
-#define PIN_DH2 D7
-#define PIN_DH2_PWR D6
+constexpr auto PIN_LED = 2;
+constexpr auto PIN_OLED_SDA = D2;
+constexpr auto PIN_OLED_SCL = D1;
+constexpr auto PIN_SCALE1_SDA = D3;
+constexpr auto PIN_SCALE1_SCL = D4;
+constexpr auto PIN_SCALE2_SDA = D5;
+constexpr auto PIN_SCALE2_SCL = D8;
+constexpr auto PIN_DH2 = D7;
+constexpr auto PIN_DH2_PWR = D6;
 #elif defined(ESP32S2)
 #define ESP_RESET ESP.restart
-#define PIN_LED BUILTIN_LED
-#define PIN_OLED_SDA SDA
-#define PIN_OLED_SCL SCL
-#define PIN_SCALE1_SDA A17
-#define PIN_SCALE1_SCL A15
-#define PIN_SCALE2_SDA A6
-#define PIN_SCALE2_SCL A11
-#define PIN_DH2 A10
-#define PIN_DH2_PWR A8
+constexpr auto PIN_LED = BUILTIN_LED;
+constexpr auto PIN_OLED_SDA = SDA;
+constexpr auto PIN_OLED_SCL = SCL;
+constexpr auto PIN_SCALE1_SDA = A17;
+constexpr auto PIN_SCALE1_SCL = A15;
+constexpr auto PIN_SCALE2_SDA = A6;
+constexpr auto PIN_SCALE2_SCL = A11;
+constexpr auto PIN_DH2 = A10;
+constexpr auto PIN_DH2_PWR = A8;
 #else
 #error "Undefined target platform"
 #endif
