@@ -69,6 +69,10 @@ This is the alternative ADC which is quite new and I have not had the time yet t
 Schema
 ======
 
+.. note::
+  The temperature sensor is installed in the scale base and you can use either a DHT22 or DS18B20. I would recommend the DS18B20 since that is more stable and 
+  cheaper than the DHT22. Some users also have had issues with ESP32S2 and DHT22, unclear what causes this.
+
 This is the schema used for the HX711 boards. 
 
 .. image:: images/schema.jpg
@@ -77,32 +81,31 @@ This is the schema used for the HX711 boards.
 
 This is the schema used for the NAU7802 boards. Scale 1 uses the same pins as the OLED displays. Scale 2 uses the same pins as for the HX711. So D3/D4 is unused in this variant. 
 
-Note that the ESP8266 only supports one I2C bus so with that processor only one scale can be used. Recommend to use ESP32S2 which can support both NAU7802 scales.
+.. note::
+  I'm considering to update the hardware design to fit a larger OLED display 1.3" and multiple NAU7802 on the ESP8266 platform but this will require an i2c extender to avoid adress overlap. 
+
+.. note::
+  Note that the ESP8266 only supports one I2C bus so with that processor only one scale can be used. Recommend to use ESP32S2 which can support both NAU7802 scales.
 
 .. image:: images/schema2.jpg
   :width: 600
   :alt: Schema NAU7802
-
-Part list:
 
 Case
 ====
 In this version the HX711 boards are moved to the case with the displays. The hope is that 
 this would stabilize the sensor readings and also make it easier to replace a faulty scale. 
 
-.. note::
-  I will update the hardware design to fit a larger OLED display 1.3". This will require a different
-  display driver on the software side. I'm also considering to update the software/design to an 
-  ESP32 for more processing power. 
+Part list:
 
 * U1 - Wemos ESP8266 D1 mini (option 1)
 * U1 - Wemos ESP32 S2 mini (option 2)
 * U2 - 0.96" 128x64 I2C OLED display (with option to change i2c adress, 0x3c)
 * U3 - 0.96" 128x64 I2C OLED display (with option to change i2c adress, 0x3d)
-* R1 - 4.7k
-* R2 - 4.7k
-* 2 x HX711 boards (option 1)
-* 2 x NAU7802 boards (option 2, require the ESP32S2)
+* R1 - 4.7k (only used with HX711)
+* R2 - 4.7k (only used with HX711)
+* R3 - 4.7k
+* 2 x HX711 boards
 * 3D printed case for displays and esp8266
 * 5V power supply
 * RJ45 connectors (optional)
@@ -110,6 +113,10 @@ this would stabilize the sensor readings and also make it easier to replace a fa
 R1 and R2 are just used to pull the CLK to +3.3V or the code will not detect 
 that scales are missing (floating input). You can use most values between 
 2k and 5k for that.  
+
+It's possible to use the NAU7802 boards to replace the HX711 ADC. Two scales is only supported on the ESP32 platform since it requires two i2c instances. The wiring is different if you choose this option. 
+
+* 2 x NAU7802 boards (require the ESP32S2 for two scales)
 
 Images below shows examples of a HX711 board and RJ45 breakout board. I use the breakout board since I 
 havent yet created my own PCB, I want to stabilize the hardware design first.
@@ -288,7 +295,7 @@ combinator board.
      - Signal from DHT22 or DS18B20
      - Signal from DHT22 or DS18B20
    * - Brown-White
-     - Not used
-     - Not used
+     - GND
+     - GND
 
 
