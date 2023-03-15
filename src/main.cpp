@@ -32,6 +32,7 @@ SOFTWARE.
 #include <temp.hpp>
 #include <utils.hpp>
 #include <wificonnection.hpp>
+#include <serialws.hpp>
 
 SerialDebug mySerial(115200L);
 KegConfig myConfig(CFG_MDNSNAME, CFG_FILENAME);
@@ -43,6 +44,7 @@ Display myDisplay;
 Scale myScale;
 LevelDetection myLevelDetection;
 TempHumidity myTemp;
+SerialWebSocket mySerialWebSocket;
 
 const int loopInterval = 2000;
 int loopCounter = 0;
@@ -135,6 +137,8 @@ void setup() {
   PERF_BEGIN("setup-webserver");
 #if defined(USE_ASYNC_WEB)
   myWebHandler.setupAsyncWebServer();
+  mySerialWebSocket.begin(myWebHandler.getWebServer(), &Serial);
+  mySerial.begin(&mySerialWebSocket);
 #else
   myWebHandler.setupWebServer();
 #endif
