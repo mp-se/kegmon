@@ -94,8 +94,6 @@ class Scale {
  public:
   Scale() {}
 
-  void test(UnitIndex idx) { readRawNAU7802(idx); }
-
   void setup(bool force = false) {
     switch (myConfig.getScaleSensorType()) {
       case ScaleSensorType::ScaleHX711:
