@@ -196,8 +196,8 @@
         <article role="main">
           <div class="section" id="releases">
 <span id="id1"></span><h1>Releases<a class="headerlink" href="#releases" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="v0-6-0-beta-2">
-<h2>v0.6.0 beta 2<a class="headerlink" href="#v0-6-0-beta-2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="v0-6-0-beta-3">
+<h2>v0.6.0 beta 3<a class="headerlink" href="#v0-6-0-beta-3" title="Permalink to this headline">¶</a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Updating from the 0.5 async version requires a manual reset after upload is finished to apply the new software.</p>
@@ -207,9 +207,11 @@
 <p>Issues with connecting to DHT22 sensor on ESP32S2 variant over long cables. Uncertain what causes this. Recommendation is to use DS18B20 instead on ESP32S2.</p>
 </div>
 <ul class="simple">
+<li><p>BUG: Configuration lost when JSON document became to large, increased buffer to 3kb (from 2kb)</p></li>
 <li><p>Added support for NAU7802 AD converter from sparkfun. Uses I2C bus. Will require ESP32S2 for two scales and different wiring. This is EXPERIMENTAL!</p></li>
 <li><p>Added error message to restore configuration feature in case the ID did not match.</p></li>
 <li><p>Added pull-up resistor to temperature sensor data line (applies to both DS18B20 and DHT22)</p></li>
+<li><p>Added web based serial console accessed via <a class="reference external" href="http://device/serial">http://device/serial</a> or ws://device/serialws (only works with async webserver)</p></li>
 </ul>
 </div>
 <div class="section" id="v0-6-0-beta-1">
@@ -296,7 +298,7 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Releases</a><ul>
-<li><a class="reference internal" href="#v0-6-0-beta-2">v0.6.0 beta 2</a></li>
+<li><a class="reference internal" href="#v0-6-0-beta-3">v0.6.0 beta 3</a></li>
 <li><a class="reference internal" href="#v0-6-0-beta-1">v0.6.0 beta 1</a></li>
 <li><a class="reference internal" href="#v0-5-0">v0.5.0</a></li>
 <li><a class="reference internal" href="#v0-4-0">v0.4.0</a></li>
