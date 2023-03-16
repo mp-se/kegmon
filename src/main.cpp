@@ -44,7 +44,9 @@ Display myDisplay;
 Scale myScale;
 LevelDetection myLevelDetection;
 TempHumidity myTemp;
+#if defined(USE_ASYNC_WEB)
 SerialWebSocket mySerialWebSocket;
+#endif
 
 const int loopInterval = 2000;
 int loopCounter = 0;
@@ -318,6 +320,9 @@ void loop() {
 
   myWebHandler.loop();
   myWifi.loop();
+#if defined(USE_ASYNC_WEB)
+  mySerialWebSocket.loop();
+#endif
   myScale.loop(UnitIndex::U1);
   myScale.loop(UnitIndex::U2);
 
