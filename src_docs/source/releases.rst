@@ -3,7 +3,7 @@
 Releases 
 ########
 
-v0.6.0 beta 2
+v0.6.0 beta 3
 =============
 
 .. note::
@@ -12,9 +12,11 @@ v0.6.0 beta 2
 .. warning::
     Issues with connecting to DHT22 sensor on ESP32S2 variant over long cables. Uncertain what causes this. Recommendation is to use DS18B20 instead on ESP32S2.
 
+* BUG: Configuration lost when JSON document became to large, increased buffer to 3kb (from 2kb)
 * Added support for NAU7802 AD converter from sparkfun. Uses I2C bus. Will require ESP32S2 for two scales and different wiring. This is EXPERIMENTAL!
 * Added error message to restore configuration feature in case the ID did not match.
 * Added pull-up resistor to temperature sensor data line (applies to both DS18B20 and DHT22)
+* Added web based serial console accessed via http://device/serial or ws://device/serialws (only works with async webserver)
 
 v0.6.0 beta 1
 =============

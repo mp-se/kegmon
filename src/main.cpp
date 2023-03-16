@@ -29,6 +29,7 @@ SOFTWARE.
 #include <ota.hpp>
 #include <perf.hpp>
 #include <scale.hpp>
+#include <serialws.hpp>
 #include <temp.hpp>
 #include <utils.hpp>
 #include <wificonnection.hpp>
@@ -43,6 +44,9 @@ Display myDisplay;
 Scale myScale;
 LevelDetection myLevelDetection;
 TempHumidity myTemp;
+#if defined(USE_ASYNC_WEB)
+SerialWebSocket mySerialWebSocket;
+#endif
 
 const int loopInterval = 2000;
 int loopCounter = 0;
@@ -135,6 +139,8 @@ void setup() {
   PERF_BEGIN("setup-webserver");
 #if defined(USE_ASYNC_WEB)
   myWebHandler.setupAsyncWebServer();
+  mySerialWebSocket.begin(myWebHandler.getWebServer(), &Serial);
+  mySerial.begin(&mySerialWebSocket);
 #else
   myWebHandler.setupWebServer();
 #endif
@@ -314,6 +320,9 @@ void loop() {
 
   myWebHandler.loop();
   myWifi.loop();
+#if defined(USE_ASYNC_WEB)
+  mySerialWebSocket.loop();
+#endif
   myScale.loop(UnitIndex::U1);
   myScale.loop(UnitIndex::U2);
 

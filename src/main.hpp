@@ -36,6 +36,8 @@ constexpr auto CFG_FILENAME = "/kegmon.json";  // Name of config file
 constexpr auto DISPLAY_ADR1 = 0x3c;
 constexpr auto DISPLAY_ADR2 = 0x3d;
 
+constexpr auto JSON_BUFFER = 3000;
+
 #if defined(ESP8266)
 #define ESP_RESET ESP.reset
 constexpr auto PIN_LED = 2;

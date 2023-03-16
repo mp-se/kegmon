@@ -59,11 +59,13 @@ constexpr auto PARAM_LAST_POUR_VOLUME1 = "last-pour-volume1";
 constexpr auto PARAM_LAST_POUR_VOLUME2 = "last-pour-volume2";
 
 #if defined(USE_ASYNC_WEB)
-KegWebHandler::KegWebHandler(KegConfig* config) : BaseAsyncWebHandler(config) {
+KegWebHandler::KegWebHandler(KegConfig* config)
+    : BaseAsyncWebHandler(config, JSON_BUFFER) {
   _config = config;
 }
 #else
-KegWebHandler::KegWebHandler(KegConfig* config) : BaseWebHandler(config) {
+KegWebHandler::KegWebHandler(KegConfig* config)
+    : BaseWebHandler(config, JSON_BUFFER) {
   _config = config;
 }
 #endif
@@ -126,14 +128,14 @@ void KegWebHandler::webHandleBrewspy(WS_PARAM) {
 void KegWebHandler::webScale(WS_PARAM) {
   Log.notice(F("WEB : webServer callback /api/scale." CR));
 
-  DynamicJsonDocument doc(300);
+  DynamicJsonDocument doc(500);
   populateScaleJson(doc);
 
   doc[PARAM_WEIGHT_UNIT] = myConfig.getWeightUnit();
   doc[PARAM_VOLUME_UNIT] = myConfig.getVolumeUnit();
 
   String out;
-  out.reserve(300);
+  out.reserve(500);
   serializeJson(doc, out);
   doc.clear();
   WS_SEND(200, "application/json", out.c_str());
@@ -388,7 +390,7 @@ void KegWebHandler::webStability(WS_PARAM) {
 #endif
 
   String out;
-  out.reserve(500);
+  out.reserve(800);
   serializeJson(doc, out);
   doc.clear();
   WS_SEND(200, "application/json", out.c_str());
