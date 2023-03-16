@@ -27,7 +27,7 @@ SOFTWARE.
 #include <utils.hpp>
 
 KegConfig::KegConfig(String baseMDNS, String fileName)
-    : BaseConfig(baseMDNS, fileName) {}
+    : BaseConfig(baseMDNS, fileName, JSON_BUFFER) {}
 
 void KegConfig::createJson(DynamicJsonDocument& doc, bool skipSecrets) {
   // Call base class functions
