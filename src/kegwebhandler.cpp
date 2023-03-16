@@ -59,11 +59,13 @@ constexpr auto PARAM_LAST_POUR_VOLUME1 = "last-pour-volume1";
 constexpr auto PARAM_LAST_POUR_VOLUME2 = "last-pour-volume2";
 
 #if defined(USE_ASYNC_WEB)
-KegWebHandler::KegWebHandler(KegConfig* config) : BaseAsyncWebHandler(config, JSON_BUFFER) {
+KegWebHandler::KegWebHandler(KegConfig* config)
+    : BaseAsyncWebHandler(config, JSON_BUFFER) {
   _config = config;
 }
 #else
-KegWebHandler::KegWebHandler(KegConfig* config) : BaseWebHandler(config, JSON_BUFFER) {
+KegWebHandler::KegWebHandler(KegConfig* config)
+    : BaseWebHandler(config, JSON_BUFFER) {
   _config = config;
 }
 #endif
