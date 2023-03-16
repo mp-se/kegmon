@@ -29,10 +29,10 @@ SOFTWARE.
 #include <ota.hpp>
 #include <perf.hpp>
 #include <scale.hpp>
+#include <serialws.hpp>
 #include <temp.hpp>
 #include <utils.hpp>
 #include <wificonnection.hpp>
-#include <serialws.hpp>
 
 SerialDebug mySerial(115200L);
 KegConfig myConfig(CFG_MDNSNAME, CFG_FILENAME);
