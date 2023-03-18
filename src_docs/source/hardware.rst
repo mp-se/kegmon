@@ -234,6 +234,8 @@ Print the 2 base models and 2 covers. Files can be found in the sub-model direct
 These models are designed to be printed on my Prusa MK3s+ and support a Cornelius  
 kegs of 9, 18 or 19 l.
 
+`An alternative design can be found here <https://github.com/darkside90a/kegmon-base>`_
+
 You can of course print or build a different mount for the load cells. Just check the 
 internet and you will find several options. Mount the load cells in the base and wire 
 the HX711 board to the load cells as shown in the next picture. Excellent guide on how to
@@ -286,28 +288,28 @@ combinator board.
    * - Wire
      - HX711
      - NAU7802
-   * - Orange
+   * - Orange (PIN 2)
      - Power to DHT22 (+3.3V)
      - Power to DHT22 (+3.3V)
-   * - Orange-White
+   * - Orange-White (PIN 1)
      - GND to DHT22 (GND)
      - GND to DHT22 (GND)
-   * - Blue
+   * - Blue (PIN 4)
      - A+ (or GRN on HX711)
      - A+ (or GREEN on NAU7802)
-   * - Blue-White
+   * - Blue-White (PIN 5)
      - A- (or WHT on HX711)
      - A- (or WHITE on NAU7802)
-   * - Green
+   * - Green (PIN 6)
      - E+ (or RED on HX711)
      - E+ (or RED on NAU7802)
-   * - Green-White
+   * - Green-White (PIN 3)
      - E- (or BLK on HX711)
      - E- (or BLACK on NAU7802)
-   * - Brown
+   * - Brown (PIN 8)
      - Signal from DHT22 or DS18B20
      - Signal from DHT22 or DS18B20
-   * - Brown-White
+   * - Brown-White (PIN 7)
      - GND
      - GND
 
