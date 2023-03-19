@@ -285,15 +285,18 @@ combinator board.
 .. list-table:: CAT Wiring
    :header-rows: 1
 
-   * - Wire
+   * - Wire (T568B)
      - HX711
      - NAU7802
-   * - Orange (PIN 2)
-     - Power to DHT22 (+3.3V)
-     - Power to DHT22 (+3.3V)
    * - Orange-White (PIN 1)
      - GND to DHT22 (GND)
      - GND to DHT22 (GND)
+   * - Orange (PIN 2)
+     - Power to DHT22 (+3.3V)
+     - Power to DHT22 (+3.3V)
+   * - Green-White (PIN 3)
+     - E- (or BLK on HX711)
+     - E- (or BLACK on NAU7802)
    * - Blue (PIN 4)
      - A+ (or GRN on HX711)
      - A+ (or GREEN on NAU7802)
@@ -303,14 +306,11 @@ combinator board.
    * - Green (PIN 6)
      - E+ (or RED on HX711)
      - E+ (or RED on NAU7802)
-   * - Green-White (PIN 3)
-     - E- (or BLK on HX711)
-     - E- (or BLACK on NAU7802)
-   * - Brown (PIN 8)
-     - Signal from DHT22 or DS18B20
-     - Signal from DHT22 or DS18B20
    * - Brown-White (PIN 7)
      - GND
      - GND
+   * - Brown (PIN 8)
+     - Signal from DHT22 or DS18B20
+     - Signal from DHT22 or DS18B20
 
 
