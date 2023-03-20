@@ -265,6 +265,9 @@ what the result looked like. The cover will be glued on top of this at a later s
 when it works correcly). You can also use a shielded cable that would be more resistent too external
 interferece.
 
+Typically the colors of the load cells are black (-), white (+) and red (out). If you use the combinator board then C is for the read (out signal). But 
+to be sure measure the resistance and it should be 1.5k over the +/- cables (or the highest resistace). 
+
 .. image:: images/keg_base_wired.jpg
   :width: 600
   :alt: Wired base
@@ -312,5 +315,4 @@ combinator board.
    * - Brown (PIN 8)
      - Signal from DHT22 or DS18B20
      - Signal from DHT22 or DS18B20
-
 
