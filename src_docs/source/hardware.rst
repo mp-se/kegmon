@@ -234,6 +234,8 @@ Print the 2 base models and 2 covers. Files can be found in the sub-model direct
 These models are designed to be printed on my Prusa MK3s+ and support a Cornelius  
 kegs of 9, 18 or 19 l.
 
+`An alternative design can be found here <https://github.com/darkside90a/kegmon-base>`_
+
 You can of course print or build a different mount for the load cells. Just check the 
 internet and you will find several options. Mount the load cells in the base and wire 
 the HX711 board to the load cells as shown in the next picture. Excellent guide on how to
@@ -263,6 +265,9 @@ what the result looked like. The cover will be glued on top of this at a later s
 when it works correcly). You can also use a shielded cable that would be more resistent too external
 interferece.
 
+Typically the colors of the load cells are black (-), white (+) and red (out). If you use the combinator board then C is for the read (out signal). But 
+to be sure measure the resistance and it should be 1.5k over the +/- cables (or the highest resistace). 
+
 .. image:: images/keg_base_wired.jpg
   :width: 600
   :alt: Wired base
@@ -283,32 +288,31 @@ combinator board.
 .. list-table:: CAT Wiring
    :header-rows: 1
 
-   * - Wire
+   * - Wire (T568B)
      - HX711
      - NAU7802
-   * - Orange
-     - Power to DHT22 (+3.3V)
-     - Power to DHT22 (+3.3V)
-   * - Orange-White
+   * - Orange-White (PIN 1)
      - GND to DHT22 (GND)
      - GND to DHT22 (GND)
-   * - Blue
-     - A+ (or GRN on HX711)
-     - A+ (or GREEN on NAU7802)
-   * - Blue-White
-     - A- (or WHT on HX711)
-     - A- (or WHITE on NAU7802)
-   * - Green
-     - E+ (or RED on HX711)
-     - E+ (or RED on NAU7802)
-   * - Green-White
+   * - Orange (PIN 2)
+     - Power to DHT22 (+3.3V)
+     - Power to DHT22 (+3.3V)
+   * - Green-White (PIN 3)
      - E- (or BLK on HX711)
      - E- (or BLACK on NAU7802)
-   * - Brown
-     - Signal from DHT22 or DS18B20
-     - Signal from DHT22 or DS18B20
-   * - Brown-White
+   * - Blue (PIN 4)
+     - A+ (or GRN on HX711)
+     - A+ (or GREEN on NAU7802)
+   * - Blue-White (PIN 5)
+     - A- (or WHT on HX711)
+     - A- (or WHITE on NAU7802)
+   * - Green (PIN 6)
+     - E+ (or RED on HX711)
+     - E+ (or RED on NAU7802)
+   * - Brown-White (PIN 7)
      - GND
      - GND
-
+   * - Brown (PIN 8)
+     - Signal from DHT22 or DS18B20
+     - Signal from DHT22 or DS18B20
 

@@ -286,7 +286,12 @@ void KegWebHandler::webStatus(WS_PARAM) {
 
   if (!isnan(f)) {
     doc[PARAM_TEMP] = convertOutgoingTemperature(f);
-    doc[PARAM_HUMIDITY] = myTemp.getLastHumidity();
+  }
+
+  float h = myTemp.getLastHumidity();
+
+  if (!isnan(h)) {
+    doc[PARAM_HUMIDITY] = h;
   }
 
 #if LOG_LEVEL == 6
@@ -381,7 +386,12 @@ void KegWebHandler::webStability(WS_PARAM) {
 
   if (!isnan(f)) {
     doc[PARAM_TEMP] = convertOutgoingTemperature(f);
-    doc[PARAM_HUMIDITY] = myTemp.getLastHumidity();
+  }
+
+  float h = myTemp.getLastHumidity();
+
+  if (!isnan(h)) {
+    doc[PARAM_HUMIDITY] = h;
   }
 
 #if LOG_LEVEL == 6
