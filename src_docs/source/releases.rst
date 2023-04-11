@@ -17,6 +17,9 @@ v0.6.0 beta 3
 * Added error message to restore configuration feature in case the ID did not match.
 * Added pull-up resistor to temperature sensor data line (applies to both DS18B20 and DHT22)
 * Added web based serial console accessed via http://device/serial or ws://device/serialws (only works with async webserver)
+* Added mobile dashboard accessed via http://device/dashboard
+* Added updated schema and pcb for the HX711 edition.
+* Added 3d model for case that works with pcb
 
 v0.6.0 beta 1
 =============
