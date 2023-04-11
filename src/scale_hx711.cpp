@@ -119,9 +119,9 @@ float Scale::readHX711(UnitIndex idx, bool skipValidation) {
     }
 
     if (raw < -100) {
-      Log.error(
-          F("SCAL: HX711 Ignoring value since it's less than -100kg %F [%d]." CR),
-          raw, idx);
+      Log.error(F("SCAL: HX711 Ignoring value since it's less than -100kg %F "
+                  "[%d]." CR),
+                raw, idx);
       PERF_END("scale-read");
       return NAN;
     }

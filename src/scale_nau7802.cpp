@@ -129,13 +129,14 @@ float Scale::readNAU7802(UnitIndex idx, bool skipValidation) {
   Log.verbose(F("SCAL: NAU7802 Reading weight=%F [%d]" CR), raw, idx);
 #endif
 
-  if(!skipValidation) {
+  if (!skipValidation) {
     // If the value is higher/lower than 100 kb/lbs then the reading is proably
     // wrong, just ignore the reading
     if (raw > 100) {
-      Log.error(F("SCAL: NAU7802 Ignoring value since it's higher than 100kg, %F "
-                  "[%d]." CR),
-                raw, idx);
+      Log.error(
+          F("SCAL: NAU7802 Ignoring value since it's higher than 100kg, %F "
+            "[%d]." CR),
+          raw, idx);
       PERF_END("scale-read");
       return NAN;
     }
