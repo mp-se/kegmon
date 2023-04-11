@@ -86,8 +86,8 @@ class Scale {
   void tareNAU7802(UnitIndex idx);
   void findFactorHX711(UnitIndex idx, float weight);
   void findFactorNAU7802(UnitIndex idx, float weight);
-  float readHX711(UnitIndex idx);
-  float readNAU7802(UnitIndex idx);
+  float readHX711(UnitIndex idx, bool skipValidation);
+  float readNAU7802(UnitIndex idx, bool skipValidation);
   int32_t readRawHX711(UnitIndex idx);
   int32_t readRawNAU7802(UnitIndex idx);
 
@@ -119,11 +119,11 @@ class Scale {
     return _hxScale[idx] != 0 || _nauScale[idx] != 0 ? true : false;
   }
 #endif
-  float read(UnitIndex idx) {
+  float read(UnitIndex idx, bool skipValidation = false) {
     if (myConfig.getScaleSensorType() == ScaleSensorType::ScaleHX711)
-      return readHX711(idx);
+      return readHX711(idx, skipValidation);
     else
-      return readNAU7802(idx);
+      return readNAU7802(idx, skipValidation);
   }
 };
 

@@ -84,7 +84,7 @@ void Scale::setScaleFactorHX711(UnitIndex idx) {
   _hxScale[idx]->set_scale(fs);
 }
 
-float Scale::readHX711(UnitIndex idx) {
+float Scale::readHX711(UnitIndex idx, bool skipValidation) {
 #if defined(DEBUG_LINK_SCALES)
   idx = UnitIndex::U1;
 #endif
@@ -107,23 +107,26 @@ float Scale::readHX711(UnitIndex idx) {
   Log.verbose(F("SCAL: HX711 Reading weight=%F [%d]" CR), raw, idx);
 #endif
 
-  // If the value is higher/lower than 100 kb/lbs then the reading is proably
-  // wrong, just ignore the reading
-  if (raw > 100) {
-    Log.error(F("SCAL: HX711 Ignoring value since it's higher than 100kg, %F "
-                "[%d]." CR),
-              raw, idx);
-    PERF_END("scale-read");
-    return NAN;
+  if (!skipValidation) {
+    // If the value is higher/lower than 100 kb/lbs then the reading is proably
+    // wrong, just ignore the reading
+    if (raw > 100) {
+      Log.error(F("SCAL: HX711 Ignoring value since it's higher than 100kg, %F "
+                  "[%d]." CR),
+                raw, idx);
+      PERF_END("scale-read");
+      return NAN;
+    }
+
+    if (raw < -100) {
+      Log.error(
+          F("SCAL: HX711 Ignoring value since it's less than -100kg %F [%d]." CR),
+          raw, idx);
+      PERF_END("scale-read");
+      return NAN;
+    }
   }
 
-  if (raw < -100) {
-    Log.error(
-        F("SCAL: HX711 Ignoring value since it's less than -100kg %F [%d]." CR),
-        raw, idx);
-    PERF_END("scale-read");
-    return NAN;
-  }
   PERF_END("scale-read");
   return raw;
 }
@@ -176,7 +179,7 @@ void Scale::findFactorHX711(UnitIndex idx, float weight) {
   myConfig.saveFile();  // save the factor to file
 
   setScaleFactorHX711(idx);  // apply the factor after it has been saved
-  readHX711(idx);
+  readHX711(idx, true);
 }
 
 // EOF
