@@ -106,7 +106,7 @@ void Scale::setScaleFactorNAU7802(UnitIndex idx) {
       fs);  // apply the saved scale factor so we get valid results
 }
 
-float Scale::readNAU7802(UnitIndex idx) {
+float Scale::readNAU7802(UnitIndex idx, bool skipValidation) {
 #if defined(DEBUG_LINK_SCALES)
   idx = UnitIndex::U1;
 #endif
@@ -129,23 +129,27 @@ float Scale::readNAU7802(UnitIndex idx) {
   Log.verbose(F("SCAL: NAU7802 Reading weight=%F [%d]" CR), raw, idx);
 #endif
 
-  // If the value is higher/lower than 100 kb/lbs then the reading is proably
-  // wrong, just ignore the reading
-  if (raw > 100) {
-    Log.error(F("SCAL: NAU7802 Ignoring value since it's higher than 100kg, %F "
-                "[%d]." CR),
-              raw, idx);
-    PERF_END("scale-read");
-    return NAN;
+  if (!skipValidation) {
+    // If the value is higher/lower than 100 kb/lbs then the reading is proably
+    // wrong, just ignore the reading
+    if (raw > 100) {
+      Log.error(
+          F("SCAL: NAU7802 Ignoring value since it's higher than 100kg, %F "
+            "[%d]." CR),
+          raw, idx);
+      PERF_END("scale-read");
+      return NAN;
+    }
+
+    if (raw < -100) {
+      Log.error(F("SCAL: NAU7802 Ignoring value since it's less than -100kg %F "
+                  "[%d]." CR),
+                raw, idx);
+      PERF_END("scale-read");
+      return NAN;
+    }
   }
 
-  if (raw < -100) {
-    Log.error(F("SCAL: NAU7802 Ignoring value since it's less than -100kg %F "
-                "[%d]." CR),
-              raw, idx);
-    PERF_END("scale-read");
-    return NAN;
-  }
   PERF_END("scale-read");
   return raw;
 }
@@ -197,7 +201,7 @@ void Scale::findFactorNAU7802(UnitIndex idx, float weight) {
 
   myConfig.setScaleFactor(idx, f);
   myConfig.saveFile();
-  readNAU7802(idx);
+  readNAU7802(idx, true);
 }
 
 // EOF

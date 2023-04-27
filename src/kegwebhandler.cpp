@@ -100,6 +100,7 @@ void KegWebHandler::setupWebHandlers() {
   WS_BIND_URL("/api/brewspy/tap", HTTP_GET, &KegWebHandler::webHandleBrewspy);
   WS_BIND_URL("/api/beer", HTTP_POST, &KegWebHandler::webHandleBeerWrite);
   WS_BIND_URL("/api/logs/clear", HTTP_GET, &KegWebHandler::webHandleLogsClear);
+  WS_BIND_URL("/dashboard", HTTP_GET, &KegWebHandler::webDashboardHtm);
 }
 
 void KegWebHandler::webHandleLogsClear(WS_PARAM) {
