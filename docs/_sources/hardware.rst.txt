@@ -175,38 +175,45 @@ so the digital interface is compatible with the ESP.
 
 Building the display case
 *************************
-
-.. warning::
-  This part will be updated since in my new prototype im using two connections, one for each keg. 
   
-First step is to print the case parts and mount the OLED displays to the front. I use hot glue to fix the displays in place. 
+First step is get a pcb and to print the two case parts. This first version is a one sided pcb. 
+In the future there will be a multisided one. 
+
+The models for the case is found under the /3d folder and the pcb files under /schema
+
+Solder the components / or the mounting pins to the PCB as shown in the image below.
+
+.. image:: images/board.jpg
+  :width: 600
+  :alt: Soldering
+
+Here is a view with all the components mounted.
+
+.. image:: images/soldered.jpg
+  :width: 600
+  :alt: Soldered all components
+
+Fit into the case.
+
+.. image:: images/complete.jpg
+  :width: 600
+  :alt: Mounted in case 
+
+I use hot glue to fix the displays in place. 
 
 .. image:: images/oled_mount.jpg
   :width: 600
   :alt: Mounting displays
 
+Here is a view of the completed build.
 
-The next step is to build the PCB where I used a standard experiment board with wire to build that up. I didnt want to spend time 
-on creating a PCB for the prototype. Might be something for the future. Just follow the schematic and validate your connections.
-
-To make the connection easy with the scales I put on a rj45 (standard network connector) which I can just plug in to the display case.
-There are other options available on the internet for both 1 and 2 displays. 
-
-.. image:: images/rj45_esp.jpg
+.. image:: images/case.jpg
   :width: 600
-  :alt: ESP and network
+  :alt: Complete
 
-This is the side which is mounted to the displays.
 
-.. image:: images/front.jpg
-  :width: 600
-  :alt: Front pcb
 
-This is the finished part. (have not wired in the power supply yet)
 
-.. image:: images/display_case.jpg
-  :width: 600
-  :alt: Display build
 
 Scale Base
 ==========

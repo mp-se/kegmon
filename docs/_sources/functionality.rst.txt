@@ -10,6 +10,10 @@ The main features
 
   Modern HTML5 based web interface with easy access to configuration and current status.
 
+* **Mobile dashboard**
+
+  Mobile dashboard that shows the important values for each keg.
+
 * **3 step easy scale calibration**
 
   3 easy steps to calibrate your scale all from the web interface. Tare the scale, calculate factor based on known weight and finally verify.
