@@ -21,32 +21,40 @@
           <div class="card-header text-primary" id="beer-name1"></div>
           <div class="card-body">
             <div class="row">
-              <div class="col-8">Glasses left</div>
-              <div class="col-4" id="glass1"></div>
+              <div class="col-6">Keg</div>
+              <div class="col-6">
+                <div class="progress">
+                  <div class="progress-bar" id="beer-percent1" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+              </div>
             </div>
             <div class="row">
-              <div class="col-8">Last pour</div>
-              <div class="col-4" id="last-pour-volume1"></div>
+              <div class="col-6">Glasses left</div>
+              <div class="col-6" id="glass1"></div>
             </div>
             <div class="row">
-              <div class="col-8">Beer volume</div>
-              <div class="col-4" id="beer-volume1"></div>
+              <div class="col-6">Last pour</div>
+              <div class="col-6" id="last-pour-volume1"></div>
+            </div>
+            <div class="row">
+              <div class="col-6">Beer volume</div>
+              <div class="col-6" id="beer-volume1"></div>
             </div>
             <hr>
-            <div class="row"><div class="col-8">ABV</div>
-              <div class="col-4" id="beer-abv1"></div>
+            <div class="row"><div class="col-6">ABV</div>
+              <div class="col-6" id="beer-abv1"></div>
             </div>
             <div class="row">
-              <div class="col-8">EBC</div>
-              <div class="col-4" id="beer-ebc1"></div>
+              <div class="col-6">EBC</div>
+              <div class="col-6" id="beer-ebc1"></div>
             </div>
             <div class="row">
-              <div class="col-8">IBU</div>
-              <div class="col-4" id="beer-ibu1"></div>
+              <div class="col-6">IBU</div>
+              <div class="col-6" id="beer-ibu1"></div>
             </div>
             <div class="row">
-              <div class="col-8">Temperature</div>
-              <div class="col-4" id="temperature1"></div>
+              <div class="col-6">Temperature</div>
+              <div class="col-6" id="temperature1"></div>
             </div>
           </div>
         </div>
@@ -57,32 +65,40 @@
           <div class="card-header text-primary" id="beer-name2"></div>
           <div class="card-body">
             <div class="row">
-              <div class="col-8">Glasses left</div>
-              <div class="col-4" id="glass2"></div>
+              <div class="col-6">Keg</div>
+              <div class="col-6">
+                <div class="progress">
+                  <div class="progress-bar" id="beer-percent2" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+              </div>
             </div>
             <div class="row">
-              <div class="col-8">Last pour</div>
-              <div class="col-4" id="last-pour-volume2"></div>
+              <div class="col-6">Glasses left</div>
+              <div class="col-6" id="glass2"></div>
             </div>
             <div class="row">
-              <div class="col-8">Beer volume</div>
-              <div class="col-4" id="beer-volume2"></div>
+              <div class="col-6">Last pour</div>
+              <div class="col-6" id="last-pour-volume2"></div>
+            </div>
+            <div class="row">
+              <div class="col-6">Beer volume</div>
+              <div class="col-6" id="beer-volume2"></div>
             </div>
             <hr>
-            <div class="row"><div class="col-8">ABV</div>
-              <div class="col-4" id="beer-abv2"></div>
+            <div class="row"><div class="col-6">ABV</div>
+              <div class="col-6" id="beer-abv2"></div>
             </div>
             <div class="row">
-              <div class="col-8">EBC</div>
-              <div class="col-4" id="beer-ebc2"></div>
+              <div class="col-6">EBC</div>
+              <div class="col-6" id="beer-ebc2"></div>
             </div>
             <div class="row">
-              <div class="col-8">IBU</div>
-              <div class="col-4" id="beer-ibu2"></div>
+              <div class="col-6">IBU</div>
+              <div class="col-6" id="beer-ibu2"></div>
             </div>
             <div class="row">
-              <div class="col-8">Temperature</div>
-              <div class="col-4" id="temperature2"></div>
+              <div class="col-6">Temperature</div>
+              <div class="col-6" id="temperature2"></div>
             </div>
           </div>
         </div>
@@ -130,6 +146,10 @@
       });
     }
 
+    function setProgress(val, id) {
+      $(id).css('width', val+'%').attr('aria-valuenow', val).text(val + "%");
+    }
+
     function getStatus() {
       if(!configLoaded) {
         getConfig();
@@ -174,6 +194,17 @@
           $("#temperature1").text(cfg["temperature"] + temp_unit);
           $("#temperature2").text(cfg["temperature"] + temp_unit);
         }       
+
+        if( cfg["scale-weight1"] === undefined ) {
+        } else {
+          setProgress(Math.round((cfg["beer-volume1"]/cfg["keg-volume1"])*100), "#beer-percent1");
+        }
+
+        if( cfg["scale-weight2"] === undefined ) {
+        } else {
+          setProgress(Math.round((cfg["beer-volume2"]/cfg["keg-volume2"])*100), "#beer-percent2");
+        }
+
       })
       .fail(function () {
       })
