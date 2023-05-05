@@ -246,7 +246,7 @@ void drawScreenDefault(UnitIndex idx) {
 
   if (myScale.isConnected(idx)) {
     snprintf(&buf[0], sizeof(buf), "%.1f%%", myConfig.getBeerABV(idx));
-    myDisplay.printPosition(idx, -1, 16, &buf[0]);
+    myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx)*1, &buf[0]);
 
     switch (defaultScreenIter[idx]) {
       case ScreenDefaultIter::ShowWeight: {
@@ -255,14 +255,14 @@ void drawScreenDefault(UnitIndex idx) {
             &buf[0], myConfig.getWeightPrecision());
         String s(&buf[0]);
         s += " " + String(myConfig.getWeightUnit());
-        myDisplay.printPosition(idx, -1, 32, s.c_str());
+        myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx)*2, s.c_str());
       } break;
 
       case ScreenDefaultIter::ShowGlasses: {
         float glass =
             myLevelDetection.getNoGlasses(idx, LevelDetectionType::STATS);
         snprintf(&buf[0], sizeof(buf), "%.1f glasses", glass);
-        myDisplay.printPosition(idx, -1, 32, &buf[0]);
+        myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx)*2, &buf[0]);
       } break;
 
       case ScreenDefaultIter::ShowPour: {
@@ -270,7 +270,7 @@ void drawScreenDefault(UnitIndex idx) {
             myLevelDetection.getPourVolume(idx, LevelDetectionType::STATS);
         // if (isnan(pour)) pour = 0.0;
         snprintf(&buf[0], sizeof(buf), "%.0f pour", pour * 100);
-        myDisplay.printPosition(idx, -1, 32, &buf[0]);
+        myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx)*2, &buf[0]);
       } break;
 
       case ScreenDefaultIter::ShowTemp: {
@@ -278,7 +278,7 @@ void drawScreenDefault(UnitIndex idx) {
     }
 
   } else {
-    myDisplay.printPosition(idx, -1, 32, "No scale");
+    myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx)*2, "No scale");
   }
 
   myDisplay.setFont(idx, FontSize::FONT_10);
@@ -287,7 +287,7 @@ void drawScreenDefault(UnitIndex idx) {
     case ScreenDefaultIter::ShowWeight:
       myDisplay.printPosition(
           idx, -1,
-          myDisplay.getHeight(idx) - myDisplay.getCurrentFontSize(idx) - 1,
+          myDisplay.getDisplayHeight(idx) - myDisplay.getFontHeight(idx),
           myLevelDetection.hasStableWeight(idx, LevelDetectionType::STATS)
               ? "stable level"
               : "searching level");
@@ -296,7 +296,7 @@ void drawScreenDefault(UnitIndex idx) {
       if (idx == UnitIndex::U1) {
         myDisplay.printPosition(
             idx, -1,
-            myDisplay.getHeight(idx) - myDisplay.getCurrentFontSize(idx) - 1,
+            myDisplay.getDisplayHeight(idx) - myDisplay.getFontHeight(idx),
             WiFi.SSID());
       }
       break;
@@ -304,7 +304,7 @@ void drawScreenDefault(UnitIndex idx) {
       if (idx == UnitIndex::U1) {
         myDisplay.printPosition(
             idx, -1,
-            myDisplay.getHeight(idx) - myDisplay.getCurrentFontSize(idx) - 1,
+            myDisplay.getDisplayHeight(idx) - myDisplay.getFontHeight(idx),
             myWifi.getIPAddress());
       }
       break;
