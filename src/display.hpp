@@ -80,6 +80,8 @@ class Display {
 
   void drawRect(UnitIndex idx, int x, int y, int w, int h);
   void fillRect(UnitIndex idx, int x, int y, int w, int h);
+
+  void drawProgressBar(UnitIndex idx, int y, float percentage);
 };
 
 extern Display myDisplay;

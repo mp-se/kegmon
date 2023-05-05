@@ -60,6 +60,16 @@ Display::Display() {
 #elif defined(DRIVER_LCD)
   _display[0] = new LiquidCrystal_I2C(PCF8574_ADDR_A21_A11_A01, 4, 5, 6, 16, 11, 12, 13, 14, POSITIVE);
   _display[1] = new LiquidCrystal_I2C(PCF8574_ADDR_A21_A11_A00, 4, 5, 6, 16, 11, 12, 13, 14, POSITIVE);
+#endif
+}
+
+void Display::setup(UnitIndex idx) {
+#if LOG_LEVEL == 6
+  // Log.verbose(F("Disp: Setting up OLED display [%d]." CR), idx);
+#endif
+
+#if defined(DRIVER_LCD)
+  _display[idx]->begin(_width[idx], _height[idx]);  
 
   _display[0]->createChar(0, START_DIV_0_OF_1);
   _display[0]->createChar(1, START_DIV_1_OF_1);
@@ -76,16 +86,6 @@ Display::Display() {
   _display[1]->createChar(4, DIV_2_OF_2);
   _display[1]->createChar(5, END_DIV_0_OF_1);
   _display[1]->createChar(6, END_DIV_1_OF_1);
-#endif
-}
-
-void Display::setup(UnitIndex idx) {
-#if LOG_LEVEL == 6
-  // Log.verbose(F("Disp: Setting up OLED display [%d]." CR), idx);
-#endif
-
-#if defined(DRIVER_LCD)
-  _display[idx]->begin(_width[idx], _height[idx]);  
 #else
   _display[idx]->init();
   _display[idx]->displayOn();
@@ -197,6 +197,43 @@ void Display::drawRect(UnitIndex idx, int x, int y, int w, int h) {
 void Display::fillRect(UnitIndex idx, int x, int y, int w, int h) {
 #if !defined(DRIVER_LCD)
     _display[idx]->fillRect(x, y, w, h);
+#endif
+}
+
+void Display::drawProgressBar(UnitIndex idx, int y, float percentage) {
+#if defined(DRIVER_LCD)
+  _display[idx]->setCursor(0, y);
+
+  // Each character displays 2 vertical bars, but the first and last character
+  // displays only one. Map range (0 ~ 100) to range (0 ~ LCD_NB_COLUMNS * 2 -
+  // 2)
+  int col = map(percentage, 0, 100, 0, _width[idx] * 2 - 2);
+
+  // Print the progress bar
+  for (int i = 0; i < _width[idx]; ++i) {
+    if( i == 0 ) {
+      // Char 0 = empty start, Char 1 = full start
+      _display[idx]->write(col == 0 ? 0 : 1);
+      col -= 1;  // First item only have one halv bar
+    } else if( i == (_width[idx] - 1)) {
+      // Char 5 = full end, Char 6 = empty end
+      _display[idx]->write(col > 0 ? 6 : 5);
+    } else {
+      if (col <= 0) {
+        // Char 2 = empty middle
+        _display[idx]->write(2);
+      } else {
+        // Char 3 = half middle, Char 4 = full middle
+        _display[idx]->write(col >= 2 ? 4 : 3);
+        col -= 2;  // One char equals to 1-2 indicators.
+      }
+    }
+  }
+#else
+  int w = map(percentage, 0, 100, 0, _width[idx]);
+
+  _display[idx]->drawRect(0, y+1, _width[idx], _fontSize[idx]-2);
+  _display[idx]->fillRect(0, y+1, w, _fontSize[idx]-2);
 #endif
 }
 

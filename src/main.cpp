@@ -208,6 +208,28 @@ void drawScreenHardwareStats(UnitIndex idx) {
   myDisplay.show(idx);
 }
 
+void drawScreenGraph(UnitIndex idx) {
+  myDisplay.clear(idx);
+  myDisplay.setFont(idx, FontSize::FONT_16);
+
+  char buf[20];
+
+  snprintf(&buf[0], sizeof(buf), "%s", myConfig.getBeerName(idx));
+  myDisplay.printPosition(idx, -1, 0, &buf[0]);
+
+  float pour =
+      myLevelDetection.getPourVolume(idx, LevelDetectionType::STATS);
+  snprintf(&buf[0], sizeof(buf), "%.0f pour", pour * 100);
+  myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx)*1, &buf[0]);
+
+  float beer = myLevelDetection.getBeerVolume(idx);
+  float keg = myConfig.getKegVolume(idx);
+
+  myDisplay.drawProgressBar(idx, myDisplay.getFontHeight(idx)*2, keg/beer);
+
+  myDisplay.show(idx);
+}
+
 enum ScreenDefaultIter {
   ShowWeight = 0,
   ShowGlasses = 1,
@@ -387,6 +409,13 @@ void loop() {
         drawScreenDefault(UnitIndex::U1);
         drawScreenDefault(UnitIndex::U2);
         PERF_END("loop-display-default");
+        break;
+
+      case DisplayLayoutType::Graph:
+        PERF_BEGIN("loop-display-graph");
+        drawScreenGraph(UnitIndex::U1);
+        drawScreenGraph(UnitIndex::U2);
+        PERF_END("loop-display-graph");
         break;
 
       case DisplayLayoutType::HardwareStats:
