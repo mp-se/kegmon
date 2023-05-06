@@ -58,8 +58,10 @@ Display::Display() {
   _display[0] = new SSD1306Wire(DISPLAY_ADR1, PIN_OLED_SDA, PIN_OLED_SCL);
   _display[1] = new SSD1306Wire(DISPLAY_ADR2, PIN_OLED_SDA, PIN_OLED_SCL);
 #elif defined(DRIVER_LCD)
-  _display[0] = new LiquidCrystal_I2C(PCF8574_ADDR_A21_A11_A01, 4, 5, 6, 16, 11, 12, 13, 14, POSITIVE);
-  _display[1] = new LiquidCrystal_I2C(PCF8574_ADDR_A21_A11_A00, 4, 5, 6, 16, 11, 12, 13, 14, POSITIVE);
+  _display[0] = new LiquidCrystal_I2C(PCF8574_ADDR_A21_A11_A01, 4, 5, 6, 16, 11,
+                                      12, 13, 14, POSITIVE);
+  _display[1] = new LiquidCrystal_I2C(PCF8574_ADDR_A21_A11_A00, 4, 5, 6, 16, 11,
+                                      12, 13, 14, POSITIVE);
 #endif
 }
 
@@ -69,7 +71,7 @@ void Display::setup(UnitIndex idx) {
 #endif
 
 #if defined(DRIVER_LCD)
-  _display[idx]->begin(_width[idx], _height[idx]);  
+  _display[idx]->begin(_width[idx], _height[idx]);
 
   _display[0]->createChar(0, START_DIV_0_OF_1);
   _display[0]->createChar(1, START_DIV_1_OF_1);
@@ -178,25 +180,23 @@ void Display::printLineCentered(UnitIndex idx, int l, const String& text) {
 #endif
 }
 
-void Display::clear(UnitIndex idx) { 
-  _display[idx]->clear(); 
-}
+void Display::clear(UnitIndex idx) { _display[idx]->clear(); }
 
-void Display::show(UnitIndex idx) { 
+void Display::show(UnitIndex idx) {
 #if !defined(DRIVER_LCD)
-  _display[idx]->display(); 
+  _display[idx]->display();
 #endif
 }
 
 void Display::drawRect(UnitIndex idx, int x, int y, int w, int h) {
 #if !defined(DRIVER_LCD)
-    _display[idx]->drawRect(x, y, w, h);
+  _display[idx]->drawRect(x, y, w, h);
 #endif
 }
 
 void Display::fillRect(UnitIndex idx, int x, int y, int w, int h) {
 #if !defined(DRIVER_LCD)
-    _display[idx]->fillRect(x, y, w, h);
+  _display[idx]->fillRect(x, y, w, h);
 #endif
 }
 
@@ -211,11 +211,11 @@ void Display::drawProgressBar(UnitIndex idx, int y, float percentage) {
 
   // Print the progress bar
   for (int i = 0; i < _width[idx]; ++i) {
-    if( i == 0 ) {
+    if (i == 0) {
       // Char 0 = empty start, Char 1 = full start
       _display[idx]->write(col == 0 ? 0 : 1);
       col -= 1;  // First item only have one halv bar
-    } else if( i == (_width[idx] - 1)) {
+    } else if (i == (_width[idx] - 1)) {
       // Char 5 = full end, Char 6 = empty end
       _display[idx]->write(col > 0 ? 6 : 5);
     } else {
@@ -232,8 +232,8 @@ void Display::drawProgressBar(UnitIndex idx, int y, float percentage) {
 #else
   int w = map(percentage, 0, 100, 0, _width[idx]);
 
-  _display[idx]->drawRect(0, y+1, _width[idx], _fontSize[idx]-2);
-  _display[idx]->fillRect(0, y+1, w, _fontSize[idx]-2);
+  _display[idx]->drawRect(0, y + 1, _width[idx], _fontSize[idx] - 2);
+  _display[idx]->fillRect(0, y + 1, w, _fontSize[idx] - 2);
 #endif
 }
 

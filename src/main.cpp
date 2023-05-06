@@ -218,15 +218,14 @@ void drawScreenGraph(UnitIndex idx) {
   snprintf(&buf[0], sizeof(buf), "%s", myConfig.getBeerName(idx));
   myDisplay.printPosition(idx, -1, 0, &buf[0]);
 
-  float pour =
-      myLevelDetection.getPourVolume(idx, LevelDetectionType::STATS);
+  float pour = myLevelDetection.getPourVolume(idx, LevelDetectionType::STATS);
   snprintf(&buf[0], sizeof(buf), "%.0f pour", pour * 100);
-  myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx)*1, &buf[0]);
+  myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx) * 1, &buf[0]);
 
   float beer = myLevelDetection.getBeerVolume(idx);
   float keg = myConfig.getKegVolume(idx);
 
-  myDisplay.drawProgressBar(idx, myDisplay.getFontHeight(idx)*2, keg/beer);
+  myDisplay.drawProgressBar(idx, myDisplay.getFontHeight(idx) * 2, keg / beer);
 
   myDisplay.show(idx);
 }
@@ -243,14 +242,17 @@ void drawScreenGraphOne() {
 
   float beer1 = myLevelDetection.getBeerVolume(UnitIndex::U1);
   float keg1 = myConfig.getKegVolume(UnitIndex::U1);
-  myDisplay.drawProgressBar(UnitIndex::U1, myDisplay.getFontHeight(UnitIndex::U1)*1, keg1/beer1);
+  myDisplay.drawProgressBar(
+      UnitIndex::U1, myDisplay.getFontHeight(UnitIndex::U1) * 1, keg1 / beer1);
 
   snprintf(&buf[0], sizeof(buf), "%s", myConfig.getBeerName(UnitIndex::U2));
-  myDisplay.printPosition(UnitIndex::U1, -1, myDisplay.getFontHeight(UnitIndex::U1)*2, &buf[0]);
+  myDisplay.printPosition(UnitIndex::U1, -1,
+                          myDisplay.getFontHeight(UnitIndex::U1) * 2, &buf[0]);
 
   float beer2 = myLevelDetection.getBeerVolume(UnitIndex::U2);
   float keg2 = myConfig.getKegVolume(UnitIndex::U2);
-  myDisplay.drawProgressBar(UnitIndex::U1, myDisplay.getFontHeight(UnitIndex::U1)*3, keg2/beer2);
+  myDisplay.drawProgressBar(
+      UnitIndex::U1, myDisplay.getFontHeight(UnitIndex::U1) * 3, keg2 / beer2);
 
   myDisplay.show(UnitIndex::U1);
 }
@@ -293,7 +295,7 @@ void drawScreenDefault(UnitIndex idx) {
 
   if (myScale.isConnected(idx)) {
     snprintf(&buf[0], sizeof(buf), "%.1f%%", myConfig.getBeerABV(idx));
-    myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx)*1, &buf[0]);
+    myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx) * 1, &buf[0]);
 
     switch (defaultScreenIter[idx]) {
       case ScreenDefaultIter::ShowWeight: {
@@ -302,14 +304,16 @@ void drawScreenDefault(UnitIndex idx) {
             &buf[0], myConfig.getWeightPrecision());
         String s(&buf[0]);
         s += " " + String(myConfig.getWeightUnit());
-        myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx)*2, s.c_str());
+        myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx) * 2,
+                                s.c_str());
       } break;
 
       case ScreenDefaultIter::ShowGlasses: {
         float glass =
             myLevelDetection.getNoGlasses(idx, LevelDetectionType::STATS);
         snprintf(&buf[0], sizeof(buf), "%.1f glasses", glass);
-        myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx)*2, &buf[0]);
+        myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx) * 2,
+                                &buf[0]);
       } break;
 
       case ScreenDefaultIter::ShowPour: {
@@ -317,7 +321,8 @@ void drawScreenDefault(UnitIndex idx) {
             myLevelDetection.getPourVolume(idx, LevelDetectionType::STATS);
         // if (isnan(pour)) pour = 0.0;
         snprintf(&buf[0], sizeof(buf), "%.0f pour", pour * 100);
-        myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx)*2, &buf[0]);
+        myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx) * 2,
+                                &buf[0]);
       } break;
 
       case ScreenDefaultIter::ShowTemp: {
@@ -325,7 +330,8 @@ void drawScreenDefault(UnitIndex idx) {
     }
 
   } else {
-    myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx)*2, "No scale");
+    myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx) * 2,
+                            "No scale");
   }
 
   myDisplay.setFont(idx, FontSize::FONT_10);
