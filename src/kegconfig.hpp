@@ -86,7 +86,7 @@ constexpr auto VOLUME_CL = "cl";
 constexpr auto VOLUME_US = "us-oz";
 constexpr auto VOLUME_UK = "uk-oz";
 
-enum DisplayLayoutType { Default = 0, Graph = 1, HardwareStats = 9 };
+enum DisplayLayoutType { Default = 0, Graph = 1, GraphOne = 2, HardwareStats = 9 };
 enum TempSensorType { SensorDHT22 = 0, SensorDS18B20 = 1 };
 enum ScaleSensorType { ScaleHX711 = 0, ScaleNAU7802 = 1 };
 

@@ -208,6 +208,7 @@ void drawScreenHardwareStats(UnitIndex idx) {
   myDisplay.show(idx);
 }
 
+// Dual screens with progress bars
 void drawScreenGraph(UnitIndex idx) {
   myDisplay.clear(idx);
   myDisplay.setFont(idx, FontSize::FONT_16);
@@ -228,6 +229,30 @@ void drawScreenGraph(UnitIndex idx) {
   myDisplay.drawProgressBar(idx, myDisplay.getFontHeight(idx)*2, keg/beer);
 
   myDisplay.show(idx);
+}
+
+// One screen with progress bars
+void drawScreenGraphOne() {
+  myDisplay.clear(UnitIndex::U1);
+  myDisplay.setFont(UnitIndex::U1, FontSize::FONT_16);
+
+  char buf[20];
+
+  snprintf(&buf[0], sizeof(buf), "%s", myConfig.getBeerName(UnitIndex::U1));
+  myDisplay.printPosition(UnitIndex::U1, -1, 0, &buf[0]);
+
+  float beer1 = myLevelDetection.getBeerVolume(UnitIndex::U1);
+  float keg1 = myConfig.getKegVolume(UnitIndex::U1);
+  myDisplay.drawProgressBar(UnitIndex::U1, myDisplay.getFontHeight(UnitIndex::U1)*1, keg1/beer1);
+
+  snprintf(&buf[0], sizeof(buf), "%s", myConfig.getBeerName(UnitIndex::U2));
+  myDisplay.printPosition(UnitIndex::U1, -1, myDisplay.getFontHeight(UnitIndex::U1)*2, &buf[0]);
+
+  float beer2 = myLevelDetection.getBeerVolume(UnitIndex::U2);
+  float keg2 = myConfig.getKegVolume(UnitIndex::U2);
+  myDisplay.drawProgressBar(UnitIndex::U1, myDisplay.getFontHeight(UnitIndex::U1)*3, keg2/beer2);
+
+  myDisplay.show(UnitIndex::U1);
 }
 
 enum ScreenDefaultIter {
@@ -415,6 +440,12 @@ void loop() {
         PERF_BEGIN("loop-display-graph");
         drawScreenGraph(UnitIndex::U1);
         drawScreenGraph(UnitIndex::U2);
+        PERF_END("loop-display-graph");
+        break;
+
+      case DisplayLayoutType::GraphOne:
+        PERF_BEGIN("loop-display-graph");
+        drawScreenGraphOne();
         PERF_END("loop-display-graph");
         break;
 
