@@ -186,6 +186,17 @@
               </div>
 
               <div class="row mb-3">
+                <label for="temp-layout" class="col-sm-2 col-form-label">Display Driver</label>
+                <div class="col-sm-3">
+                  <select class="form-select" id="display-driver" name="display-driver" data-bs-toggle="tooltip"
+                    title="select type of display">
+                    <option value="0">OLED 0.96"</option>
+                    <option value="1">LCD 20x4</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row mb-3">
                 <label for="temp-layout" class="col-sm-2 col-form-label">Temperature sensor</label>
                 <div class="col-sm-3">
                   <select class="form-select" id="temp-sensor" name="temp-sensor" data-bs-toggle="tooltip"
@@ -565,6 +576,8 @@
         $("#mqtt-pass").val(cfg["mqtt-pass"]);
 
         $("#display-layout").val(cfg["display-layout"]);
+
+        $("#display-driver").val(cfg["display-driver"]);
         $("#temp-sensor").val(cfg["temp-sensor"]);
         $("#scale-sensor").val(cfg["scale-sensor"]);
 

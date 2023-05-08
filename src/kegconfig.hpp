@@ -33,6 +33,7 @@ constexpr auto PARAM_BREWSPY_TOKEN1 = "brewspy-token1";
 constexpr auto PARAM_BREWSPY_TOKEN2 = "brewspy-token2";
 constexpr auto PARAM_DISPLAY_LAYOUT = "display-layout";
 constexpr auto PARAM_TEMP_SENSOR = "temp-sensor";
+constexpr auto PARAM_DISPLAY_DRIVER = "display-driver";
 constexpr auto PARAM_SCALE_SENSOR = "scale-sensor";
 constexpr auto PARAM_WEIGHT_UNIT = "weight-unit";
 constexpr auto PARAM_VOLUME_UNIT = "volume-unit";
@@ -94,6 +95,7 @@ enum DisplayLayoutType {
 };
 enum TempSensorType { SensorDHT22 = 0, SensorDS18B20 = 1 };
 enum ScaleSensorType { ScaleHX711 = 0, ScaleNAU7802 = 1 };
+enum DisplayDriverType { OLED_1306 = 0, LCD = 1 };
 
 float convertIncomingWeight(float w);
 float convertIncomingVolume(float v);
@@ -114,6 +116,7 @@ class KegConfig : public BaseConfig {
   DisplayLayoutType _displayLayout = DisplayLayoutType::Default;
   TempSensorType _tempSensor = TempSensorType::SensorDHT22;
   ScaleSensorType _scaleSensor = ScaleSensorType::ScaleHX711;
+  DisplayDriverType _displayDriver = DisplayDriverType::OLED_1306;
 
   float _scaleFactor[2] = {0, 0};
   int32_t _scaleOffset[2] = {0, 0};
@@ -272,6 +275,17 @@ class KegConfig : public BaseConfig {
   }
   void setScaleSensorType(int t) {
     _scaleSensor = (ScaleSensorType)t;
+    _saveNeeded = true;
+  }
+
+  DisplayDriverType getDisplayDriverType() { return _displayDriver; }
+  int getDisplayDriverTypeAsInt() { return _displayDriver; }
+  void setDisplayDriverType(DisplayDriverType t) {
+    _displayDriver = t;
+    _saveNeeded = true;
+  }
+  void setDisplayDriverType(int t) {
+    _displayDriver = (DisplayDriverType)t;
     _saveNeeded = true;
   }
 

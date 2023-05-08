@@ -43,6 +43,7 @@ void KegConfig::createJson(DynamicJsonDocument& doc, bool skipSecrets) {
   doc[PARAM_DISPLAY_LAYOUT] = getDisplayLayoutTypeAsInt();
   doc[PARAM_TEMP_SENSOR] = getTempSensorTypeAsInt();
   doc[PARAM_SCALE_SENSOR] = getScaleSensorTypeAsInt();
+  doc[PARAM_DISPLAY_DRIVER] = getDisplayDriverTypeAsInt();
   // doc[PARAM_LEVEL_DETECTION] = getLevelDetectionAsInt();
 
   doc[PARAM_BREWFATHER_APIKEY] = getBrewfatherApiKey();
@@ -123,6 +124,8 @@ void KegConfig::parseJson(DynamicJsonDocument& doc) {
     setTempSensorType(doc[PARAM_TEMP_SENSOR].as<int>());
   if (!doc[PARAM_SCALE_SENSOR].isNull())
     setScaleSensorType(doc[PARAM_SCALE_SENSOR].as<int>());
+  if (!doc[PARAM_DISPLAY_DRIVER].isNull())
+    setDisplayDriverType(doc[PARAM_DISPLAY_DRIVER].as<int>());
 
   /*if (!doc[PARAM_LEVEL_DETECTION].isNull())
     setLevelDetection(doc[PARAM_LEVEL_DETECTION].as<int>());*/

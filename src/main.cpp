@@ -81,10 +81,6 @@ void setup() {
   scanI2C(PIN_SCALE1_SDA, PIN_SCALE1_SCL);
   scanI2C(PIN_SCALE2_SDA, PIN_SCALE2_SCL);*/
 
-  PERF_BEGIN("setup-display");
-  myDisplay.setup(UnitIndex::U1);
-  myDisplay.setup(UnitIndex::U2);
-  PERF_END("setup-display");
   myConfig.checkFileSystem();
 
   // Temporary for migrating due to namechange of configuration file.
@@ -99,6 +95,9 @@ void setup() {
   PERF_BEGIN("setup-config");
   myConfig.loadFile();
   PERF_END("setup-config");
+  PERF_BEGIN("setup-display");
+  myDisplay.setup();
+  PERF_END("setup-display");
   PERF_BEGIN("setup-wifi");
   myWifi.init();
   PERF_END("setup-wifi");
@@ -119,12 +118,10 @@ void setup() {
     Log.notice(
         F("Main: Missing wifi config or double reset detected, entering wifi "
           "setup." CR));
-
     myDisplay.clear(UnitIndex::U1);
     myDisplay.setFont(UnitIndex::U1, FontSize::FONT_16);
-    myDisplay.printLineCentered(UnitIndex::U1, 0, "Entering");
-    myDisplay.printLineCentered(UnitIndex::U1, 1, "WIFI Portal");
-    myDisplay.printLineCentered(UnitIndex::U1, 2, "192.168.4.1");
+    myDisplay.printLineCentered(UnitIndex::U1, 0, "WIFI Portal Active");
+    myDisplay.printLineCentered(UnitIndex::U1, 1, "192.168.4.1");
     myDisplay.show(UnitIndex::U1);
     myWifi.startPortal();
   }
@@ -195,13 +192,13 @@ void drawScreenHardwareStats(UnitIndex idx) {
     snprintf(&buf[0], sizeof(buf), "Ave  wgt: %.3f",
              myLevelDetection.getStatsDetection(idx)->ave());
     myDisplay.printLine(idx, 2, &buf[0]);
+    snprintf(&buf[0], sizeof(buf), "Temp: %.3f", myTemp.getLastTempC());
+    myDisplay.printLine(idx, 3, &buf[0]);
     snprintf(&buf[0], sizeof(buf), "Min wgt: %.3f",
              myLevelDetection.getStatsDetection(idx)->min());
-    myDisplay.printLine(idx, 3, &buf[0]);
+    myDisplay.printLine(idx, 4, &buf[0]);
     snprintf(&buf[0], sizeof(buf), "Max wgt: %.3f",
              myLevelDetection.getStatsDetection(idx)->max());
-    myDisplay.printLine(idx, 4, &buf[0]);
-    snprintf(&buf[0], sizeof(buf), "Temp: %.3f", myTemp.getLastTempC());
     myDisplay.printLine(idx, 5, &buf[0]);
   }
 

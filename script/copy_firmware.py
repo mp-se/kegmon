@@ -24,20 +24,8 @@ def after_build(source, target, env):
         print( "Copy file : " + source + " -> " + target )
         shutil.copyfile( source, target )
 
-    if name == "kegmon-lcd-release":
-        target = dir + "/bin/firmware-lcd.bin"
-        source = dir + "/.pio/build/" + name + "/firmware.bin"
-        print( "Copy file : " + source + " -> " + target )
-        shutil.copyfile( source, target )
-
     if name == "kegmon32s2-release":
         target = dir + "/bin/firmware32s2.bin"
-        source = dir + "/.pio/build/" + name + "/firmware.bin"
-        print( "Copy file : " + source + " -> " + target )
-        shutil.copyfile( source, target )
-
-    if name == "kegmon32s2-lcd-release":
-        target = dir + "/bin/firmware32s2-lcd.bin"
         source = dir + "/.pio/build/" + name + "/firmware.bin"
         print( "Copy file : " + source + " -> " + target )
         shutil.copyfile( source, target )

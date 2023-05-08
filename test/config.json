@@ -50,5 +50,6 @@
   "kalman-estimation": 3.0,
   "kalman-noise": 0.03,
   "temp-sensor": 0,
+  "display-driver": 0,
   "scale-sensor": 1
 }

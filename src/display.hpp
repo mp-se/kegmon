@@ -24,47 +24,36 @@ SOFTWARE.
 #ifndef SRC_DISPLAY_HPP_
 #define SRC_DISPLAY_HPP_
 
-#if defined(DRIVER_1106)
 #include <SH1106Wire.h>
-#elif defined(DRIVER_1306)
-#include <SSD1306Wire.h>
-#elif defined(DRIVER_LCD)
+// #include <SSD1306Wire.h>
 #include <LiquidCrystal_I2C.h>
-#endif
 
+#include <kegconfig.hpp>
 #include <main.hpp>
 
-enum FontSize {  // OLED Size - 128x64
-#if defined(DRIVER_LCD)
-  FONT_1 = 1,
-#endif
-  FONT_10 = 10,  // Support 6 lines
-  FONT_16 = 16,  // Support 5 lines
-  FONT_24 = 24   // Support 3 lines
+enum FontSize {  // Font options
+  FONT_1 = 1,    // Support LCD
+  FONT_10 = 10,  // Support OLED 6 lines
+  FONT_16 = 16,  // Support OLED 5 lines
+  FONT_24 = 24   // Support OLED 3 lines
 };
 
 class Display {
  private:
-#if defined(DRIVER_1106)
-  SH1106Wire* _display[2] = {0, 0};
-#elif defined(DRIVER_1306)
-  SSD1306Wire* _display[2] = {0, 0};
-#elif defined(DRIVER_LCD)
-  LiquidCrystal_I2C* _display[2] = {0, 0};
-#endif
+  SH1106Wire* _displayOLED[2] = {0, 0};
+  // SSD1306Wire* _displayOLED2[2] = {0, 0};
+  LiquidCrystal_I2C* _displayLCD[2] = {0, 0};
 
-#if defined(DRIVER_LCD)
-  int _width[2] = {20, 20};
-  int _height[2] = {4, 4};
-#else
-  int _width[2] = {128, 128};
-  int _height[2] = {64, 64};
-#endif
+  int _width[2] = {0, 0};
+  int _height[2] = {0, 0};
   FontSize _fontSize[2] = {FontSize::FONT_10, FontSize::FONT_10};
+  DisplayDriverType _driver = DisplayDriverType::OLED_1306;
+
+  bool checkInitialized(UnitIndex idx);
 
  public:
   Display();
-  void setup(UnitIndex idx);
+  void setup();
   void clear(UnitIndex idx);
   void show(UnitIndex idx);
   void setFont(UnitIndex idx, FontSize fs);
