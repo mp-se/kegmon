@@ -210,7 +210,7 @@ void drawScreenGraph(UnitIndex idx) {
   myDisplay.clear(idx);
   myDisplay.setFont(idx, FontSize::FONT_16);
 
-  char buf[20];
+  char buf[50];
 
   snprintf(&buf[0], sizeof(buf), "%s", myConfig.getBeerName(idx));
   myDisplay.printPosition(idx, -1, 0, &buf[0]);
@@ -222,7 +222,16 @@ void drawScreenGraph(UnitIndex idx) {
   float beer = myLevelDetection.getBeerVolume(idx);
   float keg = myConfig.getKegVolume(idx);
 
-  myDisplay.drawProgressBar(idx, myDisplay.getFontHeight(idx) * 2, keg / beer);
+  if (myScale.isConnected(idx)) {
+    snprintf(&buf[0], sizeof(buf), "Beer %.0f %s", beer,
+             myConfig.getVolumeUnit());
+    myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx) * 2, &buf[0]);
+    myDisplay.drawProgressBar(idx, myDisplay.getFontHeight(idx) * 3,
+                              keg / beer);
+  } else {
+    myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx) * 3,
+                            "No scale");
+  }
 
   myDisplay.show(idx);
 }
@@ -239,8 +248,16 @@ void drawScreenGraphOne() {
 
   float beer1 = myLevelDetection.getBeerVolume(UnitIndex::U1);
   float keg1 = myConfig.getKegVolume(UnitIndex::U1);
-  myDisplay.drawProgressBar(
-      UnitIndex::U1, myDisplay.getFontHeight(UnitIndex::U1) * 1, keg1 / beer1);
+
+  if (myScale.isConnected(UnitIndex::U1)) {
+    myDisplay.drawProgressBar(UnitIndex::U1,
+                              myDisplay.getFontHeight(UnitIndex::U1) * 1,
+                              keg1 / beer1);
+  } else {
+    myDisplay.printPosition(UnitIndex::U1, -1,
+                            myDisplay.getFontHeight(UnitIndex::U1) * 1,
+                            "No scale");
+  }
 
   snprintf(&buf[0], sizeof(buf), "%s", myConfig.getBeerName(UnitIndex::U2));
   myDisplay.printPosition(UnitIndex::U1, -1,
@@ -248,8 +265,16 @@ void drawScreenGraphOne() {
 
   float beer2 = myLevelDetection.getBeerVolume(UnitIndex::U2);
   float keg2 = myConfig.getKegVolume(UnitIndex::U2);
-  myDisplay.drawProgressBar(
-      UnitIndex::U1, myDisplay.getFontHeight(UnitIndex::U1) * 3, keg2 / beer2);
+
+  if (myScale.isConnected(UnitIndex::U2)) {
+    myDisplay.drawProgressBar(UnitIndex::U1,
+                              myDisplay.getFontHeight(UnitIndex::U1) * 3,
+                              keg2 / beer2);
+  } else {
+    myDisplay.printPosition(UnitIndex::U1, -1,
+                            myDisplay.getFontHeight(UnitIndex::U1) * 3,
+                            "No scale");
+  }
 
   myDisplay.show(UnitIndex::U1);
 }
