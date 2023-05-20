@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 #include <display.hpp>
+#include <displayout.hpp>
 #include <kegconfig.hpp>
 #include <kegpush.hpp>
 #include <kegwebhandler.hpp>
@@ -47,6 +48,7 @@ TempHumidity myTemp;
 #if defined(USE_ASYNC_WEB)
 SerialWebSocket mySerialWebSocket;
 #endif
+DisplayLayout myDisplayLayout;
 
 const int loopInterval = 2000;
 int loopCounter = 0;
@@ -83,15 +85,6 @@ void setup() {
 
   myConfig.checkFileSystem();
 
-  // Temporary for migrating due to namechange of configuration file.
-  // @TODO Remove this code in next version
-  File f = LittleFS.open(CFG_FILENAME, "r");
-  if (!f)
-    LittleFS.rename("/kegscale.json", CFG_FILENAME);
-  else
-    f.close();
-  // End
-
   PERF_BEGIN("setup-config");
   myConfig.loadFile();
   PERF_END("setup-config");
@@ -101,6 +94,9 @@ void setup() {
   PERF_BEGIN("setup-wifi");
   myWifi.init();
   PERF_END("setup-wifi");
+
+  delay(200);
+
   PERF_BEGIN("setup-scale");
   myScale.setup();
   PERF_END("setup-scale");
@@ -118,11 +114,7 @@ void setup() {
     Log.notice(
         F("Main: Missing wifi config or double reset detected, entering wifi "
           "setup." CR));
-    myDisplay.clear(UnitIndex::U1);
-    myDisplay.setFont(UnitIndex::U1, FontSize::FONT_16);
-    myDisplay.printLineCentered(UnitIndex::U1, 0, "WIFI Portal Active");
-    myDisplay.printLineCentered(UnitIndex::U1, 1, "192.168.4.1");
-    myDisplay.show(UnitIndex::U1);
+    myDisplayLayout.showWifiPortal();
     myWifi.startPortal();
   }
 
@@ -144,250 +136,14 @@ void setup() {
   PERF_END("setup-webserver");
 
   Log.notice(F("Main: Setup completed." CR));
-
-  // Show what sensors has been detected on display 1
-  char buf[30];
-
-  myDisplay.clear(UnitIndex::U1);
-  myDisplay.setFont(UnitIndex::U1, FontSize::FONT_10);
-  snprintf(&buf[0], sizeof(buf), "Scale 1: %s",
-           myScale.isConnected(UnitIndex::U1) ? "Yes" : "No");
-  myDisplay.printLine(UnitIndex::U1, 0, &buf[0]);
-  snprintf(&buf[0], sizeof(buf), "Scale 2: %s",
-           myScale.isConnected(UnitIndex::U2) ? "Yes" : "No");
-  myDisplay.printLine(UnitIndex::U1, 1, &buf[0]);
-  snprintf(&buf[0], sizeof(buf), "Temp : %s",
-           !isnan(myTemp.getLastTempC()) ? "Yes" : "No");
-  myDisplay.printLine(UnitIndex::U1, 2, &buf[0]);
-  snprintf(&buf[0], sizeof(buf), "Version: %s", CFG_APPVER);
-  myDisplay.printLine(UnitIndex::U1, 3, &buf[0]);
-  snprintf(&buf[0], sizeof(buf), "Push: %s",
-#if defined(ENABLE_INFLUX_DEBUG)
-           "Yes");
-#else
-           "No");
-#endif
-  myDisplay.printLine(UnitIndex::U1, 4, &buf[0]);
-  myDisplay.show(UnitIndex::U1);
+  myDisplayLayout.showStartupDevices(myScale.isConnected(UnitIndex::U1),
+                                     myScale.isConnected(UnitIndex::U2),
+                                     !isnan(myTemp.getLastTempC()));
 
   PERF_END("main-setup");
   PERF_PUSH();
   myTemp.read();
   delay(3000);
-}
-
-void drawScreenHardwareStats(UnitIndex idx) {
-  myDisplay.clear(idx);
-  myDisplay.setFont(idx, FontSize::FONT_10);
-
-  if (myScale.isConnected(idx)) {
-    char buf[30];
-
-    snprintf(&buf[0], sizeof(buf), "Last wgt: %.3f",
-             myLevelDetection.getTotalWeight(idx));
-    myDisplay.printLine(idx, 0, &buf[0]);
-    snprintf(&buf[0], sizeof(buf), "Stab wgt: %.3f",
-             myLevelDetection.getTotalStableWeight(idx));
-    myDisplay.printLine(idx, 1, &buf[0]);
-    snprintf(&buf[0], sizeof(buf), "Ave  wgt: %.3f",
-             myLevelDetection.getStatsDetection(idx)->ave());
-    myDisplay.printLine(idx, 2, &buf[0]);
-    snprintf(&buf[0], sizeof(buf), "Temp: %.3f", myTemp.getLastTempC());
-    myDisplay.printLine(idx, 3, &buf[0]);
-    snprintf(&buf[0], sizeof(buf), "Min wgt: %.3f",
-             myLevelDetection.getStatsDetection(idx)->min());
-    myDisplay.printLine(idx, 4, &buf[0]);
-    snprintf(&buf[0], sizeof(buf), "Max wgt: %.3f",
-             myLevelDetection.getStatsDetection(idx)->max());
-    myDisplay.printLine(idx, 5, &buf[0]);
-  }
-
-  myDisplay.show(idx);
-}
-
-// Dual screens with progress bars
-void drawScreenGraph(UnitIndex idx) {
-  myDisplay.clear(idx);
-  myDisplay.setFont(idx, FontSize::FONT_16);
-
-  char buf[50];
-
-  snprintf(&buf[0], sizeof(buf), "%s", myConfig.getBeerName(idx));
-  myDisplay.printPosition(idx, -1, 0, &buf[0]);
-
-  float pour = myLevelDetection.getPourVolume(idx, LevelDetectionType::STATS);
-  snprintf(&buf[0], sizeof(buf), "%.0f pour", pour * 100);
-  myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx) * 1, &buf[0]);
-
-  float beer = myLevelDetection.getBeerVolume(idx);
-  float keg = myConfig.getKegVolume(idx);
-
-  if (myScale.isConnected(idx)) {
-    snprintf(&buf[0], sizeof(buf), "Beer %.0f %s", beer,
-             myConfig.getVolumeUnit());
-    myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx) * 2, &buf[0]);
-    myDisplay.drawProgressBar(idx, myDisplay.getFontHeight(idx) * 3,
-                              keg / beer);
-  } else {
-    myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx) * 3,
-                            "No scale");
-  }
-
-  myDisplay.show(idx);
-}
-
-// One screen with progress bars
-void drawScreenGraphOne() {
-  myDisplay.clear(UnitIndex::U1);
-  myDisplay.setFont(UnitIndex::U1, FontSize::FONT_16);
-
-  char buf[20];
-
-  snprintf(&buf[0], sizeof(buf), "%s", myConfig.getBeerName(UnitIndex::U1));
-  myDisplay.printPosition(UnitIndex::U1, -1, 0, &buf[0]);
-
-  float beer1 = myLevelDetection.getBeerVolume(UnitIndex::U1);
-  float keg1 = myConfig.getKegVolume(UnitIndex::U1);
-
-  if (myScale.isConnected(UnitIndex::U1)) {
-    myDisplay.drawProgressBar(UnitIndex::U1,
-                              myDisplay.getFontHeight(UnitIndex::U1) * 1,
-                              keg1 / beer1);
-  } else {
-    myDisplay.printPosition(UnitIndex::U1, -1,
-                            myDisplay.getFontHeight(UnitIndex::U1) * 1,
-                            "No scale");
-  }
-
-  snprintf(&buf[0], sizeof(buf), "%s", myConfig.getBeerName(UnitIndex::U2));
-  myDisplay.printPosition(UnitIndex::U1, -1,
-                          myDisplay.getFontHeight(UnitIndex::U1) * 2, &buf[0]);
-
-  float beer2 = myLevelDetection.getBeerVolume(UnitIndex::U2);
-  float keg2 = myConfig.getKegVolume(UnitIndex::U2);
-
-  if (myScale.isConnected(UnitIndex::U2)) {
-    myDisplay.drawProgressBar(UnitIndex::U1,
-                              myDisplay.getFontHeight(UnitIndex::U1) * 3,
-                              keg2 / beer2);
-  } else {
-    myDisplay.printPosition(UnitIndex::U1, -1,
-                            myDisplay.getFontHeight(UnitIndex::U1) * 3,
-                            "No scale");
-  }
-
-  myDisplay.show(UnitIndex::U1);
-}
-
-enum ScreenDefaultIter {
-  ShowWeight = 0,
-  ShowGlasses = 1,
-  ShowPour = 2,
-  ShowTemp = 3
-};
-
-ScreenDefaultIter defaultScreenIter[2] = {ScreenDefaultIter::ShowWeight,
-                                          ScreenDefaultIter::ShowWeight};
-
-void drawScreenDefault(UnitIndex idx) {
-  myDisplay.clear(idx);
-  myDisplay.setFont(idx, FontSize::FONT_16);
-
-  char buf[20];
-
-  snprintf(&buf[0], sizeof(buf), "%s", myConfig.getBeerName(idx));
-  myDisplay.printPosition(idx, -1, 0, &buf[0]);
-
-  if (!(loopCounter % 2)) {
-    switch (defaultScreenIter[idx]) {
-      case ScreenDefaultIter::ShowWeight:
-        defaultScreenIter[idx] = ScreenDefaultIter::ShowGlasses;
-        break;
-      case ScreenDefaultIter::ShowGlasses:
-        defaultScreenIter[idx] = ScreenDefaultIter::ShowPour;
-        break;
-      case ScreenDefaultIter::ShowPour:
-        defaultScreenIter[idx] = ScreenDefaultIter::ShowWeight;
-        break;
-      case ScreenDefaultIter::ShowTemp:
-        defaultScreenIter[idx] = ScreenDefaultIter::ShowTemp;
-        break;
-    }
-  }
-
-  if (myScale.isConnected(idx)) {
-    snprintf(&buf[0], sizeof(buf), "%.1f%%", myConfig.getBeerABV(idx));
-    myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx) * 1, &buf[0]);
-
-    switch (defaultScreenIter[idx]) {
-      case ScreenDefaultIter::ShowWeight: {
-        convertFloatToString(
-            myLevelDetection.getBeerWeight(idx, LevelDetectionType::RAW),
-            &buf[0], myConfig.getWeightPrecision());
-        String s(&buf[0]);
-        s += " " + String(myConfig.getWeightUnit());
-        myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx) * 2,
-                                s.c_str());
-      } break;
-
-      case ScreenDefaultIter::ShowGlasses: {
-        float glass =
-            myLevelDetection.getNoGlasses(idx, LevelDetectionType::STATS);
-        snprintf(&buf[0], sizeof(buf), "%.1f glasses", glass);
-        myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx) * 2,
-                                &buf[0]);
-      } break;
-
-      case ScreenDefaultIter::ShowPour: {
-        float pour =
-            myLevelDetection.getPourVolume(idx, LevelDetectionType::STATS);
-        // if (isnan(pour)) pour = 0.0;
-        snprintf(&buf[0], sizeof(buf), "%.0f pour", pour * 100);
-        myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx) * 2,
-                                &buf[0]);
-      } break;
-
-      case ScreenDefaultIter::ShowTemp: {
-      } break;
-    }
-
-  } else {
-    myDisplay.printPosition(idx, -1, myDisplay.getFontHeight(idx) * 2,
-                            "No scale");
-  }
-
-  myDisplay.setFont(idx, FontSize::FONT_10);
-
-  switch (defaultScreenIter[idx]) {
-    case ScreenDefaultIter::ShowWeight:
-      myDisplay.printPosition(
-          idx, -1,
-          myDisplay.getDisplayHeight(idx) - myDisplay.getFontHeight(idx),
-          myLevelDetection.hasStableWeight(idx, LevelDetectionType::STATS)
-              ? "stable level"
-              : "searching level");
-      break;
-    case ScreenDefaultIter::ShowGlasses:
-      if (idx == UnitIndex::U1) {
-        myDisplay.printPosition(
-            idx, -1,
-            myDisplay.getDisplayHeight(idx) - myDisplay.getFontHeight(idx),
-            WiFi.SSID());
-      }
-      break;
-    case ScreenDefaultIter::ShowPour:
-      if (idx == UnitIndex::U1) {
-        myDisplay.printPosition(
-            idx, -1,
-            myDisplay.getDisplayHeight(idx) - myDisplay.getFontHeight(idx),
-            myWifi.getIPAddress());
-      }
-      break;
-    case ScreenDefaultIter::ShowTemp:
-      break;
-  }
-
-  myDisplay.show(idx);
 }
 
 void loop() {
@@ -455,36 +211,29 @@ void loop() {
     PERF_END("loop-scale-read2");
 
     // Update screens
-    switch (myConfig.getDisplayLayoutType()) {
-      default:
-      case DisplayLayoutType::Default:
-        PERF_BEGIN("loop-display-default");
-        drawScreenDefault(UnitIndex::U1);
-        drawScreenDefault(UnitIndex::U2);
-        PERF_END("loop-display-default");
-        break;
-
-      case DisplayLayoutType::Graph:
-        PERF_BEGIN("loop-display-graph");
-        drawScreenGraph(UnitIndex::U1);
-        drawScreenGraph(UnitIndex::U2);
-        PERF_END("loop-display-graph");
-        break;
-
-      case DisplayLayoutType::GraphOne:
-        PERF_BEGIN("loop-display-graph");
-        drawScreenGraphOne();
-        PERF_END("loop-display-graph");
-        break;
-
-      case DisplayLayoutType::HardwareStats:
-        PERF_BEGIN("loop-display-hardware");
-        drawScreenHardwareStats(UnitIndex::U1);
-        drawScreenHardwareStats(UnitIndex::U2);
-        PERF_END("loop-display-hardware");
-        break;
-    }
-
+    PERF_BEGIN("loop-display-default");
+    myDisplayLayout.loop();
+    myDisplayLayout.showCurrent(
+        UnitIndex::U1, myScale.isConnected(UnitIndex::U1),
+        myLevelDetection.getBeerWeight(UnitIndex::U1, LevelDetectionType::RAW),
+        myLevelDetection.getBeerVolume(UnitIndex::U1, LevelDetectionType::RAW),
+        myLevelDetection.getNoGlasses(UnitIndex::U1, LevelDetectionType::STATS),
+        myLevelDetection.getPourVolume(UnitIndex::U1,
+                                       LevelDetectionType::STATS),
+        myTemp.getLastTempC(),
+        myLevelDetection.hasStableWeight(UnitIndex::U1,
+                                         LevelDetectionType::STATS));
+    myDisplayLayout.showCurrent(
+        UnitIndex::U2, myScale.isConnected(UnitIndex::U2),
+        myLevelDetection.getBeerWeight(UnitIndex::U2, LevelDetectionType::RAW),
+        myLevelDetection.getBeerVolume(UnitIndex::U2, LevelDetectionType::RAW),
+        myLevelDetection.getNoGlasses(UnitIndex::U2, LevelDetectionType::STATS),
+        myLevelDetection.getPourVolume(UnitIndex::U2,
+                                       LevelDetectionType::STATS),
+        myTemp.getLastTempC(),
+        myLevelDetection.hasStableWeight(UnitIndex::U2,
+                                         LevelDetectionType::STATS));
+    PERF_END("loop-display-default");
     PERF_PUSH();
 
     /*Log.notice(
