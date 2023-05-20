@@ -227,7 +227,7 @@ void DisplayLayout::showHardwareStats(UnitIndex idx, bool isScaleConnected) {
     snprintf(&_buf[0], sizeof(_buf), "Ave  wgt: %.3f",
              myLevelDetection.getStatsDetection(idx)->ave());
     myDisplay.printLine(idx, 2, &_buf[0]);
-    snprintf(&_buf[0], sizeof(_buf), "Min/Max: %.3f / %.3f",
+    snprintf(&_buf[0], sizeof(_buf), "Min/Max: %.3f/%.3f",
              myLevelDetection.getStatsDetection(idx)->min(),
              myLevelDetection.getStatsDetection(idx)->max());
     myDisplay.printLine(idx, 3, &_buf[0]);

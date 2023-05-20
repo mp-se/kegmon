@@ -58,14 +58,16 @@ class DisplayLayout {
   String getFormattedBeerWeight(float beerWeight) {
     convertFloatToString(beerWeight, &_buf[0], myConfig.getWeightPrecision());
     String s(_buf);
-    s += " " + String(myConfig.getWeightUnit());
+    s.trim();
+    s = "Beer " + s + " " + String(myConfig.getWeightUnit());
     return s;
   }
 
   String getFormattedBeerVolume(float beerVolume) {
     convertFloatToString(beerVolume, &_buf[0], myConfig.getVolumePrecision());
     String s(_buf);
-    s += " " + String(myConfig.getVolumeUnit());
+    s.trim();
+    s = "Beer " + s + " " + String(myConfig.getVolumeUnit());
     return s;
   }
 
@@ -86,6 +88,7 @@ class DisplayLayout {
 
     convertFloatToString(tempC, &_buf[0], 2);
     String s(_buf);
+    s.trim();
     s += " " + String(myConfig.getTempFormat());
     return s;
   }
