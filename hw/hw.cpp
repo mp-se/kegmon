@@ -64,8 +64,7 @@ void setup() {
              CFG_GITREV, LOG_LEVEL);
 
   PERF_BEGIN("setup-display");
-  myDisplay.setup(UnitIndex::U1);
-  myDisplay.setup(UnitIndex::U2);
+  myDisplay.setup();
   PERF_END("setup-display");
   myConfig.checkFileSystem();
 

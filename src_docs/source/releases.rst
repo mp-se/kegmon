@@ -3,6 +3,13 @@
 Releases 
 ########
 
+v0.7.0
+======
+
+* Added support for LED 20x4 displays
+* Added a few new layouts including support for one single display
+* Refactored the display logic to make it easier to change settings and share formatting among multiple rendering options. 
+
 v0.6.0
 ======
 

@@ -178,7 +178,20 @@
                   <select class="form-select" id="display-layout" name="display-layout" data-bs-toggle="tooltip"
                     title="select layout on display">
                     <option value="0">Default</option>
+                    <option value="1">Graph</option>
+                    <option value="2">Graph (one display)</option>
                     <option value="9">Hardware stats</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label for="temp-layout" class="col-sm-2 col-form-label">Display Driver</label>
+                <div class="col-sm-3">
+                  <select class="form-select" id="display-driver" name="display-driver" data-bs-toggle="tooltip"
+                    title="select type of display">
+                    <option value="0">OLED 0.96"</option>
+                    <option value="1">LCD 20x4</option>
                   </select>
                 </div>
               </div>
@@ -563,6 +576,8 @@
         $("#mqtt-pass").val(cfg["mqtt-pass"]);
 
         $("#display-layout").val(cfg["display-layout"]);
+
+        $("#display-driver").val(cfg["display-driver"]);
         $("#temp-sensor").val(cfg["temp-sensor"]);
         $("#scale-sensor").val(cfg["scale-sensor"]);
 
