@@ -43,8 +43,7 @@ LevelDetection myLevelDetection;
 
 void setup() {
   Log.notice(F("Level detection simulator" CR));
-  myDisplay.setup(UnitIndex::U1);
-  myDisplay.setup(UnitIndex::U2);
+  myDisplay.setup();
   myConfig.checkFileSystem();
 
   myConfig.loadFile();
