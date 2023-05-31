@@ -291,8 +291,10 @@ can support both NAU7802 scales.</p>
 this would stabilize the sensor readings and also make it easier to replace a faulty scale.</p>
 <p>Part list:</p>
 <ul class="simple">
-<li><p>U1 - Wemos ESP8266 D1 mini (option 1) or U1 - Wemos ESP32 S2 mini (option 2)</p></li>
-<li><p>U2/U3 - 0.96” 128x64 I2C OLED display (i2c adresses, 0x3c + 0x3d)</p></li>
+<li><p>U1 - Wemos ESP8266 D1 mini - option 1</p></li>
+<li><p>U1 - Wemos ESP32 S2 mini - option 2</p></li>
+<li><p>U2/U3 - 0.96” 128x64 I2C OLED display (i2c adresses, 0x3c + 0x3d) - option 1</p></li>
+<li><p>U2/U3 - LED 20x4 I2C display (i2c adresses, 0x27 + 0x26) - option 2</p></li>
 <li><p>R1 - 4.7k (only used with HX711)</p></li>
 <li><p>R2 - 4.7k (only used with HX711)</p></li>
 <li><p>R3 - 3.3k</p></li>
@@ -329,11 +331,11 @@ so the digital interface is compatible with the ESP.</p>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>OLED SDA #1/#2 &amp; NAU7802 #1</p></td>
+<tr class="row-even"><td><p>DISPLAY SDA #1/#2 &amp; NAU7802 #1</p></td>
 <td><p>D2</p></td>
 <td><p>33</p></td>
 </tr>
-<tr class="row-odd"><td><p>OLED SCL #1/#2 &amp; NAU7802 #1</p></td>
+<tr class="row-odd"><td><p>DISPLAY SCL #1/#2 &amp; NAU7802 #1</p></td>
 <td><p>D1</p></td>
 <td><p>35</p></td>
 </tr>

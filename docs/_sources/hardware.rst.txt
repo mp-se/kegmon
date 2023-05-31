@@ -108,8 +108,10 @@ this would stabilize the sensor readings and also make it easier to replace a fa
 
 Part list:
 
-* U1 - Wemos ESP8266 D1 mini (option 1) or U1 - Wemos ESP32 S2 mini (option 2)
-* U2/U3 - 0.96" 128x64 I2C OLED display (i2c adresses, 0x3c + 0x3d)
+* U1 - Wemos ESP8266 D1 mini - option 1
+* U1 - Wemos ESP32 S2 mini - option 2
+* U2/U3 - 0.96" 128x64 I2C OLED display (i2c adresses, 0x3c + 0x3d) - option 1
+* U2/U3 - LED 20x4 I2C display (i2c adresses, 0x27 + 0x26) - option 2
 * R1 - 4.7k (only used with HX711)
 * R2 - 4.7k (only used with HX711)
 * R3 - 3.3k
@@ -147,10 +149,10 @@ so the digital interface is compatible with the ESP.
    * - Function
      - ESP8266
      - ESP32S2
-   * - OLED SDA #1/#2 & NAU7802 #1
+   * - DISPLAY SDA #1/#2 & NAU7802 #1
      - D2
      - 33
-   * - OLED SCL #1/#2 & NAU7802 #1
+   * - DISPLAY SCL #1/#2 & NAU7802 #1
      - D1
      - 35
    * - HX711 DATA #1

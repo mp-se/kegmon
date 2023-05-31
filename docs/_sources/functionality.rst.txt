@@ -6,6 +6,10 @@ Functionality
 The main features
 -----------------
 
+* **Lots of hardware options**
+
+  One firmware that support multiple hardware opions. You can select displays, temperature sensors and ADC. Can be configured in the web UI.
+
 * **Modern web based interface**
 
   Modern HTML5 based web interface with easy access to configuration and current status.
