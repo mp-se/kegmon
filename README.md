@@ -19,7 +19,7 @@ For docs see: https://mp-se.github.io/kegmon/index.html
 * Supports ESP8266 D1 mini or ESP32s2 mini
 * Loadcells and HX711/NAU7802 ADC converters
 * DHT22 or DS18B20 temperature sensors
-* OLED 0.92" display
+* OLED 0.92" or LCD 20x4 displays
 
 # Features
 
@@ -31,4 +31,10 @@ For docs see: https://mp-se.github.io/kegmon/index.html
 * Integration with Home Assistant
 * Weights and Volumes in Metric, Imperial (both US and UK)
 * Pour detection for pours over 100 ml
-  
+* Estimation on how many glasses remain in the kegs
+* Firmware update via UI
+* One build for all hardware options
+* Modern HTML5 UI
+* Easy scale calibration
+* 3D models and PCB
+* Mobile dashboard

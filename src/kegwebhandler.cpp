@@ -108,7 +108,7 @@ void KegWebHandler::webHandleLogsClear(WS_PARAM) {
   Log.notice(F("WEB : webServer callback for /api/logs/clear." CR));
 
   if (!id.compareTo(myConfig.getID())) {
-    WS_SEND(200, "text/plain", "Removing logfiles...");
+    // WS_SEND(200, "text/plain", "Removing logfiles...");
     LittleFS.remove(LEVELS_FILENAME);
     LittleFS.remove(LEVELS_FILENAME2);
     WS_SEND(200, "text/plain", "Level logfiles cleared.");

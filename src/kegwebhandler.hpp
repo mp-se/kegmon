@@ -88,7 +88,10 @@ extern const uint8_t dashboardHtmEnd[] asm(
 #define WS_REQ_ARG_NAME(idx) request->argName(idx)
 #define WS_REQ_ARG_CNT() request->args()
 #define WS_REQ_HAS_ARG(key) request->hasArg(key)
-#define WS_SEND(code, type, text) request->send(code, type, text)
+#define WS_SEND(code, type, text)                                              \
+  AsyncWebServerResponse* response = request->beginResponse(code, type, text); \
+  response->addHeader("Access-Control-Allow-Origin", "*");                     \
+  request->send(response);
 #else
 #define WS_BIND_URL(url, http, func) \
   _server->on(url, http, std::bind(func, this))
@@ -100,6 +103,9 @@ extern const uint8_t dashboardHtmEnd[] asm(
 #define WS_REQ_ARG_CNT() _server->args()
 #define WS_REQ_HAS_ARG(key) _server->hasArg(key)
 #define WS_SEND(code, type, text) _server->send(code, type, text)
+#define WS_SEND(code, type, text) \
+  _server->enableCORS(true);      \
+  _server->send(code, type, text)
 #endif
 
 class KegWebHandler :
