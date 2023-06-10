@@ -127,7 +127,7 @@ void LevelDetection::logLevels(float kegVolume1, float kegVolume2,
            pourVolume1 < 0 ? 0 : pourVolume1,
            pourVolume2 < 0 ? 0 : pourVolume2);
 
-  Log.notice(F("LVL : Logging level change %s"), &s[0]);
+  Log.notice(F("LVL : Logging level change %s" CR), &s[0]);
 
   File f = LittleFS.open(LEVELS_FILENAME, "a");
 
@@ -136,6 +136,7 @@ void LevelDetection::logLevels(float kegVolume1, float kegVolume2,
     LittleFS.remove(LEVELS_FILENAME2);
     LittleFS.rename(LEVELS_FILENAME, LEVELS_FILENAME2);
     f = LittleFS.open(LEVELS_FILENAME, "a");
+    Log.notice(F("LVL : Logfile maximum size reached, renaming files." CR));
   }
 
   if (f) {
@@ -145,6 +146,8 @@ void LevelDetection::logLevels(float kegVolume1, float kegVolume2,
     f.write((unsigned char*)&s[0], strlen(&s[0]));
 #endif
     f.close();
+  } else {
+    Log.error(F("LVL : Failed to write to levels log." CR));
   }
 }
 
