@@ -102,7 +102,6 @@ extern const uint8_t dashboardHtmEnd[] asm(
 #define WS_REQ_ARG_NAME(idx) _server->argName(idx)
 #define WS_REQ_ARG_CNT() _server->args()
 #define WS_REQ_HAS_ARG(key) _server->hasArg(key)
-#define WS_SEND(code, type, text) _server->send(code, type, text)
 #define WS_SEND(code, type, text) \
   _server->enableCORS(true);      \
   _server->send(code, type, text)
