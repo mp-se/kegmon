@@ -121,7 +121,7 @@ void LevelDetection::logLevels(float kegVolume1, float kegVolume2,
   char s[100];
   gmtime_r(&now, &timeinfo);
   snprintf(&s[0], sizeof(s), "%04d-%02d-%02d %02d:%02d:%02d;%f;%f;%f;%f\n",
-           1900 + timeinfo.tm_year, timeinfo.tm_mon, timeinfo.tm_mday,
+           1900 + timeinfo.tm_year, 1 + timeinfo.tm_mon, timeinfo.tm_mday,
            timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec,
            kegVolume1 < 0 ? 0 : kegVolume1, kegVolume2 < 0 ? 0 : kegVolume2,
            pourVolume1 < 0 ? 0 : pourVolume1,
