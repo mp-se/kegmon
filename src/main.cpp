@@ -134,7 +134,7 @@ void setup() {
   PERF_BEGIN("setup-webserver");
 #if defined(USE_ASYNC_WEB)
   myWebHandler.setupAsyncWebServer();
-  mySerialWebSocket.begin(myWebHandler.getWebServer(), &Serial);
+  mySerialWebSocket.begin(myWebHandler.getWebServer(), &EspSerial);
   mySerial.begin(&mySerialWebSocket);
 #else
   myWebHandler.setupWebServer();
