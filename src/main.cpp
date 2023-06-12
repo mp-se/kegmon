@@ -34,6 +34,9 @@ SOFTWARE.
 #include <temp.hpp>
 #include <utils.hpp>
 #include <wificonnection.hpp>
+#if CONFIG_IDF_TARGET_ESP32S2
+#include "esp32s2/rom/rtc.h"
+#endif
 
 SerialDebug mySerial(115200L);
 KegConfig myConfig(CFG_MDNSNAME, CFG_FILENAME);
@@ -68,7 +71,10 @@ void setup() {
   Log.notice(F("Main: Started setup for %s." CR),
              String(ESP.getChipId(), HEX).c_str());
 #else
-  char cbuf[20];
+  // see: rtc.h for reset reasons
+  Log.notice(F("Main: Reset reason %d." CR), rtc_get_reset_reason(0));
+
+  char cbuf[30];
   uint32_t chipId = 0;
   for (int i = 0; i < 17; i = i + 8) {
     chipId |= ((ESP.getEfuseMac() >> (40 - i)) & 0xff) << i;
@@ -310,9 +316,14 @@ void loop() {
              isnan(stats1) ? 0 : stats1, isnan(stats2) ? 0 : stats2);
     s += &buf[0];
 
-    if (!isnan(myTemp.getTempC())) {
-      snprintf(&buf[0], sizeof(buf), ",tempC=%f,tempF=%f,humidity=%f",
-               myTemp.getTempC(), myTemp.getTempF(), myTemp.getHumidity());
+    if (!isnan(myTemp.getLastTempC())) {
+      snprintf(&buf[0], sizeof(buf), ",tempC=%f,tempF=%f",
+               myTemp.getLastTempC(), myTemp.getLastTempF());
+      s = s + &buf[0];
+    }
+
+    if (!isnan(myTemp.getLastHumidity())) {
+      snprintf(&buf[0], sizeof(buf), ",humidity=%f", myTemp.getLastHumidity());
       s = s + &buf[0];
     }
 
