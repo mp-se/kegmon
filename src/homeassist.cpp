@@ -29,41 +29,53 @@ SOFTWARE.
 #include <utils.hpp>
 
 const char *volumeTemplate =
+    "kegmon/${mdns}_volume${tap}/state:${volume}|"
+    "kegmon/${mdns}_volume${tap}/"
+    "attr:{\"glasses\":${glasses}}|"
     "homeassistant/sensor/${mdns}_volume${tap}/"
     "config:{\"device_class\":\"volume\",\"name\":\"${mdns}_volume${tap}\","
-    "\"unit_of_measurement\":\"L\",\"state_topic\":\"homeassistant/sensor/"
-    "${mdns}_volume${tap}/state\",\"json_attributes_topic\":\"homeassistant/"
-    "sensor/${mdns}_volume${tap}/"
-    "attr\",\"unique_id\":\"${mdns}_volume${tap}\"}|"
-    "homeassistant/sensor/${mdns}_volume${tap}/state:${volume}|"
-    "homeassistant/sensor/${mdns}_volume${tap}/"
-    "attr:{\"glasses\":${glasses}}|";
+    "\"unit_of_measurement\":\"L\",\"state_topic\":\"kegmon/"
+    "${mdns}_volume${tap}/state\",\"json_attributes_topic\":\"kegmon/"
+    "${mdns}_volume${tap}/"
+    "attr\",\"unique_id\":\"${mdns}_volume${tap}\","
+    "\"device\": { \"identifiers\": \"${mdns}_${id}\", \"name\": \"${mdns}\", "
+    "\"model\": \"kegmon\", \"manufacturer\": \"mp-se\", \"sw_version\": "
+    "\"${sw-ver}\" } }|";
 
 const char *beerTemplate =
-    "homeassistant/sensor/${mdns}_beer${tap}/config:"
-    "{\"name\":\"${mdns}_beer${tap}\",\"state_topic\":\"homeassistant/sensor/"
-    "${mdns}_beer${tap}/state\",\"json_attributes_topic\":\"homeassistant/"
-    "sensor/${mdns}_beer${tap}/"
-    "attr\",\"unique_id\":\"${mdns}_beer${tap}\"}|"
-    "homeassistant/sensor/${mdns}_beer${tap}/state:${beer-name}|"
-    "homeassistant/sensor/${mdns}_beer${tap}/"
+    "kegmon/${mdns}_beer${tap}/state:${beer-name}|"
+    "kegmon/${mdns}_beer${tap}/"
     "attr:{\"abv\":${beer-abv},\"abv\":${beer-abv},\"ibu\":${beer-ibu},\"ebc\":"
     "${beer-"
-    "ebc}}|";
+    "ebc}}|"
+    "homeassistant/sensor/${mdns}_beer${tap}/config:"
+    "{\"name\":\"${mdns}_beer${tap}\",\"state_topic\":\"kegmon/"
+    "${mdns}_beer${tap}/state\",\"json_attributes_topic\":\"kegmon/"
+    "${mdns}_beer${tap}/"
+    "attr\",\"unique_id\":\"${mdns}_beer${tap}\","
+    "\"device\": { \"identifiers\": \"${mdns}_${id}\", \"name\": \"${mdns}\", "
+    "\"model\": \"kegmon\", \"manufacturer\": \"mp-se\", \"sw_version\": "
+    "\"${sw-ver}\" } }|";
 
 const char *pourTemplate =
+    "kegmon/${mdns}_pour${tap}/state:${pour}|"
     "homeassistant/sensor/${mdns}_pour${tap}/config:"
     "{\"device_class\":\"volume\",\"name\":\"${mdns}_pour${tap}\",\"unit_of_"
-    "measurement\":\"L\",\"state_topic\":\"homeassistant/sensor/"
-    "${mdns}_pour${tap}/state\",\"unique_id\":\"${mdns}_pour${tap}\"}|"
-    "homeassistant/sensor/${mdns}_pour${tap}/state:${pour}|";
+    "measurement\":\"L\",\"state_topic\":\"kegmon/"
+    "${mdns}_pour${tap}/state\",\"unique_id\":\"${mdns}_pour${tap}\", "
+    "\"device\": { \"identifiers\": \"${mdns}_${id}\", \"name\": \"${mdns}\", "
+    "\"model\": \"kegmon\", \"manufacturer\": \"mp-se\", \"sw_version\": "
+    "\"${sw-ver}\" } }|";
 
 const char *tempTemplate =
+    "kegmon/${mdns}_temp/state:${temp}|"
     "homeassistant/sensor/${mdns}_temp/config:"
     "{\"device_class\":\"temperature\",\"name\":\"${mdns}_temp\",\"unit_of_"
-    "measurement\":\"${temp-format}\",\"state_topic\":\"homeassistant/sensor/"
-    "${mdns}_temp/state\",\"unique_id\":\"${mdns}_temp\"}|"
-    "homeassistant/sensor/${mdns}_temp/state:${temp}|";
+    "measurement\":\"${temp-format}\",\"state_topic\":\"kegmon/"
+    "${mdns}_temp/state\",\"unique_id\":\"${mdns}_temp\", "
+    "\"device\": { \"identifiers\": \"${mdns}_${id}\", \"name\": \"${mdns}\", "
+    "\"model\": \"kegmon\", \"manufacturer\": \"mp-se\", \"sw_version\": "
+    "\"${sw-ver}\" } }|";
 
 void HomeAssist::sendTempInformation(float tempC) {
   if (!myConfig.hasTargetMqtt()) return;
@@ -71,6 +83,8 @@ void HomeAssist::sendTempInformation(float tempC) {
   TemplatingEngine tpl;
 
   tpl.setVal("${mdns}", myConfig.getMDNS());
+  tpl.setVal("${sw-ver}", CFG_APPVER);
+  tpl.setVal("${id}", myConfig.getID());
 
   // if (myConfig.isTempFormatC()) {
   tpl.setVal("${temp}", tempC);
@@ -98,6 +112,7 @@ void HomeAssist::sendTapInformation(UnitIndex idx, float stableVol,
   TemplatingEngine tpl;
 
   tpl.setVal("${mdns}", myConfig.getMDNS());
+  tpl.setVal("${sw-ver}", CFG_APPVER);
   tpl.setVal("${id}", myConfig.getID());
   tpl.setVal("${volume}", stableVol, 3);
   tpl.setVal("${glasses}", glasses, 1);
@@ -131,6 +146,7 @@ void HomeAssist::sendPourInformation(UnitIndex idx, float pourVol) {
   TemplatingEngine tpl;
 
   tpl.setVal("${mdns}", myConfig.getMDNS());
+  tpl.setVal("${sw-ver}", CFG_APPVER);
   tpl.setVal("${id}", myConfig.getID());
   tpl.setVal("${pour}", pourVol, 3);
   tpl.setVal("${tap}", static_cast<int>(idx) + 1);
