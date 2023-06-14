@@ -79,6 +79,7 @@ const char *tempTemplate =
 
 void HomeAssist::sendTempInformation(float tempC) {
   if (!myConfig.hasTargetMqtt()) return;
+  if (isnan(tempC)) return;
 
   TemplatingEngine tpl;
 
