@@ -116,6 +116,14 @@ void LevelDetection::pushPourUpdate(UnitIndex idx, float stableVol,
 
 void LevelDetection::logLevels(float kegVolume1, float kegVolume2,
                                float pourVolume1, float pourVolume2) {
+  if ((isnan(kegVolume1) || kegVolume1 < 0.01) &&
+      (isnan(kegVolume2) || kegVolume2 < 0.01) &&
+      (isnan(pourVolume1) || pourVolume1 < 0.01) &&
+      (isnan(pourVolume2) || pourVolume2 < 0.01)) {
+    Log.notice(F(
+        "LVL : Skipping level logging since all values are NaN or < 0.01" CR));
+  }
+
   struct tm timeinfo;
   time_t now = time(nullptr);
   char s[100];
