@@ -36,6 +36,7 @@ SOFTWARE.
 #include <wificonnection.hpp>
 #if CONFIG_IDF_TARGET_ESP32S2
 #include "esp32s2/rom/rtc.h"
+#include "esp_core_dump.h"
 #endif
 
 SerialDebug mySerial(115200L);
@@ -58,6 +59,8 @@ int loopCounter = 0;
 uint32_t loopMillis = 0;
 
 void scanI2C(int sda, int scl);
+void logStartup();
+void checkCoreDump();
 
 void setup() {
 #if defined(PERF_ENABLE)
@@ -73,6 +76,7 @@ void setup() {
 #else
   // see: rtc.h for reset reasons
   Log.notice(F("Main: Reset reason %d." CR), rtc_get_reset_reason(0));
+  Log.notice(F("Core dump check %d." CR), esp_core_dump_image_check());
 
   char cbuf[30];
   uint32_t chipId = 0;
@@ -85,9 +89,11 @@ void setup() {
   Log.notice(F("Main: Build options: %s (%s) LOGLEVEL %d " CR), CFG_APPVER,
              CFG_GITREV, LOG_LEVEL);
 
-  /*scanI2C(PIN_OLED_SDA, PIN_OLED_SCL);
+  /*
+  scanI2C(PIN_OLED_SDA, PIN_OLED_SCL);
   scanI2C(PIN_SCALE1_SDA, PIN_SCALE1_SCL);
-  scanI2C(PIN_SCALE2_SDA, PIN_SCALE2_SCL);*/
+  scanI2C(PIN_SCALE2_SDA, PIN_SCALE2_SCL);
+  */
 
   myConfig.checkFileSystem();
 
@@ -131,6 +137,8 @@ void setup() {
   myWifi.timeSync();
   PERF_END("setup-timesync");
 
+  checkCoreDump();
+
   PERF_BEGIN("setup-webserver");
 #if defined(USE_ASYNC_WEB)
   myWebHandler.setupAsyncWebServer();
@@ -149,6 +157,7 @@ void setup() {
   PERF_END("main-setup");
   PERF_PUSH();
   myTemp.read();
+  // logStartup();
   delay(3000);
 }
 
@@ -205,6 +214,8 @@ void loop() {
         myTemp.setup();
       }
     }
+
+    // printHeap("Loop:");
 
     // Read the scales, only once per loop
     float t = myTemp.getLastTempC();
@@ -278,6 +289,10 @@ void loop() {
 
     float raw1 = myLevelDetection.getRawDetection(UnitIndex::U1)->getRawValue();
     float raw2 = myLevelDetection.getRawDetection(UnitIndex::U2)->getRawValue();
+    float stb1 =
+        myLevelDetection.getStatsDetection(UnitIndex::U1)->getStableValue();
+    float stb2 =
+        myLevelDetection.getStatsDetection(UnitIndex::U2)->getStableValue();
 
     String s;
     snprintf(&buf[0], sizeof(buf),
@@ -327,6 +342,16 @@ void loop() {
       s = s + &buf[0];
     }
 
+    if (!isnan(stb1)) {
+      snprintf(&buf[0], sizeof(buf), ",stable1=%f", stb1);
+      s = s + &buf[0];
+    }
+
+    if (!isnan(stb2)) {
+      snprintf(&buf[0], sizeof(buf), ",stable2=%f", stb2);
+      s = s + &buf[0];
+    }
+
 #if LOG_LEVEL == 6
     Log.verbose(F("LOOP: %s" CR), s.c_str());
 #endif
@@ -366,6 +391,64 @@ void scanI2C(int sda, int scl) {
   EspSerial.print("\n");
 #if defined(ESP32)
   Wire.end();
+#endif
+}
+
+void logStartup() {
+  struct tm timeinfo;
+  time_t now = time(nullptr);
+  char s[100];
+  gmtime_r(&now, &timeinfo);
+
+#if defined(ESP8266)
+  snprintf(&s[0], sizeof(s),
+           "%04d-%02d-%02d %02d:%02d:%02d;Starting up kegmon;%s\n",
+           1900 + timeinfo.tm_year, 1 + timeinfo.tm_mon, timeinfo.tm_mday,
+           timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec,
+           ESP.getResetInfo().c_str());
+#else
+  snprintf(&s[0], sizeof(s),
+           "%04d-%02d-%02d %02d:%02d:%02d;Starting up kegmon;%d\n",
+           1900 + timeinfo.tm_year, 1 + timeinfo.tm_mon, timeinfo.tm_mday,
+           timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec,
+           rtc_get_reset_reason(0));
+#endif
+
+  File f = LittleFS.open(STARTUP_FILENAME, "a");
+
+  if (f && f.size() > 2000) {
+    f.close();
+    LittleFS.remove(STARTUP_FILENAME);
+    f = LittleFS.open(STARTUP_FILENAME, "a");
+  }
+
+  if (f) {
+#if defined(ESP8266)
+    f.write(&s[0], strlen(&s[0]));
+#else
+    f.write((unsigned char*)&s[0], strlen(&s[0]));
+#endif
+    f.close();
+  }
+}
+
+void checkCoreDump() {
+#if CONFIG_IDF_TARGET_ESP32S2
+  esp_core_dump_summary_t *summary = static_cast<esp_core_dump_summary_t *>(
+      malloc(sizeof(esp_core_dump_summary_t)));
+
+  if (summary) {
+    esp_log_level_set("esp_core_dump_elf", ESP_LOG_VERBOSE);
+
+    if (esp_core_dump_get_summary(summary) == ESP_OK) {
+      Log.notice(F("Exception cause %d." CR), summary->ex_info.exc_cause);
+      Log.notice(F("PC 0x%x." CR), summary->exc_pc);
+
+      for (int i = 0; i < summary->exc_bt_info.depth; i++) {
+        Log.notice(F("PC(%d) 0x%x." CR), i, summary->exc_bt_info.bt[i]);
+      }
+    }
+  }
 #endif
 }
 

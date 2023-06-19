@@ -32,6 +32,7 @@ SOFTWARE.
 constexpr auto CFG_APPNAME = "KegMon";         // Name of firmware
 constexpr auto CFG_MDNSNAME = "KegMon";        // Network name
 constexpr auto CFG_FILENAME = "/kegmon.json";  // Name of config file
+constexpr auto STARTUP_FILENAME = "/startup.log";
 
 constexpr auto DISPLAY_ADR1 = 0x3c;
 constexpr auto DISPLAY_ADR2 = 0x3d;
