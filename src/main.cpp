@@ -35,8 +35,8 @@ SOFTWARE.
 #include <utils.hpp>
 #include <wificonnection.hpp>
 #if CONFIG_IDF_TARGET_ESP32S2
-#include "esp32s2/rom/rtc.h"
-#include "esp_core_dump.h"
+#include <esp32s2/rom/rtc.h>
+#include <esp_core_dump.h>
 #endif
 
 SerialDebug mySerial(115200L);
