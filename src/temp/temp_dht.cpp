@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2022 Magnus
+Copyright (c) 2021-22 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,36 +21,43 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#include <AUnit.h>
-#include <Arduino.h>
+#include "temp_dht.hpp"
 
-#include <display.hpp>
-#include <kegconfig.hpp>
-#include <kegpush.hpp>
-#include <kegwebhandler.hpp>
 #include <main.hpp>
-#include <ota.hpp>
-#include <perf.hpp>
-#include <scale.hpp>
-#include <temp/manager.hpp>
 #include <utils.hpp>
-#include <wificonnection.hpp>
 
-using aunit::Printer;
-using aunit::TestRunner;
-using aunit::Verbosity;
+void DHTSensor::setup() {
+  pinMode(PIN_DH2_PWR, OUTPUT);
+  digitalWrite(PIN_DH2_PWR, HIGH);
+  delay(100);
 
-void setup() {
-  Serial.begin(115200);
-  Serial.println("Kegmon - Unit Test Build");
-  delay(2000);
-  Printer::setPrinter(&Serial);
-  // TestRunner::setVerbosity(Verbosity::kAll);
+  Log.notice(F("TEMP: Initializing DHT22 sensor." CR));
+  if (_sensor) delete _sensor;
+  _sensor = new DHT(PIN_DH2, DHT22, 1);
+  _sensor->begin();
 }
 
-void loop() {
-  TestRunner::run();
-  delay(10);
+void DHTSensor::reset() {
+  Log.notice(F("TEMP: Reset temp sensor." CR));
+
+  digitalWrite(PIN_DH2_PWR, LOW);
+  delay(100);
 }
 
-// EOF
+tempReading DHTSensor::read() {
+  if (!_sensor) return failedReading;
+
+  float temp = _sensor->readTemperature(false, false);
+  float humidity = _sensor->readHumidity(false);
+
+  if (isnan(temp)) {
+    Log.error(F("TEMP: Error reading temperature, disable sensor." CR));
+    delete _sensor;
+    _sensor = 0;
+  }
+
+  return {
+    temp,
+    humidity
+  };
+}

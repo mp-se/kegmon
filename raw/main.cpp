@@ -27,7 +27,7 @@ SOFTWARE.
 #include <main.hpp>
 #include <ota.hpp>
 #include <scale.hpp>
-#include <temp.hpp>
+#include <temp/manager.hpp>
 #include <utils.hpp>
 #include <wificonnection.hpp>
 #include "simulated.hpp"

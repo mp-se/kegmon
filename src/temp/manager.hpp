@@ -24,31 +24,18 @@ SOFTWARE.
 #ifndef SRC_TEMP_HPP_
 #define SRC_TEMP_HPP_
 
-#include <DHT.h>
-#include <DallasTemperature.h>
-#include <OneWire.h>
-#include <Wire.h>
-
 #include <main.hpp>
 #include <utils.hpp>
+#include "sensor.hpp"
 
 class TempHumidity {
  private:
-  // DHT22
-  DHT* _temp = 0;
-
-  // DS18B20
-  OneWire* _oneWire = 0;
-  DallasTemperature* _dallas = 0;
+  Sensor *_sensor;
 
   // Generic
   float _lastTempC = NAN;
   float _lastHumidity = NAN;
 
-  void dhtSetup();
-  void dsSetup();
-  void dhtRead();
-  void dsRead();
 
  public:
   TempHumidity();

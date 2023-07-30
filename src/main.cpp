@@ -31,7 +31,7 @@ SOFTWARE.
 #include <perf.hpp>
 #include <scale.hpp>
 #include <serialws.hpp>
-#include <temp.hpp>
+#include <temp/manager.hpp>
 #include <utils.hpp>
 #include <wificonnection.hpp>
 
