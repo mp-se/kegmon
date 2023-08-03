@@ -107,7 +107,8 @@ class DisplayLayout {
                    float glasses, float pour, float temp, bool stableLevel);
   void showGraph(UnitIndex idx, bool isScaleConnected, float beerVolume,
                  float pour);
-  void showGraphOne(UnitIndex idx, bool isScaleConnected, float beerVolume, float pour, float beerWeight);
+  void showGraphOne(UnitIndex idx, bool isScaleConnected, float beerVolume,
+                    float pour, float beerWeight);
   void showHardwareStats(UnitIndex idx, bool isScaleConnected);
 
  public:
