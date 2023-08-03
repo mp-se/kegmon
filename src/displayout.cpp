@@ -175,7 +175,8 @@ void DisplayLayout::showGraph(UnitIndex idx, bool isScaleConnected,
 }
 
 void DisplayLayout::showGraphOne(UnitIndex idx, bool isScaleConnected,
-                                 float beerVolume) {
+                                 float beerVolume, float pour, float beerWeight) {
+  // Handle printout to display #1 which will show all the graphs
   if (idx == UnitIndex::U1) {
     myDisplay.clear(UnitIndex::U1);
     myDisplay.setFont(UnitIndex::U1, FontSize::FONT_16);
@@ -208,8 +209,57 @@ void DisplayLayout::showGraphOne(UnitIndex idx, bool isScaleConnected,
                               myDisplay.getFontHeight(UnitIndex::U1) * 3,
                               "No scale");
     }
-
     myDisplay.show(UnitIndex::U1);
+  }
+
+  // Handle printout to display #2 which will show all the details (iterating between the two displays)
+  if(isScaleConnected) {
+    myDisplay.setFont(UnitIndex::U2, FontSize::FONT_16);
+  
+    switch (_iter) {
+      case DisplayIterator::ShowTemp:
+      case DisplayIterator::ShowWeight:
+        if (idx == UnitIndex::U1) {
+          myDisplay.clear(UnitIndex::U2);
+
+          myDisplay.printPosition(UnitIndex::U2, -1,
+                                  myDisplay.getFontHeight(UnitIndex::U2) * 0,
+                                  getFormattedBeerName(idx));
+          myDisplay.printPosition(UnitIndex::U2, -1, myDisplay.getFontHeight(UnitIndex::U2) * 1,
+                                  getFormattedPour(pour));
+          myDisplay.printPosition(UnitIndex::U2, -1, myDisplay.getFontHeight(idx) * 2,
+                                  getFormattedBeerWeight(beerWeight));
+
+          myDisplay.setFont(UnitIndex::U2, FontSize::FONT_10);
+          myDisplay.printPosition(
+              UnitIndex::U2, -1,
+              myDisplay.getDisplayHeight(UnitIndex::U2) - myDisplay.getFontHeight(UnitIndex::U2),
+              getFormattedWifiName());
+        }  
+        break;
+      case DisplayIterator::ShowGlasses:
+      case DisplayIterator::ShowPour:
+        if (idx == UnitIndex::U2) {
+          myDisplay.clear(UnitIndex::U2);
+
+          myDisplay.printPosition(UnitIndex::U2, -1,
+                                  myDisplay.getFontHeight(UnitIndex::U2) * 0,
+                                  getFormattedBeerName(idx));
+          myDisplay.printPosition(UnitIndex::U2, -1, myDisplay.getFontHeight(UnitIndex::U2) * 1,
+                                  getFormattedPour(pour));
+          myDisplay.printPosition(UnitIndex::U2, -1, myDisplay.getFontHeight(idx) * 2,
+                                  getFormattedBeerWeight(beerWeight));
+
+          myDisplay.setFont(UnitIndex::U2, FontSize::FONT_10);
+          myDisplay.printPosition(
+              UnitIndex::U2, -1,
+              myDisplay.getDisplayHeight(UnitIndex::U2) - myDisplay.getFontHeight(UnitIndex::U2),
+              getFormattedIP());
+
+        }  
+        break;
+    }
+    myDisplay.show(UnitIndex::U2);
   }
 }
 
@@ -241,7 +291,7 @@ void DisplayLayout::showHardwareStats(UnitIndex idx, bool isScaleConnected) {
 }
 
 void DisplayLayout::showCurrent(UnitIndex idx, bool isScaleConnected,
-                                float beerWeight, float beerVoume,
+                                float beerWeight, float beerVolume,
                                 float glasses, float pour, float temp,
                                 bool stableLevel) {
   switch (myConfig.getDisplayLayoutType()) {
@@ -252,11 +302,11 @@ void DisplayLayout::showCurrent(UnitIndex idx, bool isScaleConnected,
       break;
 
     case DisplayLayoutType::Graph:
-      showGraph(idx, isScaleConnected, beerVoume, pour);
+      showGraph(idx, isScaleConnected, beerVolume, pour);
       break;
 
     case DisplayLayoutType::GraphOne:
-      showGraphOne(idx, isScaleConnected, beerVoume);
+      showGraphOne(idx, isScaleConnected, beerVolume, pour, beerWeight);
       break;
 
     case DisplayLayoutType::HardwareStats:
