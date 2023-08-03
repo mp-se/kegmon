@@ -231,6 +231,10 @@ void DisplayLayout::showHardwareStats(UnitIndex idx, bool isScaleConnected) {
              myLevelDetection.getStatsDetection(idx)->min(),
              myLevelDetection.getStatsDetection(idx)->max());
     myDisplay.printLine(idx, 3, &_buf[0]);
+
+    snprintf(&_buf[0], sizeof(_buf), "Raw  wgt: %.3f",
+             myLevelDetection.getTotalRawWeight(idx));
+    myDisplay.printLine(idx, 4, &_buf[0]);
   }
 
   myDisplay.show(idx);
