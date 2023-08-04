@@ -116,18 +116,26 @@ void LevelDetection::pushPourUpdate(UnitIndex idx, float stableVol,
 
 void LevelDetection::logLevels(float kegVolume1, float kegVolume2,
                                float pourVolume1, float pourVolume2) {
+  if ((isnan(kegVolume1) || kegVolume1 < 0.01) &&
+      (isnan(kegVolume2) || kegVolume2 < 0.01) &&
+      (isnan(pourVolume1) || pourVolume1 < 0.01) &&
+      (isnan(pourVolume2) || pourVolume2 < 0.01)) {
+    Log.notice(F(
+        "LVL : Skipping level logging since all values are NaN or < 0.01" CR));
+  }
+
   struct tm timeinfo;
   time_t now = time(nullptr);
   char s[100];
   gmtime_r(&now, &timeinfo);
   snprintf(&s[0], sizeof(s), "%04d-%02d-%02d %02d:%02d:%02d;%f;%f;%f;%f\n",
-           1900 + timeinfo.tm_year, timeinfo.tm_mon, timeinfo.tm_mday,
+           1900 + timeinfo.tm_year, 1 + timeinfo.tm_mon, timeinfo.tm_mday,
            timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec,
            kegVolume1 < 0 ? 0 : kegVolume1, kegVolume2 < 0 ? 0 : kegVolume2,
            pourVolume1 < 0 ? 0 : pourVolume1,
            pourVolume2 < 0 ? 0 : pourVolume2);
 
-  Log.notice(F("LVL : Logging level change %s"), &s[0]);
+  Log.notice(F("LVL : Logging level change %s" CR), &s[0]);
 
   File f = LittleFS.open(LEVELS_FILENAME, "a");
 
@@ -136,6 +144,7 @@ void LevelDetection::logLevels(float kegVolume1, float kegVolume2,
     LittleFS.remove(LEVELS_FILENAME2);
     LittleFS.rename(LEVELS_FILENAME, LEVELS_FILENAME2);
     f = LittleFS.open(LEVELS_FILENAME, "a");
+    Log.notice(F("LVL : Logfile maximum size reached, renaming files." CR));
   }
 
   if (f) {
@@ -145,6 +154,8 @@ void LevelDetection::logLevels(float kegVolume1, float kegVolume2,
     f.write((unsigned char*)&s[0], strlen(&s[0]));
 #endif
     f.close();
+  } else {
+    Log.error(F("LVL : Failed to write to levels log." CR));
   }
 }
 

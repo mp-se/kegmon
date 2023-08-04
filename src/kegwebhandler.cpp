@@ -84,6 +84,7 @@ void KegWebHandler::setupWebHandlers() {
   // Note! For the async implementation the order matters
   _server->serveStatic("/levels2", LittleFS, LEVELS_FILENAME2);
   _server->serveStatic("/levels", LittleFS, LEVELS_FILENAME);
+  _server->serveStatic("/startup", LittleFS, STARTUP_FILENAME);
   WS_BIND_URL("/api/reset", HTTP_GET, &KegWebHandler::webReset);
   WS_BIND_URL("/api/scale/tare", HTTP_GET, &KegWebHandler::webScaleTare);
   WS_BIND_URL("/api/scale/factor", HTTP_GET, &KegWebHandler::webScaleFactor);
