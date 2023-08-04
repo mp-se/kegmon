@@ -3,6 +3,13 @@
 Releases 
 ########
 
+v0.7.1
+======
+
+* Fixed some issues with logging changes in levels so that the logfile is not filled with data connected to startup events
+* Fixed stability issue that could cause crashes
+* Updated display layout (One) to show details on display 2 if attached
+
 v0.7.0
 ======
 
