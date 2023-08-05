@@ -55,10 +55,18 @@ void TempHumidity::setup() {
 }
 
 void TempHumidity::reset() {
+  if (!_sensor) {
+    Log.error(F("TEMP: reset called with no sensor." CR));
+    return;
+  }
   _sensor->reset();
 }
 
 void TempHumidity::read() {
+  if (!_sensor) {
+    Log.error(F("TEMP: no sensor, read failed." CR));
+    return;
+  }
   auto reading = _sensor->read();
   if (reading == failedReading) {
     Log.notice(F("TEMP: error reading sensor." CR));
