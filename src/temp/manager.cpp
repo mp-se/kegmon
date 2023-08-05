@@ -49,8 +49,7 @@ void TempHumidity::setup() {
 
   _sensor->setup();
 
-  _lastTempC = NAN;
-  _lastHumidity = NAN;
+  _last = {NAN, NAN};
   read();
 }
 
@@ -72,9 +71,9 @@ void TempHumidity::read() {
     Log.notice(F("TEMP: error reading sensor." CR));
   }
 
-  _lastTempC = reading.temprature;
+  _last.temprature = reading.temprature;
   if (!isnan(reading.humidity)) {
-    _lastHumidity = reading.humidity;
+    _last.humidity = reading.humidity;
   }
 }
 
