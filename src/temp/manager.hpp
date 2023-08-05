@@ -30,7 +30,7 @@ SOFTWARE.
 
 class TempHumidity {
  private:
-  Sensor *_sensor;
+  std::unique_ptr<Sensor> _sensor;
 
   // Generic
   float _lastTempC = NAN;

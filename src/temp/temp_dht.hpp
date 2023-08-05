@@ -29,7 +29,7 @@ SOFTWARE.
 #include <DHT.h>
 
 class DHTSensor : public Sensor {
-    DHT *_sensor;
+    std::unique_ptr<DHT> _sensor;
 
 public:
     DHTSensor() = default;

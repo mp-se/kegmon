@@ -31,6 +31,11 @@ struct tempReading {
 };
 constexpr tempReading failedReading = {NAN, NAN};
 
+bool operator==(const tempReading& lhs, const tempReading& rhs) {
+    return lhs.humidity == rhs.humidity &&
+           lhs.temprature == rhs.temprature;
+}
+
 class Sensor {
 public:
     Sensor() = default;
