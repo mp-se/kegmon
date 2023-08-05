@@ -28,12 +28,12 @@ SOFTWARE.
 
 void DHTSensor::setup() {
   pinMode(PIN_DH2_PWR, OUTPUT);
+  Log.notice(F("TEMP: Initializing DHT22 sensor." CR));
+  reset();
   digitalWrite(PIN_DH2_PWR, HIGH);
   delay(100);
 
-  Log.notice(F("TEMP: Initializing DHT22 sensor." CR));
-  if (_sensor) delete _sensor;
-  _sensor = new DHT(PIN_DH2, DHT22, 1);
+  _sensor = std::make_unique<DHT>(PIN_DH2, DHT22, 1);
   _sensor->begin();
 }
 
@@ -42,6 +42,7 @@ void DHTSensor::reset() {
 
   digitalWrite(PIN_DH2_PWR, LOW);
   delay(100);
+  _sensor.reset();
 }
 
 tempReading DHTSensor::read() {
@@ -52,8 +53,7 @@ tempReading DHTSensor::read() {
 
   if (isnan(temp)) {
     Log.error(F("TEMP: Error reading temperature, disable sensor." CR));
-    delete _sensor;
-    _sensor = 0;
+    reset();
   }
 
   return {

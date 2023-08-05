@@ -33,8 +33,8 @@ SOFTWARE.
 
 class DSSensor : public Sensor {
   // DS18B20
-  OneWire* _oneWire = 0;
-  DallasTemperature* _dallas = 0;
+  std::unique_ptr<OneWire> _oneWire;
+  std::unique_ptr<DallasTemperature> _dallas;
 
 
 public:

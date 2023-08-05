@@ -27,16 +27,17 @@ SOFTWARE.
 
 void DSSensor::setup() {
   Log.notice(F("TEMP: Initializing DS18B20 sensor." CR));
-  if (_oneWire) delete _oneWire;
-  if (_dallas) delete _dallas;
+  reset();
 
-  _oneWire = new OneWire(PIN_DH2);
-  _dallas = new DallasTemperature(_oneWire);
+  _oneWire = std::make_unique<OneWire>(PIN_DH2);
+  _dallas = std::make_unique<DallasTemperature>(_oneWire.get());
   _dallas->setResolution(12);
   _dallas->begin();
 }
 
 void DSSensor::reset() {
+  _dallas.reset();
+  _oneWire.reset();
 }
 
 tempReading DSSensor::read() {
@@ -50,10 +51,7 @@ tempReading DSSensor::read() {
 
   if (isnan(temp)) {
     Log.error(F("TEMP: Error reading temperature, disable sensor." CR));
-    delete _dallas;
-    delete _oneWire;
-    _dallas = 0;
-    _oneWire = 0;
+    reset();
   }
 
   return {

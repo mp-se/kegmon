@@ -35,29 +35,45 @@ void TempHumidity::setup() {
 
   switch (myConfig.getTempSensorType()) {
     case SensorDHT22:
-      _sensor = new DHTSensor();
+      Log.info(F("TEMP: choosing DHT22." CR));
+      _sensor = std::make_unique<DHTSensor>();
       break;
     case SensorDS18B20:
-      _sensor = new DSSensor();
+      Log.info(F("TEMP: choosing DS18B20." CR));
+      _sensor = std::make_unique<DSSensor>();
       break;
+    default:
+      Log.error(F("TEMP: unable to find sensor type, exiting." CR));
+      return;
   }
 
   _sensor->setup();
 
-  _lastTempC = NAN;
-  _lastHumidity = NAN;
+  _last = {NAN, NAN};
   read();
 }
 
 void TempHumidity::reset() {
+  if (!_sensor) {
+    Log.error(F("TEMP: reset called with no sensor." CR));
+    return;
+  }
   _sensor->reset();
 }
 
 void TempHumidity::read() {
+  if (!_sensor) {
+    Log.error(F("TEMP: no sensor, read failed." CR));
+    return;
+  }
   auto reading = _sensor->read();
-  _lastTempC = reading.temprature;
-  if (reading.humidity != NAN) {
-    _lastHumidity = reading.humidity;
+  if (reading == failedReading) {
+    Log.notice(F("TEMP: error reading sensor." CR));
+  }
+
+  _last.temprature = reading.temprature;
+  if (!isnan(reading.humidity)) {
+    _last.humidity = reading.humidity;
   }
 }
 

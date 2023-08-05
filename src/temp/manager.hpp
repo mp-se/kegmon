@@ -30,11 +30,9 @@ SOFTWARE.
 
 class TempHumidity {
  private:
-  Sensor *_sensor;
+  std::unique_ptr<Sensor> _sensor;
 
-  // Generic
-  float _lastTempC = NAN;
-  float _lastHumidity = NAN;
+  tempReading _last = {NAN, NAN};
 
 
  public:
@@ -44,12 +42,12 @@ class TempHumidity {
   void setup();
   void reset();
   void read();
-  bool hasSensor() { return !isnan(_lastTempC); }
-  float getLastTempC() { return _lastTempC; }
+  bool hasSensor() { return !!_sensor; }
+  float getLastTempC() { return _last.temprature; }
   float getLastTempF() {
-    return isnan(_lastTempC) ? NAN : convertCtoF(_lastTempC);
+    return isnan(_last.temprature) ? NAN : convertCtoF(_last.temprature);
   }
-  float getLastHumidity() { return _lastHumidity; }
+  float getLastHumidity() { return _last.humidity; }
 };
 
 extern TempHumidity myTemp;
