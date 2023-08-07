@@ -31,7 +31,7 @@ SOFTWARE.
 #include <perf.hpp>
 #include <scale.hpp>
 #include <serialws.hpp>
-#include <temp.hpp>
+#include <temp_mgr.hpp>
 #include <utils.hpp>
 #include <wificonnection.hpp>
 #if CONFIG_IDF_TARGET_ESP32S2
@@ -48,7 +48,7 @@ KegPushHandler myPush(&myConfig);
 Display myDisplay;
 Scale myScale;
 LevelDetection myLevelDetection;
-TempHumidity myTemp;
+TempSensorManager myTemp;
 #if defined(USE_ASYNC_WEB)
 SerialWebSocket mySerialWebSocket;
 #endif

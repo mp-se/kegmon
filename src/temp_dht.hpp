@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2022 Magnus
+Copyright (c) 2021-23 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,36 +21,24 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#include <AUnit.h>
-#include <Arduino.h>
+#ifndef SRC_TEMP_DHT_HPP_
+#define SRC_TEMP_DHT_HPP_
+#include <DHT.h>
 
-#include <display.hpp>
-#include <kegconfig.hpp>
-#include <kegpush.hpp>
-#include <kegwebhandler.hpp>
-#include <main.hpp>
-#include <ota.hpp>
-#include <perf.hpp>
-#include <scale.hpp>
-#include <temp/manager.hpp>
-#include <utils.hpp>
-#include <wificonnection.hpp>
+#include <memory>
+#include <temp_base.hpp>
 
-using aunit::Printer;
-using aunit::TestRunner;
-using aunit::Verbosity;
+class TempSensorDHT : public TempSensorBase {
+ private:
+  std::unique_ptr<DHT> _dht = 0;
 
-void setup() {
-  Serial.begin(115200);
-  Serial.println("Kegmon - Unit Test Build");
-  delay(2000);
-  Printer::setPrinter(&Serial);
-  // TestRunner::setVerbosity(Verbosity::kAll);
-}
+ public:
+  TempSensorDHT() = default;
 
-void loop() {
-  TestRunner::run();
-  delay(10);
-}
+  void setup() override;
+  TempReading read() override;
+};
+
+#endif  // SRC_TEMP_DHT_HPP_
 
 // EOF

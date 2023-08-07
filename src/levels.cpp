@@ -25,7 +25,7 @@ SOFTWARE.
 #include <levels.hpp>
 #include <perf.hpp>
 #include <scale.hpp>
-#include <temp.hpp>
+#include <temp_mgr.hpp>
 
 // Used for introduce noise on the signal to see if it accurate enough
 // #define ENABLE_ADDING_NOISE

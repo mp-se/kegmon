@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2022 Magnus
+Copyright (c) 2021-23 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,36 +21,23 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#include <AUnit.h>
-#include <Arduino.h>
-
-#include <display.hpp>
-#include <kegconfig.hpp>
-#include <kegpush.hpp>
-#include <kegwebhandler.hpp>
 #include <main.hpp>
-#include <ota.hpp>
-#include <perf.hpp>
-#include <scale.hpp>
-#include <temp/manager.hpp>
-#include <utils.hpp>
-#include <wificonnection.hpp>
+#include <temp_dht.hpp>
 
-using aunit::Printer;
-using aunit::TestRunner;
-using aunit::Verbosity;
+void TempSensorDHT::setup() {
+  _dht = std::make_unique<DHT>(PIN_DH2, DHT22, 1);
 
-void setup() {
-  Serial.begin(115200);
-  Serial.println("Kegmon - Unit Test Build");
-  delay(2000);
-  Printer::setPrinter(&Serial);
-  // TestRunner::setVerbosity(Verbosity::kAll);
+  if (_dht) _dht->begin();
 }
 
-void loop() {
-  TestRunner::run();
-  delay(10);
+TempReading TempSensorDHT::read() {
+  if (!_dht) return TEMP_READING_FAILED;
+
+  TempReading reading;
+
+  reading.temperature = _dht->readTemperature(false, false);
+  reading.humidity = _dht->readHumidity(false);
+  return reading;
 }
 
 // EOF

@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-22 Magnus
+Copyright (c) 2021-23 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,52 +21,30 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#ifndef SRC_TEMP_HPP_
-#define SRC_TEMP_HPP_
-
-#include <DHT.h>
-#include <DallasTemperature.h>
-#include <OneWire.h>
-#include <Wire.h>
-
 #include <main.hpp>
+#include <temp_ds.hpp>
 #include <utils.hpp>
 
-class TempHumidity {
- private:
-  // DHT22
-  DHT* _temp = 0;
+void TempSensorDS::setup() {
+  _oneWire = std::make_unique<OneWire>(PIN_DH2);
+  _dallas = std::make_unique<DallasTemperature>(_oneWire.get());
+  _dallas->setResolution(12);
+  _dallas->begin();
+}
 
-  // DS18B20
-  OneWire* _oneWire = 0;
-  DallasTemperature* _dallas = 0;
+TempReading TempSensorDS::read() {
+  TempReading temp = TEMP_READING_FAILED;
 
-  // Generic
-  float _lastTempC = NAN;
-  float _lastHumidity = NAN;
+  if (!_dallas) return temp;
 
-  void dhtSetup();
-  void dsSetup();
-  void dhtRead();
-  void dsRead();
-
- public:
-  TempHumidity();
-  TempHumidity(const TempHumidity&);
-  TempHumidity& operator=(const TempHumidity&);
-  void setup();
-  void reset();
-  void read();
-  bool hasSensor() { return !isnan(_lastTempC); }
-  float getLastTempC() { return _lastTempC; }
-  float getLastTempF() {
-    return isnan(_lastTempC) ? NAN : convertCtoF(_lastTempC);
+  if (_dallas->getDS18Count()) {
+    _dallas->requestTemperatures();
+    temp.temperature = _dallas->getTempCByIndex(0);
+  } else {
+    Log.error(F("TEMP: No DS18B20 sensors found." CR));
   }
-  float getLastHumidity() { return _lastHumidity; }
-};
 
-extern TempHumidity myTemp;
-
-#endif  // SRC_TEMP_HPP_
+  return temp;
+}
 
 // EOF
