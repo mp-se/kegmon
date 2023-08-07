@@ -32,7 +32,7 @@ SOFTWARE.
 #include <ota.hpp>
 #include <perf.hpp>
 #include <scale.hpp>
-#include <temp/manager.hpp>
+#include <temp_mgr.hpp>
 #include <utils.hpp>
 #include <wificonnection.hpp>
 
