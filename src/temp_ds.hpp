@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-22 Magnus
+Copyright (c) 2021-23 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,27 +21,27 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#ifndef SRC_TEMP_SENSOR_DS_HPP_
-#define SRC_TEMP_SENSOR_DS_HPP_
-#include <Arduino.h>
-
-#include "sensor.hpp"
+#ifndef SRC_TEMP_DS_HPP_
+#define SRC_TEMP_DS_HPP_
 #include <DallasTemperature.h>
 #include <OneWire.h>
 #include <Wire.h>
 
+#include <memory>
+#include <temp_base.hpp>
 
-class DSSensor : public Sensor {
-  // DS18B20
-  std::unique_ptr<OneWire> _oneWire;
-  std::unique_ptr<DallasTemperature> _dallas;
+class TempSensorDS : public TempSensorBase {
+ private:
+  std::unique_ptr<OneWire> _oneWire = 0;
+  std::unique_ptr<DallasTemperature> _dallas = 0;
 
+ public:
+  TempSensorDS() = default;
 
-public:
-    DSSensor() = default;
-    void setup() override;
-    void reset() override;
-    tempReading read() override;
+  void setup() override;
+  TempReading read() override;
 };
 
-#endif
+#endif  // SRC_TEMP_DS_HPP_
+
+// EOF

@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-22 Magnus
+Copyright (c) 2021-23 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,60 +21,65 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#include "manager.hpp"
-#include "temp_ds.hpp"
-#include "temp_dht.hpp"
 #include <kegconfig.hpp>
+#include <temp_dht.hpp>
+#include <temp_ds.hpp>
+#include <temp_mgr.hpp>
 
-TempHumidity::TempHumidity() {}
+bool operator==(const TempReading& lhs, const TempReading& rhs) {
+  return lhs.humidity == rhs.humidity && lhs.temperature == rhs.temperature;
+}
 
-void TempHumidity::setup() {
-#if LOG_LEVEL == 6
-  // Log.verbose(F("Temp: Initializing temperature/humidity sensor." CR));
-#endif
+TempSensorManager::TempSensorManager() {}
+
+void TempSensorManager::setup() {
+  pinMode(PIN_DH2_PWR, OUTPUT);
+  reset();
+  digitalWrite(PIN_DH2_PWR, HIGH);
+  delay(100);
+
+  if (_sensor) {
+    // delete _sensor; // not needed since make_unique is used for allocation.
+    _sensor = 0;
+  }
 
   switch (myConfig.getTempSensorType()) {
     case SensorDHT22:
-      Log.info(F("TEMP: choosing DHT22." CR));
-      _sensor = std::make_unique<DHTSensor>();
+      Log.info(F("TEMP: Initializing temp sensor DHT22." CR));
+      _sensor = std::make_unique<TempSensorDHT>();
       break;
+
     case SensorDS18B20:
-      Log.info(F("TEMP: choosing DS18B20." CR));
-      _sensor = std::make_unique<DSSensor>();
+      Log.info(F("TEMP: Initializing temp sensor DS18B20." CR));
+      _sensor = std::make_unique<TempSensorDS>();
       break;
+
     default:
-      Log.error(F("TEMP: unable to find sensor type, exiting." CR));
+      Log.error(F("TEMP: Unable to find sensor type, exiting." CR));
       return;
   }
 
-  _sensor->setup();
+  if (_sensor)
+    _sensor->setup();
+  else
+    return;
 
-  _last = {NAN, NAN};
   read();
+
+  if (!hasTemp())
+    Log.error(F("TEMP: Failed to fetch temperature from sensor." CR));
 }
 
-void TempHumidity::reset() {
-  if (!_sensor) {
-    Log.error(F("TEMP: reset called with no sensor." CR));
-    return;
-  }
-  _sensor->reset();
+void TempSensorManager::reset() {
+  Log.notice(F("TEMP: Reset temperature sensor." CR));
+  digitalWrite(PIN_DH2_PWR, LOW);
+  delay(100);
 }
 
-void TempHumidity::read() {
-  if (!_sensor) {
-    Log.error(F("TEMP: no sensor, read failed." CR));
-    return;
-  }
-  auto reading = _sensor->read();
-  if (reading == failedReading) {
-    Log.notice(F("TEMP: error reading sensor." CR));
-  }
+void TempSensorManager::read() {
+  if (!_sensor) return;
 
-  _last.temprature = reading.temprature;
-  if (!isnan(reading.humidity)) {
-    _last.humidity = reading.humidity;
-  }
+  _last = _sensor->read();
 }
 
 // EOF

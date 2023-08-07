@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-22 Magnus
+Copyright (c) 2021-23 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,43 +21,24 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#include "temp_dht.hpp"
+#ifndef SRC_TEMP_DHT_HPP_
+#define SRC_TEMP_DHT_HPP_
+#include <DHT.h>
 
-#include <main.hpp>
-#include <utils.hpp>
+#include <memory>
+#include <temp_base.hpp>
 
-void DHTSensor::setup() {
-  pinMode(PIN_DH2_PWR, OUTPUT);
-  Log.notice(F("TEMP: Initializing DHT22 sensor." CR));
-  reset();
-  digitalWrite(PIN_DH2_PWR, HIGH);
-  delay(100);
+class TempSensorDHT : public TempSensorBase {
+ private:
+  std::unique_ptr<DHT> _dht = 0;
 
-  _sensor = std::make_unique<DHT>(PIN_DH2, DHT22, 1);
-  _sensor->begin();
-}
+ public:
+  TempSensorDHT() = default;
 
-void DHTSensor::reset() {
-  Log.notice(F("TEMP: Reset temp sensor." CR));
+  void setup() override;
+  TempReading read() override;
+};
 
-  digitalWrite(PIN_DH2_PWR, LOW);
-  delay(100);
-  _sensor.reset();
-}
+#endif  // SRC_TEMP_DHT_HPP_
 
-tempReading DHTSensor::read() {
-  if (!_sensor) return failedReading;
-
-  float temp = _sensor->readTemperature(false, false);
-  float humidity = _sensor->readHumidity(false);
-
-  if (isnan(temp)) {
-    Log.error(F("TEMP: Error reading temperature, disable sensor." CR));
-    reset();
-  }
-
-  return {
-    temp,
-    humidity
-  };
-}
+// EOF

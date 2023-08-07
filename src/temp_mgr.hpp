@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-22 Magnus
+Copyright (c) 2021-23 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,27 +21,39 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#ifndef SRC_TEMP_SENSOR_HPP_
-#define SRC_TEMP_SENSOR_HPP_
+#ifndef SRC_TEMP_MGR_HPP_
+#define SRC_TEMP_MGR_HPP_
+#include <memory>
+#include <temp_base.hpp>
+#include <utils.hpp>
 
+class TempSensorManager {
+ private:
+  std::unique_ptr<TempSensorBase> _sensor = 0;
+  TempReading _last = TEMP_READING_FAILED;
 
-struct tempReading {
-    float temprature;
-    float humidity;
+ public:
+  TempSensorManager();
+  TempSensorManager(const TempSensorManager&);
+  TempSensorManager& operator=(const TempSensorManager&);
+  void setup();
+  void reset();
+  void read();
+
+  bool hasTemp() { return !isnan(_last.temperature); }
+  bool hasHumidity() { return !isnan(_last.humidity); }
+  bool hasSensor() { return !_sensor; }
+
+  float getLastTempC() { return _last.temperature; }
+  float getLastTempF() {
+    return isnan(_last.temperature) ? NAN : convertCtoF(_last.temperature);
+  }
+
+  float getLastHumidity() { return _last.humidity; }
 };
-constexpr tempReading failedReading = {NAN, NAN};
 
-bool operator==(const tempReading& lhs, const tempReading& rhs) {
-    return lhs.humidity == rhs.humidity &&
-           lhs.temprature == rhs.temprature;
-}
+extern TempSensorManager myTemp;
 
-class Sensor {
-public:
-    Sensor() = default;
-    virtual void setup() = 0;
-    virtual void reset() = 0;
-    virtual tempReading read() = 0;
-};
+#endif  // SRC_TEMP_MGR_HPP_
 
-#endif
+// EOF

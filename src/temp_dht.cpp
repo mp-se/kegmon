@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-22 Magnus
+Copyright (c) 2021-23 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,37 +21,23 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#ifndef SRC_TEMP_HPP_
-#define SRC_TEMP_HPP_
-
 #include <main.hpp>
-#include <utils.hpp>
-#include "sensor.hpp"
+#include <temp_dht.hpp>
 
-class TempHumidity {
- private:
-  std::unique_ptr<Sensor> _sensor;
+void TempSensorDHT::setup() {
+  _dht = std::make_unique<DHT>(PIN_DH2, DHT22, 1);
 
-  tempReading _last = {NAN, NAN};
+  if (_dht) _dht->begin();
+}
 
+TempReading TempSensorDHT::read() {
+  if (!_dht) return TEMP_READING_FAILED;
 
- public:
-  TempHumidity();
-  TempHumidity(const TempHumidity&);
-  TempHumidity& operator=(const TempHumidity&);
-  void setup();
-  void reset();
-  void read();
-  bool hasSensor() { return !!_sensor; }
-  float getLastTempC() { return _last.temprature; }
-  float getLastTempF() {
-    return isnan(_last.temprature) ? NAN : convertCtoF(_last.temprature);
-  }
-  float getLastHumidity() { return _last.humidity; }
-};
+  TempReading reading;
 
-extern TempHumidity myTemp;
-
-#endif  // SRC_TEMP_HPP_
+  reading.temperature = _dht->readTemperature(false, false);
+  reading.humidity = _dht->readHumidity(false);
+  return reading;
+}
 
 // EOF

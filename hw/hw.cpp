@@ -30,7 +30,7 @@ SOFTWARE.
 #include <perf.hpp>
 #include <scale.hpp>
 #include <serialws.hpp>
-#include <temp/manager.hpp>
+#include <temp_mgr.hpp>
 #include <utils.hpp>
 #include <wificonnection.hpp>
 
@@ -40,7 +40,7 @@ WifiConnection myWifi(&myConfig, CFG_APPNAME, "password", CFG_MDNSNAME);
 Display myDisplay;
 Scale myScale;
 LevelDetection myLevelDetection;
-TempHumidity myTemp;
+TempSensorManager myTemp;
 
 const int loopInterval = 2000;
 int loopCounter = 0;

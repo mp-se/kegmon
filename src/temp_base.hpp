@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-22 Magnus
+Copyright (c) 2021-23 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,41 +21,28 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#include "temp_ds.hpp"
-#include <main.hpp>
-#include <utils.hpp>
+#ifndef SRC_TEMP_BASE_HPP_
+#define SRC_TEMP_BASE_HPP_
 
-void DSSensor::setup() {
-  Log.notice(F("TEMP: Initializing DS18B20 sensor." CR));
-  reset();
+#include <Arduino.h>
 
-  _oneWire = std::make_unique<OneWire>(PIN_DH2);
-  _dallas = std::make_unique<DallasTemperature>(_oneWire.get());
-  _dallas->setResolution(12);
-  _dallas->begin();
-}
+struct TempReading {
+  float temperature;
+  float humidity;
+};
 
-void DSSensor::reset() {
-  _dallas.reset();
-  _oneWire.reset();
-}
+bool operator==(const TempReading& lhs, const TempReading& rhs);
 
-tempReading DSSensor::read() {
-  float temp;   
-  if (!_dallas) return failedReading;
+constexpr TempReading TEMP_READING_FAILED = {NAN, NAN};
 
-  if (_dallas->getDS18Count()) {
-    _dallas->requestTemperatures();
-    temp = _dallas->getTempCByIndex(0);
-  }
+class TempSensorBase {
+ public:
+  TempSensorBase() = default;
 
-  if (isnan(temp)) {
-    Log.error(F("TEMP: Error reading temperature, disable sensor." CR));
-    reset();
-  }
+  virtual void setup() = 0;
+  virtual TempReading read() = 0;
+};
 
-  return {
-    temp,
-    NAN
-  };
-}
+#endif  // SRC_TEMP_BASE_HPP_
+
+// EOF

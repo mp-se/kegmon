@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-22 Magnus
+Copyright (c) 2021-23 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,21 +21,30 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#ifndef SRC_TEMP_SENSOR_DHT_HPP_
-#define SRC_TEMP_SENSOR_DHT_HPP_
-#include <Arduino.h>
+#include <main.hpp>
+#include <temp_ds.hpp>
+#include <utils.hpp>
 
-#include "sensor.hpp"
-#include <DHT.h>
+void TempSensorDS::setup() {
+  _oneWire = std::make_unique<OneWire>(PIN_DH2);
+  _dallas = std::make_unique<DallasTemperature>(_oneWire.get());
+  _dallas->setResolution(12);
+  _dallas->begin();
+}
 
-class DHTSensor : public Sensor {
-    std::unique_ptr<DHT> _sensor;
+TempReading TempSensorDS::read() {
+  TempReading temp = TEMP_READING_FAILED;
 
-public:
-    DHTSensor() = default;
-    void setup() override;
-    void reset() override;
-    tempReading read() override;
-};
+  if (!_dallas) return temp;
 
-#endif
+  if (_dallas->getDS18Count()) {
+    _dallas->requestTemperatures();
+    temp.temperature = _dallas->getTempCByIndex(0);
+  } else {
+    Log.error(F("TEMP: No DS18B20 sensors found." CR));
+  }
+
+  return temp;
+}
+
+// EOF
