@@ -25,15 +25,15 @@ SOFTWARE.
 #define SRC_TEMP_DHT_HPP_
 #include <DHT.h>
 
-#include <memory>
 #include <temp_base.hpp>
 
 class TempSensorDHT : public TempSensorBase {
  private:
-  std::unique_ptr<DHT> _dht = 0;
+  DHT* _dht = 0;
 
  public:
-  TempSensorDHT() = default;
+  TempSensorDHT() {}
+  ~TempSensorDHT();
 
   void setup() override;
   TempReading read() override;

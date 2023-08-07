@@ -23,17 +23,17 @@ SOFTWARE.
  */
 #ifndef SRC_TEMP_MGR_HPP_
 #define SRC_TEMP_MGR_HPP_
-#include <memory>
 #include <temp_base.hpp>
 #include <utils.hpp>
 
 class TempSensorManager {
  private:
-  std::unique_ptr<TempSensorBase> _sensor = 0;
+  TempSensorBase* _sensor = 0;
   TempReading _last = TEMP_READING_FAILED;
 
  public:
-  TempSensorManager();
+  TempSensorManager() {}
+  ~TempSensorManager();
   TempSensorManager(const TempSensorManager&);
   TempSensorManager& operator=(const TempSensorManager&);
   void setup();

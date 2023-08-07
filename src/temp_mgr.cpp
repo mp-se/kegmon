@@ -32,6 +32,10 @@ bool operator==(const TempReading& lhs, const TempReading& rhs) {
 
 TempSensorManager::TempSensorManager() {}
 
+TempSensorManager::~TempSensorManager() {
+  if (_sensor) delete _sensor;
+}
+
 void TempSensorManager::setup() {
   pinMode(PIN_DH2_PWR, OUTPUT);
   reset();
@@ -39,19 +43,19 @@ void TempSensorManager::setup() {
   delay(100);
 
   if (_sensor) {
-    // delete _sensor; // not needed since make_unique is used for allocation.
+    delete _sensor;
     _sensor = 0;
   }
 
   switch (myConfig.getTempSensorType()) {
     case SensorDHT22:
       Log.info(F("TEMP: Initializing temp sensor DHT22." CR));
-      _sensor = std::make_unique<TempSensorDHT>();
+      _sensor = new TempSensorDHT;
       break;
 
     case SensorDS18B20:
       Log.info(F("TEMP: Initializing temp sensor DS18B20." CR));
-      _sensor = std::make_unique<TempSensorDS>();
+      _sensor = new TempSensorDS;
       break;
 
     default:

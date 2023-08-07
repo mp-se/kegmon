@@ -27,16 +27,16 @@ SOFTWARE.
 #include <OneWire.h>
 #include <Wire.h>
 
-#include <memory>
 #include <temp_base.hpp>
 
 class TempSensorDS : public TempSensorBase {
  private:
-  std::unique_ptr<OneWire> _oneWire = 0;
-  std::unique_ptr<DallasTemperature> _dallas = 0;
+  OneWire* _oneWire = 0;
+  DallasTemperature* _dallas = 0;
 
  public:
-  TempSensorDS() = default;
+  TempSensorDS() {}
+  ~TempSensorDS();
 
   void setup() override;
   TempReading read() override;

@@ -24,8 +24,12 @@ SOFTWARE.
 #include <main.hpp>
 #include <temp_dht.hpp>
 
+TempSensorDHT::~TempSensorDHT() {
+  if (_dht) delete _dht;
+}
+
 void TempSensorDHT::setup() {
-  _dht = std::make_unique<DHT>(PIN_DH2, DHT22, 1);
+  _dht = new DHT(PIN_DH2, DHT22, 1);
 
   if (_dht) _dht->begin();
 }

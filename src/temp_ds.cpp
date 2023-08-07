@@ -25,9 +25,14 @@ SOFTWARE.
 #include <temp_ds.hpp>
 #include <utils.hpp>
 
+TempSensorDS::~TempSensorDS() {
+  if (_oneWire) delete _oneWire;
+  if (_dallas) delete _dallas;
+}
+
 void TempSensorDS::setup() {
-  _oneWire = std::make_unique<OneWire>(PIN_DH2);
-  _dallas = std::make_unique<DallasTemperature>(_oneWire.get());
+  _oneWire = new OneWire(PIN_DH2);
+  _dallas = new DallasTemperature(_oneWire);
   _dallas->setResolution(12);
   _dallas->begin();
 }
