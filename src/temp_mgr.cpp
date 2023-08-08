@@ -30,8 +30,6 @@ bool operator==(const TempReading& lhs, const TempReading& rhs) {
   return lhs.humidity == rhs.humidity && lhs.temperature == rhs.temperature;
 }
 
-TempSensorManager::TempSensorManager() {}
-
 TempSensorManager::~TempSensorManager() {
   if (_sensor) delete _sensor;
 }
