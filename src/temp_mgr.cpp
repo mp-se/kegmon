@@ -24,36 +24,32 @@ SOFTWARE.
 #include <kegconfig.hpp>
 #include <temp_dht.hpp>
 #include <temp_ds.hpp>
+#include <temp_bme.hpp>
 #include <temp_mgr.hpp>
 
 bool operator==(const TempReading& lhs, const TempReading& rhs) {
   return lhs.humidity == rhs.humidity && lhs.temperature == rhs.temperature;
 }
 
-TempSensorManager::~TempSensorManager() {
-  if (_sensor) delete _sensor;
-}
+TempSensorManager::~TempSensorManager() {}
 
 void TempSensorManager::setup() {
-  pinMode(PIN_DH2_PWR, OUTPUT);
   reset();
-  digitalWrite(PIN_DH2_PWR, HIGH);
-  delay(100);
-
-  if (_sensor) {
-    delete _sensor;
-    _sensor = 0;
-  }
 
   switch (myConfig.getTempSensorType()) {
     case SensorDHT22:
       Log.info(F("TEMP: Initializing temp sensor DHT22." CR));
-      _sensor = new TempSensorDHT;
+      _sensor.reset(new TempSensorDHT);
       break;
 
     case SensorDS18B20:
       Log.info(F("TEMP: Initializing temp sensor DS18B20." CR));
-      _sensor = new TempSensorDS;
+      _sensor.reset(new TempSensorDS);
+      break;
+
+    case SensorBME280:
+      Log.info(F("TEMP: Initializing temp sensor BME280." CR));
+      _sensor.reset(new TempSensorBME);
       break;
 
     default:
@@ -61,10 +57,12 @@ void TempSensorManager::setup() {
       return;
   }
 
-  if (_sensor)
+  if (_sensor) {
     _sensor->setup();
-  else
+  } else {
+      Log.error(F("TEMP: unable to allocate sensor." CR));
     return;
+  }
 
   read();
 
@@ -73,9 +71,7 @@ void TempSensorManager::setup() {
 }
 
 void TempSensorManager::reset() {
-  Log.notice(F("TEMP: Reset temperature sensor." CR));
-  digitalWrite(PIN_DH2_PWR, LOW);
-  delay(100);
+  if (_sensor) _sensor->reset();
 }
 
 void TempSensorManager::read() {

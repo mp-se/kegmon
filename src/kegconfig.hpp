@@ -93,7 +93,7 @@ enum DisplayLayoutType {
   GraphOne = 2,
   HardwareStats = 9
 };
-enum TempSensorType { SensorDHT22 = 0, SensorDS18B20 = 1 };
+enum TempSensorType { SensorDHT22 = 0, SensorDS18B20 = 1, SensorBME280 = 2 };
 enum ScaleSensorType { ScaleHX711 = 0, ScaleNAU7802 = 1 };
 enum DisplayDriverType { OLED_1306 = 0, LCD = 1 };
 

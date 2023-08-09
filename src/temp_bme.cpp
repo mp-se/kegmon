@@ -22,37 +22,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 #include <main.hpp>
-#include <temp_dht.hpp>
+#include <temp_bme.hpp>
 
-TempSensorDHT::~TempSensorDHT() {
-  if (_dht) delete _dht;
+TempSensorBME::~TempSensorBME() {}
+
+void TempSensorBME::setup() {
+  _status = _bme.begin();
+  if (!_status) {
+    Log.notice(F("TEMP: unable to setup BME280." CR));
+  }
 }
 
-void TempSensorDHT::setup() {
-  pinMode(PIN_DH2_PWR, OUTPUT);
-  reset();
-  digitalWrite(PIN_DH2_PWR, HIGH);
-  delay(100);
-
-  _dht = new DHT(PIN_DH2, DHT22, 1);
-
-  if (_dht) _dht->begin();
-}
-
-void TempSensorDHT::reset() {
-  Log.notice(F("TEMP: Reset temperature sensor." CR));
-  digitalWrite(PIN_DH2_PWR, LOW);
-  delay(100);
-}
-
-TempReading TempSensorDHT::read() {
-  if (!_dht) return TEMP_READING_FAILED;
+TempReading TempSensorBME::read() {
+  if (!_status) return TEMP_READING_FAILED;
 
   TempReading reading;
 
-  reading.temperature = _dht->readTemperature(false, false);
-  reading.humidity = _dht->readHumidity(false);
+  reading.temperature = _bme.readTemperature();
+  reading.humidity = _bme.readHumidity();
   return reading;
 }
+
 
 // EOF

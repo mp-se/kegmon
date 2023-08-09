@@ -40,6 +40,7 @@ class TempSensorBase {
   TempSensorBase() = default;
 
   virtual void setup() = 0;
+  virtual void reset() {};
   virtual TempReading read() = 0;
 };
 

@@ -28,7 +28,7 @@ SOFTWARE.
 
 class TempSensorManager {
  private:
-  TempSensorBase* _sensor = 0;
+  std::unique_ptr<TempSensorBase> _sensor;
   TempReading _last = TEMP_READING_FAILED;
 
  public:

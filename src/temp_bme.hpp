@@ -21,38 +21,26 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#include <main.hpp>
-#include <temp_dht.hpp>
+#ifndef SRC_TEMP_BME_HPP_
+#define SRC_TEMP_BME_HPP_
 
-TempSensorDHT::~TempSensorDHT() {
-  if (_dht) delete _dht;
-}
+#include <temp_base.hpp>
 
-void TempSensorDHT::setup() {
-  pinMode(PIN_DH2_PWR, OUTPUT);
-  reset();
-  digitalWrite(PIN_DH2_PWR, HIGH);
-  delay(100);
+#include <Adafruit_BME280.h>
 
-  _dht = new DHT(PIN_DH2, DHT22, 1);
+class TempSensorBME : public TempSensorBase {
+ private:
+  Adafruit_BME280 _bme;
+  bool _status = false;
 
-  if (_dht) _dht->begin();
-}
+ public:
+  TempSensorBME() {}
+  ~TempSensorBME();
 
-void TempSensorDHT::reset() {
-  Log.notice(F("TEMP: Reset temperature sensor." CR));
-  digitalWrite(PIN_DH2_PWR, LOW);
-  delay(100);
-}
+  void setup() override;
+  TempReading read() override;
+};
 
-TempReading TempSensorDHT::read() {
-  if (!_dht) return TEMP_READING_FAILED;
-
-  TempReading reading;
-
-  reading.temperature = _dht->readTemperature(false, false);
-  reading.humidity = _dht->readHumidity(false);
-  return reading;
-}
+#endif  // SRC_TEMP_BME_HPP_
 
 // EOF
