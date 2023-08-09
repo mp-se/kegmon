@@ -34,6 +34,7 @@ There are a few options for building the scales and controller, the options are 
      - NAU7802 (Only with ESP32S2)
    * - Sensor
      - DHT22 (Temp & Humidity)
+     - BME280 (Temp & Humidity)
      - DS18B20 (Temp)
 
 
@@ -73,7 +74,7 @@ Schema for HX711
 ================
 
 .. note::
-  The temperature sensor is installed in the scale base and you can use either a DHT22 or DS18B20. I would recommend 
+  The temperature sensor is installed in the scale base and you can use either a DHT22, BME280 or DS18B20. I would recommend 
   the DS18B20 since that is more stable and cheaper than the DHT22. Some users also have had issues with ESP32S2 
   and DHT22, unclear what causes this.
 
@@ -149,10 +150,10 @@ so the digital interface is compatible with the ESP.
    * - Function
      - ESP8266
      - ESP32S2
-   * - DISPLAY SDA #1/#2 & NAU7802 #1
+   * - DISPLAY SDA #1/#2 & NAU7802 #1 & BME280
      - D2
      - 33
-   * - DISPLAY SCL #1/#2 & NAU7802 #1
+   * - DISPLAY SCL #1/#2 & NAU7802 #1 & BME280
      - D1
      - 35
    * - HX711 DATA #1

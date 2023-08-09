@@ -69,7 +69,7 @@ This is where the software is configured.
 
 * **Display driver**: Choose the what display driver is used, either LCD 20x4 or OLED 0.96". Default is OLED.
 
-* **Temp sensor**: Choose the what temp sensor is used, either DHT22 or DS18B20. Default is DHT22.
+* **Temp sensor**: Choose the what temp sensor is used, either DHT22, BME280 or DS18B20. Default is DHT22.
 
 * **Scale sensor**: Choose the what ADC is used. Note that these require different wiring. Default is HX711.
 
