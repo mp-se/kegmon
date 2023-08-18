@@ -26,13 +26,14 @@ SOFTWARE.
 
 TempSensorBME::~TempSensorBME() {}
 
-bool setup_bme(Adafruit_BME280* bme, uint8 addr) {
+bool setup_bme(Adafruit_BME280* bme, uint8_t addr) {
   bool status = bme->begin(addr);
   if (status) {
     // pass as int to keep the stack clean. %x expeects 4 bytes
-    Log.info(F("TEMP: setup BME280 on 0x%x" CR), (int)addr);
+    Log.info(F("TEMP: setup BME280 on 0x%x" CR), static_cast<int>(addr));
   } else {
-    Log.info(F("TEMP: unbale to setup BME280 on 0x%x" CR), (int)addr);
+    Log.info(F("TEMP: unbale to setup BME280 on 0x%x" CR),
+             static_cast<int>(addr));
   }
   return status;
 }
@@ -57,6 +58,5 @@ TempReading TempSensorBME::read() {
   reading.humidity = _bme.readHumidity();
   return reading;
 }
-
 
 // EOF

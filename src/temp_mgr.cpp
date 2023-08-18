@@ -22,9 +22,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 #include <kegconfig.hpp>
+#include <temp_bme.hpp>
 #include <temp_dht.hpp>
 #include <temp_ds.hpp>
-#include <temp_bme.hpp>
 #include <temp_mgr.hpp>
 
 bool operator==(const TempReading& lhs, const TempReading& rhs) {
@@ -63,7 +63,7 @@ void TempSensorManager::setup() {
   if (_sensor) {
     _sensor->setup();
   } else {
-      Log.error(F("TEMP: unable to allocate sensor." CR));
+    Log.error(F("TEMP: unable to allocate sensor." CR));
     return;
   }
 

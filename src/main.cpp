@@ -426,7 +426,7 @@ void logStartup() {
 #if defined(ESP8266)
     f.write(&s[0], strlen(&s[0]));
 #else
-    f.write((unsigned char*)&s[0], strlen(&s[0]));
+    f.write((unsigned char *)&s[0], strlen(&s[0]));
 #endif
     f.close();
   }

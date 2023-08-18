@@ -23,6 +23,7 @@ SOFTWARE.
  */
 #ifndef SRC_TEMP_MGR_HPP_
 #define SRC_TEMP_MGR_HPP_
+#include <memory>
 #include <temp_base.hpp>
 #include <utils.hpp>
 

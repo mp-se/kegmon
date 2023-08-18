@@ -24,9 +24,9 @@ SOFTWARE.
 #ifndef SRC_TEMP_BME_HPP_
 #define SRC_TEMP_BME_HPP_
 
-#include <temp_base.hpp>
-
 #include <Adafruit_BME280.h>
+
+#include <temp_base.hpp>
 
 class TempSensorBME : public TempSensorBase {
  private:
