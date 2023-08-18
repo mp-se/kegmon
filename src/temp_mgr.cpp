@@ -34,7 +34,10 @@ bool operator==(const TempReading& lhs, const TempReading& rhs) {
 TempSensorManager::~TempSensorManager() {}
 
 void TempSensorManager::setup() {
+  pinMode(PIN_DH2_PWR, OUTPUT);
   reset();
+  digitalWrite(PIN_DH2_PWR, HIGH);
+  delay(100);
 
   switch (myConfig.getTempSensorType()) {
     case SensorDHT22:
@@ -71,7 +74,9 @@ void TempSensorManager::setup() {
 }
 
 void TempSensorManager::reset() {
-  if (_sensor) _sensor->reset();
+  Log.notice(F("TEMP: Reset temperature sensor." CR));
+  digitalWrite(PIN_DH2_PWR, LOW);
+  delay(100);
 }
 
 void TempSensorManager::read() {

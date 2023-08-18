@@ -36,7 +36,6 @@ class TempSensorDHT : public TempSensorBase {
   ~TempSensorDHT();
 
   void setup() override;
-  void reset() override;
   TempReading read() override;
 };
 

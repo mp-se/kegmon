@@ -29,20 +29,9 @@ TempSensorDHT::~TempSensorDHT() {
 }
 
 void TempSensorDHT::setup() {
-  pinMode(PIN_DH2_PWR, OUTPUT);
-  reset();
-  digitalWrite(PIN_DH2_PWR, HIGH);
-  delay(100);
-
   _dht = new DHT(PIN_DH2, DHT22, 1);
 
   if (_dht) _dht->begin();
-}
-
-void TempSensorDHT::reset() {
-  Log.notice(F("TEMP: Reset temperature sensor." CR));
-  digitalWrite(PIN_DH2_PWR, LOW);
-  delay(100);
 }
 
 TempReading TempSensorDHT::read() {
