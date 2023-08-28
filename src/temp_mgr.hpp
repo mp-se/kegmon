@@ -43,6 +43,7 @@ class TempSensorManager {
 
   bool hasTemp() { return !isnan(_last.temperature); }
   bool hasHumidity() { return !isnan(_last.humidity); }
+  bool hasPressure() { return !isnan(_last.pressure); }
   bool hasSensor() { return !_sensor; }
 
   float getLastTempC() { return _last.temperature; }
@@ -51,6 +52,7 @@ class TempSensorManager {
   }
 
   float getLastHumidity() { return _last.humidity; }
+  float getLastPressure() { return _last.pressure; }
 };
 
 extern TempSensorManager myTemp;

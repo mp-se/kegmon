@@ -38,18 +38,20 @@ void TempSensorDS::setup() {
 }
 
 TempReading TempSensorDS::read() {
-  TempReading temp = TEMP_READING_FAILED;
+  TempReading reading = TEMP_READING_FAILED;
 
-  if (!_dallas) return temp;
+  if (!_dallas) return reading;
 
   if (_dallas->getDS18Count()) {
     _dallas->requestTemperatures();
-    temp.temperature = _dallas->getTempCByIndex(0);
+    reading.temperature = _dallas->getTempCByIndex(0);
+    reading.humidity = NAN;
+    reading.pressure = NAN;    
   } else {
     Log.error(F("TEMP: No DS18B20 sensors found." CR));
   }
 
-  return temp;
+  return reading;
 }
 
 // EOF

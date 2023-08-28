@@ -41,6 +41,7 @@ TempReading TempSensorDHT::read() {
 
   reading.temperature = _dht->readTemperature(false, false);
   reading.humidity = _dht->readHumidity(false);
+  reading.pressure = NAN;
   return reading;
 }
 

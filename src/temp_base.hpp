@@ -29,11 +29,12 @@ SOFTWARE.
 struct TempReading {
   float temperature;
   float humidity;
+  float pressure;
 };
 
 bool operator==(const TempReading& lhs, const TempReading& rhs);
 
-constexpr TempReading TEMP_READING_FAILED = {NAN, NAN};
+constexpr TempReading TEMP_READING_FAILED = {NAN, NAN, NAN};
 
 class TempSensorBase {
  public:

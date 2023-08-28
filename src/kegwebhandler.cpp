@@ -35,6 +35,7 @@ constexpr auto PARAM_APP_BUILD = "app-build";
 constexpr auto PARAM_PLATFORM = "platform";
 constexpr auto PARAM_TEMP = "temperature";
 constexpr auto PARAM_HUMIDITY = "humidity";
+constexpr auto PARAM_PRESSURE = "pressure";
 
 // Calibration input
 constexpr auto PARAM_WEIGHT = "weight";
@@ -181,65 +182,63 @@ void KegWebHandler::populateScaleJson(DynamicJsonDocument& doc) {
   doc[PARAM_SCALE_FACTOR1] = myConfig.getScaleFactor(UnitIndex::U1);
   doc[PARAM_SCALE_FACTOR2] = myConfig.getScaleFactor(UnitIndex::U2);
   if (myScale.isConnected(UnitIndex::U1)) {
-    doc[PARAM_SCALE_WEIGHT1] = reduceFloatPrecision(
-        convertOutgoingWeight(
-            myLevelDetection.getTotalRawWeight(UnitIndex::U1)),
-        myConfig.getWeightPrecision());
+    doc[PARAM_SCALE_WEIGHT1] = serialized(String(convertOutgoingWeight(myLevelDetection.getTotalRawWeight(UnitIndex::U1)),
+        myConfig.getWeightPrecision()));
     doc[PARAM_SCALE_RAW1] = myScale.readLastRaw(UnitIndex::U1);
     doc[PARAM_SCALE_OFFSET1] = myConfig.getScaleOffset(UnitIndex::U1);
-    doc[PARAM_BEER_WEIGHT1] = reduceFloatPrecision(
+    doc[PARAM_BEER_WEIGHT1] = serialized(String(
         convertOutgoingWeight(myLevelDetection.getBeerWeight(UnitIndex::U1)),
-        myConfig.getWeightPrecision());
-    doc[PARAM_BEER_VOLUME1] = reduceFloatPrecision(
+        myConfig.getWeightPrecision()));
+    doc[PARAM_BEER_VOLUME1] = serialized(String(
         convertOutgoingVolume(myLevelDetection.getBeerVolume(UnitIndex::U1)),
-        myConfig.getVolumePrecision());
+        myConfig.getVolumePrecision()));
   }
 
   if (myScale.isConnected(UnitIndex::U2)) {
-    doc[PARAM_SCALE_WEIGHT2] = reduceFloatPrecision(
+    doc[PARAM_SCALE_WEIGHT2] = serialized(String(
         convertOutgoingWeight(
             myLevelDetection.getTotalRawWeight(UnitIndex::U2)),
-        myConfig.getWeightPrecision());
+        myConfig.getWeightPrecision()));
     doc[PARAM_SCALE_RAW2] = myScale.readLastRaw(UnitIndex::U2);
     doc[PARAM_SCALE_OFFSET2] = myConfig.getScaleOffset(UnitIndex::U2);
-    doc[PARAM_BEER_WEIGHT2] = reduceFloatPrecision(
+    doc[PARAM_BEER_WEIGHT2] = serialized(String(
         convertOutgoingWeight(myLevelDetection.getBeerWeight(UnitIndex::U2)),
-        myConfig.getWeightPrecision());
-    doc[PARAM_BEER_VOLUME2] = reduceFloatPrecision(
+        myConfig.getWeightPrecision()));
+    doc[PARAM_BEER_VOLUME2] = serialized(String(
         convertOutgoingVolume(myLevelDetection.getBeerVolume(UnitIndex::U2)),
-        myConfig.getVolumePrecision());
+        myConfig.getVolumePrecision()));
   }
 
   if (myLevelDetection.hasStableWeight(UnitIndex::U1)) {
-    doc[PARAM_SCALE_STABLE_WEIGHT1] = reduceFloatPrecision(
+    doc[PARAM_SCALE_STABLE_WEIGHT1] = serialized(String(
         convertOutgoingWeight(
             myLevelDetection.getTotalStableWeight(UnitIndex::U1)),
-        myConfig.getWeightPrecision());
+        myConfig.getWeightPrecision()));
   }
 
   if (myLevelDetection.hasStableWeight(UnitIndex::U2)) {
-    doc[PARAM_SCALE_STABLE_WEIGHT2] = reduceFloatPrecision(
+    doc[PARAM_SCALE_STABLE_WEIGHT2] = serialized(String(
         convertOutgoingWeight(
             myLevelDetection.getTotalStableWeight(UnitIndex::U2)),
-        myConfig.getWeightPrecision());
+        myConfig.getWeightPrecision()));
   }
 
   if (myLevelDetection.hasPourWeight(UnitIndex::U1)) {
-    doc[PARAM_LAST_POUR_WEIGHT1] = reduceFloatPrecision(
+    doc[PARAM_LAST_POUR_WEIGHT1] = serialized(String(
         convertOutgoingWeight(myLevelDetection.getPourWeight(UnitIndex::U1)),
-        myConfig.getWeightPrecision());
-    doc[PARAM_LAST_POUR_VOLUME1] = reduceFloatPrecision(
+        myConfig.getWeightPrecision()));
+    doc[PARAM_LAST_POUR_VOLUME1] = serialized(String(
         convertOutgoingVolume(myLevelDetection.getPourVolume(UnitIndex::U1)),
-        myConfig.getVolumePrecision());
+        myConfig.getVolumePrecision()));
   }
 
   if (myLevelDetection.hasPourWeight(UnitIndex::U2)) {
-    doc[PARAM_LAST_POUR_WEIGHT2] = reduceFloatPrecision(
+    doc[PARAM_LAST_POUR_WEIGHT2] = serialized(String(
         convertOutgoingWeight(myLevelDetection.getPourWeight(UnitIndex::U2)),
-        myConfig.getWeightPrecision());
-    doc[PARAM_LAST_POUR_VOLUME2] = reduceFloatPrecision(
+        myConfig.getWeightPrecision()));
+    doc[PARAM_LAST_POUR_VOLUME2] = serialized(String(
         convertOutgoingVolume(myLevelDetection.getPourVolume(UnitIndex::U2)),
-        myConfig.getVolumePrecision());
+        myConfig.getVolumePrecision()));
   }
 
 #if LOG_LEVEL == 6
@@ -274,10 +273,14 @@ void KegWebHandler::webStatus(WS_PARAM) {
 
   // For this we use the last value read from the scale to avoid having to much
   // communication. The value will be updated regulary second in the main loop.
-  doc[PARAM_GLASS1] = reduceFloatPrecision(
-      myLevelDetection.getNoStableGlasses(UnitIndex::U1), 1);
-  doc[PARAM_GLASS2] = reduceFloatPrecision(
-      myLevelDetection.getNoStableGlasses(UnitIndex::U2), 1);
+  if (myLevelDetection.hasStableWeight(UnitIndex::U1)) {
+    doc[PARAM_GLASS1] = serialized(String(
+        myLevelDetection.getNoStableGlasses(UnitIndex::U1), 1));
+  }
+  if (myLevelDetection.hasStableWeight(UnitIndex::U2)) {
+    doc[PARAM_GLASS2] = serialized(String(
+        myLevelDetection.getNoStableGlasses(UnitIndex::U2), 1));
+  }
 
   doc[PARAM_KEG_VOLUME1] =
       convertOutgoingVolume(myConfig.getKegVolume(UnitIndex::U1));
@@ -287,13 +290,19 @@ void KegWebHandler::webStatus(WS_PARAM) {
   float f = myTemp.getLastTempC();
 
   if (!isnan(f)) {
-    doc[PARAM_TEMP] = convertOutgoingTemperature(f);
+    doc[PARAM_TEMP] = serialized(String(convertOutgoingTemperature(f), 2));
   }
 
   float h = myTemp.getLastHumidity();
 
   if (!isnan(h)) {
-    doc[PARAM_HUMIDITY] = h;
+    doc[PARAM_HUMIDITY] = serialized(String(h, 2));
+  }
+
+  float p = myTemp.getLastPressure();
+
+  if (!isnan(p)) {
+    doc[PARAM_PRESSURE] = serialized(String(p, 2));
   }
 
 #if LOG_LEVEL == 6

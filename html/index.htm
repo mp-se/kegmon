@@ -134,7 +134,7 @@
               <div class="col-md-3 bg-light" id="last-pour-volume2">Loading...</div>
             </div>
 
-            <hr id="toggle3">
+            <hr id="toggle4">
 
             <div class="row mb-3" id="toggle1">
               <div class="col-md-2 bg-light">Temperature</div>
@@ -144,6 +144,11 @@
             <div class="row mb-3" id="toggle2">
               <div class="col-md-2 bg-light">Humidity</div>
               <div class="col-md-6 bg-light" id="humidity">Loading...</div>
+            </div>
+
+            <div class="row mb-3" id="toggle3">
+              <div class="col-md-2 bg-light">Pressure</div>
+              <div class="col-md-6 bg-light" id="pressure">Loading...</div>
             </div>
           
             <hr>
@@ -208,6 +213,7 @@
           $('#toggle1').addClass('hide').removeClass('show').addClass('d-none');
           $('#toggle2').addClass('hide').removeClass('show').addClass('d-none');
           $('#toggle3').addClass('hide').removeClass('show').addClass('d-none');
+          $('#toggle4').addClass('hide').removeClass('show').addClass('d-none');
         } else {
           $("#temperature").text(cfg["temperature"] + " " + temp_unit); 
 
@@ -215,6 +221,12 @@
             $('#toggle2').addClass('hide').removeClass('show').addClass('d-none');
           } else {
             $("#humidity").text(cfg["humidity"] + " %"); 
+          }        
+
+          if( cfg["pressure"] === undefined ) {
+            $('#toggle3').addClass('hide').removeClass('show').addClass('d-none');
+          } else {
+            $("#pressure").text(cfg["pressure"] + " hpa"); 
           }        
         }
 
