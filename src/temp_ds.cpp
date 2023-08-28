@@ -46,7 +46,7 @@ TempReading TempSensorDS::read() {
     _dallas->requestTemperatures();
     reading.temperature = _dallas->getTempCByIndex(0);
     reading.humidity = NAN;
-    reading.pressure = NAN;    
+    reading.pressure = NAN;
   } else {
     Log.error(F("TEMP: No DS18B20 sensors found." CR));
   }

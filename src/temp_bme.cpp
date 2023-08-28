@@ -26,9 +26,7 @@ SOFTWARE.
 
 TempSensorBME::~TempSensorBME() {}
 
-bool setup_bme(Adafruit_BME280* bme, uint8_t addr) {
-  return bme->begin(addr);
-}
+bool setup_bme(Adafruit_BME280* bme, uint8_t addr) { return bme->begin(addr); }
 
 void TempSensorBME::setup() {
   _status = setup_bme(&_bme, BME280_ADDRESS);
@@ -48,7 +46,7 @@ TempReading TempSensorBME::read() {
 
   reading.temperature = _bme.readTemperature();
   reading.humidity = _bme.readHumidity();
-  reading.pressure = _bme.readPressure()/100;
+  reading.pressure = _bme.readPressure() / 100;
   return reading;
 }
 

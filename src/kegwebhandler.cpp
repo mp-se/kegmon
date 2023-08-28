@@ -182,8 +182,10 @@ void KegWebHandler::populateScaleJson(DynamicJsonDocument& doc) {
   doc[PARAM_SCALE_FACTOR1] = myConfig.getScaleFactor(UnitIndex::U1);
   doc[PARAM_SCALE_FACTOR2] = myConfig.getScaleFactor(UnitIndex::U2);
   if (myScale.isConnected(UnitIndex::U1)) {
-    doc[PARAM_SCALE_WEIGHT1] = serialized(String(convertOutgoingWeight(myLevelDetection.getTotalRawWeight(UnitIndex::U1)),
-        myConfig.getWeightPrecision()));
+    doc[PARAM_SCALE_WEIGHT1] = serialized(
+        String(convertOutgoingWeight(
+                   myLevelDetection.getTotalRawWeight(UnitIndex::U1)),
+               myConfig.getWeightPrecision()));
     doc[PARAM_SCALE_RAW1] = myScale.readLastRaw(UnitIndex::U1);
     doc[PARAM_SCALE_OFFSET1] = myConfig.getScaleOffset(UnitIndex::U1);
     doc[PARAM_BEER_WEIGHT1] = serialized(String(
@@ -195,10 +197,10 @@ void KegWebHandler::populateScaleJson(DynamicJsonDocument& doc) {
   }
 
   if (myScale.isConnected(UnitIndex::U2)) {
-    doc[PARAM_SCALE_WEIGHT2] = serialized(String(
-        convertOutgoingWeight(
-            myLevelDetection.getTotalRawWeight(UnitIndex::U2)),
-        myConfig.getWeightPrecision()));
+    doc[PARAM_SCALE_WEIGHT2] = serialized(
+        String(convertOutgoingWeight(
+                   myLevelDetection.getTotalRawWeight(UnitIndex::U2)),
+               myConfig.getWeightPrecision()));
     doc[PARAM_SCALE_RAW2] = myScale.readLastRaw(UnitIndex::U2);
     doc[PARAM_SCALE_OFFSET2] = myConfig.getScaleOffset(UnitIndex::U2);
     doc[PARAM_BEER_WEIGHT2] = serialized(String(
@@ -210,17 +212,17 @@ void KegWebHandler::populateScaleJson(DynamicJsonDocument& doc) {
   }
 
   if (myLevelDetection.hasStableWeight(UnitIndex::U1)) {
-    doc[PARAM_SCALE_STABLE_WEIGHT1] = serialized(String(
-        convertOutgoingWeight(
-            myLevelDetection.getTotalStableWeight(UnitIndex::U1)),
-        myConfig.getWeightPrecision()));
+    doc[PARAM_SCALE_STABLE_WEIGHT1] = serialized(
+        String(convertOutgoingWeight(
+                   myLevelDetection.getTotalStableWeight(UnitIndex::U1)),
+               myConfig.getWeightPrecision()));
   }
 
   if (myLevelDetection.hasStableWeight(UnitIndex::U2)) {
-    doc[PARAM_SCALE_STABLE_WEIGHT2] = serialized(String(
-        convertOutgoingWeight(
-            myLevelDetection.getTotalStableWeight(UnitIndex::U2)),
-        myConfig.getWeightPrecision()));
+    doc[PARAM_SCALE_STABLE_WEIGHT2] = serialized(
+        String(convertOutgoingWeight(
+                   myLevelDetection.getTotalStableWeight(UnitIndex::U2)),
+               myConfig.getWeightPrecision()));
   }
 
   if (myLevelDetection.hasPourWeight(UnitIndex::U1)) {
@@ -274,12 +276,12 @@ void KegWebHandler::webStatus(WS_PARAM) {
   // For this we use the last value read from the scale to avoid having to much
   // communication. The value will be updated regulary second in the main loop.
   if (myLevelDetection.hasStableWeight(UnitIndex::U1)) {
-    doc[PARAM_GLASS1] = serialized(String(
-        myLevelDetection.getNoStableGlasses(UnitIndex::U1), 1));
+    doc[PARAM_GLASS1] = serialized(
+        String(myLevelDetection.getNoStableGlasses(UnitIndex::U1), 1));
   }
   if (myLevelDetection.hasStableWeight(UnitIndex::U2)) {
-    doc[PARAM_GLASS2] = serialized(String(
-        myLevelDetection.getNoStableGlasses(UnitIndex::U2), 1));
+    doc[PARAM_GLASS2] = serialized(
+        String(myLevelDetection.getNoStableGlasses(UnitIndex::U2), 1));
   }
 
   doc[PARAM_KEG_VOLUME1] =
