@@ -183,7 +183,7 @@ bool LevelDetection::hasPourWeight(UnitIndex idx, LevelDetectionType type) {
       f = false;
       break;
     case LevelDetectionType::STATS:
-      f = getStatsDetection(idx)->hasStableValue();
+      f = getStatsDetection(idx)->hasPourValue();
       break;
   }
 
