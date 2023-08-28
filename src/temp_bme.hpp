@@ -21,40 +21,26 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#ifndef SRC_TEMP_MGR_HPP_
-#define SRC_TEMP_MGR_HPP_
-#include <memory>
-#include <temp_base.hpp>
-#include <utils.hpp>
+#ifndef SRC_TEMP_BME_HPP_
+#define SRC_TEMP_BME_HPP_
 
-class TempSensorManager {
+#include <Adafruit_BME280.h>
+
+#include <temp_base.hpp>
+
+class TempSensorBME : public TempSensorBase {
  private:
-  std::unique_ptr<TempSensorBase> _sensor;
-  TempReading _last = TEMP_READING_FAILED;
+  Adafruit_BME280 _bme;
+  bool _status = false;
 
  public:
-  TempSensorManager() {}
-  ~TempSensorManager();
-  TempSensorManager(const TempSensorManager&);
-  TempSensorManager& operator=(const TempSensorManager&);
-  void setup();
-  void reset();
-  void read();
+  TempSensorBME() {}
+  ~TempSensorBME();
 
-  bool hasTemp() { return !isnan(_last.temperature); }
-  bool hasHumidity() { return !isnan(_last.humidity); }
-  bool hasSensor() { return !_sensor; }
-
-  float getLastTempC() { return _last.temperature; }
-  float getLastTempF() {
-    return isnan(_last.temperature) ? NAN : convertCtoF(_last.temperature);
-  }
-
-  float getLastHumidity() { return _last.humidity; }
+  void setup() override;
+  TempReading read() override;
 };
 
-extern TempSensorManager myTemp;
-
-#endif  // SRC_TEMP_MGR_HPP_
+#endif  // SRC_TEMP_BME_HPP_
 
 // EOF

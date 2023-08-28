@@ -21,40 +21,42 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#ifndef SRC_TEMP_MGR_HPP_
-#define SRC_TEMP_MGR_HPP_
-#include <memory>
-#include <temp_base.hpp>
-#include <utils.hpp>
+#include <main.hpp>
+#include <temp_bme.hpp>
 
-class TempSensorManager {
- private:
-  std::unique_ptr<TempSensorBase> _sensor;
-  TempReading _last = TEMP_READING_FAILED;
+TempSensorBME::~TempSensorBME() {}
 
- public:
-  TempSensorManager() {}
-  ~TempSensorManager();
-  TempSensorManager(const TempSensorManager&);
-  TempSensorManager& operator=(const TempSensorManager&);
-  void setup();
-  void reset();
-  void read();
-
-  bool hasTemp() { return !isnan(_last.temperature); }
-  bool hasHumidity() { return !isnan(_last.humidity); }
-  bool hasSensor() { return !_sensor; }
-
-  float getLastTempC() { return _last.temperature; }
-  float getLastTempF() {
-    return isnan(_last.temperature) ? NAN : convertCtoF(_last.temperature);
+bool setup_bme(Adafruit_BME280* bme, uint8_t addr) {
+  bool status = bme->begin(addr);
+  if (status) {
+    // pass as int to keep the stack clean. %x expeects 4 bytes
+    Log.info(F("TEMP: setup BME280 on 0x%x" CR), static_cast<int>(addr));
+  } else {
+    Log.info(F("TEMP: unbale to setup BME280 on 0x%x" CR),
+             static_cast<int>(addr));
   }
+  return status;
+}
 
-  float getLastHumidity() { return _last.humidity; }
-};
+void TempSensorBME::setup() {
+  _status = setup_bme(&_bme, BME280_ADDRESS);
+  if (_status) {
+    return;
+  }
+  _status = setup_bme(&_bme, BME280_ADDRESS_ALTERNATE);
+  if (!_status) {
+    Log.notice(F("TEMP: unable to setup BME280 on 0x76 or 0x77" CR));
+  }
+}
 
-extern TempSensorManager myTemp;
+TempReading TempSensorBME::read() {
+  if (!_status) return TEMP_READING_FAILED;
 
-#endif  // SRC_TEMP_MGR_HPP_
+  TempReading reading;
+
+  reading.temperature = _bme.readTemperature();
+  reading.humidity = _bme.readHumidity();
+  return reading;
+}
 
 // EOF
