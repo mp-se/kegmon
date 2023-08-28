@@ -114,7 +114,7 @@ class KegConfig : public BaseConfig {
   String _brewspyToken[2] = {"", ""};
 
   DisplayLayoutType _displayLayout = DisplayLayoutType::Default;
-  TempSensorType _tempSensor = TempSensorType::SensorDHT22;
+  TempSensorType _tempSensor = TempSensorType::SensorDS18B20;
   ScaleSensorType _scaleSensor = ScaleSensorType::ScaleHX711;
   DisplayDriverType _displayDriver = DisplayDriverType::OLED_1306;
 
