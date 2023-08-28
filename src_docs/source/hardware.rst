@@ -17,27 +17,6 @@ weight after a few hours.
   :width: 600
   :alt: Scale drift
 
-There are a few options for building the scales and controller, the options are shown here:
-
-.. list-table:: Hardware options
-   :widths: 20 30 30
-   :header-rows: 1
-
-   * - Category
-     - Option A
-     - Option B
-   * - Chip
-     - ESP8266 D1 mini
-     - ESP32S2 mini
-   * - ADC
-     - HX711
-     - NAU7802 (Only with ESP32S2)
-   * - Sensor
-     - DHT22 (Temp & Humidity)
-     - BME280 (Temp & Humidity)
-     - DS18B20 (Temp)
-
-
 HX711
 =====
 
@@ -55,16 +34,20 @@ other boards.
 The SparkFun board is the most expensive one but has one major advantage. You can power it on +5V and 
 configure it to use 3.3V digital signal levels (using VCC and VDD pins). 
 
-I'm currently using the Purple board which and I have not had any issues with stability.
+The main option used in this project is the purple HX711 board. The green board dont have the same pin configiuration 
+so this will not work with the PCB design.
 
 NAU7802
 =======
 
 This is the alternative ADC which is quite new and I have not had the time yet to validate the long term stability. 
 
+These boards use the I2C bus for communication so these needs a differnt hardware wiring. Since you cannot change the 
+adress on these boards you need to an ESP32 if two scales will be connected since the ESP8266 only supports one I2C bus.
+
 .. note::
   If you are using this you need to change this in the configuration menu and restart the device for it to work 
-  properly. The default option is the HX711 boaard.
+  properly. 
 
 .. image:: images/nau7802.jpg
   :width: 300
@@ -74,15 +57,15 @@ Schema for HX711
 ================
 
 .. note::
-  The temperature sensor is installed in the scale base and you can use either a DHT22, BME280 or DS18B20. I would recommend 
-  the DS18B20 since that is more stable and cheaper than the DHT22. Some users also have had issues with ESP32S2 
-  and DHT22, unclear what causes this.
+  The temperature sensor is installed in the scale base and you can use either a DS18B20, DHT22 or BME280. I would recommend 
+  the DS18B20 since that is more stable and cheaper than the DHT22. The BME280 uses an I2C bus so this will require a different 
+  wiring than the other options.
 
-This is the schema used for the HX711 boards. 
+This is the schema used for the default hardware options. 
 
 .. image:: images/schema.jpg
   :width: 600
-  :alt: Schema HX711
+  :alt: Default hardware options
 
 Schema for NAU7802
 ==================
@@ -127,7 +110,7 @@ that scales are missing (floating input). You can use most values between
 2k and 5k for that.  
 
 It's possible to use the NAU7802 boards to replace the HX711 ADC. Two scales is only supported on the ESP32 platform since it requires 
-two i2c instances. The wiring is different if you choose this option. 
+two i2c bus instances. The wiring is different if you choose this option. 
 
 * 2 x NAU7802 boards (require the ESP32S2 for two scales)
 
@@ -145,35 +128,54 @@ so the digital interface is compatible with the ESP.
   :alt: RJ45 board
 
 .. list-table:: ESP pins
+   :widths: 60 20 20
    :header-rows: 1
 
    * - Function
      - ESP8266
      - ESP32S2
-   * - DISPLAY SDA #1/#2 & NAU7802 #1 & BME280
+   * - DISPLAY SDA 1 and 2
      - D2
      - 33
-   * - DISPLAY SCL #1/#2 & NAU7802 #1 & BME280
+   * - DISPLAY SCL 1 and 2
      - D1
      - 35
-   * - HX711 DATA #1
+   * - NAU7802 SDA 1
+     - D2
+     - 33
+   * - NAU7802 SCL 1
+     - D1
+     - 35
+   * - HX711 DATA 1
      - D3
      - 18
-   * - HX711 CLK #1
+   * - HX711 CLK 1
      - D4
      - 16
-   * - HX711 DATA #2 & NAU7802 SDA #2
+   * - HX711 DATA 2
      - D5
      - 7
-   * - HX711 CLK #2 & NAU7802 SCL #2
+   * - HX711 CLK 2,
      - D8
      - 12
-   * - DHT22 + DS18B2 Power
-     - D6
-     - 9
-   * - DHT22 + DS18B2 Data
+   * - NAU7802 SDA 2
+     - D5
+     - 7
+   * - NAU7802 SCL 2
+     - D8
+     - 12
+   * - Data to DHT22 or DS18B2
      - D7
      - 11
+   * - BME280 SDA
+     - D2
+     - 33
+   * - BME280 SCL
+     - D1
+     - 35
+   * - Power to DHT22, DS18B2, BME280
+     - D6
+     - 9
 
 
 Building the display case
@@ -230,7 +232,8 @@ Each base will have the same build process but only the temperature sensor of on
 * CAT6 network cable
 * U4 - DHT22 temp and humidity sensor (optional, alternative 1)
 * U4 - DS18B20 temp sensor (optional, alternative 2)
-* Load Combinator PCB (Optional)
+* U4 - BME280 temp sensor (optional, alternative 3)
+* Load Combinator PCB (optional)
 
 .. image:: images/loadcombinator_board.jpg
   :width: 300
@@ -302,11 +305,11 @@ combinator board.
      - HX711
      - NAU7802
    * - Orange-White (PIN 1)
-     - GND to DHT22 (GND)
-     - GND to DHT22 (GND)
+     - GND to DHT22, DS18B20, BME280 (GND)
+     - GND to DHT22, DS18B20, BME280 (GND)
    * - Orange (PIN 2)
-     - Power to DHT22 (+3.3V)
-     - Power to DHT22 (+3.3V)
+     - Power to DHT22, DS18B20, BME280 (+3.3V)
+     - Power to DHT22, DS18B20, BME280 (+3.3V)
    * - Green-White (PIN 3)
      - E- (or BLK on HX711)
      - E- (or BLACK on NAU7802)
@@ -320,9 +323,9 @@ combinator board.
      - E+ (or RED on HX711)
      - E+ (or RED on NAU7802)
    * - Brown-White (PIN 7)
-     - GND
-     - GND
+     - GND or BME280 (SCL)
+     - GND or BME280 (SCL)
    * - Brown (PIN 8)
-     - Signal from DHT22 or DS18B20
-     - Signal from DHT22 or DS18B20
+     - Signal from DHT22, DS18B20 or BME280 (SDA)
+     - Signal from DHT22, DS18B20 or BME280 (SDA)
 
