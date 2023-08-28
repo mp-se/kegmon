@@ -18,9 +18,6 @@ welcome.
 The software has two interfaces, displays and web-browser. Integrations with external services is available, 
 currently BrewFather, BrewSpy and Home Assistant. If you have requests for other services raise a request on github. 
 
-On the hardware side there are a few options that allows for customization of the build. See the section below for a 
-detailed description fo those options.
-
 The cheap load cells are quite unpredicteble so it's hard to get a fully accurate and stable system. In order to 
 compensate for this I have built in the possibility to add filters and clean up the values, these filters include:
 
@@ -61,11 +58,21 @@ at the web UI or via the external integrations.
 The software will automatically detect how many sensor boards are connected and if there is a temperature sensor. 
 
 The project contains the following parts:
-* Software that manage the scale and present the readings
-* Hardware design based on standard HX711 AD converter with load cells and temperature sensor (PCB is work in progress)
-* 3D models for the base
-* 3D models for display case (work in progress)
 
+* Software that manage the scale and present the readings
+* Hardware design based on standard HX711 AD converter with load cells and temperature sensor
+* 3D models for the base
+* 3D models for display case
+
+Help wanted
+===========
+
+I have not had the possibility to test / validate all the options so any feedback and updates to the documentation is appreciated.
+
+Topics that need verification:
+
+* Using BME280 in a scale base to measure temperature
+* Using NAU7802 ADC to measure weight
 
 Hardware options
 ================
