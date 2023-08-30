@@ -18,8 +18,8 @@ For docs see: https://mp-se.github.io/kegmon/index.html
 
 * Supports ESP8266 D1 mini or ESP32s2 mini
 * Loadcells and HX711/NAU7802 ADC converters
-* DHT22 or DS18B20 temperature sensors
-* OLED 0.92" or LCD 20x4 displays
+* DS18B20, DHT22 or BME280 temperature sensors
+* OLED 0.96" or LCD 20x4/20x2 displays
 
 # Features
 

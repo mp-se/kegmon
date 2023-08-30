@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-22 Magnus
+Copyright (c) 2021-23 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,52 +21,33 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#ifndef SRC_TEMP_HPP_
-#define SRC_TEMP_HPP_
-
-#include <DHT.h>
-#include <DallasTemperature.h>
-#include <OneWire.h>
-#include <Wire.h>
-
 #include <main.hpp>
-#include <utils.hpp>
+#include <temp_bme.hpp>
 
-class TempHumidity {
- private:
-  // DHT22
-  DHT* _temp = 0;
+TempSensorBME::~TempSensorBME() {}
 
-  // DS18B20
-  OneWire* _oneWire = 0;
-  DallasTemperature* _dallas = 0;
+bool setup_bme(Adafruit_BME280* bme, uint8_t addr) { return bme->begin(addr); }
 
-  // Generic
-  float _lastTempC = NAN;
-  float _lastHumidity = NAN;
-
-  void dhtSetup();
-  void dsSetup();
-  void dhtRead();
-  void dsRead();
-
- public:
-  TempHumidity();
-  TempHumidity(const TempHumidity&);
-  TempHumidity& operator=(const TempHumidity&);
-  void setup();
-  void reset();
-  void read();
-  bool hasSensor() { return !isnan(_lastTempC); }
-  float getLastTempC() { return _lastTempC; }
-  float getLastTempF() {
-    return isnan(_lastTempC) ? NAN : convertCtoF(_lastTempC);
+void TempSensorBME::setup() {
+  _status = setup_bme(&_bme, BME280_ADDRESS);
+  if (_status) {
+    return;
   }
-  float getLastHumidity() { return _lastHumidity; }
-};
+  _status = setup_bme(&_bme, BME280_ADDRESS_ALTERNATE);
+  if (!_status) {
+    Log.warning(F("TEMP: Unable to find BME280 sensor on 0x76 or 0x77" CR));
+  }
+}
 
-extern TempHumidity myTemp;
+TempReading TempSensorBME::read() {
+  if (!_status) return TEMP_READING_FAILED;
 
-#endif  // SRC_TEMP_HPP_
+  TempReading reading;
+
+  reading.temperature = _bme.readTemperature();
+  reading.humidity = _bme.readHumidity();
+  reading.pressure = _bme.readPressure() / 100;
+  return reading;
+}
 
 // EOF

@@ -93,7 +93,7 @@ enum DisplayLayoutType {
   GraphOne = 2,
   HardwareStats = 9
 };
-enum TempSensorType { SensorDHT22 = 0, SensorDS18B20 = 1 };
+enum TempSensorType { SensorDHT22 = 0, SensorDS18B20 = 1, SensorBME280 = 2 };
 enum ScaleSensorType { ScaleHX711 = 0, ScaleNAU7802 = 1 };
 enum DisplayDriverType { OLED_1306 = 0, LCD = 1 };
 
@@ -114,7 +114,7 @@ class KegConfig : public BaseConfig {
   String _brewspyToken[2] = {"", ""};
 
   DisplayLayoutType _displayLayout = DisplayLayoutType::Default;
-  TempSensorType _tempSensor = TempSensorType::SensorDHT22;
+  TempSensorType _tempSensor = TempSensorType::SensorDS18B20;
   ScaleSensorType _scaleSensor = ScaleSensorType::ScaleHX711;
   DisplayDriverType _displayDriver = DisplayDriverType::OLED_1306;
 

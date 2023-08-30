@@ -27,7 +27,7 @@ SOFTWARE.
 #include <main.hpp>
 #include <ota.hpp>
 #include <scale.hpp>
-#include <temp.hpp>
+#include <temp_mgr.hpp>
 #include <utils.hpp>
 #include <wificonnection.hpp>
 #include "simulated.hpp"
@@ -38,7 +38,7 @@ WifiConnection myWifi(&myConfig, CFG_APPNAME, "password", CFG_MDNSNAME);
 OtaUpdate myOta(&myConfig, CFG_APPVER);
 KegPushHandler myPush(&myConfig);
 Display myDisplay;
-TempHumidity myTemp;
+TempSensorManager myTemp;
 LevelDetection myLevelDetection;
 
 void setup() {

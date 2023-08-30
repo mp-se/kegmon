@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2022 Magnus
+Copyright (c) 2021-23 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,36 +21,42 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#include <AUnit.h>
-#include <Arduino.h>
-
-#include <display.hpp>
-#include <kegconfig.hpp>
-#include <kegpush.hpp>
-#include <kegwebhandler.hpp>
-#include <main.hpp>
-#include <ota.hpp>
-#include <perf.hpp>
-#include <scale.hpp>
-#include <temp_mgr.hpp>
+#ifndef SRC_TEMP_MGR_HPP_
+#define SRC_TEMP_MGR_HPP_
+#include <memory>
+#include <temp_base.hpp>
 #include <utils.hpp>
-#include <wificonnection.hpp>
 
-using aunit::Printer;
-using aunit::TestRunner;
-using aunit::Verbosity;
+class TempSensorManager {
+ private:
+  std::unique_ptr<TempSensorBase> _sensor;
+  TempReading _last = TEMP_READING_FAILED;
 
-void setup() {
-  Serial.begin(115200);
-  Serial.println("Kegmon - Unit Test Build");
-  delay(2000);
-  Printer::setPrinter(&Serial);
-  // TestRunner::setVerbosity(Verbosity::kAll);
-}
+ public:
+  TempSensorManager() {}
+  ~TempSensorManager();
+  TempSensorManager(const TempSensorManager&);
+  TempSensorManager& operator=(const TempSensorManager&);
+  void setup();
+  void reset();
+  void read();
 
-void loop() {
-  TestRunner::run();
-  delay(10);
-}
+  bool hasTemp() { return !isnan(_last.temperature); }
+  bool hasHumidity() { return !isnan(_last.humidity); }
+  bool hasPressure() { return !isnan(_last.pressure); }
+  bool hasSensor() { return !_sensor; }
+
+  float getLastTempC() { return _last.temperature; }
+  float getLastTempF() {
+    return isnan(_last.temperature) ? NAN : convertCtoF(_last.temperature);
+  }
+
+  float getLastHumidity() { return _last.humidity; }
+  float getLastPressure() { return _last.pressure; }
+};
+
+extern TempSensorManager myTemp;
+
+#endif  // SRC_TEMP_MGR_HPP_
 
 // EOF

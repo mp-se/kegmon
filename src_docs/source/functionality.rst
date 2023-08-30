@@ -64,7 +64,7 @@ The main features
 
 * **Temperature & Humidity sensor**
 
-  Place a temperature sensor close to the base, this can be used to do temperature adjustments of the load cells using a formula. Supports either a DS18B20 or a DHT22.
+  Place a temperature sensor close to the base, this can be used to do temperature adjustments of the load cells using a formula. Supports either a DS18B20, BME280 or a DHT22.
 
 * **Backup and Restore of settings**
 

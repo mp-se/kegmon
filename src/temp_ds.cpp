@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2022 Magnus
+Copyright (c) 2021-23 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,36 +21,37 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#include <AUnit.h>
-#include <Arduino.h>
-
-#include <display.hpp>
-#include <kegconfig.hpp>
-#include <kegpush.hpp>
-#include <kegwebhandler.hpp>
 #include <main.hpp>
-#include <ota.hpp>
-#include <perf.hpp>
-#include <scale.hpp>
-#include <temp_mgr.hpp>
+#include <temp_ds.hpp>
 #include <utils.hpp>
-#include <wificonnection.hpp>
 
-using aunit::Printer;
-using aunit::TestRunner;
-using aunit::Verbosity;
-
-void setup() {
-  Serial.begin(115200);
-  Serial.println("Kegmon - Unit Test Build");
-  delay(2000);
-  Printer::setPrinter(&Serial);
-  // TestRunner::setVerbosity(Verbosity::kAll);
+TempSensorDS::~TempSensorDS() {
+  if (_oneWire) delete _oneWire;
+  if (_dallas) delete _dallas;
 }
 
-void loop() {
-  TestRunner::run();
-  delay(10);
+void TempSensorDS::setup() {
+  _oneWire = new OneWire(PIN_DH2);
+  _dallas = new DallasTemperature(_oneWire);
+  _dallas->setResolution(12);
+  _dallas->begin();
+}
+
+TempReading TempSensorDS::read() {
+  TempReading reading = TEMP_READING_FAILED;
+
+  if (!_dallas) return reading;
+
+  if (_dallas->getDS18Count()) {
+    _dallas->requestTemperatures();
+    reading.temperature = _dallas->getTempCByIndex(0);
+    reading.humidity = NAN;
+    reading.pressure = NAN;
+  } else {
+    Log.error(F("TEMP: No DS18B20 sensors found." CR));
+  }
+
+  return reading;
 }
 
 // EOF

@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2022 Magnus
+Copyright (c) 2021-23 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,36 +21,29 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#include <AUnit.h>
+#ifndef SRC_TEMP_BASE_HPP_
+#define SRC_TEMP_BASE_HPP_
+
 #include <Arduino.h>
 
-#include <display.hpp>
-#include <kegconfig.hpp>
-#include <kegpush.hpp>
-#include <kegwebhandler.hpp>
-#include <main.hpp>
-#include <ota.hpp>
-#include <perf.hpp>
-#include <scale.hpp>
-#include <temp_mgr.hpp>
-#include <utils.hpp>
-#include <wificonnection.hpp>
+struct TempReading {
+  float temperature;
+  float humidity;
+  float pressure;
+};
 
-using aunit::Printer;
-using aunit::TestRunner;
-using aunit::Verbosity;
+bool operator==(const TempReading& lhs, const TempReading& rhs);
 
-void setup() {
-  Serial.begin(115200);
-  Serial.println("Kegmon - Unit Test Build");
-  delay(2000);
-  Printer::setPrinter(&Serial);
-  // TestRunner::setVerbosity(Verbosity::kAll);
-}
+constexpr TempReading TEMP_READING_FAILED = {NAN, NAN, NAN};
 
-void loop() {
-  TestRunner::run();
-  delay(10);
-}
+class TempSensorBase {
+ public:
+  TempSensorBase() = default;
+
+  virtual void setup() = 0;
+  virtual TempReading read() = 0;
+};
+
+#endif  // SRC_TEMP_BASE_HPP_
 
 // EOF

@@ -25,7 +25,7 @@ SOFTWARE.
 #include <levels.hpp>
 #include <perf.hpp>
 #include <scale.hpp>
-#include <temp.hpp>
+#include <temp_mgr.hpp>
 
 // Used for introduce noise on the signal to see if it accurate enough
 // #define ENABLE_ADDING_NOISE
@@ -183,7 +183,7 @@ bool LevelDetection::hasPourWeight(UnitIndex idx, LevelDetectionType type) {
       f = false;
       break;
     case LevelDetectionType::STATS:
-      f = getStatsDetection(idx)->hasStableValue();
+      f = getStatsDetection(idx)->hasPourValue();
       break;
   }
 

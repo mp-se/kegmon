@@ -3,6 +3,15 @@
 Releases 
 ########
 
+v0.8.0 (beta)
+=============
+
+* Added support for BME280 sensor + pressure information
+* Refactor documentation to show the hardware options better
+* Updating dependecies
+* DS18B20 temperature sensor is not the default
+* Updated code to support newer versions of ArduinoJSON
+
 v0.7.1
 ======
 
