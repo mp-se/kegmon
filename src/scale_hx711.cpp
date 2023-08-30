@@ -34,7 +34,8 @@ void Scale::setupHX711(bool force) {
                 myConfig.getScaleOffset(UnitIndex::U1));
 #endif
     _hxScale[0] = new HX711();
-    _hxScale[0]->begin(myConfig.getPinScale1Data(), myConfig.getPinScale1Clock());
+    _hxScale[0]->begin(myConfig.getPinScale1Data(),
+                       myConfig.getPinScale1Clock());
     _hxScale[0]->set_offset(myConfig.getScaleOffset(UnitIndex::U1));
 
     if (_hxScale[0]->wait_ready_timeout(500)) {
@@ -56,7 +57,8 @@ void Scale::setupHX711(bool force) {
                 myConfig.getScaleOffset(UnitIndex::U2));
 #endif
     _hxScale[1] = new HX711();
-    _hxScale[1]->begin(myConfig.getPinScale2Data(), myConfig.getPinScale2Clock());
+    _hxScale[1]->begin(myConfig.getPinScale2Data(),
+                       myConfig.getPinScale2Clock());
     _hxScale[1]->set_offset(myConfig.getScaleOffset(UnitIndex::U2));
 
     if (_hxScale[1]->wait_ready_timeout(500)) {

@@ -70,9 +70,11 @@ void Display::setup() {
       Log.notice(F("DISP: Using display driver for OLED 0.96\"" CR));
 
       _displayOLED[0] =
-          new SH1106Wire(DISPLAY_ADR1, myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
+          new SH1106Wire(DISPLAY_ADR1, myConfig.getPinDisplayData(),
+                         myConfig.getPinDisplayClock());
       _displayOLED[1] =
-          new SH1106Wire(DISPLAY_ADR2, myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
+          new SH1106Wire(DISPLAY_ADR2, myConfig.getPinDisplayData(),
+                         myConfig.getPinDisplayClock());
       _width[0] = 127;
       _width[1] = 127;
       _height[0] = 63;

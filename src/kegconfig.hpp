@@ -85,7 +85,7 @@ struct HardwareInfo {
   int _displayData = D2;
   int _displayClock = D1;
   int _scale1Data = D3;
-  int _scale1Clock= D4;
+  int _scale1Clock = D4;
   int _scale2Data = D5;
   int _scale2Clock = D8;
   int _tempData = D7;
@@ -435,45 +435,45 @@ class KegConfig : public BaseConfig {
 
   // Hardware related methods
   int getPinDisplayData() { return _pins._displayData; }
-  void setPinDisplayData(int pin) { 
+  void setPinDisplayData(int pin) {
     _pins._displayData = pin;
     _saveNeeded = true;
   }
   int getPinDisplayClock() { return _pins._displayClock; }
-  void setPinDisplayClock(int pin) { 
+  void setPinDisplayClock(int pin) {
     _pins._displayClock = pin;
     _saveNeeded = true;
   }
 
   int getPinScale1Data() { return _pins._scale1Data; }
-  void setPinScale1Data(int pin) { 
+  void setPinScale1Data(int pin) {
     _pins._scale1Data = pin;
     _saveNeeded = true;
   }
   int getPinScale1Clock() { return _pins._scale1Clock; }
-  void setPinScale1Clock(int pin) { 
+  void setPinScale1Clock(int pin) {
     _pins._scale1Clock = pin;
     _saveNeeded = true;
   }
 
   int getPinScale2Data() { return _pins._scale2Data; }
-  void setPinScale2Data(int pin) { 
+  void setPinScale2Data(int pin) {
     _pins._scale2Data = pin;
     _saveNeeded = true;
   }
   int getPinScale2Clock() { return _pins._scale2Clock; }
-  void setPinScale2Clock(int pin) { 
+  void setPinScale2Clock(int pin) {
     _pins._scale2Clock = pin;
     _saveNeeded = true;
   }
 
   int getPinTempData() { return _pins._tempData; }
-  void setPinTempData(int pin) { 
+  void setPinTempData(int pin) {
     _pins._tempData = pin;
     _saveNeeded = true;
   }
   int getPinTempPower() { return _pins._tempPower; }
-  void setPinTempPower(int pin) { 
+  void setPinTempPower(int pin) {
     _pins._tempPower = pin;
     _saveNeeded = true;
   }

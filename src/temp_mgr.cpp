@@ -28,7 +28,8 @@ SOFTWARE.
 #include <temp_mgr.hpp>
 
 bool operator==(const TempReading& lhs, const TempReading& rhs) {
-  return lhs.humidity == rhs.humidity && lhs.temperature == rhs.temperature && lhs.pressure == rhs.pressure;
+  return lhs.humidity == rhs.humidity && lhs.temperature == rhs.temperature &&
+         lhs.pressure == rhs.pressure;
 }
 
 TempSensorManager::~TempSensorManager() {}
