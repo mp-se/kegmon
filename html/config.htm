@@ -248,18 +248,18 @@
               </div>
 
               <div class="row mb-2">
-                <label class="col-sm-8 col-form-label">Changing pin configuration is done on your own risk, only the default settings have been tested.</label>
+                <label class="col-sm-8 col-form-label">Changing pin configuration is done on your own risk, only the default settings have been fully tested and verified. Make sure you only use a PIN once!</label>
               </div>
 
               <div class="row mb-2">
                 <label for="pin-display-data" class="col-sm-2 col-form-label">Display / I2C - Data</label>
                 <div class="col-sm-2">
-                  <select class="form-select" id="pin-display-data" name="pin-display-data">
+                  <select class="form-select" disabled="true" id="pin-display-data" name="pin-display-data">
                   </select>
                 </div>
                 <label for="pin-display-clock" class="col-sm-2 col-form-label">Display / I2C - Clock</label>
                 <div class="col-sm-2">
-                  <select class="form-select" id="pin-display-clock" name="pin-display-clock">
+                  <select class="form-select" disabled="true" id="pin-display-clock" name="pin-display-clock">
                   </select>
                 </div>
               </div>
@@ -267,12 +267,12 @@
               <div class="row mb-2">
                 <label for="pin-scale1-data" class="col-sm-2 col-form-label">Scale 1 - Data</label>
                 <div class="col-sm-2">
-                  <select class="form-select" id="pin-scale1-data" name="pin-scale1-data">
+                  <select class="form-select" disabled="true" id="pin-scale1-data" name="pin-scale1-data">
                   </select>
                 </div>
                 <label for="pin-scale1-clock" class="col-sm-2 col-form-label">Scale 1 - Clock</label>
                 <div class="col-sm-2">
-                  <select class="form-select" id="pin-scale1-clock" name="pin-scale1-clock">
+                  <select class="form-select" disabled="true" id="pin-scale1-clock" name="pin-scale1-clock">
                   </select>
                 </div>
               </div>
@@ -280,12 +280,12 @@
               <div class="row mb-2">
                 <label for="pin-scale2-data" class="col-sm-2 col-form-label">Scale 2 - Data</label>
                 <div class="col-sm-2">
-                  <select class="form-select" id="pin-scale2-data" name="pin-scale2-data">
+                  <select class="form-select" disabled="true" id="pin-scale2-data" name="pin-scale2-data">
                   </select>
                 </div>
                 <label for="pin-scale2-clock" class="col-sm-2 col-form-label">Scale 2 - Clock</label>
                 <div class="col-sm-2">
-                  <select class="form-select" id="pin-scale2-clock" name="pin-scale2-clock">
+                  <select class="form-select" disabled="true" id="pin-scale2-clock" name="pin-scale2-clock">
                   </select>
                 </div>
               </div>
@@ -293,16 +293,41 @@
               <div class="row mb-2">
                 <label for="pin-temp-data" class="col-sm-2 col-form-label">Temperature - Data</label>
                 <div class="col-sm-2">
-                  <select class="form-select" id="pin-temp-data" name="pin-temp-data">
+                  <select class="form-select" disabled="true" id="pin-temp-data" name="pin-temp-data">
                   </select>
                 </div>
                 <label for="pin-temp-power" class="col-sm-2 col-form-label">Temperature - Power</label>
                 <div class="col-sm-2">
-                  <select class="form-select" id="pin-temp-power" name="pin-temp-power">
+                  <select class="form-select" disabled="true" id="pin-temp-power" name="pin-temp-power">
                   </select>
                 </div>
               </div>
 
+              <div class="row mb-3">
+                <div class="col-sm-3">
+                  <input class="form-check-input" type="checkbox" name="advanced-toggle" id="advanced-toggle" checked
+                    data-bs-toggle="tooltip" title="Hide advanced fields">
+                  <label class="form-check-label" for="advanced">Hide advanced settings</label>
+                </div>
+              </div>
+
+              <script>
+                function toggleElementHidden(x) {
+                  x.disabled = !x.disabled;
+                }
+  
+                $("#advanced-toggle").click(function (e) {
+                  toggleElementHidden(document.getElementById("pin-display-data"));
+                  toggleElementHidden(document.getElementById("pin-display-clock"));
+                  toggleElementHidden(document.getElementById("pin-scale1-data"));
+                  toggleElementHidden(document.getElementById("pin-scale1-clock"));
+                  toggleElementHidden(document.getElementById("pin-scale2-data"));
+                  toggleElementHidden(document.getElementById("pin-scale2-clock"));
+                  toggleElementHidden(document.getElementById("pin-temp-data"));
+                  toggleElementHidden(document.getElementById("pin-temp-power"));
+                });
+              </script>
+  
               <div class="row mb-3">
                 <div class="col-sm-2 offset-sm-2">
                   <button type="submit" class="btn btn-primary" id="hardware-btn" data-bs-toggle="tooltip"
@@ -400,12 +425,12 @@
                 <div class="col-sm-3">
                   <input class="form-check-input" type="checkbox" name="password-toggle" id="password-toggle" checked
                     data-bs-toggle="tooltip" title="Hide sensitive fields">
-                  <label class="form-check-label" for="gravity-temp-adjustment">Hide sensitive data</label>
+                  <label class="form-check-label" for="password-toggle">Hide sensitive data</label>
                 </div>
               </div>
 
               <script>
-                function toggleElement(x) {
+                function toggleElementPassword(x) {
                   if (x.type === "password") {
                     x.type = "text";
                   } else {
@@ -414,15 +439,14 @@
                 }
 
                 $("#password-toggle").click(function (e) {
-                  toggleElement(document.getElementById("brewfather-userkey"));
-                  toggleElement(document.getElementById("brewfather-apikey"));
-                  toggleElement(document.getElementById("brewspy-token1"));
-                  toggleElement(document.getElementById("brewspy-token2"));
-                  toggleElement(document.getElementById("mqtt-user"));
-                  toggleElement(document.getElementById("mqtt-pass"));
+                  toggleElementPassword(document.getElementById("brewfather-userkey"));
+                  toggleElementPassword(document.getElementById("brewfather-apikey"));
+                  toggleElementPassword(document.getElementById("brewspy-token1"));
+                  toggleElementPassword(document.getElementById("brewspy-token2"));
+                  toggleElementPassword(document.getElementById("mqtt-user"));
+                  toggleElementPassword(document.getElementById("mqtt-pass"));
                 });
               </script>
-
 
               <div class="row mb-3">
                 <div class="col-sm-2 offset-sm-2">
@@ -669,7 +693,7 @@
         setButtonDisabled(true);
 
         var url = "/api/config";
-        var url = "/test/config.json";
+        // var url = "/test/config.json";
         $('#spinner').show();
         $.getJSON(url, function (cfg) {
           console.log(cfg);
