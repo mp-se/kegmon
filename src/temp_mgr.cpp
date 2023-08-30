@@ -28,15 +28,15 @@ SOFTWARE.
 #include <temp_mgr.hpp>
 
 bool operator==(const TempReading& lhs, const TempReading& rhs) {
-  return lhs.humidity == rhs.humidity && lhs.temperature == rhs.temperature;
+  return lhs.humidity == rhs.humidity && lhs.temperature == rhs.temperature && lhs.pressure == rhs.pressure;
 }
 
 TempSensorManager::~TempSensorManager() {}
 
 void TempSensorManager::setup() {
-  pinMode(PIN_DH2_PWR, OUTPUT);
+  pinMode(myConfig.getPinTempPower(), OUTPUT);
   reset();
-  digitalWrite(PIN_DH2_PWR, HIGH);
+  digitalWrite(myConfig.getPinTempPower(), HIGH);
   delay(100);
 
   switch (myConfig.getTempSensorType()) {
@@ -75,7 +75,7 @@ void TempSensorManager::setup() {
 
 void TempSensorManager::reset() {
   Log.notice(F("TEMP: Reset temperature sensor." CR));
-  digitalWrite(PIN_DH2_PWR, LOW);
+  digitalWrite(myConfig.getPinTempPower(), LOW);
   delay(100);
 }
 

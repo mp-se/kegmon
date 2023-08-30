@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 #include <main.hpp>
+#include <kegconfig.hpp>
 #include <temp_dht.hpp>
 
 TempSensorDHT::~TempSensorDHT() {
@@ -29,7 +30,7 @@ TempSensorDHT::~TempSensorDHT() {
 }
 
 void TempSensorDHT::setup() {
-  _dht = new DHT(PIN_DH2, DHT22, 1);
+  _dht = new DHT(myConfig.getPinTempData(), DHT22, 1);
 
   if (_dht) _dht->begin();
 }

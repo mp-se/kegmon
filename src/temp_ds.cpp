@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 #include <main.hpp>
+#include <kegconfig.hpp>
 #include <temp_ds.hpp>
 #include <utils.hpp>
 
@@ -31,7 +32,7 @@ TempSensorDS::~TempSensorDS() {
 }
 
 void TempSensorDS::setup() {
-  _oneWire = new OneWire(PIN_DH2);
+  _oneWire = new OneWire(myConfig.getPinTempData());
   _dallas = new DallasTemperature(_oneWire);
   _dallas->setResolution(12);
   _dallas->begin();

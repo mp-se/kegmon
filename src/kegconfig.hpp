@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-22 Magnus
+Copyright (c) 2021-23 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -80,6 +80,37 @@ struct BeerInfo {
   float _fg = 1;
 };
 
+struct HardwareInfo {
+#if defined(ESP8266)
+  int _displayData = D2;
+  int _displayClock = D1;
+  int _scale1Data = D3;
+  int _scale1Clock= D4;
+  int _scale2Data = D5;
+  int _scale2Clock = D8;
+  int _tempData = D7;
+  int _tempPower = D6;
+#elif defined(ESP32S2)
+  int _displayData = SDA;
+  int _displayClock = SCL;
+  int _scale1Data = A17;
+  int _scale1Clock = A15;
+  int _scale2Data = A6;
+  int _scale2Clock = A11;
+  int _tempData = A10;
+  int _tempPower = A8;
+#endif
+};
+
+constexpr auto PARAM_PIN_DISPLAY_DATA = "pin-display-data";
+constexpr auto PARAM_PIN_DISPLAY_CLOCK = "pin-display-clock";
+constexpr auto PARAM_PIN_SCALE1_DATA = "pin-scale1-data";
+constexpr auto PARAM_PIN_SCALE1_CLOCK = "pin-scale1-clock";
+constexpr auto PARAM_PIN_SCALE2_DATA = "pin-scale2-data";
+constexpr auto PARAM_PIN_SCALE2_CLOCK = "pin-scale2-clock";
+constexpr auto PARAM_PIN_TEMP_DATA = "pin-temp-data";
+constexpr auto PARAM_PIN_TEMP_POWER = "pin-temp-power";
+
 constexpr auto WEIGHT_KG = "kg";
 constexpr auto WEIGHT_LBS = "lbs";
 
@@ -134,6 +165,7 @@ class KegConfig : public BaseConfig {
   String _scaleTempCompensationFormula[2] = {"", ""};
 
   LevelDetectionType _levelDetection = LevelDetectionType::STATS;
+  HardwareInfo _pins;
 
   /*
   bool _kalmanActive = true;
@@ -400,6 +432,51 @@ class KegConfig : public BaseConfig {
   void setBucketInfluxDB2(String bucket) {}
   const char* getTokenInfluxDB2() { return ""; }
   void setTokenInfluxDB2(String token) {}
+
+  // Hardware related methods
+  int getPinDisplayData() { return _pins._displayData; }
+  void setPinDisplayData(int pin) { 
+    _pins._displayData = pin;
+    _saveNeeded = true;
+  }
+  int getPinDisplayClock() { return _pins._displayClock; }
+  void setPinDisplayClock(int pin) { 
+    _pins._displayClock = pin;
+    _saveNeeded = true;
+  }
+
+  int getPinScale1Data() { return _pins._scale1Data; }
+  void setPinScale1Data(int pin) { 
+    _pins._scale1Data = pin;
+    _saveNeeded = true;
+  }
+  int getPinScale1Clock() { return _pins._scale1Clock; }
+  void setPinScale1Clock(int pin) { 
+    _pins._scale1Clock = pin;
+    _saveNeeded = true;
+  }
+
+  int getPinScale2Data() { return _pins._scale2Data; }
+  void setPinScale2Data(int pin) { 
+    _pins._scale2Data = pin;
+    _saveNeeded = true;
+  }
+  int getPinScale2Clock() { return _pins._scale2Clock; }
+  void setPinScale2Clock(int pin) { 
+    _pins._scale2Clock = pin;
+    _saveNeeded = true;
+  }
+
+  int getPinTempData() { return _pins._tempData; }
+  void setPinTempData(int pin) { 
+    _pins._tempData = pin;
+    _saveNeeded = true;
+  }
+  int getPinTempPower() { return _pins._tempPower; }
+  void setPinTempPower(int pin) { 
+    _pins._tempPower = pin;
+    _saveNeeded = true;
+  }
 
   // These are helper function to assist with formatting of values
   int getWeightPrecision() { return 2; }  // 2 decimans for kg

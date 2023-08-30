@@ -70,9 +70,9 @@ void Display::setup() {
       Log.notice(F("DISP: Using display driver for OLED 0.96\"" CR));
 
       _displayOLED[0] =
-          new SH1106Wire(DISPLAY_ADR1, PIN_OLED_SDA, PIN_OLED_SCL);
+          new SH1106Wire(DISPLAY_ADR1, myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
       _displayOLED[1] =
-          new SH1106Wire(DISPLAY_ADR2, PIN_OLED_SDA, PIN_OLED_SCL);
+          new SH1106Wire(DISPLAY_ADR2, myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
       _width[0] = 127;
       _width[1] = 127;
       _height[0] = 63;
@@ -90,6 +90,8 @@ void Display::setup() {
 
     case DisplayDriverType::LCD:
       Log.notice(F("DISP: Using display driver for LED 20x4" CR));
+
+      Wire.begin(myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
 
       _displayLCD[0] = new LiquidCrystal_I2C(PCF8574_ADDR_A21_A11_A01, 4, 5, 6,
                                              16, 11, 12, 13, 14, POSITIVE);

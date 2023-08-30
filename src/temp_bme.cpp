@@ -22,13 +22,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 #include <main.hpp>
+#include <kegconfig.hpp>
 #include <temp_bme.hpp>
 
 TempSensorBME::~TempSensorBME() {}
 
-bool setup_bme(Adafruit_BME280* bme, uint8_t addr) { return bme->begin(addr); }
+bool setup_bme(Adafruit_BME280* bme, uint8_t addr) { 
+  return bme->begin(addr); 
+}
 
 void TempSensorBME::setup() {
+  Wire.begin(myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
+
   _status = setup_bme(&_bme, BME280_ADDRESS);
   if (_status) {
     return;

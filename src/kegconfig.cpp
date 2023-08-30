@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-22 Magnus
+Copyright (c) 2021-23 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,8 @@ SOFTWARE.
 #include <log.hpp>
 #include <main.hpp>
 #include <utils.hpp>
+
+constexpr auto PARAM_PLATFORM = "platform";
 
 KegConfig::KegConfig(String baseMDNS, String fileName)
     : BaseConfig(baseMDNS, fileName, JSON_BUFFER) {}
@@ -88,6 +90,21 @@ void KegConfig::createJson(DynamicJsonDocument& doc, bool skipSecrets) {
   doc[PARAM_SCALE_READ_COUNT] = getScaleReadCount();
   doc[PARAM_SCALE_READ_COUNT_CALIBRATION] = getScaleReadCountCalibration();
   doc[PARAM_SCALE_STABLE_COUNT] = getScaleStableCount();
+
+  doc[PARAM_PIN_DISPLAY_DATA] = getPinDisplayData();
+  doc[PARAM_PIN_DISPLAY_CLOCK] = getPinDisplayClock();
+  doc[PARAM_PIN_SCALE1_DATA] = getPinScale1Data();
+  doc[PARAM_PIN_SCALE1_CLOCK] = getPinScale1Clock();
+  doc[PARAM_PIN_SCALE2_DATA] = getPinScale2Data();
+  doc[PARAM_PIN_SCALE2_CLOCK] = getPinScale2Clock();
+  doc[PARAM_PIN_TEMP_DATA] = getPinTempData();
+  doc[PARAM_PIN_TEMP_POWER] = getPinTempPower();
+
+#if defined(ESP8266)
+  doc[PARAM_PLATFORM] = "esp8266";
+#elif defined(ESP32S2)
+  doc[PARAM_PLATFORM] = "esp32s2";
+#endif
 
   /*
   doc[PARAM_KALMAN_ACTIVE] = isKalmanActive();
@@ -204,6 +221,23 @@ void KegConfig::parseJson(DynamicJsonDocument& doc) {
     setScaleReadCountCalibration(doc[PARAM_SCALE_READ_COUNT_CALIBRATION]);
   if (!doc[PARAM_SCALE_STABLE_COUNT].isNull())
     setScaleStableCount(doc[PARAM_SCALE_STABLE_COUNT]);
+
+  if (!doc[PARAM_PIN_DISPLAY_DATA].isNull())
+    setPinDisplayData(doc[PARAM_PIN_DISPLAY_DATA]);
+  if (!doc[PARAM_PIN_DISPLAY_CLOCK].isNull())
+    setPinDisplayClock(doc[PARAM_PIN_DISPLAY_CLOCK]);
+  if (!doc[PARAM_PIN_SCALE1_DATA].isNull())
+    setPinScale1Data(doc[PARAM_PIN_SCALE1_DATA]);
+  if (!doc[PARAM_PIN_SCALE1_CLOCK].isNull())
+    setPinScale1Clock(doc[PARAM_PIN_SCALE1_CLOCK]);
+  if (!doc[PARAM_PIN_SCALE2_DATA].isNull())
+    setPinScale2Data(doc[PARAM_PIN_SCALE2_DATA]);
+  if (!doc[PARAM_PIN_SCALE2_CLOCK].isNull())
+    setPinScale2Clock(doc[PARAM_PIN_SCALE2_CLOCK]);
+  if (!doc[PARAM_PIN_TEMP_DATA].isNull())
+    setPinTempData(doc[PARAM_PIN_TEMP_DATA]);
+  if (!doc[PARAM_PIN_TEMP_POWER].isNull())
+    setPinTempPower(doc[PARAM_PIN_TEMP_POWER]);
 
   /*
   if (!doc[PARAM_KALMAN_ESTIMATION].isNull())

@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-22 Magnus
+Copyright (c) 2021-23 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -42,25 +42,9 @@ constexpr auto JSON_BUFFER = 3000;
 #if defined(ESP8266)
 #define ESP_RESET ESP.reset
 constexpr auto PIN_LED = 2;
-constexpr auto PIN_OLED_SDA = D2;
-constexpr auto PIN_OLED_SCL = D1;
-constexpr auto PIN_SCALE1_SDA = D3;
-constexpr auto PIN_SCALE1_SCL = D4;
-constexpr auto PIN_SCALE2_SDA = D5;
-constexpr auto PIN_SCALE2_SCL = D8;
-constexpr auto PIN_DH2 = D7;
-constexpr auto PIN_DH2_PWR = D6;
 #elif defined(ESP32S2)
 #define ESP_RESET ESP.restart
 constexpr auto PIN_LED = BUILTIN_LED;
-constexpr auto PIN_OLED_SDA = SDA;
-constexpr auto PIN_OLED_SCL = SCL;
-constexpr auto PIN_SCALE1_SDA = A17;
-constexpr auto PIN_SCALE1_SCL = A15;
-constexpr auto PIN_SCALE2_SDA = A6;
-constexpr auto PIN_SCALE2_SCL = A11;
-constexpr auto PIN_DH2 = A10;
-constexpr auto PIN_DH2_PWR = A8;
 #else
 #error "Undefined target platform"
 #endif
