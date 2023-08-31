@@ -254,12 +254,14 @@
               <div class="row mb-2">
                 <label for="pin-display-data" class="col-sm-2 col-form-label">Display / I2C - Data</label>
                 <div class="col-sm-2">
-                  <select class="form-select" disabled="true" id="pin-display-data" name="pin-display-data">
+                  <select class="form-select" disabled="true" id="pin-display-data" name="pin-display-data" data-bs-toggle="tooltip"
+                  title="SDA pin for main I2C bus connecting: displays, sensors and scale 1 (for NAU7802)">
                   </select>
                 </div>
                 <label for="pin-display-clock" class="col-sm-2 col-form-label">Display / I2C - Clock</label>
                 <div class="col-sm-2">
-                  <select class="form-select" disabled="true" id="pin-display-clock" name="pin-display-clock">
+                  <select class="form-select" disabled="true" id="pin-display-clock" name="pin-display-clock" data-bs-toggle="tooltip"
+                  title="SCL pin for main I2C bus connecting: displays, sensors and scale 1 (for NAU7802)">
                   </select>
                 </div>
               </div>
@@ -267,12 +269,14 @@
               <div class="row mb-2">
                 <label for="pin-scale1-data" class="col-sm-2 col-form-label">Scale 1 - Data</label>
                 <div class="col-sm-2">
-                  <select class="form-select" disabled="true" id="pin-scale1-data" name="pin-scale1-data">
+                  <select class="form-select" disabled="true" id="pin-scale1-data" name="pin-scale1-data" data-bs-toggle="tooltip"
+                  title="Data pin for scale 1 (HX711)">
                   </select>
                 </div>
                 <label for="pin-scale1-clock" class="col-sm-2 col-form-label">Scale 1 - Clock</label>
                 <div class="col-sm-2">
-                  <select class="form-select" disabled="true" id="pin-scale1-clock" name="pin-scale1-clock">
+                  <select class="form-select" disabled="true" id="pin-scale1-clock" name="pin-scale1-clock" data-bs-toggle="tooltip"
+                  title="Clock pin for scale 1 (HX711)">
                   </select>
                 </div>
               </div>
@@ -280,12 +284,14 @@
               <div class="row mb-2">
                 <label for="pin-scale2-data" class="col-sm-2 col-form-label">Scale 2 - Data</label>
                 <div class="col-sm-2">
-                  <select class="form-select" disabled="true" id="pin-scale2-data" name="pin-scale2-data">
+                  <select class="form-select" disabled="true" id="pin-scale2-data" name="pin-scale2-data" data-bs-toggle="tooltip"
+                  title="Data pin for scale 2 (HX711) or SDA for I2C bus 2 connecting scale 2 (NAU7802)">
                   </select>
                 </div>
                 <label for="pin-scale2-clock" class="col-sm-2 col-form-label">Scale 2 - Clock</label>
                 <div class="col-sm-2">
-                  <select class="form-select" disabled="true" id="pin-scale2-clock" name="pin-scale2-clock">
+                  <select class="form-select" disabled="true" id="pin-scale2-clock" name="pin-scale2-clock"  data-bs-toggle="tooltip"
+                  title="Clock pin for scale 2 (HX711) or SCL for I2C bus 2 connecting scale 2 (NAU7802)">
                   </select>
                 </div>
               </div>
@@ -293,12 +299,14 @@
               <div class="row mb-2">
                 <label for="pin-temp-data" class="col-sm-2 col-form-label">Temperature - Data</label>
                 <div class="col-sm-2">
-                  <select class="form-select" disabled="true" id="pin-temp-data" name="pin-temp-data">
+                  <select class="form-select" disabled="true" id="pin-temp-data" name="pin-temp-data" data-bs-toggle="tooltip"
+                  title="Data pin for onewire temperature sensors.">
                   </select>
                 </div>
                 <label for="pin-temp-power" class="col-sm-2 col-form-label">Temperature - Power</label>
                 <div class="col-sm-2">
-                  <select class="form-select" disabled="true" id="pin-temp-power" name="pin-temp-power">
+                  <select class="form-select" disabled="true" id="pin-temp-power" name="pin-temp-power" data-bs-toggle="tooltip"
+                  title="Power control for the temperature sensors, used to power on/off the temperature sensor in case this is needed">
                   </select>
                 </div>
               </div>
