@@ -93,7 +93,8 @@ void Display::setup() {
     case DisplayDriverType::LCD:
       Log.notice(F("DISP: Using display driver for LED 20x4" CR));
 
-      Wire.begin(myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
+      Wire.setPins(myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
+      Wire.begin();
 
       _displayLCD[0] = new LiquidCrystal_I2C(PCF8574_ADDR_A21_A11_A01, 4, 5, 6,
                                              16, 11, 12, 13, 14, POSITIVE);

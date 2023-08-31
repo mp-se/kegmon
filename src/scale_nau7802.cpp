@@ -37,6 +37,9 @@ void Scale::setupNAU7802(bool force) {
 #if LOG_LEVEL == 6
     Log.verbose(F("SCAL: NAU7802 initializing scale [0]." CR));
 #endif
+    Wire.setPins(myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
+    Wire.begin();
+
     _nauScale[0] = new NAU7802();
     _nauScale[0]->begin(Wire);
 
@@ -69,7 +72,8 @@ void Scale::setupNAU7802(bool force) {
                 myConfig.getScaleOffset(UnitIndex::U2));
 #endif
     _nauScale[1] = new NAU7802();
-    Wire1.setPins(PIN_SCALE2_SDA, PIN_SCALE2_SCL);
+
+    Wire1.setPins(myConfig.getPinScale2Data(), myConfig.getPinScale2Clock());
     Wire1.begin();
     _nauScale[1]->begin(Wire1);
 

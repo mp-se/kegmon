@@ -30,7 +30,8 @@ TempSensorBME::~TempSensorBME() {}
 bool setup_bme(Adafruit_BME280* bme, uint8_t addr) { return bme->begin(addr); }
 
 void TempSensorBME::setup() {
-  Wire.begin(myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
+  Wire.setPins(myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
+  Wire.begin();
 
   _status = setup_bme(&_bme, BME280_ADDRESS);
   if (_status) {
