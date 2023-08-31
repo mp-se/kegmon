@@ -36,9 +36,9 @@ void TempSensorDS::setup() {
   _dallas = new DallasTemperature(_oneWire);
   _dallas->setResolution(12);
   _dallas->begin();
-  if (_dallas->getDS18Count()) 
+  if (_dallas->getDS18Count())
     _hasSensor = true;
-  else 
+  else
     _hasSensor = false;
 }
 

@@ -70,7 +70,8 @@ void Scale::setupNAU7802(bool force) {
 #endif
     _nauScale[1] = new NAU7802();
 
-    Log.notice(F("SCAL: Initializing I2C bus #2 on pins SDA=%d,SCL=%d" CR), myConfig.getPinScale2Data(), myConfig.getPinScale2Clock());
+    Log.notice(F("SCAL: Initializing I2C bus #2 on pins SDA=%d,SCL=%d" CR),
+               myConfig.getPinScale2Data(), myConfig.getPinScale2Clock());
     Wire1.setPins(myConfig.getPinScale2Data(), myConfig.getPinScale2Clock());
     Wire1.begin();
     _nauScale[1]->begin(Wire1);

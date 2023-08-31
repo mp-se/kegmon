@@ -96,9 +96,10 @@ void setup() {
   PERF_END("setup-config");
 
 #if defined(ESP8266)
-  Log.notice(F("Main: Initializing I2C bus #1 on pins SDA=%d,SCL=%d" CR), myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
+  Log.notice(F("Main: Initializing I2C bus #1 on pins SDA=%d,SCL=%d" CR),
+             myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
   Wire.begin(myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
-#else // ESP32
+#else  // ESP32
   Wire.setPins(myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
   Wire.begin();
 #endif

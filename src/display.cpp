@@ -69,10 +69,8 @@ void Display::setup() {
     case DisplayDriverType::OLED_1306:
       Log.notice(F("DISP: Using display driver for OLED 0.96\"" CR));
 
-      _displayOLED[0] =
-          new SH1106Wire(DISPLAY_ADR1, -1, -1);
-      _displayOLED[1] =
-          new SH1106Wire(DISPLAY_ADR2, -1, -1);
+      _displayOLED[0] = new SH1106Wire(DISPLAY_ADR1, -1, -1);
+      _displayOLED[1] = new SH1106Wire(DISPLAY_ADR2, -1, -1);
       _width[0] = 127;
       _width[1] = 127;
       _height[0] = 63;

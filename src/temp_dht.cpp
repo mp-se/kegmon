@@ -35,7 +35,7 @@ void TempSensorDHT::setup() {
   if (_dht) {
     _dht->begin();
 
-    if (_dht->readTemperature(false, false) != NAN) 
+    if (_dht->readTemperature(false, false) != NAN)
       _hasSensor = true;
     else
       _hasSensor = false;
