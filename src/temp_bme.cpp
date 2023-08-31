@@ -30,17 +30,19 @@ TempSensorBME::~TempSensorBME() {}
 bool setup_bme(Adafruit_BME280* bme, uint8_t addr) { return bme->begin(addr); }
 
 void TempSensorBME::setup() {
-  Wire.setPins(myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
-  Wire.begin();
-
   _status = setup_bme(&_bme, BME280_ADDRESS);
   if (_status) {
+    _hasSensor = true;
     return;
   }
   _status = setup_bme(&_bme, BME280_ADDRESS_ALTERNATE);
-  if (!_status) {
-    Log.warning(F("TEMP: Unable to find BME280 sensor on 0x76 or 0x77" CR));
+  if (_status) {
+    _hasSensor = true;
+    return;
   }
+
+  Log.warning(F("TEMP: Unable to find BME280 sensor on 0x76 or 0x77" CR));
+  _hasSensor = false;
 }
 
 TempReading TempSensorBME::read() {

@@ -35,6 +35,7 @@ bool operator==(const TempReading& lhs, const TempReading& rhs) {
 TempSensorManager::~TempSensorManager() {}
 
 void TempSensorManager::setup() {
+  Log.notice(F("SCAL: Initializing sensors on pins Power=%d,Data=%d." CR), myConfig.getPinTempPower(), myConfig.getPinTempData());
   pinMode(myConfig.getPinTempPower(), OUTPUT);
   reset();
   digitalWrite(myConfig.getPinTempPower(), HIGH);

@@ -33,12 +33,14 @@ class TempSensorDS : public TempSensorBase {
  private:
   OneWire* _oneWire = 0;
   DallasTemperature* _dallas = 0;
+  bool _hasSensor = false;
 
  public:
   TempSensorDS() {}
   ~TempSensorDS();
 
   void setup() override;
+  bool hasSensor() override { return _hasSensor; }
   TempReading read() override;
 };
 

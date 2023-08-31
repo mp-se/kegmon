@@ -32,12 +32,14 @@ class TempSensorBME : public TempSensorBase {
  private:
   Adafruit_BME280 _bme;
   bool _status = false;
+  bool _hasSensor = false;
 
  public:
   TempSensorBME() {}
   ~TempSensorBME();
 
   void setup() override;
+  bool hasSensor() override { return _hasSensor; }
   TempReading read() override;
 };
 

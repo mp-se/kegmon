@@ -89,17 +89,21 @@ void setup() {
   Log.notice(F("Main: Build options: %s (%s) LOGLEVEL %d " CR), CFG_APPVER,
              CFG_GITREV, LOG_LEVEL);
 
-  /*
-  scanI2C(PIN_OLED_SDA, PIN_OLED_SCL);
-  scanI2C(PIN_SCALE1_SDA, PIN_SCALE1_SCL);
-  scanI2C(PIN_SCALE2_SDA, PIN_SCALE2_SCL);
-  */
-
   myConfig.checkFileSystem();
 
   PERF_BEGIN("setup-config");
   myConfig.loadFile();
   PERF_END("setup-config");
+
+#if defined(ESP8266)
+  Log.notice(F("Main: Initializing I2C bus #1 on pins SDA=%d,SCL=%d" CR), myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
+  Wire.begin(myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
+#else // ESP32
+  Wire.setPins(myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
+  Wire.begin();
+#endif
+  scanI2C(myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
+
   PERF_BEGIN("setup-display");
   myDisplay.setup();
   PERF_END("setup-display");
@@ -362,17 +366,10 @@ void loop() {
 }
 
 void scanI2C(int sda, int scl) {
-#if defined(ESP8266)
-  Wire.begin(sda, scl);
-#else  // ESP32
-  Wire.setPins(sda, scl);
-  Wire.begin();
-#endif
-
   byte error, address;
   int n = 0;
 
-  Log.notice(F("Scanning I2C bus on pins %d:%d for devices: "), sda, scl);
+  Log.notice(F("Main: Scanning I2C bus on pins %d:%d for devices: "), sda, scl);
 
   for (address = 1; address < 127; address++) {
     // The i2c_scanner uses the return value of
@@ -384,14 +381,11 @@ void scanI2C(int sda, int scl) {
 
     if (error == 0) {
       EspSerial.print(address, HEX);
-      EspSerial.print("\t");
+      EspSerial.print(",");
       n++;
     }
   }
   EspSerial.print("\n");
-#if defined(ESP32)
-  Wire.end();
-#endif
 }
 
 void logStartup() {

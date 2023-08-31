@@ -32,7 +32,14 @@ TempSensorDHT::~TempSensorDHT() {
 void TempSensorDHT::setup() {
   _dht = new DHT(myConfig.getPinTempData(), DHT22, 1);
 
-  if (_dht) _dht->begin();
+  if (_dht) {
+    _dht->begin();
+
+    if (_dht->readTemperature(false, false) != NAN) 
+      _hasSensor = true;
+    else
+      _hasSensor = false;
+  }
 }
 
 TempReading TempSensorDHT::read() {

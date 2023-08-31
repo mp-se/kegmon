@@ -30,12 +30,14 @@ SOFTWARE.
 class TempSensorDHT : public TempSensorBase {
  private:
   DHT* _dht = 0;
+  bool _hasSensor = false;
 
  public:
   TempSensorDHT() {}
   ~TempSensorDHT();
 
   void setup() override;
+  bool hasSensor() override { return _hasSensor; }
   TempReading read() override;
 };
 

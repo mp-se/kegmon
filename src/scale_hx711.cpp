@@ -34,6 +34,7 @@ void Scale::setupHX711(bool force) {
                 myConfig.getScaleOffset(UnitIndex::U1));
 #endif
     _hxScale[0] = new HX711();
+    Log.notice(F("SCAL: Initializing HX711 bus #1 on pins Data=%d,Clock=%d" CR), myConfig.getPinScale1Data(), myConfig.getPinScale1Clock());
     _hxScale[0]->begin(myConfig.getPinScale1Data(),
                        myConfig.getPinScale1Clock());
     _hxScale[0]->set_offset(myConfig.getScaleOffset(UnitIndex::U1));
@@ -57,6 +58,7 @@ void Scale::setupHX711(bool force) {
                 myConfig.getScaleOffset(UnitIndex::U2));
 #endif
     _hxScale[1] = new HX711();
+    Log.notice(F("SCAL: Initializing HX711 bus #2 on pins Data=%d,Clock=%d" CR), myConfig.getPinScale2Data(), myConfig.getPinScale2Clock());
     _hxScale[1]->begin(myConfig.getPinScale2Data(),
                        myConfig.getPinScale2Clock());
     _hxScale[1]->set_offset(myConfig.getScaleOffset(UnitIndex::U2));
