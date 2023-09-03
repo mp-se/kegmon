@@ -86,3 +86,7 @@ The main features
 
   You can switch between different volume formats. KegMon will always use *cl* for it's internal calculations and 
   convert to other formats when displayed.
+
+* **Customize pins and the hardware design**
+
+  You can customize the pin configuration if you want to change the hardware setup.
