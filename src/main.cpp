@@ -42,7 +42,8 @@ SOFTWARE.
 SerialDebug mySerial(115200L);
 KegConfig myConfig(CFG_MDNSNAME, CFG_FILENAME);
 #if defined(WOKWI)
-WifiConnection myWifi(&myConfig, CFG_APPNAME, "password", CFG_MDNSNAME, "Wokwi-GUEST", "");
+WifiConnection myWifi(&myConfig, CFG_APPNAME, "password", CFG_MDNSNAME,
+                      "Wokwi-GUEST", "");
 #else
 WifiConnection myWifi(&myConfig, CFG_APPNAME, "password", CFG_MDNSNAME);
 #endif
