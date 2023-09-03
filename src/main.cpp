@@ -41,7 +41,11 @@ SOFTWARE.
 
 SerialDebug mySerial(115200L);
 KegConfig myConfig(CFG_MDNSNAME, CFG_FILENAME);
+#if defined(WOKWI)
+WifiConnection myWifi(&myConfig, CFG_APPNAME, "password", CFG_MDNSNAME, "Wokwi-GUEST", "");
+#else
 WifiConnection myWifi(&myConfig, CFG_APPNAME, "password", CFG_MDNSNAME);
+#endif
 OtaUpdate myOta(&myConfig, CFG_APPVER);
 KegWebHandler myWebHandler(&myConfig);
 KegPushHandler myPush(&myConfig);
@@ -94,6 +98,12 @@ void setup() {
   PERF_BEGIN("setup-config");
   myConfig.loadFile();
   PERF_END("setup-config");
+
+#if defined(WOKWI)
+  // Set some default values when we run on the simulator
+  myConfig.setScaleFactor(UnitIndex::U1, 1);
+  myConfig.setScaleFactor(UnitIndex::U2, 1);
+#endif
 
 #if defined(ESP8266)
   Log.notice(F("Main: Initializing I2C bus #1 on pins SDA=%d,SCL=%d" CR),
