@@ -2,6 +2,7 @@
 version = 1
 firmware = '.pio/build/kegmon32-wokwi/firmware_merged.bin'
 elf = '.pio/build/kegmon32-wokwi/firmware.elf'
+gdbServerPort = 3333
 
 [[net.forward]]
 from = "localhost:8180"

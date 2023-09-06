@@ -218,6 +218,11 @@ void loop() {
       }
     }
 
+    // Try to reconnect to scales if they are missing (60 seconds)
+    if (!(loopCounter % 10)) {
+      printHeap("Loop:");
+    }
+
     // The temp sensor should not be read too often. Reading every 10 seconds.
     if (!(loopCounter % 5)) {
       myTemp.read();
