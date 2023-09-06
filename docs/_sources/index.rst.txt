@@ -7,7 +7,7 @@ Welcome to KegMon - Keezer Level Monitor
 ----------------------------------------
 
 .. note::
-  Reflects test version **v0.7.1*, Last updated 2023-08-03
+  Reflects test version *v0.8.0*, Last updated 2023-09-03
 
 Introduction
 ============
@@ -15,11 +15,8 @@ Introduction
 The software is tailored towards my personal needs and external services that I use, but suggestions are always 
 welcome. 
 
-The software has two interfaces, one via the OLED displays and one via the web-browser, integrations with external 
-services is available, currently BrewFather, BrewSpy and Home Assistant. If you have requests for other services 
-raise a request on github. 
-
-Two ADC types are supported, the HX711 and the NAU7802 (requires ESP32S2 for two scales).
+The software has two interfaces, displays and web-browser. Integrations with external services is available, 
+currently BrewFather, BrewSpy and Home Assistant. If you have requests for other services raise a request on github. 
 
 The cheap load cells are quite unpredicteble so it's hard to get a fully accurate and stable system. In order to 
 compensate for this I have built in the possibility to add filters and clean up the values, these filters include:
@@ -52,25 +49,67 @@ one large pour.
 
 The design is created for 2 kegs but it will work if you only use one (make sure to use the pins for scale 1 in that case). 
 
-The OLED screens will show the name of the beer, abv and alternate between weight and pours. The first screen will display 
+The displays will show the name of the beer, abv and alternate between weight and pours. The first screen will display 
 values for keg 1 and the second for keg 2.
 
-The values presented on the OLED screen is the raw values so that you can see directly if the level changes. Stable values can be screen
+The values presented on the displays is the raw values so that you can see directly if the level changes. Stable values can be screen
 at the web UI or via the external integrations.
 
-The software will detect how many hx711 boards are connected and if there is a temperature sensor. 
+The software will automatically detect how many sensor boards are connected and if there is a temperature sensor. 
 
 The project contains the following parts:
-* Software that manage the scale and present the readings
-* Hardware design based on standard HX711 AD converter with load cells and temperature sensor (PCB is work in progress)
-* 3D models for the base
-* 3D models for display case (work in progress)
 
-TODO list
-=========
-* Complete compensation formula for temperature compensation
-* Create PCB 
-* Finalize 3D model for case
+* Software that manage the scale and present the readings
+* Hardware design based on standard HX711 AD converter with load cells and temperature sensor
+* 3D models for the base
+* 3D models for display case
+
+Help wanted
+===========
+
+I have not had the possibility to test / validate all the options so any feedback and updates to the documentation is appreciated.
+
+Topics that need verification:
+
+* Using BME280 in a scale base to measure temperature
+* Using NAU7802 ADC to measure weight
+
+Hardware options
+================
+
+Display 
+*******
+
+For display there are two options that can be used:
+
+* OLED 0.96" display based on SH1106
+* LED display based on PCF8574, both 20x4 and 20x2 displays can be used. 
+
+The *OLED 0.96" display* is the option that is the primary option used in the design. 
+
+There are larger OLED displays that could be used, but most of these dont have the option to 
+change I2C adress so this would require a different hardware design. 
+
+ADC
+***
+
+For ADC there are a few options available: 
+
+* HX711 based boards (3 main options, green, purple and red boards)
+* NAU7802 requires a differnt hardware wiring. NAU782 uses I2C communication and for two scales an ESP32S2 is required.
+
+The *HX711 purple board* is the primary option used in the design. The green board has a different pin configuration. 
+
+Temperature sensor
+******************
+
+For temperature sensor you can use:
+
+* DS18B20, one wire sensor
+* DHT22, one wire sensor
+* BME280, i2c sensor. This option require a different wiring
+
+The *DS18B20 temperature sensor* is the primary option.
 
 Credits to
 ==========
@@ -79,7 +118,6 @@ Thanks to the following projects.
 * https://github.com/mp-se/gravitymon
 * https://github.com/mp-se/espframework
 * https://github.com/graphitemaster/incbin
-* https://github.com/khoih-prog/ESP_WiFiManager
 * https://github.com/thijse/Arduino-Log
 * https://github.com/bblanchon/ArduinoJson
 * https://getbootstrap.com
@@ -90,7 +128,11 @@ Thanks to the following projects.
 * https://modelviewer.dev/
 * https://github.com/RobTillaart/Statistic
 * https://github.com/denyssene/SimpleKalmanFilter
-
+*	https://github.com/mp-se/ESPAsyncWebServer
+*	https://github.com/mp-se/ESPAsyncTCP
+* https://github.com/adafruit/Adafruit_BME280_Library
+* https://github.com/enjoyneering/LiquidCrystal_I2C
+* https://github.com/sparkfun/SparkFun_Qwiic_Scale_NAU7802_Arduino_Library
 
 .. toctree::
    :maxdepth: 2

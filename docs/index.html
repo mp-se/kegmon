@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Functionality" href="functionality.html" />
 
     <meta name="generator" content="sphinx-4.3.2, furo 2022.01.02"/>
-        <title>KegMon v0.6.0</title>
+        <title>KegMon v0.8.0</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=df49af52631e7917044a9c21a57f7b83170a6dd0" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="#"><div class="brand">KegMon v0.6.0</div></a>
+      <a href="#"><div class="brand">KegMon v0.8.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -149,7 +149,7 @@
     <img class="sidebar-logo" src="_static/kegmon_logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">KegMon v0.6.0</span>
+  <span class="sidebar-brand-text">KegMon v0.8.0</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -198,16 +198,14 @@
 <h1>Welcome to KegMon - Keezer Level Monitor<a class="headerlink" href="#welcome-to-kegmon-keezer-level-monitor" title="Permalink to this headline">¶</a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Reflects test version <a href="#id1"><span class="problematic" id="id2">**</span></a>v0.7.1*, Last updated 2023-08-03</p>
+<p>Reflects test version <em>v0.8.0</em>, Last updated 2023-09-03</p>
 </div>
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>The software is tailored towards my personal needs and external services that I use, but suggestions are always
 welcome.</p>
-<p>The software has two interfaces, one via the OLED displays and one via the web-browser, integrations with external
-services is available, currently BrewFather, BrewSpy and Home Assistant. If you have requests for other services
-raise a request on github.</p>
-<p>Two ADC types are supported, the HX711 and the NAU7802 (requires ESP32S2 for two scales).</p>
+<p>The software has two interfaces, displays and web-browser. Integrations with external services is available,
+currently BrewFather, BrewSpy and Home Assistant. If you have requests for other services raise a request on github.</p>
 <p>The cheap load cells are quite unpredicteble so it’s hard to get a fully accurate and stable system. In order to
 compensate for this I have built in the possibility to add filters and clean up the values, these filters include:</p>
 <ul class="simple">
@@ -229,24 +227,60 @@ must exceed 10 cl. This means that a pour needs to be more than this level. It c
 be detected and a pour registered. This means that if you pour a number of glasses quickly, this will be detected as
 one large pour.</p>
 <p>The design is created for 2 kegs but it will work if you only use one (make sure to use the pins for scale 1 in that case).</p>
-<p>The OLED screens will show the name of the beer, abv and alternate between weight and pours. The first screen will display
+<p>The displays will show the name of the beer, abv and alternate between weight and pours. The first screen will display
 values for keg 1 and the second for keg 2.</p>
-<p>The values presented on the OLED screen is the raw values so that you can see directly if the level changes. Stable values can be screen
+<p>The values presented on the displays is the raw values so that you can see directly if the level changes. Stable values can be screen
 at the web UI or via the external integrations.</p>
-<p>The software will detect how many hx711 boards are connected and if there is a temperature sensor.</p>
-<p>The project contains the following parts:
-* Software that manage the scale and present the readings
-* Hardware design based on standard HX711 AD converter with load cells and temperature sensor (PCB is work in progress)
-* 3D models for the base
-* 3D models for display case (work in progress)</p>
-</div>
-<div class="section" id="todo-list">
-<h2>TODO list<a class="headerlink" href="#todo-list" title="Permalink to this headline">¶</a></h2>
+<p>The software will automatically detect how many sensor boards are connected and if there is a temperature sensor.</p>
+<p>The project contains the following parts:</p>
 <ul class="simple">
-<li><p>Complete compensation formula for temperature compensation</p></li>
-<li><p>Create PCB</p></li>
-<li><p>Finalize 3D model for case</p></li>
+<li><p>Software that manage the scale and present the readings</p></li>
+<li><p>Hardware design based on standard HX711 AD converter with load cells and temperature sensor</p></li>
+<li><p>3D models for the base</p></li>
+<li><p>3D models for display case</p></li>
 </ul>
+</div>
+<div class="section" id="help-wanted">
+<h2>Help wanted<a class="headerlink" href="#help-wanted" title="Permalink to this headline">¶</a></h2>
+<p>I have not had the possibility to test / validate all the options so any feedback and updates to the documentation is appreciated.</p>
+<p>Topics that need verification:</p>
+<ul class="simple">
+<li><p>Using BME280 in a scale base to measure temperature</p></li>
+<li><p>Using NAU7802 ADC to measure weight</p></li>
+</ul>
+</div>
+<div class="section" id="hardware-options">
+<h2>Hardware options<a class="headerlink" href="#hardware-options" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="display">
+<h3>Display<a class="headerlink" href="#display" title="Permalink to this headline">¶</a></h3>
+<p>For display there are two options that can be used:</p>
+<ul class="simple">
+<li><p>OLED 0.96” display based on SH1106</p></li>
+<li><p>LED display based on PCF8574, both 20x4 and 20x2 displays can be used.</p></li>
+</ul>
+<p>The <em>OLED 0.96” display</em> is the option that is the primary option used in the design.</p>
+<p>There are larger OLED displays that could be used, but most of these dont have the option to
+change I2C adress so this would require a different hardware design.</p>
+</div>
+<div class="section" id="adc">
+<h3>ADC<a class="headerlink" href="#adc" title="Permalink to this headline">¶</a></h3>
+<p>For ADC there are a few options available:</p>
+<ul class="simple">
+<li><p>HX711 based boards (3 main options, green, purple and red boards)</p></li>
+<li><p>NAU7802 requires a differnt hardware wiring. NAU782 uses I2C communication and for two scales an ESP32S2 is required.</p></li>
+</ul>
+<p>The <em>HX711 purple board</em> is the primary option used in the design. The green board has a different pin configuration.</p>
+</div>
+<div class="section" id="temperature-sensor">
+<h3>Temperature sensor<a class="headerlink" href="#temperature-sensor" title="Permalink to this headline">¶</a></h3>
+<p>For temperature sensor you can use:</p>
+<ul class="simple">
+<li><p>DS18B20, one wire sensor</p></li>
+<li><p>DHT22, one wire sensor</p></li>
+<li><p>BME280, i2c sensor. This option require a different wiring</p></li>
+</ul>
+<p>The <em>DS18B20 temperature sensor</em> is the primary option.</p>
+</div>
 </div>
 <div class="section" id="credits-to">
 <h2>Credits to<a class="headerlink" href="#credits-to" title="Permalink to this headline">¶</a></h2>
@@ -255,7 +289,6 @@ at the web UI or via the external integrations.</p>
 <li><p><a class="reference external" href="https://github.com/mp-se/gravitymon">https://github.com/mp-se/gravitymon</a></p></li>
 <li><p><a class="reference external" href="https://github.com/mp-se/espframework">https://github.com/mp-se/espframework</a></p></li>
 <li><p><a class="reference external" href="https://github.com/graphitemaster/incbin">https://github.com/graphitemaster/incbin</a></p></li>
-<li><p><a class="reference external" href="https://github.com/khoih-prog/ESP_WiFiManager">https://github.com/khoih-prog/ESP_WiFiManager</a></p></li>
 <li><p><a class="reference external" href="https://github.com/thijse/Arduino-Log">https://github.com/thijse/Arduino-Log</a></p></li>
 <li><p><a class="reference external" href="https://github.com/bblanchon/ArduinoJson">https://github.com/bblanchon/ArduinoJson</a></p></li>
 <li><p><a class="reference external" href="https://getbootstrap.com">https://getbootstrap.com</a></p></li>
@@ -266,6 +299,11 @@ at the web UI or via the external integrations.</p>
 <li><p><a class="reference external" href="https://modelviewer.dev/">https://modelviewer.dev/</a></p></li>
 <li><p><a class="reference external" href="https://github.com/RobTillaart/Statistic">https://github.com/RobTillaart/Statistic</a></p></li>
 <li><p><a class="reference external" href="https://github.com/denyssene/SimpleKalmanFilter">https://github.com/denyssene/SimpleKalmanFilter</a></p></li>
+<li><p><a class="reference external" href="https://github.com/mp-se/ESPAsyncWebServer">https://github.com/mp-se/ESPAsyncWebServer</a></p></li>
+<li><p><a class="reference external" href="https://github.com/mp-se/ESPAsyncTCP">https://github.com/mp-se/ESPAsyncTCP</a></p></li>
+<li><p><a class="reference external" href="https://github.com/adafruit/Adafruit_BME280_Library">https://github.com/adafruit/Adafruit_BME280_Library</a></p></li>
+<li><p><a class="reference external" href="https://github.com/enjoyneering/LiquidCrystal_I2C">https://github.com/enjoyneering/LiquidCrystal_I2C</a></p></li>
+<li><p><a class="reference external" href="https://github.com/sparkfun/SparkFun_Qwiic_Scale_NAU7802_Arduino_Library">https://github.com/sparkfun/SparkFun_Qwiic_Scale_NAU7802_Arduino_Library</a></p></li>
 </ul>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
@@ -275,6 +313,7 @@ at the web UI or via the external integrations.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="releases.html">Releases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="releases.html#v0-8-0-beta">v0.8.0 (beta)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="releases.html#v0-7-1">v0.7.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="releases.html#v0-7-0">v0.7.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="releases.html#v0-6-0">v0.6.0</a></li>
@@ -382,7 +421,13 @@ at the web UI or via the external integrations.</p>
             <ul>
 <li><a class="reference internal" href="#">Welcome to KegMon - Keezer Level Monitor</a><ul>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
-<li><a class="reference internal" href="#todo-list">TODO list</a></li>
+<li><a class="reference internal" href="#help-wanted">Help wanted</a></li>
+<li><a class="reference internal" href="#hardware-options">Hardware options</a><ul>
+<li><a class="reference internal" href="#display">Display</a></li>
+<li><a class="reference internal" href="#adc">ADC</a></li>
+<li><a class="reference internal" href="#temperature-sensor">Temperature sensor</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#credits-to">Credits to</a></li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
