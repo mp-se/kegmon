@@ -6,11 +6,11 @@ on:
       - master
 
 jobs:
-  build:
+  doc-build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - uses: ammaraskar/sphinx-action@master
         with:
@@ -41,6 +41,7 @@ jobs:
           git commit -m "Update documentation" -a || true
           # The above command will fail if no changes were present, so we ignore
           # the return code.
+          
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
