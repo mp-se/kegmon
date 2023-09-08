@@ -23,7 +23,6 @@ jobs:
           add: 'bin'
           author_name: GitHub Action
           author_email: mp-se@noreply.github.com
-          branch: dev
           default_author: github_actor
           message: 'GitHub Action Build'
           pathspec_error_handling: ignore
