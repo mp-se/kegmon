@@ -15,8 +15,21 @@ jobs:
       - name: Setup PlatformIO
         uses: n-vr/setup-platformio-action@v1.0.1    
   
-      - name: Run PlatformIO
-        run: pio run -e kegmon-release -e kegmon32s2-release
+      #- name: Run PlatformIO
+      #  run: pio run -e kegmon-release -e kegmon32s2-release
+
+      - name: PlatformIO Run
+        uses: karniv00l/platformio-run-action@v1
+        with:
+          environments: "kegmon-release,kegmon32s2-release"
+          #targets: "kegmon-release,kegmon32s2-release"
+          #project-dir: "./some_dir"
+          #project-conf: "./some_dir/custom.ini"
+          jobs: 6
+          silent: false
+          verbose: true
+          disable-auto-clean: false
+
 
       - uses: EndBug/add-and-commit@v9 # You can change this to use a specific version. https://github.com/marketplace/actions/add-commit
         with:
