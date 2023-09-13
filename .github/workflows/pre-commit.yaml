@@ -15,5 +15,6 @@ jobs:
     - uses: actions/setup-python@v4
     - name: clang format support
       run: |
+        sudo apt update
         sudo apt install clang-format cppcheck
     - uses: pre-commit/action@v3.0.0
