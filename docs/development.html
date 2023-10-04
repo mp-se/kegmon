@@ -2,10 +2,10 @@
 <html class="no-js">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Development" href="development.html" />
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Q &amp; A" href="q_and_a.html" /><link rel="prev" title="Licence" href="license.html" />
 
     <meta name="generator" content="sphinx-4.3.2, furo 2022.01.02"/>
-        <title>Q &amp; A - KegMon v0.8.0</title>
+        <title>Development - KegMon v0.8.0</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=df49af52631e7917044a9c21a57f7b83170a6dd0" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -167,8 +167,8 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Software Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Software</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">Licence</a></li>
-<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Q &amp; A</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="q_and_a.html">Q &amp; A</a></li>
 </ul>
 
 </div>
@@ -189,15 +189,51 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <div class="section" id="q-a">
-<h1>Q &amp; A<a class="headerlink" href="#q-a" title="Permalink to this headline">¶</a></h1>
-<p>Placeholder for future Q&amp;A.</p>
+          <div class="section" id="development">
+<span id="id1"></span><h1>Development<a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h1>
+<p>Development of this project is done in VSCode with the PlatformIO extension using Arduino for ESP8266 and ESP32.</p>
+<p>For the documentation we use SPINX and github pages for publishing.</p>
+<p>Compliance to coding standards PRE-COMMIT is used with their standard rules for formatting and good cpp code. Any PR needs
+to pass this validation in order to be considered for merging.</p>
+<p>The pipeline is build based on github actions and all firmware builds and documentation publishing is done using the
+defined github actions.</p>
+<p>For testing there is a UNIT TEST target defined which currently needs to be run on hardware. The plan is to move this to
+WOKWI and their github action to run these after a completed build. There is also a python script that can be used to validate the
+output of the available API’s to ensure they deliver what is wanted.</p>
+<div class="section" id="future">
+<h2>Future<a class="headerlink" href="#future" title="Permalink to this headline">¶</a></h2>
+<p>The following additions is being worked on.</p>
+<ul class="simple">
+<li><p>WOKWI simulator, so that the software can be run wihtout the need for hardware.</p></li>
+<li><p>WOKWI CI, to run the unit test and API tests during builds.</p></li>
+<li><p>Update PR checks to include builds and unit testing.</p></li>
+</ul>
+</div>
+<div class="section" id="links">
+<h2>Links<a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h2>
+<p>If you want to start contributing these are links to the tools I use.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://code.visualstudio.com/">https://code.visualstudio.com/</a> (Code Editor)</p></li>
+<li><p><a class="reference external" href="https://platformio.org/">https://platformio.org/</a> (Arduino development)</p></li>
+<li><p><a class="reference external" href="https://wokwi.com/">https://wokwi.com/</a> (Simulator for ESP32)</p></li>
+<li><p><a class="reference external" href="https://marketplace.visualstudio.com/items?itemName=HookyQR.minify">https://marketplace.visualstudio.com/items?itemName=HookyQR.minify</a> (Extension for making HTML files smaller)</p></li>
+<li><p><a class="reference external" href="https://marketplace.visualstudio.com/items?itemName=platformio.platformio-ide">https://marketplace.visualstudio.com/items?itemName=platformio.platformio-ide</a> (Platform IO extension)</p></li>
+<li><p><a class="reference external" href="https://marketplace.visualstudio.com/items?itemName=Wokwi.wokwi-vscode">https://marketplace.visualstudio.com/items?itemName=Wokwi.wokwi-vscode</a> (Wokwi simulator extension)</p></li>
+<li><p><a class="reference external" href="https://pre-commit.com/">https://pre-commit.com/</a> (Code validation, need to run this in Linux/WSL)</p></li>
+<li><p><a class="reference external" href="https://cli.github.com/">https://cli.github.com/</a> (Source code management)</p></li>
+<li><p><a class="reference external" href="https://gitforwindows.org/">https://gitforwindows.org/</a> (Git for Windows)</p></li>
+</ul>
+<p>Other projects that are of interrest for development</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/nektos/act">https://github.com/nektos/act</a> (Run github actions locally)</p></li>
+</ul>
+</div>
 </div>
 
         </article>
@@ -205,15 +241,23 @@
       <footer>
         
         <div class="related-pages">
-          
-          <a class="prev-page" href="development.html">
+          <a class="next-page" href="q_and_a.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Q &amp; A</div>
+              </div>
+              <svg><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="license.html">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Development</div>
+                <div class="title">Licence</div>
                 
               </div>
             </a>
@@ -227,8 +271,28 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Development</a><ul>
+<li><a class="reference internal" href="#future">Future</a></li>
+<li><a class="reference internal" href="#links">Links</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
