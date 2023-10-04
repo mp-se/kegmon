@@ -3,8 +3,8 @@
 Releases 
 ########
 
-v0.8.0 (beta)
-=============
+v0.8.0
+======
 
 * Added possiblity to run on wokwi simulator (work in progress, scales, file system not yet working)
 * Added option for setting pins for external devices (display, scales and sensor)
