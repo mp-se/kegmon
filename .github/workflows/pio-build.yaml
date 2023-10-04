@@ -1,51 +1,43 @@
 name: PlatformIO CI
 
 on: 
+  pull_request:
   push:
     branches: 
       - dev
 
 jobs:
-  build:
+  pio-build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
     
-      - name: Cache pip
-        uses: actions/cache@v2
+      - name: Setup PlatformIO
+        uses: n-vr/setup-platformio-action@v1.0.1    
+  
+      #- name: Run PlatformIO
+      #  run: pio run -e kegmon-release -e kegmon32s2-release
+
+      - name: PlatformIO Run
+        uses: karniv00l/platformio-run-action@v1
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-    
-      - name: Cache PlatformIO
-        uses: actions/cache@v2
-        with:
-          path: ~/.platformio
-          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+          environments: "kegmon-release,kegmon32s2-release"
+          #targets: "kegmon-release,kegmon32s2-release"
+          #project-dir: "./some_dir"
+          #project-conf: "./some_dir/custom.ini"
+          jobs: 6
+          silent: false
+          verbose: true
+          disable-auto-clean: false
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
 
-      - name: Install PlatformIO
-        run: |
-          python -m pip install --upgrade pip
-          pip install --upgrade platformio
-          git config --global advice.detachedHead false
-
-      - name: Run PlatformIO
-        run: pio run -e kegmon-release -e kegmon32s2-release
-
-      - uses: EndBug/add-and-commit@v7 # You can change this to use a specific version. https://github.com/marketplace/actions/add-commit
+      - uses: EndBug/add-and-commit@v9 # You can change this to use a specific version. https://github.com/marketplace/actions/add-commit
+        if: ${{ github.event_name != 'pull_request' }}
         with:
           add: 'bin'
           author_name: GitHub Action
           author_email: mp-se@noreply.github.com
-
-          branch: dev
-
           default_author: github_actor
           message: 'GitHub Action Build'
           pathspec_error_handling: ignore
