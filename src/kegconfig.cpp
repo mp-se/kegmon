@@ -56,37 +56,50 @@ void KegConfig::createJson(DynamicJsonDocument& doc, bool skipSecrets) {
 
   doc[PARAM_SCALE_TEMP_FORMULA1] =
       getScaleTempCompensationFormula(UnitIndex::U1);
-  doc[PARAM_SCALE_FACTOR1] = getScaleFactor(UnitIndex::U1);
+  doc[PARAM_SCALE_FACTOR1] =
+      serialized(String(getScaleFactor(UnitIndex::U1), 5));
   doc[PARAM_SCALE_OFFSET1] = getScaleOffset(UnitIndex::U1);
-  doc[PARAM_KEG_WEIGHT1] = convertOutgoingWeight(getKegWeight(UnitIndex::U1));
-  doc[PARAM_KEG_VOLUME1] =
-      getKegVolume(UnitIndex::U1);  // Dont convert this part (drop down in UI)
-  doc[PARAM_GLASS_VOLUME1] = getGlassVolume(
-      UnitIndex::U1);  // Dont convert this part (drop down in UI)
+  doc[PARAM_KEG_WEIGHT1] =
+      serialized(String(convertOutgoingWeight(getKegWeight(UnitIndex::U1)),
+                        getWeightPrecision()));
+  doc[PARAM_KEG_VOLUME1] = serialized(String(
+      getKegVolume(UnitIndex::U1),
+      getWeightPrecision()));  // Dont convert this part (drop down in UI)
+  doc[PARAM_GLASS_VOLUME1] = serialized(String(
+      getGlassVolume(UnitIndex::U1),
+      getWeightPrecision()));  // Dont convert this part (drop down in UI)
   doc[PARAM_BEER_NAME1] = getBeerName(UnitIndex::U1);
-  doc[PARAM_BEER_ABV1] = getBeerABV(UnitIndex::U1);
-  doc[PARAM_BEER_FG1] = getBeerFG(UnitIndex::U1);
+  doc[PARAM_BEER_ABV1] = serialized(String(getBeerABV(UnitIndex::U1), 2));
+  doc[PARAM_BEER_FG1] = serialized(String(getBeerFG(UnitIndex::U1), 2));
   doc[PARAM_BEER_EBC1] = getBeerEBC(UnitIndex::U1);
   doc[PARAM_BEER_IBU1] = getBeerIBU(UnitIndex::U1);
 
   doc[PARAM_SCALE_TEMP_FORMULA2] =
       getScaleTempCompensationFormula(UnitIndex::U2);
-  doc[PARAM_SCALE_FACTOR2] = getScaleFactor(UnitIndex::U2);
+  doc[PARAM_SCALE_FACTOR2] =
+      serialized(String(getScaleFactor(UnitIndex::U2), 5));
   doc[PARAM_SCALE_OFFSET2] = getScaleOffset(UnitIndex::U2);
-  doc[PARAM_KEG_WEIGHT2] = convertOutgoingWeight(getKegWeight(UnitIndex::U2));
-  doc[PARAM_KEG_VOLUME2] =
-      getKegVolume(UnitIndex::U2);  // Dont convert this part (drop down in UI)
-  doc[PARAM_GLASS_VOLUME2] = getGlassVolume(
-      UnitIndex::U2);  // Dont convert this part (drop down in UI)
+  doc[PARAM_KEG_WEIGHT2] =
+      serialized(String(convertOutgoingWeight(getKegWeight(UnitIndex::U2)),
+                        getWeightPrecision()));
+  doc[PARAM_KEG_VOLUME2] = serialized(String(
+      getKegVolume(UnitIndex::U2),
+      getWeightPrecision()));  // Dont convert this part (drop down in UI)
+  doc[PARAM_GLASS_VOLUME2] =
+      serialized(String(getGlassVolume(UnitIndex::U2),
+                        2));  // Dont convert this part (drop down in UI)
   doc[PARAM_BEER_NAME2] = getBeerName(UnitIndex::U2);
-  doc[PARAM_BEER_ABV2] = getBeerABV(UnitIndex::U2);
-  doc[PARAM_BEER_FG2] = getBeerFG(UnitIndex::U2);
+  doc[PARAM_BEER_ABV2] = serialized(String(getBeerABV(UnitIndex::U2), 2));
+  doc[PARAM_BEER_FG2] = serialized(String(getBeerFG(UnitIndex::U2), 2));
   doc[PARAM_BEER_EBC2] = getBeerEBC(UnitIndex::U2);
   doc[PARAM_BEER_IBU2] = getBeerIBU(UnitIndex::U2);
 
-  doc[PARAM_SCALE_DEVIATION_INCREASE] = getScaleDeviationIncreaseValue();
-  doc[PARAM_SCALE_DEVIATION_DECREASE] = getScaleDeviationDecreaseValue();
-  doc[PARAM_SCALE_DEVIATION_KALMAN] = getScaleKalmanDeviationValue();
+  doc[PARAM_SCALE_DEVIATION_INCREASE] =
+      serialized(String(getScaleDeviationIncreaseValue(), 2));
+  doc[PARAM_SCALE_DEVIATION_DECREASE] =
+      serialized(String(getScaleDeviationDecreaseValue(), 2));
+  doc[PARAM_SCALE_DEVIATION_KALMAN] =
+      serialized(String(getScaleKalmanDeviationValue(), 2));
   doc[PARAM_SCALE_READ_COUNT] = getScaleReadCount();
   doc[PARAM_SCALE_READ_COUNT_CALIBRATION] = getScaleReadCountCalibration();
   doc[PARAM_SCALE_STABLE_COUNT] = getScaleStableCount();
