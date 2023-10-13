@@ -51,8 +51,7 @@ TempReading TempSensorDHT::read() {
   reading.humidity = _dht->readHumidity(false);
   reading.pressure = NAN;
 
-  if (isnan(reading.temperature))
-    _hasSensor = false;
+  if (isnan(reading.temperature)) _hasSensor = false;
 
   return reading;
 }

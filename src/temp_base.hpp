@@ -39,7 +39,7 @@ constexpr TempReading TEMP_READING_FAILED = {NAN, NAN, NAN};
 class TempSensorBase {
  public:
   TempSensorBase() = default;
-  virtual ~TempSensorBase() {};
+  virtual ~TempSensorBase(){};
 
   virtual void setup() = 0;
   virtual bool hasSensor() = 0;
