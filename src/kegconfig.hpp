@@ -31,6 +31,7 @@ constexpr auto PARAM_BREWFATHER_USERKEY = "brewfather-userkey";
 constexpr auto PARAM_BREWFATHER_APIKEY = "brewfather-apikey";
 constexpr auto PARAM_BREWSPY_TOKEN1 = "brewspy-token1";
 constexpr auto PARAM_BREWSPY_TOKEN2 = "brewspy-token2";
+constexpr auto PARAM_BREWPI_URL = "brewpi-url";
 constexpr auto PARAM_DISPLAY_LAYOUT = "display-layout";
 constexpr auto PARAM_TEMP_SENSOR = "temp-sensor";
 constexpr auto PARAM_DISPLAY_DRIVER = "display-driver";
@@ -124,7 +125,12 @@ enum DisplayLayoutType {
   GraphOne = 2,
   HardwareStats = 9
 };
-enum TempSensorType { SensorDHT22 = 0, SensorDS18B20 = 1, SensorBME280 = 2 };
+enum TempSensorType {
+  SensorDHT22 = 0,
+  SensorDS18B20 = 1,
+  SensorBME280 = 2,
+  SensorBrewPI = 3
+};
 enum ScaleSensorType { ScaleHX711 = 0, ScaleNAU7802 = 1 };
 enum DisplayDriverType { OLED_1306 = 0, LCD = 1 };
 
@@ -143,6 +149,8 @@ class KegConfig : public BaseConfig {
   String _brewfatherApiKey = "";
 
   String _brewspyToken[2] = {"", ""};
+
+  String _brewpiUrl = "";
 
   DisplayLayoutType _displayLayout = DisplayLayoutType::Default;
   TempSensorType _tempSensor = TempSensorType::SensorDS18B20;
@@ -188,6 +196,12 @@ class KegConfig : public BaseConfig {
   const char* getBrewfatherApiKey() { return _brewfatherApiKey.c_str(); }
   void setBrewfatherApiKey(String s) {
     _brewfatherApiKey = s;
+    _saveNeeded = true;
+  }
+
+  const char* getBrewpiUrl() { return _brewpiUrl.c_str(); }
+  void setBrewpiUrl(String s) {
+    _brewpiUrl = s;
     _saveNeeded = true;
   }
 

@@ -8,6 +8,7 @@
   "temp-format": "C",
   "brewfather-userkey": "Urz3aokmzsdfXWZlUoHpG42",
   "brewfather-apikey": "2kew78WzUbjY2Zt0Adsfi0S4FJsCh3FVLZusfaBXYbFYHNG",
+  "brewpi-url": "http://192.168.0.4",
   "brewspy-token1": "token1",
   "brewspy-token2": "token2",
   "mqtt-target": "mqtt",

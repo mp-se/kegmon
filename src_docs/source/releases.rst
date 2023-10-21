@@ -3,6 +3,11 @@
 Releases 
 ########
 
+v0.9.0 (beta)
+=============
+
+* Added option to fetch temperature from brewpi-esp installation
+
 v0.8.0
 ======
 

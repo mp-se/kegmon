@@ -224,8 +224,8 @@ void loop() {
       printHeap("Loop:");
     }
 
-    // The temp sensor should not be read too often. Reading every 10 seconds.
-    if (!(loopCounter % 5)) {
+    // The temp sensor should not be read too often.
+    if (!(loopCounter % 15)) {
       myTemp.read();
     }
 

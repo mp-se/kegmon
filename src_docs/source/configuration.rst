@@ -73,9 +73,11 @@ This is where the software is configured.
 
 * **Display driver**: Choose the what display driver is used, either LCD 20x4 or OLED 0.96". Default is OLED 0.96".
 
-* **Temp sensor**: Choose the what temp sensor is used, either DHT22, BME280 or DS18B20. Default is DS18B20. *Wiring for BME280 is different*.
+* **Temp sensor**: Choose the what temp sensor is used, either DHT22, BME280, DS18B20 or remote BrewPI-ESP installation. Default is DS18B20. *Wiring for BME280 is different*.
 
 * **Scale sensor**: Choose the what ADC is used, HX711 or NAU7802. Default is HX711. *Wiring for NAU7802 is different*.
+
+* **BrewPI ESP URL**: Base URL for the brewpi-esp to fetch temperature from. Require v15 or later. 
 
 * **Pin**: If you dont follow the standard hardware wiring then you can customize the pins here.
 

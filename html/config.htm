@@ -204,10 +204,18 @@
                 <label for="temp-layout" class="col-sm-2 col-form-label">Temperature sensor</label>
                 <div class="col-sm-2">
                   <select class="form-select" id="temp-sensor" name="temp-sensor" data-bs-toggle="tooltip" title="select type of temperature sensor">
-                    <option value="0">DHT22</option>
                     <option value="1">DS18B20</option>
+                    <option value="0">DHT22</option>
                     <option value="2">BME280</option>
+                    <option value="3">BREWPI-ESP</option>
                   </select>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label for="mdns" class="col-sm-2 col-form-label">Brewpi-esp URL</label>
+                <div class="col-sm-3">
+                  <input type="url" maxlength="80" class="form-control" name="brewpi-url" id="brewpi-url" placeholder="http://brewpi.local" data-bs-toggle="tooltip" title="Url to the brewpi-esp installation for the keezer, requires v15 or newer with web interface.">
                 </div>
               </div>
 
@@ -642,6 +650,8 @@
           $("#brewfather-apikey").val(cfg["brewfather-apikey"]);
           $("#brewfather-userkey").val(cfg["brewfather-userkey"]);
 
+          $("#brewpi-url").val(cfg["brewpi-url"]);
+
           $("#brewspy-token1").val(cfg["brewspy-token1"]);
           $("#brewspy-token2").val(cfg["brewspy-token2"]);
 
@@ -717,7 +727,7 @@
 
     <!-- START FOOTER -->
 
-    <div class="container themed-container bg-primary text-light row-margin-10">(C) Copyright 2022-23 Magnus Persson</div>
+    <div class="container themed-container bg-primary text-light row-margin-10">(C) Copyright 2022-2023 Magnus Persson</div>
   </div>
 </body>
 

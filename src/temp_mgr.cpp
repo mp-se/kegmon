@@ -23,6 +23,7 @@ SOFTWARE.
  */
 #include <kegconfig.hpp>
 #include <temp_bme.hpp>
+#include <temp_brewpi.hpp>
 #include <temp_dht.hpp>
 #include <temp_ds.hpp>
 #include <temp_mgr.hpp>
@@ -56,6 +57,11 @@ void TempSensorManager::setup() {
     case SensorBME280:
       Log.info(F("TEMP: Initializing temp sensor BME280." CR));
       _sensor.reset(new TempSensorBME);
+      break;
+
+    case SensorBrewPI:
+      Log.info(F("TEMP: Initializing temp sensor BrewPI." CR));
+      _sensor.reset(new TempSensorBrewpi);
       break;
 
     default:
