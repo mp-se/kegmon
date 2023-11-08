@@ -7,6 +7,7 @@ v0.9.0 (beta)
 =============
 
 * Added option to fetch temperature from brewpi-esp installation
+* Removed mobile dashboard, replaced with KegMonApp (see: https://github.com/mp-se/kegmonapp)
 
 v0.8.0
 ======
