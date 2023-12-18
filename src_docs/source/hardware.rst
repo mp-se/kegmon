@@ -78,7 +78,7 @@ for the HX711. So D3/D4 is unused in this variant.
   this will require an i2c extender to avoid adress overlap. 
 
 .. note::
-  Note that the ESP8266 only supports one I2C bus so with that processor only one scale can be used. Recommend to use ESP32S2 which 
+  Note that the ESP8266 only supports one I2C bus so with that processor only one scale can be used. Recommend to use ESP32S2/S3 which 
   can support both NAU7802 scales.
 
 .. image:: images/schema2.jpg
@@ -112,7 +112,7 @@ that scales are missing (floating input). You can use most values between
 It's possible to use the NAU7802 boards to replace the HX711 ADC. Two scales is only supported on the ESP32 platform since it requires 
 two i2c bus instances. The wiring is different if you choose this option. 
 
-* 2 x NAU7802 boards (require the ESP32S2 for two scales)
+* 2 x NAU7802 boards (require the ESP32S2/S3 for two scales)
 
 Images below shows examples of a HX711 board and RJ45 breakout board. 
 

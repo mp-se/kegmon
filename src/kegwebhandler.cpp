@@ -267,6 +267,12 @@ void KegWebHandler::webStatus(WS_PARAM) {
   doc[PARAM_PLATFORM] = "esp32s2 async";
 #elif defined(ESP32S2)
   doc[PARAM_PLATFORM] = "esp32s2";
+#elif defined(ESP32S3) && defined(USE_ASYNC_WEB)
+  doc[PARAM_PLATFORM] = "esp32s3 async";
+#elif defined(ESP32S3)
+  doc[PARAM_PLATFORM] = "esp32s3";
+#else
+#error "Undefined target"
 #endif
   doc[PARAM_APP_VER] = CFG_APPVER;
   doc[PARAM_APP_BUILD] = CFG_GITREV;

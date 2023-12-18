@@ -100,6 +100,17 @@ struct HardwareInfo {
   int _scale2Clock = A11;
   int _tempData = A10;
   int _tempPower = A8;
+#elif defined(ESP32S3)
+  int _displayData = SDA;
+  int _displayClock = SCL;
+  int _scale1Data = A17;
+  int _scale1Clock = A15;
+  int _scale2Data = A11; 
+  int _scale2Clock = A9; 
+  int _tempData = A10;
+  int _tempPower = A12; 
+#else
+#error "Not a supported target"
 #endif
 };
 

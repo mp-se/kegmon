@@ -24,7 +24,7 @@ This is the web page accessed by accessing the device via a web-browser. This se
 
 * **Host name**: Name of the device on the network.
 
-* **Platform**: Which hardware platform is used (ESP8266 or ESP32S2).
+* **Platform**: Which hardware platform is used (ESP8266, ESP32S2, ESP32S3).
 
 * **Device ID**: ESP chip ID. Used for identifying the device.
 

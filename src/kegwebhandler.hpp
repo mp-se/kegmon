@@ -27,7 +27,7 @@ SOFTWARE.
 #if defined(ESP8266)
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
-#elif defined(ESP32S2)
+#elif defined(ESP32S2) || defined(ESP32S3)
 #include <WiFi.h>
 #endif
 
@@ -37,11 +37,11 @@ SOFTWARE.
 #include <ESP8266WebServer.h>
 
 #include <basewebhandler.hpp>
-#elif defined(ESP32S2) && defined(USE_ASYNC_WEB)
+#elif (defined(ESP32S2) || defined(ESP32S3)) && defined(USE_ASYNC_WEB)
 #include <WebServer.h>
 
 #include <baseasyncwebhandler.hpp>
-#elif defined(ESP32S2)
+#elif defined(ESP32S2) || defined(ESP32S3)
 #include <WebServer.h>
 
 #include <basewebhandler.hpp>

@@ -35,6 +35,9 @@ In the /bin directory you will find 2 different firmware builds;
 
   This is the release build for an esp32s2 variant. 
 
+* **firmware32s3.bin**
+
+  This is the release build for an esp32s3 variant. 
 
 Updating firmware 
 =================

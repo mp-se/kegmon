@@ -38,6 +38,10 @@ SOFTWARE.
 #include <esp32s2/rom/rtc.h>
 #include <esp_core_dump.h>
 #endif
+#if CONFIG_IDF_TARGET_ESP32S3
+#include <esp32s3/rom/rtc.h>
+#include <esp_core_dump.h>
+#endif
 
 SerialDebug mySerial(115200L);
 KegConfig myConfig(CFG_MDNSNAME, CFG_FILENAME);

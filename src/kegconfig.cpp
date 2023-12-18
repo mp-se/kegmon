@@ -119,6 +119,10 @@ void KegConfig::createJson(DynamicJsonDocument& doc, bool skipSecrets) {
   doc[PARAM_PLATFORM] = "esp8266";
 #elif defined(ESP32S2)
   doc[PARAM_PLATFORM] = "esp32s2";
+#elif defined(ESP32S3)
+  doc[PARAM_PLATFORM] = "esp32s3";
+#else
+#error "Unsupported target"
 #endif
 
   /*

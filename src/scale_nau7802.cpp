@@ -62,7 +62,7 @@ void Scale::setupNAU7802(bool force) {
 #if defined(ESP8266)
     Log.error(
         F("SCAL: NAU7802 scale [1] cannot be used on ESP8266 since only one "
-          "I2C bus is supported in Arduino. Use an ESP32S2 instead." CR));
+          "I2C bus is supported in Arduino. Use an ESP32S2/S3 instead." CR));
 #else
 #if LOG_LEVEL == 6
     Log.verbose(F("SCAL: NAU7802 initializing [1], using offset %l." CR),
