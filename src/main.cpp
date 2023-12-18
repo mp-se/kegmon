@@ -36,10 +36,12 @@ SOFTWARE.
 #include <wificonnection.hpp>
 #if CONFIG_IDF_TARGET_ESP32S2
 #include <esp32s2/rom/rtc.h>
-#include <esp_core_dump.h>
 #endif
 #if CONFIG_IDF_TARGET_ESP32S3
+
 #include <esp32s3/rom/rtc.h>
+#endif
+#if defined(ESP32)
 #include <esp_core_dump.h>
 #endif
 

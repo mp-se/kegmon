@@ -105,10 +105,10 @@ struct HardwareInfo {
   int _displayClock = SCL;
   int _scale1Data = A17;
   int _scale1Clock = A15;
-  int _scale2Data = A11; 
-  int _scale2Clock = A9; 
+  int _scale2Data = A11;
+  int _scale2Clock = A9;
   int _tempData = A10;
-  int _tempPower = A12; 
+  int _tempPower = A12;
 #else
 #error "Not a supported target"
 #endif
