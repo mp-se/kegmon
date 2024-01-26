@@ -22,7 +22,7 @@ jobs:
       - name: PlatformIO Run
         uses: karniv00l/platformio-run-action@v1
         with:
-          environments: "kegmon-release,kegmon32s2-release"
+          environments: "kegmon-release,kegmon32s2-release,kgmon32s3-release"
           #targets: "kegmon-release,kegmon32s2-release"
           #project-dir: "./some_dir"
           #project-conf: "./some_dir/custom.ini"
