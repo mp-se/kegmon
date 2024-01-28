@@ -16,9 +16,9 @@ For docs see: https://mp-se.github.io/kegmon/index.html
 
 # Hardware
 
-* Supports ESP8266 D1 mini or ESP32s2 mini
+* Supports ESP8266 D1 mini, ESP32s2 mini or ESP32s3 mini
 * Loadcells and HX711/NAU7802 ADC converters
-* DS18B20, DHT22 or BME280 temperature sensors
+* DS18B20, DHT22, BME280 or BrewPI(IP) temperature sensors
 * OLED 0.96" or LCD 20x4/20x2 displays
 
 # Features
@@ -37,4 +37,3 @@ For docs see: https://mp-se.github.io/kegmon/index.html
 * Modern HTML5 UI
 * Easy scale calibration
 * 3D models and PCB
-* Mobile dashboard

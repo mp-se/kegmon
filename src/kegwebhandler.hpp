@@ -27,7 +27,7 @@ SOFTWARE.
 #if defined(ESP8266)
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
-#elif defined(ESP32S2)
+#elif defined(ESP32S2) || defined(ESP32S3)
 #include <WiFi.h>
 #endif
 
@@ -37,11 +37,11 @@ SOFTWARE.
 #include <ESP8266WebServer.h>
 
 #include <basewebhandler.hpp>
-#elif defined(ESP32S2) && defined(USE_ASYNC_WEB)
+#elif (defined(ESP32S2) || defined(ESP32S3)) && defined(USE_ASYNC_WEB)
 #include <WebServer.h>
 
 #include <baseasyncwebhandler.hpp>
-#elif defined(ESP32S2)
+#elif defined(ESP32S2) || defined(ESP32S3)
 #include <WebServer.h>
 
 #include <basewebhandler.hpp>
@@ -56,7 +56,7 @@ INCBIN_EXTERN(BeerHtm);
 INCBIN_EXTERN(StabilityHtm);
 INCBIN_EXTERN(GraphHtm);
 INCBIN_EXTERN(BackupHtm);
-INCBIN_EXTERN(DashboardHtm);
+INCBIN_EXTERN(BrewpiHtm);
 #else
 extern const uint8_t calibrationHtmStart[] asm(
     "_binary_html_calibration_min_htm_start");
@@ -72,10 +72,8 @@ extern const uint8_t graphHtmStart[] asm("_binary_html_graph_min_htm_start");
 extern const uint8_t graphHtmEnd[] asm("_binary_html_graph_min_htm_end");
 extern const uint8_t backupHtmStart[] asm("_binary_html_backup_min_htm_start");
 extern const uint8_t backupHtmEnd[] asm("_binary_html_backup_min_htm_end");
-extern const uint8_t dashboardHtmStart[] asm(
-    "_binary_html_dashboard_min_htm_start");
-extern const uint8_t dashboardHtmEnd[] asm(
-    "_binary_html_dashboard_min_htm_end");
+extern const uint8_t brewpiHtmStart[] asm("_binary_html_brewpi_min_htm_start");
+extern const uint8_t brewpiHtmEnd[] asm("_binary_html_brewpi_min_htm_end");
 #endif
 
 #if defined(USE_ASYNC_WEB)
@@ -145,9 +143,6 @@ class KegWebHandler :
   void webBackupHtm(WS_PARAM) {
     WS_SEND_STATIC(gBackupHtmData, gBackupHtmSize);
   }
-  void webDashboardHtm(WS_PARAM) {
-    WS_SEND_STATIC(gDashboardHtmData, gDashboardHtmSize);
-  }
 #else
   void webCalibrateHtm(WS_PARAM) {
     WS_SEND_STATIC(
@@ -170,11 +165,6 @@ class KegWebHandler :
   void webBackupHtm(WS_PARAM) {
     WS_SEND_STATIC((const char*)backupHtmStart,
                    strlen(reinterpret_cast<const char*>(&backupHtmStart[0])));
-  }
-  void webDashboardHtm(WS_PARAM) {
-    WS_SEND_STATIC(
-        (const char*)dashboardHtmStart,
-        strlen(reinterpret_cast<const char*>(&dashboardHtmStart[0])));
   }
 #endif
 

@@ -36,6 +36,12 @@ SOFTWARE.
 #include <wificonnection.hpp>
 #if CONFIG_IDF_TARGET_ESP32S2
 #include <esp32s2/rom/rtc.h>
+#endif
+#if CONFIG_IDF_TARGET_ESP32S3
+
+#include <esp32s3/rom/rtc.h>
+#endif
+#if defined(ESP32)
 #include <esp_core_dump.h>
 #endif
 
@@ -106,13 +112,14 @@ void setup() {
   myConfig.setScaleFactor(UnitIndex::U2, 1);
 #endif
 
-#if defined(ESP8266)
-  Log.notice(F("Main: Initializing I2C bus #1 on pins SDA=%d,SCL=%d" CR),
+  Log.notice(F("Main: Initializing I2C bus #1 on pins SDA=%d, SCL=%d" CR),
              myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
+#if defined(ESP8266)
   Wire.begin(myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
 #else  // ESP32
   Wire.setPins(myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
   Wire.begin();
+  // Log.notice(F("Main: I2C bus clock=%d" CR), Wire.getClock());
 #endif
   scanI2C(myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
 
@@ -223,8 +230,8 @@ void loop() {
       printHeap("Loop:");
     }
 
-    // The temp sensor should not be read too often. Reading every 10 seconds.
-    if (!(loopCounter % 5)) {
+    // The temp sensor should not be read too often.
+    if (!(loopCounter % 15)) {
       myTemp.read();
     }
 

@@ -35,10 +35,10 @@ void TempSensorDHT::setup() {
   if (_dht) {
     _dht->begin();
 
-    if (_dht->readTemperature(false, false) != NAN)
-      _hasSensor = true;
-    else
+    if (isnan(_dht->readTemperature(false, false)))
       _hasSensor = false;
+    else
+      _hasSensor = true;
   }
 }
 
@@ -50,6 +50,9 @@ TempReading TempSensorDHT::read() {
   reading.temperature = _dht->readTemperature(false, false);
   reading.humidity = _dht->readHumidity(false);
   reading.pressure = NAN;
+
+  if (isnan(reading.temperature)) _hasSensor = false;
+
   return reading;
 }
 

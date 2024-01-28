@@ -45,6 +45,9 @@ constexpr auto PIN_LED = 2;
 #elif defined(ESP32S2)
 #define ESP_RESET ESP.restart
 constexpr auto PIN_LED = BUILTIN_LED;
+#elif defined(ESP32S3)
+#define ESP_RESET ESP.restart
+constexpr auto PIN_LED = BUILTIN_LED;
 #else
 #error "Undefined target platform"
 #endif

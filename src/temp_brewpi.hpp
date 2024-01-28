@@ -1,6 +1,7 @@
 /*
 MIT License
 
+
 Copyright (c) 2021-23 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,31 +22,26 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#ifndef SRC_TEMP_BASE_HPP_
-#define SRC_TEMP_BASE_HPP_
+#ifndef SRC_TEMP_BREWPI_HPP_
+#define SRC_TEMP_BREWPI_HPP_
 
-#include <Arduino.h>
+#include <basepush.hpp>
+#include <temp_base.hpp>
 
-struct TempReading {
-  float temperature;
-  float humidity;
-  float pressure;
-};
+class TempSensorBrewpi : public TempSensorBase {
+ private:
+  BasePush* _push = NULL;
+  bool _hasSensor = false;
 
-bool operator==(const TempReading& lhs, const TempReading& rhs);
-
-constexpr TempReading TEMP_READING_FAILED = {NAN, NAN, NAN};
-
-class TempSensorBase {
  public:
-  TempSensorBase() = default;
-  virtual ~TempSensorBase() {}
+  TempSensorBrewpi();
+  ~TempSensorBrewpi();
 
-  virtual void setup() = 0;
-  virtual bool hasSensor() = 0;
-  virtual TempReading read() = 0;
+  void setup() override {}
+  bool hasSensor() override { return _hasSensor; }
+  TempReading read() override;
 };
 
-#endif  // SRC_TEMP_BASE_HPP_
+#endif  // SRC_TEMP_BREWPI_HPP_
 
 // EOF
