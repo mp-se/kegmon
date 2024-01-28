@@ -208,7 +208,7 @@
 <li><p><strong>Temperature</strong>: Temperature reading (not shown if there is no sensor).</p></li>
 <li><p><strong>Current version</strong>: Shows the current software version including git revision or beta tag.</p></li>
 <li><p><strong>Host name</strong>: Name of the device on the network.</p></li>
-<li><p><strong>Platform</strong>: Which hardware platform is used (ESP8266 or ESP32S2).</p></li>
+<li><p><strong>Platform</strong>: Which hardware platform is used (ESP8266, ESP32S2, ESP32S3).</p></li>
 <li><p><strong>Device ID</strong>: ESP chip ID. Used for identifying the device.</p></li>
 <li><p><strong>SSID</strong>: Name of network we are connected to.</p></li>
 </ul>
@@ -238,8 +238,9 @@
 <a class="reference internal image-reference" href="_images/config2.png"><img alt="Hardware" src="_images/config2.png" style="width: 600px;"/></a>
 <ul class="simple">
 <li><p><strong>Display driver</strong>: Choose the what display driver is used, either LCD 20x4 or OLED 0.96”. Default is OLED 0.96”.</p></li>
-<li><p><strong>Temp sensor</strong>: Choose the what temp sensor is used, either DHT22, BME280 or DS18B20. Default is DS18B20. <em>Wiring for BME280 is different</em>.</p></li>
+<li><p><strong>Temp sensor</strong>: Choose the what temp sensor is used, either DHT22, BME280, DS18B20 or remote BrewPI-ESP installation. Default is DS18B20. <em>Wiring for BME280 is different</em>.</p></li>
 <li><p><strong>Scale sensor</strong>: Choose the what ADC is used, HX711 or NAU7802. Default is HX711. <em>Wiring for NAU7802 is different</em>.</p></li>
+<li><p><strong>BrewPI ESP URL</strong>: Base URL for the brewpi-esp to fetch temperature from. Require v15 or later.</p></li>
 <li><p><strong>Pin</strong>: If you dont follow the standard hardware wiring then you can customize the pins here.</p></li>
 </ul>
 <a class="reference internal image-reference" href="_images/config3.png"><img alt="Configuration (2)" src="_images/config3.png" style="width: 600px;"/></a>

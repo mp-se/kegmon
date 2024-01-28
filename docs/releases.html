@@ -197,6 +197,16 @@
         <article role="main">
           <div class="section" id="releases">
 <span id="id1"></span><h1>Releases<a class="headerlink" href="#releases" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="v0-9-0">
+<h2>v0.9.0<a class="headerlink" href="#v0-9-0" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Added new board esp32s3 mini</p></li>
+<li><p>Added option to fetch temperature from brewpi-esp installation</p></li>
+<li><p>Removed mobile dashboard, replaced with KegMonApp (see: <a class="reference external" href="https://github.com/mp-se/kegmonapp">https://github.com/mp-se/kegmonapp</a>)</p></li>
+<li><p>Added support for ESP32s3 mini</p></li>
+<li><p>Fixed memory leak in temp sensor code</p></li>
+</ul>
+</div>
 <div class="section" id="v0-8-0">
 <h2>v0.8.0<a class="headerlink" href="#v0-8-0" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -233,11 +243,11 @@
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Issues with connecting to DHT22 sensor on ESP32S2 variant over long cables. Uncertain what causes this. Recommendation is to use DS18B20 instead on ESP32S2.</p>
+<p>Issues with connecting to DHT22 sensor on ESP32S2/S3 variant over long cables. Uncertain what causes this. Recommendation is to use DS18B20 instead on ESP32S2/S3.</p>
 </div>
 <ul class="simple">
 <li><p>BUG: Configuration lost when JSON document became to large, increased buffer to 3kb (from 2kb)</p></li>
-<li><p>Added support for NAU7802 AD converter from sparkfun. Uses I2C bus. Will require ESP32S2 for two scales and different wiring. This is EXPERIMENTAL!</p></li>
+<li><p>Added support for NAU7802 AD converter from sparkfun. Uses I2C bus. Will require ESP32S2/S3 for two scales and different wiring. This is EXPERIMENTAL!</p></li>
 <li><p>Added error message to restore configuration feature in case the ID did not match.</p></li>
 <li><p>Added pull-up resistor to temperature sensor data line (applies to both DS18B20 and DHT22)</p></li>
 <li><p>Added web based serial console accessed via <a class="reference external" href="http://device/serial">http://device/serial</a> or ws://device/serialws (only works with async webserver)</p></li>
@@ -325,6 +335,7 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Releases</a><ul>
+<li><a class="reference internal" href="#v0-9-0">v0.9.0</a></li>
 <li><a class="reference internal" href="#v0-8-0">v0.8.0</a></li>
 <li><a class="reference internal" href="#v0-7-1">v0.7.1</a></li>
 <li><a class="reference internal" href="#v0-7-0">v0.7.0</a></li>

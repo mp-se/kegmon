@@ -7,7 +7,7 @@ Welcome to KegMon - Keezer Level Monitor
 ----------------------------------------
 
 .. note::
-  Reflects test version *v0.8.0*, Last updated 2023-10-03
+  Reflects test version *v0.9.0*, Last updated 2024-01-28
 
 Introduction
 ============
@@ -96,7 +96,7 @@ ADC
 For ADC there are a few options available: 
 
 * HX711 based boards (3 main options, green, purple and red boards)
-* NAU7802 requires a differnt hardware wiring. NAU782 uses I2C communication and for two scales an ESP32S2 is required.
+* NAU7802 requires a differnt hardware wiring. NAU782 uses I2C communication and for two scales an ESP32S2/S3 is required.
 
 The *HX711 purple board* is the primary option used in the design. The green board has a different pin configuration. 
 
