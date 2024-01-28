@@ -7,7 +7,7 @@ Welcome to KegMon - Keezer Level Monitor
 ----------------------------------------
 
 .. note::
-  Reflects test version *v0.8.0*, Last updated 2023-10-03
+  Reflects test version *v0.9.0*, Last updated 2024-01-28
 
 Introduction
 ============

@@ -3,12 +3,14 @@
 Releases 
 ########
 
-v0.9.0 (beta)
-=============
+v0.9.0
+======
 
+* Added new board esp32s3 mini
 * Added option to fetch temperature from brewpi-esp installation
 * Removed mobile dashboard, replaced with KegMonApp (see: https://github.com/mp-se/kegmonapp)
 * Added support for ESP32s3 mini
+* Fixed memory leak in temp sensor code
 
 v0.8.0
 ======
