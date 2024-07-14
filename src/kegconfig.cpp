@@ -31,12 +31,12 @@ constexpr auto PARAM_PLATFORM = "platform";
 KegConfig::KegConfig(String baseMDNS, String fileName)
     : BaseConfig(baseMDNS, fileName, JSON_BUFFER) {}
 
-void KegConfig::createJson(DynamicJsonDocument& doc, bool skipSecrets) {
+void KegConfig::createJson(JsonObject& doc) {
   // Call base class functions
-  createJsonBase(doc, skipSecrets);
-  createJsonWifi(doc, skipSecrets);
-  createJsonOta(doc, skipSecrets);
-  createJsonPush(doc, skipSecrets);
+  createJsonBase(doc);
+  createJsonWifi(doc);
+  createJsonOta(doc);
+  createJsonPush(doc);
 
   // Handle project specific config
   doc[PARAM_WEIGHT_UNIT] = getWeightUnit();
@@ -133,7 +133,7 @@ void KegConfig::createJson(DynamicJsonDocument& doc, bool skipSecrets) {
   */
 }
 
-void KegConfig::parseJson(DynamicJsonDocument& doc) {
+void KegConfig::parseJson(JsonObject& doc) {
   // Call base class functions
   parseJsonBase(doc);
   parseJsonWifi(doc);
@@ -340,6 +340,57 @@ float convertOutgoingVolume(float v) {
 float convertOutgoingTemperature(float t) {
   if (myConfig.isTempFormatC()) return t;
   return convertCtoF(t);
+}
+
+void KegConfig::migrateSettings() {
+  constexpr auto CFG_FILENAME_OLD = "/kegmon.json";
+
+  if (!LittleFS.exists(CFG_FILENAME_OLD)) {
+    return;
+  }
+
+  File configFile = LittleFS.open(CFG_FILENAME_OLD, "r");
+
+  if (!configFile) {
+    Serial.println("Failed to open old config file");
+    return;
+  }
+
+  DynamicJsonDocument doc(JSON_BUFFER_SIZE_L);
+  DynamicJsonDocument doc2(JSON_BUFFER_SIZE_L);
+
+  DeserializationError err = deserializeJson(doc, configFile);
+  configFile.close();
+
+  if (err) {
+    Serial.println("Failed to open parse old config file");
+    return;
+  }
+
+  JsonObject obj = doc.as<JsonObject>();
+  JsonObject obj2 = doc2.createNestedObject();
+
+  serializeJson(obj, EspSerial);
+  EspSerial.print(CR);
+
+  for (JsonPair kv : obj) {
+    String k = kv.key().c_str();
+    k.replace("-", "_");
+  }
+
+  obj.clear();
+#if LOG_LEVEL == 6
+  serializeJson(obj2, EspSerial);
+  EspSerial.print(CR);
+#endif
+  parseJson(obj2);
+  obj2.clear();
+
+  if (saveFile()) {
+    LittleFS.remove(CFG_FILENAME_OLD);
+  }
+
+  Log.notice(F("CFG : Migrated old config /kegmonmon.json." CR));
 }
 
 // EOF
