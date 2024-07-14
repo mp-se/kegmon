@@ -37,7 +37,7 @@ class Brewspy {
   void sendTapInformation(UnitIndex idx, float stableVol, float pourVol);
   void sendPourInformation(UnitIndex idx, float pourVol);
   void clearKegInformation(UnitIndex idx);
-  String getTapInformation(const String &token);
+  void getTapInformation(JsonObject &obj, const String token);
 };
 
 #endif  // SRC_BREWSPY_HPP_
