@@ -16,7 +16,7 @@ jobs:
       - name: Checkout UI
         run: |
           echo "Checkout UI"
-          git clone https://github.com/mp-se/gravitymon-ui kegmon-ui 
+          git clone https://github.com/mp-se/kegmon-ui kegmon-ui 
           cp kegmon-ui/dist/css/app.css.gz html/
           cp kegmon-ui/dist/js/app.js.gz html/
           cp kegmon-ui/dist/index.html html/
