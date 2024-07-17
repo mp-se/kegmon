@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#include <onewire.h>
+#include <OneWire.h>
 
 #include <kegpush.hpp>
 #include <kegwebhandler.hpp>
@@ -146,6 +146,9 @@ void KegWebHandler::setupWebHandlers() {
   _server->on(
       "/api/hardware", HTTP_GET,
       std::bind(&KegWebHandler::webHardwareScan, this, std::placeholders::_1));
+  _server->on("/api/factory", HTTP_GET,
+              std::bind(&KegWebHandler::webHandleFactoryDefaults, this,
+                        std::placeholders::_1));
 }
 
 void KegWebHandler::webConfigGet(AsyncWebServerRequest *request) {
@@ -160,6 +163,30 @@ void KegWebHandler::webConfigGet(AsyncWebServerRequest *request) {
   myConfig.createJson(obj);
   response->setLength();
   request->send(response);
+}
+
+void KegWebHandler::webHandleFactoryDefaults(AsyncWebServerRequest *request) {
+  if (!isAuthenticated(request)) {
+    return;
+  }
+
+  Log.notice(F("WEB : webServer callback for /api/factory." CR));
+  myConfig.saveFileWifiOnly();
+  LittleFS.remove(ERR_FILENAME);
+  LittleFS.remove(LEVELS_FILENAME);
+  LittleFS.remove(LEVELS_FILENAME2);
+  LittleFS.end();
+  Log.notice(F("WEB : Deleted files in filesystem, rebooting." CR));
+
+  AsyncJsonResponse *response =
+      new AsyncJsonResponse(false, JSON_BUFFER_SIZE_S);
+  JsonObject obj = response->getRoot().as<JsonObject>();
+  obj[PARAM_SUCCESS] = true;
+  obj[PARAM_MESSAGE] = "Factory reset completed, rebooting";
+  response->setLength();
+  request->send(response);
+  delay(500);
+  ESP_RESET();
 }
 
 void KegWebHandler::webConfigPost(AsyncWebServerRequest *request,

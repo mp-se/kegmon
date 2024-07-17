@@ -47,12 +47,7 @@ SOFTWARE.
 
 SerialDebug mySerial(115200L);
 KegConfig myConfig(CFG_MDNSNAME, CFG_FILENAME);
-#if defined(WOKWI)
-WifiConnection myWifi(&myConfig, CFG_APPNAME, "password", CFG_MDNSNAME,
-                      "Wokwi-GUEST", "");
-#else
 WifiConnection myWifi(&myConfig, CFG_APPNAME, "password", CFG_MDNSNAME);
-#endif
 OtaUpdate myOta(&myConfig, CFG_APPVER);
 KegWebHandler myWebHandler(&myConfig);
 KegPushHandler myPush(&myConfig);
@@ -60,14 +55,14 @@ Display myDisplay;
 Scale myScale;
 LevelDetection myLevelDetection;
 TempSensorManager myTemp;
-#if defined(USE_ASYNC_WEB)
 SerialWebSocket mySerialWebSocket;
-#endif
 DisplayLayout myDisplayLayout;
 
 const int loopInterval = 2000;
 int loopCounter = 0;
 uint32_t loopMillis = 0;
+
+RunMode runMode = RunMode::normalMode;
 
 void scanI2C(int sda, int scl);
 void logStartup();
@@ -101,16 +96,11 @@ void setup() {
              CFG_GITREV, LOG_LEVEL);
 
   myConfig.checkFileSystem();
+  myConfig.migrateSettings();
 
   PERF_BEGIN("setup-config");
   myConfig.loadFile();
   PERF_END("setup-config");
-
-#if defined(WOKWI)
-  // Set some default values when we run on the simulator
-  myConfig.setScaleFactor(UnitIndex::U1, 1);
-  myConfig.setScaleFactor(UnitIndex::U2, 1);
-#endif
 
   Log.notice(F("Main: Initializing I2C bus #1 on pins SDA=%d, SCL=%d" CR),
              myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
@@ -150,26 +140,30 @@ void setup() {
         F("Main: Missing wifi config or double reset detected, entering wifi "
           "setup." CR));
     myDisplayLayout.showWifiPortal();
-    myWifi.startPortal();
+    myWifi.startAP();
+    runMode = RunMode::wifiSetupMode;
   }
 
-  PERF_BEGIN("setup-wifi-connect");
-  myWifi.connect();
-  PERF_END("setup-wifi-connect");
-  PERF_BEGIN("setup-timesync");
-  myWifi.timeSync();
-  PERF_END("setup-timesync");
+  switch (runMode) {
+    case RunMode::normalMode:
+      PERF_BEGIN("setup-wifi-connect");
+      myWifi.connect();
+      PERF_END("setup-wifi-connect");
+      PERF_BEGIN("setup-timesync");
+      myWifi.timeSync();
+      PERF_END("setup-timesync");
+      break;
+
+    case RunMode::wifiSetupMode:
+      break;
+  }
 
   checkCoreDump();
 
   PERF_BEGIN("setup-webserver");
-#if defined(USE_ASYNC_WEB)
-  myWebHandler.setupAsyncWebServer();
+  myWebHandler.setupWebServer();
   mySerialWebSocket.begin(myWebHandler.getWebServer(), &EspSerial);
   mySerial.begin(&mySerialWebSocket);
-#else
-  myWebHandler.setupWebServer();
-#endif
   PERF_END("setup-webserver");
 
   Log.notice(F("Main: Setup completed." CR));
@@ -180,18 +174,15 @@ void setup() {
   PERF_END("main-setup");
   PERF_PUSH();
   myTemp.read();
-  // logStartup();
   delay(3000);
 }
 
 void loop() {
-  if (!myWifi.isConnected()) myWifi.connect();
+  if (!myWifi.isConnected() && runMode == RunMode::normalMode) myWifi.connect();
 
   myWebHandler.loop();
   myWifi.loop();
-#if defined(USE_ASYNC_WEB)
   mySerialWebSocket.loop();
-#endif
   myScale.loop(UnitIndex::U1);
   myScale.loop(UnitIndex::U2);
 
@@ -242,8 +233,6 @@ void loop() {
         myTemp.setup();
       }
     }
-
-    // printHeap("Loop:");
 
     // Read the scales, only once per loop
     float t = myTemp.getLastTempC();
