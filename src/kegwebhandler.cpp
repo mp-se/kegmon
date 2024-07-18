@@ -30,6 +30,7 @@ SOFTWARE.
 #include <scale.hpp>
 #include <temp_mgr.hpp>
 #include <utils.hpp>
+#include <uptime.hpp>
 
 // Configuration or api params
 constexpr auto PARAM_APP_VER = "app_ver";
@@ -80,6 +81,10 @@ constexpr auto PARAM_FEATURES = "features";
 constexpr auto PARAM_WIFI_SETUP = "wifi_setup";
 constexpr auto PARAM_ONEWIRE = "onewire";
 constexpr auto PARAM_RESOLUTION = "resolution";
+constexpr auto PARAM_UPTIME_SECONDS = "uptime_seconds";
+constexpr auto PARAM_UPTIME_MINUTES = "uptime_minutes";
+constexpr auto PARAM_UPTIME_HOURS = "uptime_hours";
+constexpr auto PARAM_UPTIME_DAYS = "uptime_days";
 
 KegWebHandler::KegWebHandler(KegConfig *config)
     : BaseWebServer(config, JSON_BUFFER) {
@@ -425,6 +430,11 @@ void KegWebHandler::webStatus(AsyncWebServerRequest *request) {
   obj[PARAM_WEIGHT_UNIT] = myConfig.getWeightUnit();
   obj[PARAM_VOLUME_UNIT] = myConfig.getVolumeUnit();
   obj[PARAM_TEMP_FORMAT] = String(myConfig.getTempFormat());
+
+  obj[PARAM_UPTIME_SECONDS] = myUptime.getSeconds();
+  obj[PARAM_UPTIME_MINUTES] = myUptime.getMinutes();
+  obj[PARAM_UPTIME_HOURS] = myUptime.getHours();
+  obj[PARAM_UPTIME_DAYS] = myUptime.getDays();
 
   // For this we use the last value read from the scale to avoid having to much
   // communication. The value will be updated regulary second in the main loop.
