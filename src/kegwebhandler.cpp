@@ -518,6 +518,8 @@ void KegWebHandler::webStability(AsyncWebServerRequest *request) {
 
   obj[PARAM_WEIGHT_UNIT] = myConfig.getWeightUnit();
 
+  // TODO: Fix formatting of the stability values
+
   if (stability1->count() > 1) {
     obj[PARAM_STABILITY_COUNT1] = stability1->count();
     obj[PARAM_STABILITY_SUM1] = stability1->sum();
