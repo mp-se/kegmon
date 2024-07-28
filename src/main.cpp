@@ -126,9 +126,6 @@ void setup() {
   PERF_BEGIN("setup-scale");
   myScale.setup();
   PERF_END("setup-scale");
-  PERF_BEGIN("setup-temp");
-  myTemp.setup();
-  PERF_END("setup-temp");
 
 #if defined(ESP8266)
   ESP.wdtDisable();
@@ -166,6 +163,10 @@ void setup() {
   mySerialWebSocket.begin(myWebHandler.getWebServer(), &EspSerial);
   mySerial.begin(&mySerialWebSocket);
   PERF_END("setup-webserver");
+
+  PERF_BEGIN("setup-temp");
+  myTemp.setup();
+  PERF_END("setup-temp");
 
   Log.notice(F("Main: Setup completed." CR));
   myDisplayLayout.showStartupDevices(myScale.isConnected(UnitIndex::U1),
@@ -226,6 +227,9 @@ void loop() {
     // The temp sensor should not be read too often.
     if (!(loopCounter % 15)) {
       myTemp.read();
+      Log.notice(F("LOOP: Reading temperature=%F,humidity=%F,pressure=%F" CR),
+                 myTemp.getLastTempC(), myTemp.getLastPressure(),
+                 myTemp.getLastPressure());
     }
 
     // Check if the temp sensor exist and try to reinitialize
