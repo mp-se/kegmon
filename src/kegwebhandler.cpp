@@ -62,6 +62,8 @@ constexpr auto PARAM_LAST_POUR_WEIGHT1 = "last_pour_weight1";
 constexpr auto PARAM_LAST_POUR_WEIGHT2 = "last_pour_weight2";
 constexpr auto PARAM_LAST_POUR_VOLUME1 = "last_pour_volume1";
 constexpr auto PARAM_LAST_POUR_VOLUME2 = "last_pour_volume2";
+constexpr auto PARAM_SCALE_CONNECTED1 = "scale_connected1";
+constexpr auto PARAM_SCALE_CONNECTED2 = "scale_connected2";
 
 // Other values
 constexpr auto PARAM_TOTAL_HEAP = "total_heap";
@@ -327,6 +329,10 @@ void KegWebHandler::webScaleFactor(AsyncWebServerRequest *request,
 void KegWebHandler::populateScaleJson(JsonObject &doc) {
   // This will return the raw weight so that that we get the actual values.
   doc[PARAM_SCALE_BUSY] = myScale.isScheduleRunning();
+
+  doc[PARAM_SCALE_CONNECTED1] = myScale.isConnected(UnitIndex::U1);
+  doc[PARAM_SCALE_CONNECTED2] = myScale.isConnected(UnitIndex::U2);
+
   doc[PARAM_SCALE_FACTOR1] = myConfig.getScaleFactor(UnitIndex::U1);
   doc[PARAM_SCALE_FACTOR2] = myConfig.getScaleFactor(UnitIndex::U2);
   if (myScale.isConnected(UnitIndex::U1)) {
