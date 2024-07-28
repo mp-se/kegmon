@@ -29,8 +29,8 @@ SOFTWARE.
 #include <main.hpp>
 #include <scale.hpp>
 #include <temp_mgr.hpp>
-#include <utils.hpp>
 #include <uptime.hpp>
+#include <utils.hpp>
 
 // Configuration or api params
 constexpr auto PARAM_APP_VER = "app_ver";

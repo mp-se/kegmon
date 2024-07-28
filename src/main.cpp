@@ -26,13 +26,13 @@ SOFTWARE.
 #include <kegconfig.hpp>
 #include <kegpush.hpp>
 #include <kegwebhandler.hpp>
-#include <uptime.hpp>
 #include <main.hpp>
 #include <ota.hpp>
 #include <perf.hpp>
 #include <scale.hpp>
 #include <serialws.hpp>
 #include <temp_mgr.hpp>
+#include <uptime.hpp>
 #include <utils.hpp>
 #include <wificonnection.hpp>
 #if CONFIG_IDF_TARGET_ESP32S2
