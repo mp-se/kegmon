@@ -26,6 +26,7 @@ SOFTWARE.
 #include <kegconfig.hpp>
 #include <kegpush.hpp>
 #include <kegwebhandler.hpp>
+#include <uptime.hpp>
 #include <main.hpp>
 #include <ota.hpp>
 #include <perf.hpp>
@@ -180,6 +181,7 @@ void setup() {
 void loop() {
   if (!myWifi.isConnected() && runMode == RunMode::normalMode) myWifi.connect();
 
+  myUptime.calculate();
   myWebHandler.loop();
   myWifi.loop();
   mySerialWebSocket.loop();
