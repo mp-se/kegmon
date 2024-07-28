@@ -344,6 +344,7 @@ float convertOutgoingTemperature(float t) {
 
 void KegConfig::migrateSettings() {
   constexpr auto CFG_FILENAME_OLD = "/kegmon.json";
+  constexpr auto CFG_FILENAME_OLD_SAVE = "/kegmon_old.json";
 
   if (!LittleFS.exists(CFG_FILENAME_OLD)) {
     return;
@@ -356,8 +357,8 @@ void KegConfig::migrateSettings() {
     return;
   }
 
-  DynamicJsonDocument doc(JSON_BUFFER_SIZE_L);
-  DynamicJsonDocument doc2(JSON_BUFFER_SIZE_L);
+  DynamicJsonDocument doc(JSON_BUFFER_SIZE_XL);
+  DynamicJsonDocument doc2(JSON_BUFFER_SIZE_XL);
 
   DeserializationError err = deserializeJson(doc, configFile);
   configFile.close();
@@ -376,6 +377,7 @@ void KegConfig::migrateSettings() {
   for (JsonPair kv : obj) {
     String k = kv.key().c_str();
     k.replace("-", "_");
+    obj2[k] = obj[kv.key().c_str()];
   }
 
   obj.clear();
@@ -387,10 +389,11 @@ void KegConfig::migrateSettings() {
   obj2.clear();
 
   if (saveFile()) {
-    LittleFS.remove(CFG_FILENAME_OLD);
+    LittleFS.rename(CFG_FILENAME_OLD, CFG_FILENAME_OLD_SAVE);
+    // LittleFS.remove(CFG_FILENAME_OLD);
   }
 
-  Log.notice(F("CFG : Migrated old config /kegmonmon.json." CR));
+  Log.notice(F("CFG : Migrated old config /kegmon.json." CR));
 }
 
 // EOF
