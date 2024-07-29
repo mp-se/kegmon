@@ -434,31 +434,6 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }
 
-  // These settings are used for debugging and checking stability of the scales.
-  // Only influx is used for now
-  const char* getTargetHttpPost() { return ""; }
-  void setTargetHttpPost(String target) {}
-  const char* getHeader1HttpPost() { return ""; }
-  void setHeader1HttpPost(String header) {}
-  const char* getHeader2HttpPost() { return ""; }
-  void setHeader2HttpPost(String header) {}
-
-  const char* getTargetHttpGet() { return ""; }
-  void setTargetHttpGet(String target) {}
-  const char* getHeader1HttpGet() { return ""; }
-  void setHeader1HttpGet(String header) {}
-  const char* getHeader2HttpGet() { return ""; }
-  void setHeader2HttpGet(String header) {}
-
-  const char* getTargetInfluxDB2() { return ""; }
-  void setTargetInfluxDB2(String target) {}
-  const char* getOrgInfluxDB2() { return ""; }
-  void setOrgInfluxDB2(String org) {}
-  const char* getBucketInfluxDB2() { return ""; }
-  void setBucketInfluxDB2(String bucket) {}
-  const char* getTokenInfluxDB2() { return ""; }
-  void setTokenInfluxDB2(String token) {}
-
   // Hardware related methods
   int getPinDisplayData() { return _pins._displayData; }
   void setPinDisplayData(int pin) {
