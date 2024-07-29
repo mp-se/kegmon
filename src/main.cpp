@@ -305,82 +305,88 @@ void loop() {
         myLevelDetection.getStatsDetection(UnitIndex::U1)->getPourValue(),
         myLevelDetection.getStatsDetection(UnitIndex::U2)->getPourValue());
 
-#if defined(ENABLE_INFLUX_DEBUG)
-    // This part is used to send data to an influxdb in order to get data on
-    // scale stability/drift over time.
-    char buf[250];
+    if (myConfig.hasTargetInfluxDb2()) {
+      Log.notice(F("LOOP: Sending data to configured influxdb" CR));
 
-    float raw1 = myLevelDetection.getRawDetection(UnitIndex::U1)->getRawValue();
-    float raw2 = myLevelDetection.getRawDetection(UnitIndex::U2)->getRawValue();
-    float stb1 =
-        myLevelDetection.getStatsDetection(UnitIndex::U1)->getStableValue();
-    float stb2 =
-        myLevelDetection.getStatsDetection(UnitIndex::U2)->getStableValue();
+      // This part is used to send data to an influxdb in order to get data on
+      // scale stability/drift over time.
+      char buf[250];
 
-    String s;
-    snprintf(&buf[0], sizeof(buf),
-             "debug,host=%s,device=%s "
-             "level-raw1=%f,"
-             "level-raw2=%f",
-             myConfig.getMDNS(), myConfig.getID(), isnan(raw1) ? 0 : raw1,
-             isnan(raw2) ? 0 : raw2);
-    s = &buf[0];
+      float raw1 =
+          myLevelDetection.getRawDetection(UnitIndex::U1)->getRawValue();
+      float raw2 =
+          myLevelDetection.getRawDetection(UnitIndex::U2)->getRawValue();
+      float stb1 =
+          myLevelDetection.getStatsDetection(UnitIndex::U1)->getStableValue();
+      float stb2 =
+          myLevelDetection.getStatsDetection(UnitIndex::U2)->getStableValue();
 
-    float ave1 =
-        myLevelDetection.getRawDetection(UnitIndex::U1)->getAverageValue();
-    float ave2 =
-        myLevelDetection.getRawDetection(UnitIndex::U2)->getAverageValue();
+      String s;
+      snprintf(&buf[0], sizeof(buf),
+               "scale,host=%s,device=%s "
+               "level-raw1=%f,"
+               "level-raw2=%f",
+               myConfig.getMDNS(), myConfig.getID(), isnan(raw1) ? 0 : raw1,
+               isnan(raw2) ? 0 : raw2);
+      s = &buf[0];
 
-    snprintf(&buf[0], sizeof(buf), ",level-average1=%f,level-average2=%f",
-             isnan(ave1) ? 0 : ave1, isnan(ave2) ? 0 : ave2);
-    s += &buf[0];
+      float ave1 =
+          myLevelDetection.getRawDetection(UnitIndex::U1)->getAverageValue();
+      float ave2 =
+          myLevelDetection.getRawDetection(UnitIndex::U2)->getAverageValue();
 
-    float kal1 =
-        myLevelDetection.getRawDetection(UnitIndex::U1)->getKalmanValue();
-    float kal2 =
-        myLevelDetection.getRawDetection(UnitIndex::U2)->getKalmanValue();
+      snprintf(&buf[0], sizeof(buf), ",level-average1=%f,level-average2=%f",
+               isnan(ave1) ? 0 : ave1, isnan(ave2) ? 0 : ave2);
+      s += &buf[0];
 
-    snprintf(&buf[0], sizeof(buf), ",level-kalman1=%f,level-kalman2=%f",
-             isnan(kal1) ? 0 : kal1, isnan(kal2) ? 0 : kal2);
-    s += &buf[0];
+      float kal1 =
+          myLevelDetection.getRawDetection(UnitIndex::U1)->getKalmanValue();
+      float kal2 =
+          myLevelDetection.getRawDetection(UnitIndex::U2)->getKalmanValue();
 
-    float stats1 =
-        myLevelDetection.getStatsDetection(UnitIndex::U1)->getStableValue();
-    float stats2 =
-        myLevelDetection.getStatsDetection(UnitIndex::U2)->getStableValue();
+      snprintf(&buf[0], sizeof(buf), ",level-kalman1=%f,level-kalman2=%f",
+               isnan(kal1) ? 0 : kal1, isnan(kal2) ? 0 : kal2);
+      s += &buf[0];
 
-    snprintf(&buf[0], sizeof(buf), ",level-stats1=%f,level-stats2=%f",
+      float stats1 =
+          myLevelDetection.getStatsDetection(UnitIndex::U1)->getStableValue();
+      float stats2 =
+          myLevelDetection.getStatsDetection(UnitIndex::U2)->getStableValue();
 
-             isnan(stats1) ? 0 : stats1, isnan(stats2) ? 0 : stats2);
-    s += &buf[0];
+      snprintf(&buf[0], sizeof(buf), ",level-stats1=%f,level-stats2=%f",
 
-    if (!isnan(myTemp.getLastTempC())) {
-      snprintf(&buf[0], sizeof(buf), ",tempC=%f,tempF=%f",
-               myTemp.getLastTempC(), myTemp.getLastTempF());
-      s = s + &buf[0];
-    }
+               isnan(stats1) ? 0 : stats1, isnan(stats2) ? 0 : stats2);
+      s += &buf[0];
 
-    if (!isnan(myTemp.getLastHumidity())) {
-      snprintf(&buf[0], sizeof(buf), ",humidity=%f", myTemp.getLastHumidity());
-      s = s + &buf[0];
-    }
+      if (!isnan(myTemp.getLastTempC())) {
+        snprintf(&buf[0], sizeof(buf), ",tempC=%f,tempF=%f",
+                 myTemp.getLastTempC(), myTemp.getLastTempF());
+        s = s + &buf[0];
+      }
 
-    if (!isnan(stb1)) {
-      snprintf(&buf[0], sizeof(buf), ",stable1=%f", stb1);
-      s = s + &buf[0];
-    }
+      if (!isnan(myTemp.getLastHumidity())) {
+        snprintf(&buf[0], sizeof(buf), ",humidity=%f",
+                 myTemp.getLastHumidity());
+        s = s + &buf[0];
+      }
 
-    if (!isnan(stb2)) {
-      snprintf(&buf[0], sizeof(buf), ",stable2=%f", stb2);
-      s = s + &buf[0];
-    }
+      if (!isnan(stb1)) {
+        snprintf(&buf[0], sizeof(buf), ",stable1=%f", stb1);
+        s = s + &buf[0];
+      }
+
+      if (!isnan(stb2)) {
+        snprintf(&buf[0], sizeof(buf), ",stable2=%f", stb2);
+        s = s + &buf[0];
+      }
 
 #if LOG_LEVEL == 6
-    Log.verbose(F("LOOP: %s" CR), s.c_str());
+      Log.verbose(F("LOOP: %s" CR), s.c_str());
 #endif
-    myPush.sendInfluxDb2(s, PUSH_INFLUX_TARGET, PUSH_INFLUX_ORG,
-                         PUSH_INFLUX_BUCKET, PUSH_INFLUX_TOKEN);
-#endif  // ENABLE_INFLUX_DEBUG
+      myPush.sendInfluxDb2(
+          s, myConfig.getTargetInfluxDB2(), myConfig.getOrgInfluxDB2(),
+          myConfig.getBucketInfluxDB2(), myConfig.getTokenInfluxDB2());
+    }
   }
 }
 
