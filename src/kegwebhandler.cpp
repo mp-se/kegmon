@@ -165,7 +165,7 @@ void KegWebHandler::webConfigGet(AsyncWebServerRequest *request) {
 
   Log.notice(F("WEB : webServer callback for /api/config(read)." CR));
   AsyncJsonResponse *response =
-      new AsyncJsonResponse(false, JSON_BUFFER_SIZE_L);
+      new AsyncJsonResponse(false, JSON_BUFFER_SIZE_XL);
   JsonObject obj = response->getRoot().as<JsonObject>();
   myConfig.createJson(obj);
   response->setLength();
@@ -204,6 +204,12 @@ void KegWebHandler::webConfigPost(AsyncWebServerRequest *request,
 
   Log.notice(F("WEB : webServer callback for /api/config(write)." CR));
   JsonObject obj = json.as<JsonObject>();
+
+  /*for (JsonPair kv : obj) {
+    Log.notice(F("WEB : %s=%s." CR), kv.key().c_str(),
+  kv.value().as<String>().c_str());
+  }*/
+
   myConfig.parseJson(obj);
   obj.clear();
   myConfig.saveFile();
