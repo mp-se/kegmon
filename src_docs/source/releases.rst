@@ -7,7 +7,8 @@ v1.0.0-alfa2
 ============
 
 * Added influx integration for scale data (debugging)
-* Removed chart views since this made the build to large for esp8266
+* Added favicon
+* Fixed timeout issue when uploading new firmware
 
 v1.0.0-alfa1
 ============
