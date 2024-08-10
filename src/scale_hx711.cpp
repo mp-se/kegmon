@@ -181,6 +181,8 @@ void Scale::findFactorHX711(UnitIndex idx, float weight) {
       F("SCAL: HX711 Detecting factor for weight %F, raw %l %F [%d]." CR),
       weight, l, f, idx);
 
+  if (isinf(f) || isnan(f)) f = 0.0;
+
   myConfig.setScaleFactor(idx, f);
   myConfig.saveFile();  // save the factor to file
 

@@ -32,8 +32,6 @@ SOFTWARE.
 #include <stability.hpp>
 #include <weightvolume.hpp>
 
-constexpr auto LEVELS_FILENAME = "/levels.log";
-constexpr auto LEVELS_FILENAME2 = "/levels2.log";
 constexpr auto LEVELS_FILEMAXSIZE = 2000;
 
 class LevelDetection {

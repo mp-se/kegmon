@@ -31,145 +31,37 @@ SOFTWARE.
 #include <WiFi.h>
 #endif
 
-#if defined(ESP8266) && defined(USE_ASYNC_WEB)
-#include <baseasyncwebhandler.hpp>
-#elif defined(ESP8266)
-#include <ESP8266WebServer.h>
-
-#include <basewebhandler.hpp>
-#elif (defined(ESP32S2) || defined(ESP32S3)) && defined(USE_ASYNC_WEB)
-#include <WebServer.h>
-
-#include <baseasyncwebhandler.hpp>
-#elif defined(ESP32S2) || defined(ESP32S3)
-#include <WebServer.h>
-
-#include <basewebhandler.hpp>
-#endif
-
+#include <basewebserver.hpp>
 #include <kegconfig.hpp>
 
-#if defined(ESP8266)
-#include <incbin.h>
-INCBIN_EXTERN(CalibrateHtm);
-INCBIN_EXTERN(BeerHtm);
-INCBIN_EXTERN(StabilityHtm);
-INCBIN_EXTERN(GraphHtm);
-INCBIN_EXTERN(BackupHtm);
-INCBIN_EXTERN(BrewpiHtm);
-#else
-extern const uint8_t calibrationHtmStart[] asm(
-    "_binary_html_calibration_min_htm_start");
-extern const uint8_t calibrationHtmEnd[] asm(
-    "_binary_html_calibration_min_htm_end");
-extern const uint8_t beerHtmStart[] asm("_binary_html_beer_min_htm_start");
-extern const uint8_t beerHtmEnd[] asm("_binary_html_beer_min_htm_end");
-extern const uint8_t stabilityHtmStart[] asm(
-    "_binary_html_stability_min_htm_start");
-extern const uint8_t stabilityHtmEnd[] asm(
-    "_binary_html_stability_min_htm_end");
-extern const uint8_t graphHtmStart[] asm("_binary_html_graph_min_htm_start");
-extern const uint8_t graphHtmEnd[] asm("_binary_html_graph_min_htm_end");
-extern const uint8_t backupHtmStart[] asm("_binary_html_backup_min_htm_start");
-extern const uint8_t backupHtmEnd[] asm("_binary_html_backup_min_htm_end");
-extern const uint8_t brewpiHtmStart[] asm("_binary_html_brewpi_min_htm_start");
-extern const uint8_t brewpiHtmEnd[] asm("_binary_html_brewpi_min_htm_end");
-#endif
-
-#if defined(USE_ASYNC_WEB)
-#define WS_BIND_URL(url, http, func) \
-  _server->on(url, http, std::bind(func, this, std::placeholders::_1))
-#define WS_PARAM AsyncWebServerRequest* request
-#define WS_SEND_STATIC(ptr, size) \
-  request->send_P(200, "text/html", (const uint8_t*)ptr, size)
-#define WS_REQ_ARG(key) request->arg(key)
-#define WS_REQ_ARG_NAME(idx) request->argName(idx)
-#define WS_REQ_ARG_CNT() request->args()
-#define WS_REQ_HAS_ARG(key) request->hasArg(key)
-#define WS_SEND(code, type, text)                                              \
-  AsyncWebServerResponse* response = request->beginResponse(code, type, text); \
-  response->addHeader("Access-Control-Allow-Origin", "*");                     \
-  request->send(response);
-#else
-#define WS_BIND_URL(url, http, func) \
-  _server->on(url, http, std::bind(func, this))
-#define WS_PARAM
-#define WS_SEND_STATIC(ptr, size) \
-  _server->send_P(200, "text/html", (const char*)ptr, size)
-#define WS_REQ_ARG(key) _server->arg(key)
-#define WS_REQ_ARG_NAME(idx) _server->argName(idx)
-#define WS_REQ_ARG_CNT() _server->args()
-#define WS_REQ_HAS_ARG(key) _server->hasArg(key)
-#define WS_SEND(code, type, text) \
-  _server->enableCORS(true);      \
-  _server->send(code, type, text)
-#endif
-
-class KegWebHandler :
-#if defined(USE_ASYNC_WEB)
-    public BaseAsyncWebHandler
-#else
-    public BaseWebHandler
-#endif
-{
+class KegWebHandler : public BaseWebServer {
  protected:
-  KegConfig* _config;
+  KegConfig *_config;
+  volatile bool _hardwareScanTask = false;
+
+  String _hardwareScanData;
 
   void setupWebHandlers();
-  void setupAsyncWebHandlers();
-  void populateScaleJson(DynamicJsonDocument& doc);
-  void webScale(WS_PARAM);
-  void webScaleTare(WS_PARAM);
-  void webScaleFactor(WS_PARAM);
-  void webConfigGet(WS_PARAM);
-  void webConfigPost(WS_PARAM);
-  void webStatus(WS_PARAM);
-  void webStability(WS_PARAM);
-  void webStabilityClear(WS_PARAM);
-  void webReset(WS_PARAM);
-  void webHandleBeerWrite(WS_PARAM);
-  void webHandleBrewspy(WS_PARAM);
-  void webHandleLogsClear(WS_PARAM);
+  void populateScaleJson(JsonObject &doc);
 
-#if defined(ESP8266)
-  void webCalibrateHtm(WS_PARAM) {
-    WS_SEND_STATIC(gCalibrateHtmData, gCalibrateHtmSize);
-  }
-  void webBeerHtm(WS_PARAM) { WS_SEND_STATIC(gBeerHtmData, gBeerHtmSize); }
-  void webStabilityHtm(WS_PARAM) {
-    WS_SEND_STATIC(gStabilityHtmData, gStabilityHtmSize);
-  }
-  void webGraphHtm(WS_PARAM) { WS_SEND_STATIC(gGraphHtmData, gGraphHtmSize); }
-  void webBackupHtm(WS_PARAM) {
-    WS_SEND_STATIC(gBackupHtmData, gBackupHtmSize);
-  }
-#else
-  void webCalibrateHtm(WS_PARAM) {
-    WS_SEND_STATIC(
-        (const char*)calibrationHtmStart,
-        strlen(reinterpret_cast<const char*>(&calibrationHtmStart[0])));
-  }
-  void webBeerHtm(WS_PARAM) {
-    WS_SEND_STATIC((const char*)beerHtmStart,
-                   strlen(reinterpret_cast<const char*>(&beerHtmStart[0])));
-  }
-  void webStabilityHtm(WS_PARAM) {
-    WS_SEND_STATIC(
-        (const char*)stabilityHtmStart,
-        strlen(reinterpret_cast<const char*>(&stabilityHtmStart[0])));
-  }
-  void webGraphHtm(WS_PARAM) {
-    WS_SEND_STATIC((const char*)graphHtmStart,
-                   strlen(reinterpret_cast<const char*>(&graphHtmStart[0])));
-  }
-  void webBackupHtm(WS_PARAM) {
-    WS_SEND_STATIC((const char*)backupHtmStart,
-                   strlen(reinterpret_cast<const char*>(&backupHtmStart[0])));
-  }
-#endif
+  void webScale(AsyncWebServerRequest *request);
+  void webScaleTare(AsyncWebServerRequest *request, JsonVariant &json);
+  void webScaleFactor(AsyncWebServerRequest *request, JsonVariant &json);
+  void webHardwareScan(AsyncWebServerRequest *request);
+  void webHardwareScanStatus(AsyncWebServerRequest *request);
+  void webConfigGet(AsyncWebServerRequest *request);
+  void webConfigPost(AsyncWebServerRequest *request, JsonVariant &json);
+  void webStatus(AsyncWebServerRequest *request);
+  void webStability(AsyncWebServerRequest *request);
+  void webStabilityClear(AsyncWebServerRequest *request);
+  void webHandleLogsClear(AsyncWebServerRequest *request);
+  void webHandleBrewspy(AsyncWebServerRequest *request, JsonVariant &json);
+  void webHandleFactoryDefaults(AsyncWebServerRequest *request);
 
  public:
-  explicit KegWebHandler(KegConfig* config);
+  explicit KegWebHandler(KegConfig *config);
+
+  void loop();
 };
 
 #endif  // SRC_KEGWEBHANDLER_HPP_

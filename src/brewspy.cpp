@@ -126,7 +126,7 @@ void Brewspy::clearKegInformation(UnitIndex idx) {
   _push->sendHttpPost(out, "https://brew-spy.com/api/tap/keg/clear", "", "");
 }
 
-String Brewspy::getTapInformation(const String& token) {
+void Brewspy::getTapInformation(JsonObject& obj, const String token) {
   // API: https://brew-spy.com/api/json/taplist/<TOKEN>
   // Descr: To view the current data for a tap you can use the
   // Payload:
@@ -144,7 +144,7 @@ String Brewspy::getTapInformation(const String& token) {
   //     "volUnit" : <volume of beer left unit>,
   //   }
   // }
-  if (token.length() == 0) return "{}";
+  if (token.length() == 0) return;
 
   Log.notice(F("BSPY: Requesting TAP information from brewspy." CR));
 
@@ -152,11 +152,20 @@ String Brewspy::getTapInformation(const String& token) {
   String payload = "";
   String resp =
       _push->sendHttpGet(payload, url.c_str(), "Accept: application/json", "");
-  // #if LOG_LEVEL == 6
   EspSerial.print(resp.c_str());
   EspSerial.print(CR);
-  // #endif
-  return resp;
+
+  DynamicJsonDocument doc(JSON_BUFFER_SIZE_M);
+  DeserializationError error = deserializeJson(doc, resp);
+
+  if (error) {
+    Serial.print(F("deserializeJson() failed: "));
+    Serial.println(error.f_str());
+    return;
+  }
+
+  obj["recipe"] = doc["recipe"].as<String>();
+  obj["abv"] = doc["abv"].as<float>();
 }
 
 // EOF

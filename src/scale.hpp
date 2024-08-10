@@ -110,6 +110,11 @@ class Scale {
     _sched[idx].findFactor = true;
     _sched[idx].factorWeight = weight;
   }
+  bool isScheduleRunning() {
+    return _sched[UnitIndex::U1].findFactor ||
+           _sched[UnitIndex::U2].findFactor || _sched[UnitIndex::U1].tare ||
+           _sched[UnitIndex::U2].tare;
+  }
   int32_t readLastRaw(UnitIndex idx) { return _lastRaw[idx]; }
 
 #if defined(DEBUG_LINK_SCALES)

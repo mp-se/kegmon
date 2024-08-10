@@ -40,8 +40,8 @@ class KegPushHandler : public BasePush {
     _ha = new HomeAssist(this);
   }
 
-  String requestTapInfoFromBrewspy(String& token) {
-    return _brewspy->getTapInformation(token);
+  void requestTapInfoFromBrewspy(JsonObject& obj, String token) {
+    _brewspy->getTapInformation(obj, token);
   }
 
   void pushTempInformation(float tempC, bool isLoop = false);
