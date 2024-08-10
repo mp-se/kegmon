@@ -3,16 +3,12 @@
 Releases 
 ########
 
-v1.0.0-alfa2
+v1.0.0-beta1
 ============
 
 * Added influx integration for scale data (debugging)
 * Added favicon
 * Fixed timeout issue when uploading new firmware
-
-v1.0.0-alfa1
-============
-
 * Created new user interface in VueJS
 * Changed all API's to use JSON
 
