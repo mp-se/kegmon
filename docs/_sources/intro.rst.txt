@@ -43,7 +43,7 @@ It will broadcast a name like kegmonXXXXXX.local over mDNS. Where the XXXXXX is 
 find the name via an mDNS browser, check your router or connect the device to a serial monitor. On windows mDNS 
 might not work so then use the IP address instead. Once connected you will meet a web interface that looks like this.
 
-.. image:: images/index.png
+.. image:: images/view_home.png
   :width: 800
   :alt: Index page
 

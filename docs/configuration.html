@@ -200,62 +200,36 @@
 <div class="section" id="index">
 <h2>Index<a class="headerlink" href="#index" title="Permalink to this headline">¶</a></h2>
 <p>This is the web page accessed by accessing the device via a web-browser. This section will show the general device information.</p>
-<a class="reference internal image-reference" href="_images/index.png"><img alt="Index" src="_images/index.png" style="width: 600px;"/></a>
-<ul class="simple">
-<li><p><strong>Weights/Volumes</strong>: Shows weighs for scale 1 and 2.</p></li>
-<li><p><strong>Glasses</strong>: Shows glasses (pours) left for scale 1 and 2.</p></li>
-<li><p><strong>Last Pour</strong>: How much the last pour was. Is lost when rebooting.</p></li>
-<li><p><strong>Temperature</strong>: Temperature reading (not shown if there is no sensor).</p></li>
-<li><p><strong>Current version</strong>: Shows the current software version including git revision or beta tag.</p></li>
-<li><p><strong>Host name</strong>: Name of the device on the network.</p></li>
-<li><p><strong>Platform</strong>: Which hardware platform is used (ESP8266, ESP32S2, ESP32S3).</p></li>
-<li><p><strong>Device ID</strong>: ESP chip ID. Used for identifying the device.</p></li>
-<li><p><strong>SSID</strong>: Name of network we are connected to.</p></li>
-</ul>
+<a class="reference internal image-reference" href="_images/view_home.png"><img alt="Index" src="_images/view_home.png" style="width: 600px;"/></a>
+<p>Shows information about the device and temperatures, only data available will be shown.</p>
 </div>
-<div class="section" id="beers">
-<h2>Beers<a class="headerlink" href="#beers" title="Permalink to this headline">¶</a></h2>
-<p>This is where the beer on tap is configured.</p>
-<a class="reference internal image-reference" href="_images/beer.png"><img alt="Beer configuration" src="_images/beer.png" style="width: 600px;"/></a>
-<ul class="simple">
-<li><p><strong>Empty keg weight</strong>: Weight of the empty keg, used to determine how much beer is in the keg.</p></li>
-<li><p><strong>Glass volume</strong>: Choose the volume of the beer glasses, used to determine how many pours are left.</p></li>
-<li><p><strong>Beer name</strong>, <strong>Beer ABV</strong>, <strong>Beer EBC</strong>, <strong>Beer IBU</strong>: Information about the beer, used to show on user interfaces.</p></li>
-<li><p><strong>Beer FG</strong>: Used in formula for calculating the beer volume. FG has a slight impact on the weight / volume unit. If not defined 1 will be used for calculations.</p></li>
-</ul>
-</div>
-<div class="section" id="configuration">
-<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
-<p>This is where the software is configured.</p>
-<a class="reference internal image-reference" href="_images/config.png"><img alt="Device" src="_images/config.png" style="width: 600px;"/></a>
+<div class="section" id="device-settings">
+<h2>Device - Settings<a class="headerlink" href="#device-settings" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/view_device_settings.png"><img alt="Device Settings" src="_images/view_device_settings.png" style="width: 600px;"/></a>
 <ul class="simple">
 <li><p><strong>Device name</strong>: Set the name of the device on the network, your network needs to support mDNS.</p></li>
 <li><p><strong>Temperature format</strong>: Select format for temperatures</p></li>
 <li><p><strong>Weight unit</strong>: Select format for weights</p></li>
 <li><p><strong>Volume unit</strong>: Select format for volumes</p></li>
-<li><p><strong>Display layout</strong>: Choose the layout/information on the displays.</p></li>
+<li><p><strong>Dark Mode</strong>: Switches the UI between light and dark mode. You can also use the toggle on the menubar for that.</p></li>
 </ul>
-<a class="reference internal image-reference" href="_images/config2.png"><img alt="Hardware" src="_images/config2.png" style="width: 600px;"/></a>
+</div>
+<div class="section" id="device-hardware">
+<h2>Device - Hardware<a class="headerlink" href="#device-hardware" title="Permalink to this headline">¶</a></h2>
+<p>TODO: Missing hardware screen dump</p>
+<a class="reference internal image-reference" href="images/view_device_hardware.png"><img alt="Device Hardware" src="images/view_device_hardware.png" style="width: 600px;"/></a>
 <ul class="simple">
+<li><p><strong>Display layout</strong>: Choose the layout/information on the displays.</p></li>
 <li><p><strong>Display driver</strong>: Choose the what display driver is used, either LCD 20x4 or OLED 0.96”. Default is OLED 0.96”.</p></li>
 <li><p><strong>Temp sensor</strong>: Choose the what temp sensor is used, either DHT22, BME280, DS18B20 or remote BrewPI-ESP installation. Default is DS18B20. <em>Wiring for BME280 is different</em>.</p></li>
 <li><p><strong>Scale sensor</strong>: Choose the what ADC is used, HX711 or NAU7802. Default is HX711. <em>Wiring for NAU7802 is different</em>.</p></li>
 <li><p><strong>BrewPI ESP URL</strong>: Base URL for the brewpi-esp to fetch temperature from. Require v15 or later.</p></li>
-<li><p><strong>Pin</strong>: If you dont follow the standard hardware wiring then you can customize the pins here.</p></li>
+<li><p><strong>Pins</strong>: If you dont follow the standard hardware wiring then you can customize the pins here.</p></li>
 </ul>
-<a class="reference internal image-reference" href="_images/config3.png"><img alt="Configuration (2)" src="_images/config3.png" style="width: 600px;"/></a>
-<ul class="simple">
-<li><p><strong>HA MQTT</strong>: Setting for MQTT server that is used by Home Assistant.</p></li>
-<li><p><strong>Brewfather user key</strong>, <strong>Brewfather API key</strong>: Brewfather User key/API key.</p></li>
-<li><p><strong>Brewspy token</strong>: Brewspy tokens for keg 1 &amp; keg 2.</p></li>
-</ul>
-<a class="reference internal image-reference" href="_images/config4.png"><img alt="Configuration (3)" src="_images/config4.png" style="width: 600px;"/></a>
-<p>Here you can customise some of the thresholds and parameters that are used in the software.</p>
 </div>
-<div class="section" id="calibration">
-<h2>Calibration<a class="headerlink" href="#calibration" title="Permalink to this headline">¶</a></h2>
-<p>This is the page where you can calibrate your scales in 3 simple steps..</p>
-<a class="reference internal image-reference" href="_images/calibration.png"><img alt="Calibration" src="_images/calibration.png" style="width: 600px;"/></a>
+<div class="section" id="device-calibration">
+<h2>Device - Calibration<a class="headerlink" href="#device-calibration" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/view_device_calibration.png"><img alt="Device calibration" src="_images/view_device_calibration.png" style="width: 600px;"/></a>
 <ul class="simple">
 <li><p><strong>STEP 1 - Tare scale</strong></p></li>
 </ul>
@@ -273,31 +247,98 @@ the factor for estimating the weight.</p>
 <p>The third step is to validate that everything works, place anohter thing with a know weight and
 check the measured value. If you are satisfied then you are done.</p>
 </div>
+<div class="section" id="device-wifi">
+<h2>Device - Wifi<a class="headerlink" href="#device-wifi" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/view_device_wifi.png"><img alt="Device wifi" src="_images/view_device_wifi.png" style="width: 600px;"/></a>
+<ul>
+<li><p><strong>SSID #1:</strong></p>
+<p>Select the desired primary SSID to use.</p>
+</li>
+<li><p><strong>Password #1:</strong></p>
+<p>Enter the primary password.</p>
+</li>
+<li><p><strong>SSID #2:</strong></p>
+<p>Select the desired secondary SSID to use (optional).</p>
+</li>
+<li><p><strong>Password #2:</strong></p>
+<p>Enter the secondary password (optional).</p>
+</li>
+<li><p><strong>Portal timeout:</strong></p>
+<p>If the wifi portal is triggered (can be triggered by tapping the reset button 2-3 times within 3 seconds) then this is the amount of time allowed before it exists again.</p>
+</li>
+<li><p><strong>Connect timeout:</strong></p>
+<p>This is the amount of time allowed for a wifi connect.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="tap-settings">
+<h2>Tap Settings<a class="headerlink" href="#tap-settings" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/view_taps_settings.png"><img alt="Tap settings" src="_images/view_taps_settings.png" style="width: 600px;"/></a>
+<ul class="simple">
+<li><p><strong>Empty keg weight</strong>: Weight of the empty keg, used to determine how much beer is in the keg.</p></li>
+<li><p><strong>Glass volume</strong>: Choose the volume of the beer glasses, used to determine how many pours are left.</p></li>
+<li><p><strong>Beer name</strong>, <strong>Beer ABV</strong>, <strong>Beer EBC</strong>, <strong>Beer IBU</strong>: Information about the beer, used to show on user interfaces.</p></li>
+<li><p><strong>Beer FG</strong>: Used in formula for calculating the beer volume. FG has a slight impact on the weight / volume unit. If not defined 1 will be used for calculations.</p></li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h2>Tap Settings<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/view_taps_beers.png"><img alt="Tap beers" src="_images/view_taps_beers.png" style="width: 600px;"/></a>
+<p>Shows information about beers on tap. Use the buttons to import from brewspy or brewfather.</p>
+</div>
+<div class="section" id="integration-home-assistant">
+<h2>Integration - Home Assistant<a class="headerlink" href="#integration-home-assistant" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/view_integration_ha.png"><img alt="Home Assistant" src="_images/view_integration_ha.png" style="width: 600px;"/></a>
+<p>Setting for MQTT server that is used by Home Assistant.</p>
+</div>
+<div class="section" id="integration-brewfather">
+<h2>Integration - Brewfather<a class="headerlink" href="#integration-brewfather" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/view_integration_brewfather.png"><img alt="Brewfather" src="_images/view_integration_brewfather.png" style="width: 600px;"/></a>
+<p>API and User keys for access to brewfather</p>
+</div>
+<div class="section" id="integration-brewspy">
+<h2>Integration - Brewspy<a class="headerlink" href="#integration-brewspy" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/view_integration_brewspy.png"><img alt="Brewspy" src="_images/view_integration_brewspy.png" style="width: 600px;"/></a>
+<p>Brewspy tokens for keg 1 &amp; keg 2.</p>
+</div>
 <div class="section" id="history">
 <h2>History<a class="headerlink" href="#history" title="Permalink to this headline">¶</a></h2>
-<p>Shows the last level changes detected by the software. There is a second graph for the pours.</p>
-<a class="reference internal image-reference" href="_images/history.png"><img alt="Level changes" src="_images/history.png" style="width: 600px;"/></a>
-<a class="reference internal image-reference" href="_images/history2.png"><img alt="Pours" src="_images/history2.png" style="width: 600px;"/></a>
+<p>TODO: Not yet implemented in new UI</p>
 </div>
 <div class="section" id="stability">
 <h2>Stability<a class="headerlink" href="#stability" title="Permalink to this headline">¶</a></h2>
+<p>TODO: Not yet implemented in new UI</p>
 <p>Information page that can determine the stability of your hardware build.</p>
-<a class="reference internal image-reference" href="_images/stability.png"><img alt="Statistics" src="_images/stability.png" style="width: 600px;"/></a>
 <p>I have found that some of my hardware builds was not really stable so I added this
 feature to check the scale build before doing the final assembly.</p>
-<a class="reference internal image-reference" href="_images/stability2.png"><img alt="Statistics" src="_images/stability2.png" style="width: 600px;"/></a>
 <p>If you keep the browser open you can also see the history of the values (raw, kalman &amp; stable). This can help to show
 how your scale varies over time. Data is only stored in the browser so any refresh or page change will delete the graphs.</p>
 </div>
-<div class="section" id="firmware-update">
-<h2>Firmware update<a class="headerlink" href="#firmware-update" title="Permalink to this headline">¶</a></h2>
-<p>Here you can upload a new firmware version without the need to hook the device to a serial port
-on your computer.</p>
-<a class="reference internal image-reference" href="_images/upload.png"><img alt="Upload firmware" src="_images/upload.png" style="width: 600px;"/></a>
+<div class="section" id="serial-console">
+<h2>Serial console<a class="headerlink" href="#serial-console" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/view_other_serial.png"><img alt="Serial console" src="_images/view_other_serial.png" style="width: 600px;"/></a>
+<p>Here you can view the serial output from the device for troubleshooting</p>
 </div>
 <div class="section" id="backup-recovery">
 <h2>Backup &amp; Recovery<a class="headerlink" href="#backup-recovery" title="Permalink to this headline">¶</a></h2>
-<a class="reference internal image-reference" href="_images/backup.png"><img alt="Backup configuration" src="_images/backup.png" style="width: 600px;"/></a>
+<a class="reference internal image-reference" href="_images/view_other_backup.png"><img alt="Backup configuration" src="_images/view_other_backup.png" style="width: 600px;"/></a>
+<p>Backup your configuration or restore it from a previous state</p>
+</div>
+<div class="section" id="firmware-update">
+<h2>Firmware update<a class="headerlink" href="#firmware-update" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/view_other_firmware.png"><img alt="Upload firmware" src="_images/view_other_firmware.png" style="width: 600px;"/></a>
+<p>Here you can upload a new firmware version without the need to hook the device to a serial port
+on your computer.</p>
+</div>
+<div class="section" id="support">
+<h2>Support<a class="headerlink" href="#support" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/view_other_support.png"><img alt="Support information" src="_images/view_other_support.png" style="width: 600px;"/></a>
+<p>View logs or check the hardware configuration</p>
+</div>
+<div class="section" id="tools">
+<h2>Tools<a class="headerlink" href="#tools" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/view_other_tools.png"><img alt="Tools" src="_images/view_other_tools.png" style="width: 600px;"/></a>
+<p>Interact with the file system on the device</p>
 </div>
 </div>
 
@@ -350,13 +391,22 @@ on your computer.</p>
             <ul>
 <li><a class="reference internal" href="#">Software</a><ul>
 <li><a class="reference internal" href="#index">Index</a></li>
-<li><a class="reference internal" href="#beers">Beers</a></li>
-<li><a class="reference internal" href="#configuration">Configuration</a></li>
-<li><a class="reference internal" href="#calibration">Calibration</a></li>
+<li><a class="reference internal" href="#device-settings">Device - Settings</a></li>
+<li><a class="reference internal" href="#device-hardware">Device - Hardware</a></li>
+<li><a class="reference internal" href="#device-calibration">Device - Calibration</a></li>
+<li><a class="reference internal" href="#device-wifi">Device - Wifi</a></li>
+<li><a class="reference internal" href="#tap-settings">Tap Settings</a></li>
+<li><a class="reference internal" href="#id2">Tap Settings</a></li>
+<li><a class="reference internal" href="#integration-home-assistant">Integration - Home Assistant</a></li>
+<li><a class="reference internal" href="#integration-brewfather">Integration - Brewfather</a></li>
+<li><a class="reference internal" href="#integration-brewspy">Integration - Brewspy</a></li>
 <li><a class="reference internal" href="#history">History</a></li>
 <li><a class="reference internal" href="#stability">Stability</a></li>
-<li><a class="reference internal" href="#firmware-update">Firmware update</a></li>
+<li><a class="reference internal" href="#serial-console">Serial console</a></li>
 <li><a class="reference internal" href="#backup-recovery">Backup &amp; Recovery</a></li>
+<li><a class="reference internal" href="#firmware-update">Firmware update</a></li>
+<li><a class="reference internal" href="#support">Support</a></li>
+<li><a class="reference internal" href="#tools">Tools</a></li>
 </ul>
 </li>
 </ul>
