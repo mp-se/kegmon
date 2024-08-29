@@ -103,6 +103,8 @@ void setup() {
   myConfig.loadFile();
   PERF_END("setup-config");
 
+  delay(4000);
+
   Log.notice(F("Main: Initializing I2C bus #1 on pins SDA=%d, SCL=%d" CR),
              myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
 #if defined(ESP8266)
@@ -110,8 +112,9 @@ void setup() {
 #else  // ESP32
   Wire.setPins(myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
   Wire.begin();
-  // Log.notice(F("Main: I2C bus clock=%d" CR), Wire.getClock());
 #endif
+  Wire.setClock(400000);
+  Log.notice(F("Main: I2C bus clock=%d" CR), Wire.getClock());
   scanI2C(myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
 
   PERF_BEGIN("setup-display");
