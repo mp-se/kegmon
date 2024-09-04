@@ -114,7 +114,9 @@ void setup() {
   Wire.begin();
 #endif
   Wire.setClock(400000);
+#if !defined(ESP8266)
   Log.notice(F("Main: I2C bus clock=%d" CR), Wire.getClock());
+#endif
   scanI2C(myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
 
   PERF_BEGIN("setup-display");
