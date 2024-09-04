@@ -17,9 +17,8 @@ jobs:
         run: |
           echo "Checkout UI"
           git clone https://github.com/mp-se/kegmon-ui kegmon-ui 
-          cp kegmon-ui/dist/css/app.css.gz html/
-          cp kegmon-ui/dist/js/app.js.gz html/
-          cp kegmon-ui/dist/index.html html/
+          cp kegmon-ui/dist/assets/style.css.gz html/app.css.gz
+          cp kegmon-ui/dist/assets/index.js.gz html/app.js.gz
 
       - name: Setup PlatformIO
         uses: n-vr/setup-platformio-action@v1.0.1    
