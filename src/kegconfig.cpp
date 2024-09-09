@@ -58,7 +58,7 @@ void KegConfig::createJson(JsonObject& doc) {
 
   doc[PARAM_BARHELPER_APIKEY] = getBarhelperApiKey();
   doc[PARAM_BARHELPER_MONITOR1] = getBarhelperMonitor(UnitIndex::U1);
-  doc[PARAM_BARHELPER_MONITOR1] = getBarhelperMonitor(UnitIndex::U2);
+  doc[PARAM_BARHELPER_MONITOR2] = getBarhelperMonitor(UnitIndex::U2);
 
   doc[PARAM_SCALE_TEMP_FORMULA1] =
       getScaleTempCompensationFormula(UnitIndex::U1);
