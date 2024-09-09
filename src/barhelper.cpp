@@ -25,7 +25,7 @@ SOFTWARE.
 #include <kegconfig.hpp>
 #include <log.hpp>
 
-void Barhelper::sendPourInformation(UnitIndex idx, float pourVol) {
+/*void Barhelper::sendPourInformation(UnitIndex idx, float pourVol) {
   //
   // API: https://europe-west1-barhelper-app.cloudfunctions.net/api/customKegMon
   // Descr: This method just reports the pourVolume.
@@ -70,22 +70,21 @@ void Barhelper::sendPourInformation(UnitIndex idx, float pourVol) {
     return;
   }
 
-  /* Typical response
-  {
-  "amount: 0.1"
-  "prevKegAmount": 6,
-  "newKegAmount": 5.9,
-  "success": true,
-  "message": "Keg Monitor updated successfully"
-  }
-  */
+  // Typical response
+  // {
+  // "amount: 0.1"
+  // "prevKegAmount": 6,
+  // "newKegAmount": 5.9,
+  // "success": true,
+  // "message": "Keg Monitor updated successfully"
+  // }
 
   JsonObject obj = doc.as<JsonObject>();
   Log.info(F("BARH: Server responded: %s, new level=%F, message=%s." CR),
            obj["success"].as<bool>() ? "True" : "False",
            obj["newKegAmount"].as<float>(),
            obj["message"].as<String>().c_str());
-}
+}*/
 
 void Barhelper::sendKegInformation(UnitIndex idx, float kegVol) {
   //
@@ -100,7 +99,7 @@ void Barhelper::sendKegInformation(UnitIndex idx, float kegVol) {
   // }
   if (strlen(myConfig.getBarhelperApiKey()) == 0) return;
 
-  DynamicJsonDocument doc(100);
+  DynamicJsonDocument doc(300);
   String header = "Authorization: " + String(myConfig.getBarhelperApiKey());
 
   doc["name"] = myConfig.getBarhelperMonitor(idx);
@@ -118,35 +117,39 @@ void Barhelper::sendKegInformation(UnitIndex idx, float kegVol) {
   EspSerial.print(out.c_str());
   EspSerial.print(CR);
   // #endif
-  String response = _push->sendHttpPost(
+  out = _push->sendHttpPost(
       out,
       "https://europe-west1-barhelper-app.cloudfunctions.net/api/customKegMon",
       "Content-Type: application/json", header.c_str());
 
-  DeserializationError err = deserializeJson(doc, response);
+  Log.info(F("BARH: Response %s." CR), out.c_str());
 
-  if (err) {
+  // Note! the server does not return a valid json so it cant be parsed. Just
+  // print the value for now.
+
+  /*DeserializationError err = deserializeJson(doc, out);
+
+  /*if (err) {
     Log.error(
         F("BARH: Failed to parse response from barhelper, Err: %s, %s." CR),
-        err.c_str(), response.c_str());
+        err.c_str(), out.c_str());
     return;
-  }
+  }*/
 
-  /* Typical response
-  {
-  "amount: 0.1"
-  "prevKegAmount": 6,
-  "newKegAmount": 5.9,
-  "success": true,
-  "message": "Keg Monitor updated successfully"
-  }
-  */
+  // Typical response
+  // {
+  // "amount: 0.1"
+  // "prevKegAmount": 6,
+  // "newKegAmount": 5.9,
+  // "success": true,
+  // "message": "Keg Monitor updated successfully"
+  // }
 
-  JsonObject obj = doc.as<JsonObject>();
+  /*JsonObject obj = doc.as<JsonObject>();
   Log.info(F("BARH: Server responded: %s, new level=%F, message=%s." CR),
            obj["success"].as<bool>() ? "True" : "False",
            obj["newKegAmount"].as<float>(),
-           obj["message"].as<String>().c_str());
+           obj["message"].as<String>().c_str());*/
 }
 
 // EOF

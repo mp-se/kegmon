@@ -157,6 +157,15 @@ Integration - Brewspy
 
 Brewspy tokens for keg 1 & keg 2.
 
+Integration - Barhelper
+***********************
+
+.. image:: images/view_integration_barhelper.png
+  :width: 600
+  :alt: Barhelper
+
+Barhelper API keys and name of monitors.
+
 
 History
 *******

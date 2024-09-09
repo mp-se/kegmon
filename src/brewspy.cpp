@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-22 Magnus
+Copyright (c) 2021-2024 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -60,7 +60,7 @@ void Brewspy::sendTapInformation(UnitIndex idx, float stableVol,
   doc["pour"] = pourVol;
   Log.notice(F("BSPY: Sending TAP information to brewspy, last %Fl, "
                "pour %Fl  [%d]" CR),
-             stableVol, pourVol);
+             stableVol, pourVol, idx);
   String out;
   out.reserve(100);
   serializeJson(doc, out);
