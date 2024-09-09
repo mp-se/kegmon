@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-22 Magnus
+Copyright (c) 2021-2024 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -38,6 +38,8 @@ void KegPushHandler::pushPourInformation(UnitIndex idx, float pourVol,
     _brewspy->sendPourInformation(idx, pourVol);
 
   _ha->sendPourInformation(idx, pourVol);
+  // Either push when level is stable or when pour has been detecged
+  // _barhelper->sendPourInformation(idx, pourVol);
 }
 
 void KegPushHandler::pushKegInformation(UnitIndex idx, float stableVol,
@@ -47,6 +49,8 @@ void KegPushHandler::pushKegInformation(UnitIndex idx, float stableVol,
     _brewspy->sendTapInformation(idx, stableVol, pourVol);
 
   _ha->sendTapInformation(idx, stableVol, glasses);
+  // Either push when level is stable or when pour has been detecged
+  _barhelper->sendKegInformation(idx, stableVol);
 }
 
 // EOF

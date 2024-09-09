@@ -32,6 +32,9 @@ constexpr auto PARAM_BREWFATHER_APIKEY = "brewfather_apikey";
 constexpr auto PARAM_BREWSPY_TOKEN1 = "brewspy_token1";
 constexpr auto PARAM_BREWSPY_TOKEN2 = "brewspy_token2";
 constexpr auto PARAM_BREWPI_URL = "brewpi_url";
+constexpr auto PARAM_BARHELPER_APIKEY = "barhelper_apikey";
+constexpr auto PARAM_BARHELPER_MONITOR1 = "barhelper_monitor1";
+constexpr auto PARAM_BARHELPER_MONITOR2 = "barhelper_monitor2";
 constexpr auto PARAM_DISPLAY_LAYOUT = "display_layout";
 constexpr auto PARAM_TEMP_SENSOR = "temp_sensor";
 constexpr auto PARAM_DISPLAY_DRIVER = "display_driver";
@@ -161,6 +164,9 @@ class KegConfig : public BaseConfig {
 
   String _brewspyToken[2] = {"", ""};
 
+  String _barhelperApiKey = "";
+  String _barhelperMonitor[2] = {"Kegmon TAP 1", "Kegmon TAP 2"};
+
   String _brewpiUrl = "";
 
   DisplayLayoutType _displayLayout = DisplayLayoutType::Default;
@@ -208,6 +214,19 @@ class KegConfig : public BaseConfig {
   const char* getBrewfatherApiKey() { return _brewfatherApiKey.c_str(); }
   void setBrewfatherApiKey(String s) {
     _brewfatherApiKey = s;
+    _saveNeeded = true;
+  }
+
+  const char* getBarhelperApiKey() { return _barhelperApiKey.c_str(); }
+  void setBarhelperApiKey(String s) {
+    _barhelperApiKey = s;
+    _saveNeeded = true;
+  }
+  const char* getBarhelperMonitor(UnitIndex idx) {
+    return _barhelperMonitor[idx].c_str();
+  }
+  void setBarhelperMonitor(UnitIndex idx, String s) {
+    _barhelperMonitor[idx] = s;
     _saveNeeded = true;
   }
 

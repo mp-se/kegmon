@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-23 Magnus
+Copyright (c) 2021-2024 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -55,6 +55,10 @@ void KegConfig::createJson(JsonObject& doc) {
 
   doc[PARAM_BREWSPY_TOKEN1] = getBrewspyToken(UnitIndex::U1);
   doc[PARAM_BREWSPY_TOKEN2] = getBrewspyToken(UnitIndex::U2);
+
+  doc[PARAM_BARHELPER_APIKEY] = getBarhelperApiKey();
+  doc[PARAM_BARHELPER_MONITOR1] = getBarhelperMonitor(UnitIndex::U1);
+  doc[PARAM_BARHELPER_MONITOR1] = getBarhelperMonitor(UnitIndex::U2);
 
   doc[PARAM_SCALE_TEMP_FORMULA1] =
       getScaleTempCompensationFormula(UnitIndex::U1);
@@ -155,6 +159,14 @@ void KegConfig::parseJson(JsonObject& doc) {
     setBrewspyToken(UnitIndex::U1, doc[PARAM_BREWSPY_TOKEN1]);
   if (!doc[PARAM_BREWSPY_TOKEN2].isNull())
     setBrewspyToken(UnitIndex::U2, doc[PARAM_BREWSPY_TOKEN2]);
+
+  if (!doc[PARAM_BARHELPER_APIKEY].isNull())
+    setBarhelperApiKey(doc[PARAM_BARHELPER_APIKEY]);
+
+  if (!doc[PARAM_BARHELPER_MONITOR1].isNull())
+    setBarhelperMonitor(UnitIndex::U1, doc[PARAM_BARHELPER_MONITOR1]);
+  if (!doc[PARAM_BARHELPER_MONITOR2].isNull())
+    setBarhelperMonitor(UnitIndex::U2, doc[PARAM_BARHELPER_MONITOR2]);
 
   if (!doc[PARAM_DISPLAY_LAYOUT].isNull())
     setDisplayLayoutType(doc[PARAM_DISPLAY_LAYOUT].as<int>());
