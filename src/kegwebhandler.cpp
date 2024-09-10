@@ -83,10 +83,21 @@ constexpr auto PARAM_FEATURES = "features";
 constexpr auto PARAM_WIFI_SETUP = "wifi_setup";
 constexpr auto PARAM_ONEWIRE = "onewire";
 constexpr auto PARAM_RESOLUTION = "resolution";
+
 constexpr auto PARAM_UPTIME_SECONDS = "uptime_seconds";
 constexpr auto PARAM_UPTIME_MINUTES = "uptime_minutes";
 constexpr auto PARAM_UPTIME_HOURS = "uptime_hours";
 constexpr auto PARAM_UPTIME_DAYS = "uptime_days";
+
+// Push status
+constexpr auto PARAM_HOMEASSISTANT = "ha";
+constexpr auto PARAM_BARHELPER = "barhelper";
+constexpr auto PARAM_BREWSPY = "brewspy";
+constexpr auto PARAM_PUSH_USED = "push_used";
+constexpr auto PARAM_PUSH_AGE = "push_age";
+constexpr auto PARAM_PUSH_STATUS = "push_status";
+constexpr auto PARAM_PUSH_CODE = "push_code";
+constexpr auto PARAM_PUSH_RESPONSE = "push_response";
 
 KegWebHandler::KegWebHandler(KegConfig *config)
     : BaseWebServer(config, JSON_BUFFER) {
@@ -421,7 +432,7 @@ void KegWebHandler::webStatus(AsyncWebServerRequest *request) {
   Log.notice(F("WEB : webServer callback /api/status." CR));
 
   AsyncJsonResponse *response =
-      new AsyncJsonResponse(false, JSON_BUFFER_SIZE_L);
+      new AsyncJsonResponse(false, JSON_BUFFER_SIZE_XL);
   JsonObject obj = response->getRoot().as<JsonObject>();
   populateScaleJson(obj);
   obj[PARAM_MDNS] = myConfig.getMDNS();
@@ -492,6 +503,40 @@ void KegWebHandler::webStatus(AsyncWebServerRequest *request) {
   obj[PARAM_IP] = WiFi.localIP().toString();
 #endif
   obj[PARAM_WIFI_SETUP] = (runMode == RunMode::wifiSetupMode) ? true : false;
+
+  // Home Assistant
+  if (myConfig.hasTargetMqtt()) {
+    JsonObject o = obj.createNestedObject(PARAM_HOMEASSISTANT);
+    HomeAssist *ha = myPush.getHomeAssist();
+    o[PARAM_PUSH_AGE] = abs((int32_t)(millis() - ha->getLastTimeStamp()));
+    o[PARAM_PUSH_STATUS] = ha->getLastStatus();
+    o[PARAM_PUSH_CODE] = ha->getLastError();
+    o[PARAM_PUSH_RESPONSE] = "";
+    o[PARAM_PUSH_USED] = ha->hasRun();
+  }
+
+  // Bar helper
+  if (strlen(myConfig.getBarhelperApiKey()) > 0) {
+    JsonObject o = obj.createNestedObject(PARAM_BARHELPER);
+    Barhelper *bar = myPush.getBarHelper();
+    o[PARAM_PUSH_AGE] = abs((int32_t)(millis() - bar->getLastTimeStamp()));
+    o[PARAM_PUSH_STATUS] = bar->getLastStatus();
+    o[PARAM_PUSH_CODE] = bar->getLastError();
+    o[PARAM_PUSH_RESPONSE] = bar->getLastResponse();
+    o[PARAM_PUSH_USED] = bar->hasRun();
+  }
+
+  // Brewspy
+  if (strlen(myConfig.getBrewspyToken(UnitIndex::U1)) > 0 ||
+      strlen(myConfig.getBrewspyToken(UnitIndex::U2)) > 0) {
+    JsonObject o = obj.createNestedObject(PARAM_BREWSPY);
+    Brewspy *brew = myPush.getBrewspy();
+    o[PARAM_PUSH_AGE] = abs((int32_t)(millis() - brew->getLastTimeStamp()));
+    o[PARAM_PUSH_STATUS] = brew->getLastStatus();
+    o[PARAM_PUSH_CODE] = brew->getLastError();
+    o[PARAM_PUSH_RESPONSE] = brew->getLastResponse();
+    o[PARAM_PUSH_USED] = brew->hasRun();
+  }
 
   response->setLength();
   request->send(response);

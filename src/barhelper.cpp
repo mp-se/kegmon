@@ -121,6 +121,7 @@ void Barhelper::sendKegInformation(UnitIndex idx, float kegVol) {
       out,
       "https://europe-west1-barhelper-app.cloudfunctions.net/api/customKegMon",
       "Content-Type: application/json", header.c_str());
+  updateStatus(out);
 
   Log.info(F("BARH: Response %s." CR), out.c_str());
 
@@ -150,6 +151,14 @@ void Barhelper::sendKegInformation(UnitIndex idx, float kegVol) {
            obj["success"].as<bool>() ? "True" : "False",
            obj["newKegAmount"].as<float>(),
            obj["message"].as<String>().c_str());*/
+}
+
+void Barhelper::updateStatus(String& response) {
+  _lastTimestamp = millis();
+  _lastStatus = _push->wasLastSuccessful();
+  _lastHttpError = _push->getLastResponseCode();
+  _lastResponse = response;
+  _hasRun = true;
 }
 
 // EOF

@@ -100,6 +100,7 @@ void HomeAssist::sendTempInformation(float tempC) {
   EspSerial.print(CR);
   String outStr(out);
   _push->sendMqtt(outStr);
+  updateStatus();
 
   Log.notice(F("HA  : Sending temp information to HA, last %FC" CR), tempC);
 
@@ -128,6 +129,7 @@ void HomeAssist::sendTapInformation(UnitIndex idx, float stableVol,
   EspSerial.print(CR);
   String outStr(out);
   _push->sendMqtt(outStr);
+  updateStatus();
 
   Log.notice(F("HA  : Sending TAP information to HA, last %Fl [%d]" CR),
              stableVol);
@@ -137,6 +139,7 @@ void HomeAssist::sendTapInformation(UnitIndex idx, float stableVol,
   EspSerial.print(CR);
   outStr = out;
   _push->sendMqtt(outStr);
+  updateStatus();
 
   tpl.freeMemory();
 }
@@ -160,7 +163,16 @@ void HomeAssist::sendPourInformation(UnitIndex idx, float pourVol) {
   EspSerial.print(CR);
   String outStr(out);
   _push->sendMqtt(outStr);
+  updateStatus();
+
   tpl.freeMemory();
+}
+
+void HomeAssist::updateStatus() {
+  _lastTimestamp = millis();
+  _lastStatus = _push->wasLastSuccessful();
+  _lastMqttError = _push->getLastResponseCode();
+  _hasRun = true;
 }
 
 // EOF

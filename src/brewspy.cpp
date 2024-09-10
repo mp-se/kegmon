@@ -69,7 +69,11 @@ void Brewspy::sendTapInformation(UnitIndex idx, float stableVol,
   EspSerial.print(out.c_str());
   EspSerial.print(CR);
   // #endif
-  _push->sendHttpPost(out, "https://brew-spy.com/api/tap/keg/set", "", "");
+  out =
+      _push->sendHttpPost(out, "https://brew-spy.com/api/tap/keg/set", "", "");
+  updateStatus(out);
+
+  Log.info(F("BSPY: Response %s." CR), out.c_str());
 }
 
 void Brewspy::sendPourInformation(UnitIndex idx, float pourVol) {
@@ -98,7 +102,11 @@ void Brewspy::sendPourInformation(UnitIndex idx, float pourVol) {
   EspSerial.print(out.c_str());
   EspSerial.print(CR);
   // #endif
-  _push->sendHttpPost(out, "https://brew-spy.com/api/tap/keg/pour", "", "");
+  out =
+      _push->sendHttpPost(out, "https://brew-spy.com/api/tap/keg/pour", "", "");
+  updateStatus(out);
+
+  Log.info(F("BSPY: Response %s." CR), out.c_str());
 }
 
 void Brewspy::clearKegInformation(UnitIndex idx) {
@@ -123,7 +131,11 @@ void Brewspy::clearKegInformation(UnitIndex idx) {
   EspSerial.print(out.c_str());
   EspSerial.print(CR);
   // #endif
-  _push->sendHttpPost(out, "https://brew-spy.com/api/tap/keg/clear", "", "");
+  out = _push->sendHttpPost(out, "https://brew-spy.com/api/tap/keg/clear", "",
+                            "");
+  updateStatus(out);
+
+  Log.info(F("BSPY: Response %s." CR), out.c_str());
 }
 
 void Brewspy::getTapInformation(JsonObject& obj, const String token) {
@@ -166,6 +178,14 @@ void Brewspy::getTapInformation(JsonObject& obj, const String token) {
 
   obj["recipe"] = doc["recipe"].as<String>();
   obj["abv"] = doc["abv"].as<float>();
+}
+
+void Brewspy::updateStatus(String& response) {
+  _lastTimestamp = millis();
+  _lastStatus = _push->wasLastSuccessful();
+  _lastHttpError = _push->getLastResponseCode();
+  _lastResponse = response;
+  _hasRun = true;
 }
 
 // EOF

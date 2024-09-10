@@ -51,6 +51,10 @@ class KegPushHandler : public BasePush {
   void pushPourInformation(UnitIndex idx, float pourVol, bool isLoop = false);
   void pushKegInformation(UnitIndex idx, float stableVol, float pourVol,
                           float glasses, bool isLoop = false);
+
+  Brewspy* getBrewspy() { return _brewspy; }
+  HomeAssist* getHomeAssist() { return _ha; }
+  Barhelper* getBarHelper() { return _barhelper; }
 };
 
 extern KegPushHandler myPush;

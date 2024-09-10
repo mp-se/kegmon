@@ -29,7 +29,7 @@ SOFTWARE.
 constexpr auto PARAM_PLATFORM = "platform";
 
 KegConfig::KegConfig(String baseMDNS, String fileName)
-    : BaseConfig(baseMDNS, fileName, JSON_BUFFER) {}
+    : BaseConfig(baseMDNS, fileName, JSON_BUFFER_SIZE_XL) {}
 
 void KegConfig::createJson(JsonObject& doc) {
   // Call base class functions

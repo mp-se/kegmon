@@ -31,12 +31,25 @@ class HomeAssist {
  protected:
   BasePush *_push;
 
+  bool _hasRun = false;
+  uint32_t _lastTimestamp = 0;
+  bool _lastStatus = 0;
+  int _lastMqttError = 0;
+
+  void updateStatus();
+
  public:
   explicit HomeAssist(BasePush *push) { _push = push; }
 
   void sendTempInformation(float tempC);
   void sendTapInformation(UnitIndex idx, float stableVol, float glasses);
   void sendPourInformation(UnitIndex idx, float pourVol);
+
+  bool hasRun() { return _hasRun; }
+  uint32_t getLastTimeStamp() { return _lastTimestamp; }
+  bool getLastStatus() { return _lastStatus; }
+  int getLastError() { return _lastMqttError; }
+  String getLastResponse() { return ""; }
 };
 
 #endif  // SRC_HOMEASSIST_HPP_
