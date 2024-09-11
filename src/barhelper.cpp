@@ -117,25 +117,33 @@ void Barhelper::sendKegInformation(UnitIndex idx, float kegVol) {
   EspSerial.print(out.c_str());
   EspSerial.print(CR);
   // #endif
+
+#if defined(ESP8266)
+  constexpr auto BARHELPER_URL = "http://europe-west1-barhelper-app.cloudfunctions.net/api/customKegMon";
+#else
+  constexpr auto BARHELPER_URL = "https://europe-west1-barhelper-app.cloudfunctions.net/api/customKegMon";
+#endif
+  Log.info(F("BARH: Using URL %s." CR), BARHELPER_URL);
   out = _push->sendHttpPost(
       out,
-      "https://europe-west1-barhelper-app.cloudfunctions.net/api/customKegMon",
+      BARHELPER_URL,
       "Content-Type: application/json", header.c_str());
   updateStatus(out);
-
   Log.info(F("BARH: Response %s." CR), out.c_str());
 
   // Note! the server does not return a valid json so it cant be parsed. Just
   // print the value for now.
 
-  /*DeserializationError err = deserializeJson(doc, out);
+  /*
+  
+  DeserializationError err = deserializeJson(doc, out);
 
-  /*if (err) {
+  if (err) {
     Log.error(
         F("BARH: Failed to parse response from barhelper, Err: %s, %s." CR),
         err.c_str(), out.c_str());
     return;
-  }*/
+  }
 
   // Typical response
   // {
@@ -146,11 +154,12 @@ void Barhelper::sendKegInformation(UnitIndex idx, float kegVol) {
   // "message": "Keg Monitor updated successfully"
   // }
 
-  /*JsonObject obj = doc.as<JsonObject>();
+  JsonObject obj = doc.as<JsonObject>();
   Log.info(F("BARH: Server responded: %s, new level=%F, message=%s." CR),
            obj["success"].as<bool>() ? "True" : "False",
            obj["newKegAmount"].as<float>(),
-           obj["message"].as<String>().c_str());*/
+           obj["message"].as<String>().c_str());
+  */
 }
 
 void Barhelper::updateStatus(String& response) {
