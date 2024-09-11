@@ -34,8 +34,6 @@ Device - Settings
 Device - Hardware
 *****************
 
-TODO: Missing hardware screen dump
-
 .. image:: images/view_device_hardware.png
   :width: 600
   :alt: Device Hardware
@@ -75,6 +73,21 @@ the factor for estimating the weight.
 The third step is to validate that everything works, place anohter thing with a know weight and 
 check the measured value. If you are satisfied then you are done.
 
+Device - Stability
+******************
+
+.. image:: images/view_device_stability.png
+  :width: 600
+  :alt: Serial console
+
+Information page that can determine the stability of your hardware build.
+
+I have found that some of my hardware builds was not really stable so I added this 
+feature to check the scale build before doing the final assembly. 
+
+If you keep the browser open you can also see the history of the values (raw, kalman & stable). This can help to show
+how your scale varies over time. Data is only stored in the browser so any refresh or page change will delete the graphs.
+
 Device - Wifi
 *************
 
@@ -106,8 +119,8 @@ Device - Wifi
 
   This is the amount of time allowed for a wifi connect. 
 
-Tap Settings
-************
+Taps - Settings
+***************
 
 .. image:: images/view_taps_settings.png
   :width: 600
@@ -121,7 +134,7 @@ Tap Settings
 
 * **Beer FG**: Used in formula for calculating the beer volume. FG has a slight impact on the weight / volume unit. If not defined 1 will be used for calculations.
 
-Tap Settings
+Taps - Beers
 ************
 
 .. image:: images/view_taps_beers.png
@@ -130,12 +143,22 @@ Tap Settings
 
 Shows information about beers on tap. Use the buttons to import from brewspy or brewfather.
 
+Taps - History
+**************
+
+.. image:: images/view_taps_history.png
+  :width: 600
+  :alt: Tap history
+
+Shows information about the latest pours per tapbeers on tap.
+
+
 Integration - Home Assistant
 ****************************
 
 .. image:: images/view_integration_ha.png
   :width: 600
-  :alt: Home Assistant
+  :alt: Home Assistant integration
 
 Setting for MQTT server that is used by Home Assistant.
 
@@ -148,43 +171,53 @@ Integration - Brewfather
 
 API and User keys for access to brewfather
 
+
 Integration - Brewspy
 *********************
 
 .. image:: images/view_integration_brewspy.png
   :width: 600
-  :alt: Brewspy
+  :alt: Brewspy integration
 
-Brewspy tokens for keg 1 & keg 2.
+Brewspy tokens for keg 1 & keg 2. 
+
+Click on the taplist and the tap you want to connect. Under webhook URL copy the 
+last code and enter that into kegmon.
+
+.. note::
+  This will not work on ESP8266 due to lack of RAM for using SSL connections.
+
 
 Integration - Barhelper
 ***********************
 
 .. image:: images/view_integration_barhelper.png
   :width: 600
-  :alt: Barhelper
+  :alt: Barhelper integration
 
 Barhelper API keys and name of monitors.
 
+You can get the API key from the settings part of Barhelper and enter this into 
+kegmon. Make a copy of it since you will not be able to retrieve it again. 
 
-History
-*******
+The name of the monitors does not need to be registered, they will be added 
+after the first run. Just connect the tap/keg to the monitor and the level will 
+be the same as in kegmon.
 
-TODO: Not yet implemented in new UI
+.. note::
+  On ESP8266 the device will use a NON-SSL endpoint to send the data since there is 
+  not enough memory.
 
 
-Stability
-*********
+Integration - Influx
+********************
 
-TODO: Not yet implemented in new UI
+.. image:: images/view_integration_influx.png
+  :width: 600
+  :alt: Influx integration
 
-Information page that can determine the stability of your hardware build.
+Sends scale and internal parameters to an influx db v2 for debugging and detailed analysis.
 
-I have found that some of my hardware builds was not really stable so I added this 
-feature to check the scale build before doing the final assembly. 
-
-If you keep the browser open you can also see the history of the values (raw, kalman & stable). This can help to show
-how your scale varies over time. Data is only stored in the browser so any refresh or page change will delete the graphs.
 
 Serial console
 **************
