@@ -7,6 +7,10 @@ v1.0.0-beta2
 ============
 
 * Added new integration to Barhelper
+* Fixed test on brewfather user key
+* Updated documentation
+* Added push feedback to UI to check status of integrations
+* Change wire speed to 400 Mhz (Speed up display rendering)
 
 v1.0.0-beta1
 ============
