@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-22 Magnus
+Copyright (c) 2021-2024 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,13 +31,27 @@ class Brewspy {
  protected:
   BasePush *_push;
 
+  bool _hasRun = false;
+  uint32_t _lastTimestamp = 0;
+  bool _lastStatus = false;
+  int _lastHttpError = 0;
+  String _lastResponse;
+
+  void updateStatus(String &response);
+
  public:
   explicit Brewspy(BasePush *push) { _push = push; }
 
   void sendTapInformation(UnitIndex idx, float stableVol, float pourVol);
   void sendPourInformation(UnitIndex idx, float pourVol);
   void clearKegInformation(UnitIndex idx);
-  String getTapInformation(const String &token);
+  void getTapInformation(JsonObject &obj, const String token);
+
+  bool hasRun() { return _hasRun; }
+  uint32_t getLastTimeStamp() { return _lastTimestamp; }
+  bool getLastStatus() { return _lastStatus; }
+  int getLastError() { return _lastHttpError; }
+  String getLastResponse() { return _lastResponse; }
 };
 
 #endif  // SRC_BREWSPY_HPP_

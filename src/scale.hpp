@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-22 Magnus
+Copyright (c) 2021-2024 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -109,6 +109,11 @@ class Scale {
   void scheduleFindFactor(UnitIndex idx, float weight) {
     _sched[idx].findFactor = true;
     _sched[idx].factorWeight = weight;
+  }
+  bool isScheduleRunning() {
+    return _sched[UnitIndex::U1].findFactor ||
+           _sched[UnitIndex::U2].findFactor || _sched[UnitIndex::U1].tare ||
+           _sched[UnitIndex::U2].tare;
   }
   int32_t readLastRaw(UnitIndex idx) { return _lastRaw[idx]; }
 

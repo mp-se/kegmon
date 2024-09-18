@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-23 Magnus
+Copyright (c) 2021-2024 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,51 +27,54 @@ SOFTWARE.
 #include <baseconfig.hpp>
 #include <main.hpp>
 
-constexpr auto PARAM_BREWFATHER_USERKEY = "brewfather-userkey";
-constexpr auto PARAM_BREWFATHER_APIKEY = "brewfather-apikey";
-constexpr auto PARAM_BREWSPY_TOKEN1 = "brewspy-token1";
-constexpr auto PARAM_BREWSPY_TOKEN2 = "brewspy-token2";
-constexpr auto PARAM_BREWPI_URL = "brewpi-url";
-constexpr auto PARAM_DISPLAY_LAYOUT = "display-layout";
-constexpr auto PARAM_TEMP_SENSOR = "temp-sensor";
-constexpr auto PARAM_DISPLAY_DRIVER = "display-driver";
-constexpr auto PARAM_SCALE_SENSOR = "scale-sensor";
-constexpr auto PARAM_WEIGHT_UNIT = "weight-unit";
-constexpr auto PARAM_VOLUME_UNIT = "volume-unit";
-constexpr auto PARAM_KEG_WEIGHT1 = "keg-weight1";
-constexpr auto PARAM_KEG_WEIGHT2 = "keg-weight2";
-constexpr auto PARAM_KEG_VOLUME1 = "keg-volume1";
-constexpr auto PARAM_KEG_VOLUME2 = "keg-volume2";
-constexpr auto PARAM_GLASS_VOLUME1 = "glass-volume1";
-constexpr auto PARAM_GLASS_VOLUME2 = "glass-volume2";
-constexpr auto PARAM_BEER_NAME1 = "beer-name1";
-constexpr auto PARAM_BEER_NAME2 = "beer-name2";
-constexpr auto PARAM_BEER_ABV1 = "beer-abv1";
-constexpr auto PARAM_BEER_ABV2 = "beer-abv2";
-constexpr auto PARAM_BEER_IBU1 = "beer-ibu1";
-constexpr auto PARAM_BEER_IBU2 = "beer-ibu2";
-constexpr auto PARAM_BEER_EBC1 = "beer-ebc1";
-constexpr auto PARAM_BEER_EBC2 = "beer-ebc2";
-constexpr auto PARAM_BEER_FG1 = "beer-fg1";
-constexpr auto PARAM_BEER_FG2 = "beer-fg2";
-constexpr auto PARAM_SCALE_FACTOR1 = "scale-factor1";
-constexpr auto PARAM_SCALE_FACTOR2 = "scale-factor2";
-constexpr auto PARAM_SCALE_OFFSET1 = "scale-offset1";
-constexpr auto PARAM_SCALE_OFFSET2 = "scale-offset2";
-constexpr auto PARAM_SCALE_TEMP_FORMULA1 = "scale-temp-formula1";
-constexpr auto PARAM_SCALE_TEMP_FORMULA2 = "scale-temp-formula2";
-constexpr auto PARAM_SCALE_DEVIATION_INCREASE = "scale-deviation-increase";
-constexpr auto PARAM_SCALE_DEVIATION_DECREASE = "scale-deviation-decrease";
-constexpr auto PARAM_SCALE_DEVIATION_KALMAN = "scale-deviation-kalman";
-constexpr auto PARAM_SCALE_READ_COUNT = "scale-read-count";
+constexpr auto PARAM_BREWFATHER_USERKEY = "brewfather_userkey";
+constexpr auto PARAM_BREWFATHER_APIKEY = "brewfather_apikey";
+constexpr auto PARAM_BREWSPY_TOKEN1 = "brewspy_token1";
+constexpr auto PARAM_BREWSPY_TOKEN2 = "brewspy_token2";
+constexpr auto PARAM_BREWPI_URL = "brewpi_url";
+constexpr auto PARAM_BARHELPER_APIKEY = "barhelper_apikey";
+constexpr auto PARAM_BARHELPER_MONITOR1 = "barhelper_monitor1";
+constexpr auto PARAM_BARHELPER_MONITOR2 = "barhelper_monitor2";
+constexpr auto PARAM_DISPLAY_LAYOUT = "display_layout";
+constexpr auto PARAM_TEMP_SENSOR = "temp_sensor";
+constexpr auto PARAM_DISPLAY_DRIVER = "display_driver";
+constexpr auto PARAM_SCALE_SENSOR = "scale_sensor";
+constexpr auto PARAM_WEIGHT_UNIT = "weight_unit";
+constexpr auto PARAM_VOLUME_UNIT = "volume_unit";
+constexpr auto PARAM_KEG_WEIGHT1 = "keg_weight1";
+constexpr auto PARAM_KEG_WEIGHT2 = "keg_weight2";
+constexpr auto PARAM_KEG_VOLUME1 = "keg_volume1";
+constexpr auto PARAM_KEG_VOLUME2 = "keg_volume2";
+constexpr auto PARAM_GLASS_VOLUME1 = "glass_volume1";
+constexpr auto PARAM_GLASS_VOLUME2 = "glass_volume2";
+constexpr auto PARAM_BEER_NAME1 = "beer_name1";
+constexpr auto PARAM_BEER_NAME2 = "beer_name2";
+constexpr auto PARAM_BEER_ABV1 = "beer_abv1";
+constexpr auto PARAM_BEER_ABV2 = "beer_abv2";
+constexpr auto PARAM_BEER_IBU1 = "beer_ibu1";
+constexpr auto PARAM_BEER_IBU2 = "beer_ibu2";
+constexpr auto PARAM_BEER_EBC1 = "beer_ebc1";
+constexpr auto PARAM_BEER_EBC2 = "beer_ebc2";
+constexpr auto PARAM_BEER_FG1 = "beer_fg1";
+constexpr auto PARAM_BEER_FG2 = "beer_fg2";
+constexpr auto PARAM_SCALE_FACTOR1 = "scale_factor1";
+constexpr auto PARAM_SCALE_FACTOR2 = "scale_factor2";
+constexpr auto PARAM_SCALE_OFFSET1 = "scale_offset1";
+constexpr auto PARAM_SCALE_OFFSET2 = "scale_offset2";
+constexpr auto PARAM_SCALE_TEMP_FORMULA1 = "scale_temp_formula1";
+constexpr auto PARAM_SCALE_TEMP_FORMULA2 = "scale_temp_formula2";
+constexpr auto PARAM_SCALE_DEVIATION_INCREASE = "scale_deviation_increase";
+constexpr auto PARAM_SCALE_DEVIATION_DECREASE = "scale_deviation_decrease";
+constexpr auto PARAM_SCALE_DEVIATION_KALMAN = "scale_deviation_kalman";
+constexpr auto PARAM_SCALE_READ_COUNT = "scale_read_count";
 constexpr auto PARAM_SCALE_READ_COUNT_CALIBRATION =
-    "scale-read-count-calibration";
-constexpr auto PARAM_SCALE_STABLE_COUNT = "scale-stable-count";
-constexpr auto PARAM_LEVEL_DETECTION = "level-detection";
-constexpr auto PARAM_KALMAN_NOISE = "kalman-noise";
-constexpr auto PARAM_KALMAN_MEASUREMENT = "kalman-measurement";
-constexpr auto PARAM_KALMAN_ESTIMATION = "kalman-estimation";
-constexpr auto PARAM_KALMAN_ACTIVE = "kalman-active";
+    "scale_read_count_calibration";
+constexpr auto PARAM_SCALE_STABLE_COUNT = "scale_stable_count";
+constexpr auto PARAM_LEVEL_DETECTION = "level_detection";
+constexpr auto PARAM_KALMAN_NOISE = "kalman_noise";
+constexpr auto PARAM_KALMAN_MEASUREMENT = "kalman_measurement";
+constexpr auto PARAM_KALMAN_ESTIMATION = "kalman_estimation";
+constexpr auto PARAM_KALMAN_ACTIVE = "kalman_active";
 
 struct BeerInfo {
   String _name = "";
@@ -114,14 +117,14 @@ struct HardwareInfo {
 #endif
 };
 
-constexpr auto PARAM_PIN_DISPLAY_DATA = "pin-display-data";
-constexpr auto PARAM_PIN_DISPLAY_CLOCK = "pin-display-clock";
-constexpr auto PARAM_PIN_SCALE1_DATA = "pin-scale1-data";
-constexpr auto PARAM_PIN_SCALE1_CLOCK = "pin-scale1-clock";
-constexpr auto PARAM_PIN_SCALE2_DATA = "pin-scale2-data";
-constexpr auto PARAM_PIN_SCALE2_CLOCK = "pin-scale2-clock";
-constexpr auto PARAM_PIN_TEMP_DATA = "pin-temp-data";
-constexpr auto PARAM_PIN_TEMP_POWER = "pin-temp-power";
+constexpr auto PARAM_PIN_DISPLAY_DATA = "pin_display_data";
+constexpr auto PARAM_PIN_DISPLAY_CLOCK = "pin_display_clock";
+constexpr auto PARAM_PIN_SCALE1_DATA = "pin_scale1_data";
+constexpr auto PARAM_PIN_SCALE1_CLOCK = "pin_scale1_clock";
+constexpr auto PARAM_PIN_SCALE2_DATA = "pin_scale2_data";
+constexpr auto PARAM_PIN_SCALE2_CLOCK = "pin_scale2_clock";
+constexpr auto PARAM_PIN_TEMP_DATA = "pin_temp_data";
+constexpr auto PARAM_PIN_TEMP_POWER = "pin_temp_power";
 
 constexpr auto WEIGHT_KG = "kg";
 constexpr auto WEIGHT_LBS = "lbs";
@@ -161,6 +164,9 @@ class KegConfig : public BaseConfig {
 
   String _brewspyToken[2] = {"", ""};
 
+  String _barhelperApiKey = "";
+  String _barhelperMonitor[2] = {"Kegmon TAP 1", "Kegmon TAP 2"};
+
   String _brewpiUrl = "";
 
   DisplayLayoutType _displayLayout = DisplayLayoutType::Default;
@@ -196,8 +202,9 @@ class KegConfig : public BaseConfig {
  public:
   KegConfig(String baseMDNS, String fileName);
 
-  void createJson(DynamicJsonDocument& doc, bool skipSecrets = true);
-  void parseJson(DynamicJsonDocument& doc);
+  void createJson(JsonObject& doc);
+  void parseJson(JsonObject& doc);
+  void migrateSettings();
 
   const char* getBrewfatherUserKey() { return _brewfatherUserKey.c_str(); }
   void setBrewfatherUserKey(String s) {
@@ -207,6 +214,19 @@ class KegConfig : public BaseConfig {
   const char* getBrewfatherApiKey() { return _brewfatherApiKey.c_str(); }
   void setBrewfatherApiKey(String s) {
     _brewfatherApiKey = s;
+    _saveNeeded = true;
+  }
+
+  const char* getBarhelperApiKey() { return _barhelperApiKey.c_str(); }
+  void setBarhelperApiKey(String s) {
+    _barhelperApiKey = s;
+    _saveNeeded = true;
+  }
+  const char* getBarhelperMonitor(UnitIndex idx) {
+    return _barhelperMonitor[idx].c_str();
+  }
+  void setBarhelperMonitor(UnitIndex idx, String s) {
+    _barhelperMonitor[idx] = s;
     _saveNeeded = true;
   }
 
@@ -432,31 +452,6 @@ class KegConfig : public BaseConfig {
     _scaleTempCompensationFormula[idx] = s;
     _saveNeeded = true;
   }
-
-  // These settings are used for debugging and checking stability of the scales.
-  // Only influx is used for now
-  const char* getTargetHttpPost() { return ""; }
-  void setTargetHttpPost(String target) {}
-  const char* getHeader1HttpPost() { return ""; }
-  void setHeader1HttpPost(String header) {}
-  const char* getHeader2HttpPost() { return ""; }
-  void setHeader2HttpPost(String header) {}
-
-  const char* getTargetHttpGet() { return ""; }
-  void setTargetHttpGet(String target) {}
-  const char* getHeader1HttpGet() { return ""; }
-  void setHeader1HttpGet(String header) {}
-  const char* getHeader2HttpGet() { return ""; }
-  void setHeader2HttpGet(String header) {}
-
-  const char* getTargetInfluxDB2() { return ""; }
-  void setTargetInfluxDB2(String target) {}
-  const char* getOrgInfluxDB2() { return ""; }
-  void setOrgInfluxDB2(String org) {}
-  const char* getBucketInfluxDB2() { return ""; }
-  void setBucketInfluxDB2(String bucket) {}
-  const char* getTokenInfluxDB2() { return ""; }
-  void setTokenInfluxDB2(String token) {}
 
   // Hardware related methods
   int getPinDisplayData() { return _pins._displayData; }

@@ -8,54 +8,18 @@ Index
 
 This is the web page accessed by accessing the device via a web-browser. This section will show the general device information.
 
-.. image:: images/index.png
+.. image:: images/view_home.png
   :width: 600
   :alt: Index
 
-* **Weights/Volumes**: Shows weighs for scale 1 and 2.
+Shows information about the device and temperatures, only data available will be shown.
 
-* **Glasses**: Shows glasses (pours) left for scale 1 and 2. 
+Device - Settings
+*****************
 
-* **Last Pour**: How much the last pour was. Is lost when rebooting.
-
-* **Temperature**: Temperature reading (not shown if there is no sensor).
-
-* **Current version**: Shows the current software version including git revision or beta tag.
-
-* **Host name**: Name of the device on the network.
-
-* **Platform**: Which hardware platform is used (ESP8266, ESP32S2, ESP32S3).
-
-* **Device ID**: ESP chip ID. Used for identifying the device.
-
-* **SSID**: Name of network we are connected to.
-
-Beers
-*****
-
-This is where the beer on tap is configured. 
-
-.. image:: images/beer.png
+.. image:: images/view_device_settings.png
   :width: 600
-  :alt: Beer configuration
-
-* **Empty keg weight**: Weight of the empty keg, used to determine how much beer is in the keg.
-
-* **Glass volume**: Choose the volume of the beer glasses, used to determine how many pours are left. 
-
-* **Beer name**, **Beer ABV**, **Beer EBC**, **Beer IBU**: Information about the beer, used to show on user interfaces.
-
-* **Beer FG**: Used in formula for calculating the beer volume. FG has a slight impact on the weight / volume unit. If not defined 1 will be used for calculations.
-
-
-Configuration
-*************
-
-This is where the software is configured. 
-
-.. image:: images/config.png
-  :width: 600
-  :alt: Device
+  :alt: Device Settings
 
 * **Device name**: Set the name of the device on the network, your network needs to support mDNS.
 
@@ -65,11 +29,16 @@ This is where the software is configured.
 
 * **Volume unit**: Select format for volumes
 
-* **Display layout**: Choose the layout/information on the displays.
+* **Dark Mode**: Switches the UI between light and dark mode. You can also use the toggle on the menubar for that.
 
-.. image:: images/config2.png
+Device - Hardware
+*****************
+
+.. image:: images/view_device_hardware.png
   :width: 600
-  :alt: Hardware
+  :alt: Device Hardware
+
+* **Display layout**: Choose the layout/information on the displays.
 
 * **Display driver**: Choose the what display driver is used, either LCD 20x4 or OLED 0.96". Default is OLED 0.96".
 
@@ -79,32 +48,14 @@ This is where the software is configured.
 
 * **BrewPI ESP URL**: Base URL for the brewpi-esp to fetch temperature from. Require v15 or later. 
 
-* **Pin**: If you dont follow the standard hardware wiring then you can customize the pins here.
+* **Pins**: If you dont follow the standard hardware wiring then you can customize the pins here.
 
-.. image:: images/config3.png
+Device - Calibration
+*********************
+
+.. image:: images/view_device_calibration.png
   :width: 600
-  :alt: Configuration (2)
-
-* **HA MQTT**: Setting for MQTT server that is used by Home Assistant.
-
-* **Brewfather user key**, **Brewfather API key**: Brewfather User key/API key.
-
-* **Brewspy token**: Brewspy tokens for keg 1 & keg 2.
-
-.. image:: images/config4.png
-  :width: 600
-  :alt: Configuration (3)
-
-Here you can customise some of the thresholds and parameters that are used in the software. 
-
-Calibration
-***********
-
-This is the page where you can calibrate your scales in 3 simple steps.. 
-
-.. image:: images/calibration.png
-  :width: 600
-  :alt: Calibration
+  :alt: Device calibration
 
 * **STEP 1 - Tare scale**
 
@@ -122,52 +73,194 @@ the factor for estimating the weight.
 The third step is to validate that everything works, place anohter thing with a know weight and 
 check the measured value. If you are satisfied then you are done.
 
-History
-*******
+Device - Stability
+******************
 
-Shows the last level changes detected by the software. There is a second graph for the pours.
-
-.. image:: images/history.png
+.. image:: images/view_device_stability.png
   :width: 600
-  :alt: Level changes
-
-.. image:: images/history2.png
-  :width: 600
-  :alt: Pours
-
-
-Stability
-*********
+  :alt: Serial console
 
 Information page that can determine the stability of your hardware build.
-
-.. image:: images/stability.png
-  :width: 600
-  :alt: Statistics
 
 I have found that some of my hardware builds was not really stable so I added this 
 feature to check the scale build before doing the final assembly. 
 
-.. image:: images/stability2.png
-  :width: 600
-  :alt: Statistics
-
 If you keep the browser open you can also see the history of the values (raw, kalman & stable). This can help to show
 how your scale varies over time. Data is only stored in the browser so any refresh or page change will delete the graphs.
 
-Firmware update
+Device - Wifi
+*************
+
+.. image:: images/view_device_wifi.png
+  :width: 600
+  :alt: Device wifi
+
+* **SSID #1:**
+
+  Select the desired primary SSID to use. 
+
+* **Password #1:**
+
+  Enter the primary password. 
+
+* **SSID #2:**
+
+  Select the desired secondary SSID to use (optional). 
+
+* **Password #2:**
+
+  Enter the secondary password (optional). 
+
+* **Portal timeout:**
+
+  If the wifi portal is triggered (can be triggered by tapping the reset button 2-3 times within 3 seconds) then this is the amount of time allowed before it exists again.
+
+* **Connect timeout:**
+
+  This is the amount of time allowed for a wifi connect. 
+
+Taps - Settings
 ***************
 
-Here you can upload a new firmware version without the need to hook the device to a serial port 
-on your computer.
-
-.. image:: images/upload.png
+.. image:: images/view_taps_settings.png
   :width: 600
-  :alt: Upload firmware
+  :alt: Tap settings
+
+* **Empty keg weight**: Weight of the empty keg, used to determine how much beer is in the keg.
+
+* **Glass volume**: Choose the volume of the beer glasses, used to determine how many pours are left. 
+
+* **Beer name**, **Beer ABV**, **Beer EBC**, **Beer IBU**: Information about the beer, used to show on user interfaces.
+
+* **Beer FG**: Used in formula for calculating the beer volume. FG has a slight impact on the weight / volume unit. If not defined 1 will be used for calculations.
+
+Taps - Beers
+************
+
+.. image:: images/view_taps_beers.png
+  :width: 600
+  :alt: Tap beers
+
+Shows information about beers on tap. Use the buttons to import from brewspy or brewfather.
+
+Taps - History
+**************
+
+.. image:: images/view_taps_history.png
+  :width: 600
+  :alt: Tap history
+
+Shows information about the latest pours per tapbeers on tap.
+
+
+Integration - Home Assistant
+****************************
+
+.. image:: images/view_integration_ha.png
+  :width: 600
+  :alt: Home Assistant integration
+
+Setting for MQTT server that is used by Home Assistant.
+
+Integration - Brewfather
+************************
+
+.. image:: images/view_integration_brewfather.png
+  :width: 600
+  :alt: Brewfather
+
+API and User keys for access to brewfather
+
+
+Integration - Brewspy
+*********************
+
+.. image:: images/view_integration_brewspy.png
+  :width: 600
+  :alt: Brewspy integration
+
+Brewspy tokens for keg 1 & keg 2. 
+
+Click on the taplist and the tap you want to connect. Under webhook URL copy the 
+last code and enter that into kegmon.
+
+.. note::
+  This will not work on ESP8266 due to lack of RAM for using SSL connections.
+
+
+Integration - Barhelper
+***********************
+
+.. image:: images/view_integration_barhelper.png
+  :width: 600
+  :alt: Barhelper integration
+
+Barhelper API keys and name of monitors.
+
+You can get the API key from the settings part of Barhelper and enter this into 
+kegmon. Make a copy of it since you will not be able to retrieve it again. 
+
+The name of the monitors does not need to be registered, they will be added 
+after the first run. Just connect the tap/keg to the monitor and the level will 
+be the same as in kegmon.
+
+.. note::
+  On ESP8266 the device will use a NON-SSL endpoint to send the data since there is 
+  not enough memory.
+
+
+Integration - Influx
+********************
+
+.. image:: images/view_integration_influx.png
+  :width: 600
+  :alt: Influx integration
+
+Sends scale and internal parameters to an influx db v2 for debugging and detailed analysis.
+
+
+Serial console
+**************
+
+.. image:: images/view_other_serial.png
+  :width: 600
+  :alt: Serial console
+
+Here you can view the serial output from the device for troubleshooting
 
 Backup & Recovery
 *****************
 
-.. image:: images/backup.png
+.. image:: images/view_other_backup.png
   :width: 600
   :alt: Backup configuration
+
+Backup your configuration or restore it from a previous state
+
+Firmware update
+***************
+
+.. image:: images/view_other_firmware.png
+  :width: 600
+  :alt: Upload firmware
+
+Here you can upload a new firmware version without the need to hook the device to a serial port 
+on your computer.
+
+Support
+*******
+
+.. image:: images/view_other_support.png
+  :width: 600
+  :alt: Support information
+
+View logs or check the hardware configuration
+
+Tools
+*****
+
+.. image:: images/view_other_tools.png
+  :width: 600
+  :alt: Tools
+
+Interact with the file system on the device

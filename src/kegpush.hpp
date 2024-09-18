@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-22 Magnus
+Copyright (c) 2021-2024 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@ SOFTWARE.
 #ifndef SRC_KEGPUSH_HPP_
 #define SRC_KEGPUSH_HPP_
 
+#include <barhelper.hpp>
 #include <basepush.hpp>
 #include <brewspy.hpp>
 #include <homeassist.hpp>
@@ -33,21 +34,27 @@ class KegPushHandler : public BasePush {
  private:
   Brewspy* _brewspy = NULL;
   HomeAssist* _ha = NULL;
+  Barhelper* _barhelper = NULL;
 
  public:
   explicit KegPushHandler(KegConfig* config) : BasePush(config) {
     _brewspy = new Brewspy(this);
     _ha = new HomeAssist(this);
+    _barhelper = new Barhelper(this);
   }
 
-  String requestTapInfoFromBrewspy(String& token) {
-    return _brewspy->getTapInformation(token);
+  void requestTapInfoFromBrewspy(JsonObject& obj, String token) {
+    _brewspy->getTapInformation(obj, token);
   }
 
   void pushTempInformation(float tempC, bool isLoop = false);
   void pushPourInformation(UnitIndex idx, float pourVol, bool isLoop = false);
   void pushKegInformation(UnitIndex idx, float stableVol, float pourVol,
                           float glasses, bool isLoop = false);
+
+  Brewspy* getBrewspy() { return _brewspy; }
+  HomeAssist* getHomeAssist() { return _ha; }
+  Barhelper* getBarHelper() { return _barhelper; }
 };
 
 extern KegPushHandler myPush;

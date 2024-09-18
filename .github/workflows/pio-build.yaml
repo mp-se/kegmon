@@ -13,6 +13,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
     
+      - name: Checkout UI
+        run: |
+          echo "Checkout UI"
+          git clone https://github.com/mp-se/kegmon-ui kegmon-ui 
+          cp kegmon-ui/dist/assets/style.css.gz html/app.css.gz
+          cp kegmon-ui/dist/assets/index.js.gz html/app.js.gz
+
       - name: Setup PlatformIO
         uses: n-vr/setup-platformio-action@v1.0.1    
   
@@ -31,13 +38,13 @@ jobs:
           verbose: true
           disable-auto-clean: false
 
-
       - uses: EndBug/add-and-commit@v9 # You can change this to use a specific version. https://github.com/marketplace/actions/add-commit
         if: ${{ github.event_name != 'pull_request' }}
         with:
-          add: 'bin'
+          add: 'bin html'
           author_name: GitHub Action
           author_email: mp-se@noreply.github.com
           default_author: github_actor
           message: 'GitHub Action Build'
           pathspec_error_handling: ignore
+

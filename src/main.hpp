@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-23 Magnus
+Copyright (c) 2021-2024 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,24 +29,29 @@ SOFTWARE.
 
 #include <log.hpp>
 
-constexpr auto CFG_APPNAME = "KegMon";         // Name of firmware
-constexpr auto CFG_MDNSNAME = "KegMon";        // Network name
-constexpr auto CFG_FILENAME = "/kegmon.json";  // Name of config file
+constexpr auto CFG_APPNAME = "KegMon";
+constexpr auto CFG_MDNSNAME = "KegMon";
+constexpr auto CFG_FILENAME = "/kegmon1.json";
 constexpr auto STARTUP_FILENAME = "/startup.log";
+constexpr auto LEVELS_FILENAME = "/levels.log";
+constexpr auto LEVELS_FILENAME2 = "/levels2.log";
 
 constexpr auto DISPLAY_ADR1 = 0x3c;
 constexpr auto DISPLAY_ADR2 = 0x3d;
 
 constexpr auto JSON_BUFFER = 3000;
 
+enum RunMode {
+  normalMode = 0,
+  wifiSetupMode = 2,
+};
+extern RunMode runMode;
+
 #if defined(ESP8266)
-#define ESP_RESET ESP.reset
 constexpr auto PIN_LED = 2;
 #elif defined(ESP32S2)
-#define ESP_RESET ESP.restart
 constexpr auto PIN_LED = BUILTIN_LED;
 #elif defined(ESP32S3)
-#define ESP_RESET ESP.restart
 constexpr auto PIN_LED = BUILTIN_LED;
 #else
 #error "Undefined target platform"

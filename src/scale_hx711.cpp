@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-22 Magnus
+Copyright (c) 2021-2024 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -180,6 +180,8 @@ void Scale::findFactorHX711(UnitIndex idx, float weight) {
   Log.notice(
       F("SCAL: HX711 Detecting factor for weight %F, raw %l %F [%d]." CR),
       weight, l, f, idx);
+
+  if (isinf(f) || isnan(f)) f = 0.0;
 
   myConfig.setScaleFactor(idx, f);
   myConfig.saveFile();  // save the factor to file

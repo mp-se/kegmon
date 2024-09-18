@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2022 Magnus
+Copyright (c) 2022-2024 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,7 @@ SOFTWARE.
 #include <scale.hpp>
 #include <serialws.hpp>
 #include <temp_mgr.hpp>
+#include <uptime.hpp>
 #include <utils.hpp>
 #include <wificonnection.hpp>
 #if CONFIG_IDF_TARGET_ESP32S2
@@ -47,12 +48,7 @@ SOFTWARE.
 
 SerialDebug mySerial(115200L);
 KegConfig myConfig(CFG_MDNSNAME, CFG_FILENAME);
-#if defined(WOKWI)
-WifiConnection myWifi(&myConfig, CFG_APPNAME, "password", CFG_MDNSNAME,
-                      "Wokwi-GUEST", "");
-#else
 WifiConnection myWifi(&myConfig, CFG_APPNAME, "password", CFG_MDNSNAME);
-#endif
 OtaUpdate myOta(&myConfig, CFG_APPVER);
 KegWebHandler myWebHandler(&myConfig);
 KegPushHandler myPush(&myConfig);
@@ -60,14 +56,14 @@ Display myDisplay;
 Scale myScale;
 LevelDetection myLevelDetection;
 TempSensorManager myTemp;
-#if defined(USE_ASYNC_WEB)
 SerialWebSocket mySerialWebSocket;
-#endif
 DisplayLayout myDisplayLayout;
 
 const int loopInterval = 2000;
 int loopCounter = 0;
 uint32_t loopMillis = 0;
+
+RunMode runMode = RunMode::normalMode;
 
 void scanI2C(int sda, int scl);
 void logStartup();
@@ -101,16 +97,13 @@ void setup() {
              CFG_GITREV, LOG_LEVEL);
 
   myConfig.checkFileSystem();
+  myConfig.migrateSettings();
 
   PERF_BEGIN("setup-config");
   myConfig.loadFile();
   PERF_END("setup-config");
 
-#if defined(WOKWI)
-  // Set some default values when we run on the simulator
-  myConfig.setScaleFactor(UnitIndex::U1, 1);
-  myConfig.setScaleFactor(UnitIndex::U2, 1);
-#endif
+  delay(4000);
 
   Log.notice(F("Main: Initializing I2C bus #1 on pins SDA=%d, SCL=%d" CR),
              myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
@@ -119,7 +112,10 @@ void setup() {
 #else  // ESP32
   Wire.setPins(myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
   Wire.begin();
-  // Log.notice(F("Main: I2C bus clock=%d" CR), Wire.getClock());
+#endif
+  Wire.setClock(400000);
+#if !defined(ESP8266)
+  Log.notice(F("Main: I2C bus clock=%d" CR), Wire.getClock());
 #endif
   scanI2C(myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
 
@@ -135,9 +131,6 @@ void setup() {
   PERF_BEGIN("setup-scale");
   myScale.setup();
   PERF_END("setup-scale");
-  PERF_BEGIN("setup-temp");
-  myTemp.setup();
-  PERF_END("setup-temp");
 
 #if defined(ESP8266)
   ESP.wdtDisable();
@@ -150,27 +143,35 @@ void setup() {
         F("Main: Missing wifi config or double reset detected, entering wifi "
           "setup." CR));
     myDisplayLayout.showWifiPortal();
-    myWifi.startPortal();
+    myWifi.startAP();
+    runMode = RunMode::wifiSetupMode;
   }
 
-  PERF_BEGIN("setup-wifi-connect");
-  myWifi.connect();
-  PERF_END("setup-wifi-connect");
-  PERF_BEGIN("setup-timesync");
-  myWifi.timeSync();
-  PERF_END("setup-timesync");
+  switch (runMode) {
+    case RunMode::normalMode:
+      PERF_BEGIN("setup-wifi-connect");
+      myWifi.connect();
+      PERF_END("setup-wifi-connect");
+      PERF_BEGIN("setup-timesync");
+      myWifi.timeSync();
+      PERF_END("setup-timesync");
+      break;
+
+    case RunMode::wifiSetupMode:
+      break;
+  }
 
   checkCoreDump();
 
   PERF_BEGIN("setup-webserver");
-#if defined(USE_ASYNC_WEB)
-  myWebHandler.setupAsyncWebServer();
+  myWebHandler.setupWebServer();
   mySerialWebSocket.begin(myWebHandler.getWebServer(), &EspSerial);
   mySerial.begin(&mySerialWebSocket);
-#else
-  myWebHandler.setupWebServer();
-#endif
   PERF_END("setup-webserver");
+
+  PERF_BEGIN("setup-temp");
+  myTemp.setup();
+  PERF_END("setup-temp");
 
   Log.notice(F("Main: Setup completed." CR));
   myDisplayLayout.showStartupDevices(myScale.isConnected(UnitIndex::U1),
@@ -180,18 +181,16 @@ void setup() {
   PERF_END("main-setup");
   PERF_PUSH();
   myTemp.read();
-  // logStartup();
   delay(3000);
 }
 
 void loop() {
-  if (!myWifi.isConnected()) myWifi.connect();
+  if (!myWifi.isConnected() && runMode == RunMode::normalMode) myWifi.connect();
 
+  myUptime.calculate();
   myWebHandler.loop();
   myWifi.loop();
-#if defined(USE_ASYNC_WEB)
   mySerialWebSocket.loop();
-#endif
   myScale.loop(UnitIndex::U1);
   myScale.loop(UnitIndex::U2);
 
@@ -233,6 +232,9 @@ void loop() {
     // The temp sensor should not be read too often.
     if (!(loopCounter % 15)) {
       myTemp.read();
+      Log.notice(F("LOOP: Reading temperature=%F,humidity=%F,pressure=%F" CR),
+                 myTemp.getLastTempC(), myTemp.getLastPressure(),
+                 myTemp.getLastPressure());
     }
 
     // Check if the temp sensor exist and try to reinitialize
@@ -242,8 +244,6 @@ void loop() {
         myTemp.setup();
       }
     }
-
-    // printHeap("Loop:");
 
     // Read the scales, only once per loop
     float t = myTemp.getLastTempC();
@@ -310,82 +310,88 @@ void loop() {
         myLevelDetection.getStatsDetection(UnitIndex::U1)->getPourValue(),
         myLevelDetection.getStatsDetection(UnitIndex::U2)->getPourValue());
 
-#if defined(ENABLE_INFLUX_DEBUG)
-    // This part is used to send data to an influxdb in order to get data on
-    // scale stability/drift over time.
-    char buf[250];
+    if (myConfig.hasTargetInfluxDb2()) {
+      Log.notice(F("LOOP: Sending data to configured influxdb" CR));
 
-    float raw1 = myLevelDetection.getRawDetection(UnitIndex::U1)->getRawValue();
-    float raw2 = myLevelDetection.getRawDetection(UnitIndex::U2)->getRawValue();
-    float stb1 =
-        myLevelDetection.getStatsDetection(UnitIndex::U1)->getStableValue();
-    float stb2 =
-        myLevelDetection.getStatsDetection(UnitIndex::U2)->getStableValue();
+      // This part is used to send data to an influxdb in order to get data on
+      // scale stability/drift over time.
+      char buf[250];
 
-    String s;
-    snprintf(&buf[0], sizeof(buf),
-             "debug,host=%s,device=%s "
-             "level-raw1=%f,"
-             "level-raw2=%f",
-             myConfig.getMDNS(), myConfig.getID(), isnan(raw1) ? 0 : raw1,
-             isnan(raw2) ? 0 : raw2);
-    s = &buf[0];
+      float raw1 =
+          myLevelDetection.getRawDetection(UnitIndex::U1)->getRawValue();
+      float raw2 =
+          myLevelDetection.getRawDetection(UnitIndex::U2)->getRawValue();
+      float stb1 =
+          myLevelDetection.getStatsDetection(UnitIndex::U1)->getStableValue();
+      float stb2 =
+          myLevelDetection.getStatsDetection(UnitIndex::U2)->getStableValue();
 
-    float ave1 =
-        myLevelDetection.getRawDetection(UnitIndex::U1)->getAverageValue();
-    float ave2 =
-        myLevelDetection.getRawDetection(UnitIndex::U2)->getAverageValue();
+      String s;
+      snprintf(&buf[0], sizeof(buf),
+               "scale,host=%s,device=%s "
+               "level-raw1=%f,"
+               "level-raw2=%f",
+               myConfig.getMDNS(), myConfig.getID(), isnan(raw1) ? 0 : raw1,
+               isnan(raw2) ? 0 : raw2);
+      s = &buf[0];
 
-    snprintf(&buf[0], sizeof(buf), ",level-average1=%f,level-average2=%f",
-             isnan(ave1) ? 0 : ave1, isnan(ave2) ? 0 : ave2);
-    s += &buf[0];
+      float ave1 =
+          myLevelDetection.getRawDetection(UnitIndex::U1)->getAverageValue();
+      float ave2 =
+          myLevelDetection.getRawDetection(UnitIndex::U2)->getAverageValue();
 
-    float kal1 =
-        myLevelDetection.getRawDetection(UnitIndex::U1)->getKalmanValue();
-    float kal2 =
-        myLevelDetection.getRawDetection(UnitIndex::U2)->getKalmanValue();
+      snprintf(&buf[0], sizeof(buf), ",level-average1=%f,level-average2=%f",
+               isnan(ave1) ? 0 : ave1, isnan(ave2) ? 0 : ave2);
+      s += &buf[0];
 
-    snprintf(&buf[0], sizeof(buf), ",level-kalman1=%f,level-kalman2=%f",
-             isnan(kal1) ? 0 : kal1, isnan(kal2) ? 0 : kal2);
-    s += &buf[0];
+      float kal1 =
+          myLevelDetection.getRawDetection(UnitIndex::U1)->getKalmanValue();
+      float kal2 =
+          myLevelDetection.getRawDetection(UnitIndex::U2)->getKalmanValue();
 
-    float stats1 =
-        myLevelDetection.getStatsDetection(UnitIndex::U1)->getStableValue();
-    float stats2 =
-        myLevelDetection.getStatsDetection(UnitIndex::U2)->getStableValue();
+      snprintf(&buf[0], sizeof(buf), ",level-kalman1=%f,level-kalman2=%f",
+               isnan(kal1) ? 0 : kal1, isnan(kal2) ? 0 : kal2);
+      s += &buf[0];
 
-    snprintf(&buf[0], sizeof(buf), ",level-stats1=%f,level-stats2=%f",
+      float stats1 =
+          myLevelDetection.getStatsDetection(UnitIndex::U1)->getStableValue();
+      float stats2 =
+          myLevelDetection.getStatsDetection(UnitIndex::U2)->getStableValue();
 
-             isnan(stats1) ? 0 : stats1, isnan(stats2) ? 0 : stats2);
-    s += &buf[0];
+      snprintf(&buf[0], sizeof(buf), ",level-stats1=%f,level-stats2=%f",
 
-    if (!isnan(myTemp.getLastTempC())) {
-      snprintf(&buf[0], sizeof(buf), ",tempC=%f,tempF=%f",
-               myTemp.getLastTempC(), myTemp.getLastTempF());
-      s = s + &buf[0];
-    }
+               isnan(stats1) ? 0 : stats1, isnan(stats2) ? 0 : stats2);
+      s += &buf[0];
 
-    if (!isnan(myTemp.getLastHumidity())) {
-      snprintf(&buf[0], sizeof(buf), ",humidity=%f", myTemp.getLastHumidity());
-      s = s + &buf[0];
-    }
+      if (!isnan(myTemp.getLastTempC())) {
+        snprintf(&buf[0], sizeof(buf), ",tempC=%f,tempF=%f",
+                 myTemp.getLastTempC(), myTemp.getLastTempF());
+        s = s + &buf[0];
+      }
 
-    if (!isnan(stb1)) {
-      snprintf(&buf[0], sizeof(buf), ",stable1=%f", stb1);
-      s = s + &buf[0];
-    }
+      if (!isnan(myTemp.getLastHumidity())) {
+        snprintf(&buf[0], sizeof(buf), ",humidity=%f",
+                 myTemp.getLastHumidity());
+        s = s + &buf[0];
+      }
 
-    if (!isnan(stb2)) {
-      snprintf(&buf[0], sizeof(buf), ",stable2=%f", stb2);
-      s = s + &buf[0];
-    }
+      if (!isnan(stb1)) {
+        snprintf(&buf[0], sizeof(buf), ",stable1=%f", stb1);
+        s = s + &buf[0];
+      }
+
+      if (!isnan(stb2)) {
+        snprintf(&buf[0], sizeof(buf), ",stable2=%f", stb2);
+        s = s + &buf[0];
+      }
 
 #if LOG_LEVEL == 6
-    Log.verbose(F("LOOP: %s" CR), s.c_str());
+      Log.verbose(F("LOOP: %s" CR), s.c_str());
 #endif
-    myPush.sendInfluxDb2(s, PUSH_INFLUX_TARGET, PUSH_INFLUX_ORG,
-                         PUSH_INFLUX_BUCKET, PUSH_INFLUX_TOKEN);
-#endif  // ENABLE_INFLUX_DEBUG
+      myPush.sendInfluxDb2(
+          s, myConfig.getTargetInfluxDB2(), myConfig.getOrgInfluxDB2(),
+          myConfig.getBucketInfluxDB2(), myConfig.getTokenInfluxDB2());
+    }
   }
 }
 

@@ -3,11 +3,11 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to KegMon - Keezer Level Monitor
-----------------------------------------
+Welcome to KegMon - Keg Level Monitor
+-------------------------------------
 
 .. note::
-  Reflects test version *v0.9.0*, Last updated 2024-01-28
+  Reflects version *v1.0.0 beta2*, Last updated 2024-09-09
 
 Introduction
 ============

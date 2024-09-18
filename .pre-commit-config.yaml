@@ -7,5 +7,5 @@ repos:
     -   id: cpplint
         files: ^src/
     -   id: cppcheck
-        args: [--force]
+        args: [--force,--check-level=exhaustive]
         files: ^src/

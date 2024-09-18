@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-22 Magnus
+Copyright (c) 2021-2024 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,8 +32,6 @@ SOFTWARE.
 #include <stability.hpp>
 #include <weightvolume.hpp>
 
-constexpr auto LEVELS_FILENAME = "/levels.log";
-constexpr auto LEVELS_FILENAME2 = "/levels2.log";
 constexpr auto LEVELS_FILEMAXSIZE = 2000;
 
 class LevelDetection {

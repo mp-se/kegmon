@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-23 Magnus
+Copyright (c) 2021-2024 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,14 +29,14 @@ SOFTWARE.
 constexpr auto PARAM_PLATFORM = "platform";
 
 KegConfig::KegConfig(String baseMDNS, String fileName)
-    : BaseConfig(baseMDNS, fileName, JSON_BUFFER) {}
+    : BaseConfig(baseMDNS, fileName, JSON_BUFFER_SIZE_XL) {}
 
-void KegConfig::createJson(DynamicJsonDocument& doc, bool skipSecrets) {
+void KegConfig::createJson(JsonObject& doc) {
   // Call base class functions
-  createJsonBase(doc, skipSecrets);
-  createJsonWifi(doc, skipSecrets);
-  createJsonOta(doc, skipSecrets);
-  createJsonPush(doc, skipSecrets);
+  createJsonBase(doc);
+  createJsonWifi(doc);
+  createJsonOta(doc);
+  createJsonPush(doc);
 
   // Handle project specific config
   doc[PARAM_WEIGHT_UNIT] = getWeightUnit();
@@ -55,6 +55,10 @@ void KegConfig::createJson(DynamicJsonDocument& doc, bool skipSecrets) {
 
   doc[PARAM_BREWSPY_TOKEN1] = getBrewspyToken(UnitIndex::U1);
   doc[PARAM_BREWSPY_TOKEN2] = getBrewspyToken(UnitIndex::U2);
+
+  doc[PARAM_BARHELPER_APIKEY] = getBarhelperApiKey();
+  doc[PARAM_BARHELPER_MONITOR1] = getBarhelperMonitor(UnitIndex::U1);
+  doc[PARAM_BARHELPER_MONITOR2] = getBarhelperMonitor(UnitIndex::U2);
 
   doc[PARAM_SCALE_TEMP_FORMULA1] =
       getScaleTempCompensationFormula(UnitIndex::U1);
@@ -133,7 +137,7 @@ void KegConfig::createJson(DynamicJsonDocument& doc, bool skipSecrets) {
   */
 }
 
-void KegConfig::parseJson(DynamicJsonDocument& doc) {
+void KegConfig::parseJson(JsonObject& doc) {
   // Call base class functions
   parseJsonBase(doc);
   parseJsonWifi(doc);
@@ -155,6 +159,14 @@ void KegConfig::parseJson(DynamicJsonDocument& doc) {
     setBrewspyToken(UnitIndex::U1, doc[PARAM_BREWSPY_TOKEN1]);
   if (!doc[PARAM_BREWSPY_TOKEN2].isNull())
     setBrewspyToken(UnitIndex::U2, doc[PARAM_BREWSPY_TOKEN2]);
+
+  if (!doc[PARAM_BARHELPER_APIKEY].isNull())
+    setBarhelperApiKey(doc[PARAM_BARHELPER_APIKEY]);
+
+  if (!doc[PARAM_BARHELPER_MONITOR1].isNull())
+    setBarhelperMonitor(UnitIndex::U1, doc[PARAM_BARHELPER_MONITOR1]);
+  if (!doc[PARAM_BARHELPER_MONITOR2].isNull())
+    setBarhelperMonitor(UnitIndex::U2, doc[PARAM_BARHELPER_MONITOR2]);
 
   if (!doc[PARAM_DISPLAY_LAYOUT].isNull())
     setDisplayLayoutType(doc[PARAM_DISPLAY_LAYOUT].as<int>());
@@ -340,6 +352,60 @@ float convertOutgoingVolume(float v) {
 float convertOutgoingTemperature(float t) {
   if (myConfig.isTempFormatC()) return t;
   return convertCtoF(t);
+}
+
+void KegConfig::migrateSettings() {
+  constexpr auto CFG_FILENAME_OLD = "/kegmon.json";
+  constexpr auto CFG_FILENAME_OLD_SAVE = "/kegmon_old.json";
+
+  if (!LittleFS.exists(CFG_FILENAME_OLD)) {
+    return;
+  }
+
+  File configFile = LittleFS.open(CFG_FILENAME_OLD, "r");
+
+  if (!configFile) {
+    Serial.println("Failed to open old config file");
+    return;
+  }
+
+  DynamicJsonDocument doc(JSON_BUFFER_SIZE_XL);
+  DynamicJsonDocument doc2(JSON_BUFFER_SIZE_XL);
+
+  DeserializationError err = deserializeJson(doc, configFile);
+  configFile.close();
+
+  if (err) {
+    Serial.println("Failed to open parse old config file");
+    return;
+  }
+
+  JsonObject obj = doc.as<JsonObject>();
+  JsonObject obj2 = doc2.createNestedObject();
+
+  serializeJson(obj, EspSerial);
+  EspSerial.print(CR);
+
+  for (JsonPair kv : obj) {
+    String k = kv.key().c_str();
+    k.replace("-", "_");
+    obj2[k] = obj[kv.key().c_str()];
+  }
+
+  obj.clear();
+#if LOG_LEVEL == 6
+  serializeJson(obj2, EspSerial);
+  EspSerial.print(CR);
+#endif
+  parseJson(obj2);
+  obj2.clear();
+
+  if (saveFile()) {
+    LittleFS.rename(CFG_FILENAME_OLD, CFG_FILENAME_OLD_SAVE);
+    // LittleFS.remove(CFG_FILENAME_OLD);
+  }
+
+  Log.notice(F("CFG : Migrated old config /kegmon.json." CR));
 }
 
 // EOF
