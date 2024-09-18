@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Licence" href="license.html" /><link rel="prev" title="Software Installation" href="installation.html" />
 
     <meta name="generator" content="sphinx-4.3.2, furo 2022.01.02"/>
-        <title>Software - KegMon v0.8.0</title>
+        <title>Software - KegMon v1.0.0</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=df49af52631e7917044a9c21a57f7b83170a6dd0" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">KegMon v0.8.0</div></a>
+      <a href="index.html"><div class="brand">KegMon v1.0.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -149,7 +149,7 @@
     <img class="sidebar-logo" src="_static/kegmon_logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">KegMon v0.8.0</span>
+  <span class="sidebar-brand-text">KegMon v1.0.0</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -216,8 +216,7 @@
 </div>
 <div class="section" id="device-hardware">
 <h2>Device - Hardware<a class="headerlink" href="#device-hardware" title="Permalink to this headline">¶</a></h2>
-<p>TODO: Missing hardware screen dump</p>
-<a class="reference internal image-reference" href="images/view_device_hardware.png"><img alt="Device Hardware" src="images/view_device_hardware.png" style="width: 600px;"/></a>
+<a class="reference internal image-reference" href="_images/view_device_hardware.png"><img alt="Device Hardware" src="_images/view_device_hardware.png" style="width: 600px;"/></a>
 <ul class="simple">
 <li><p><strong>Display layout</strong>: Choose the layout/information on the displays.</p></li>
 <li><p><strong>Display driver</strong>: Choose the what display driver is used, either LCD 20x4 or OLED 0.96”. Default is OLED 0.96”.</p></li>
@@ -247,6 +246,15 @@ the factor for estimating the weight.</p>
 <p>The third step is to validate that everything works, place anohter thing with a know weight and
 check the measured value. If you are satisfied then you are done.</p>
 </div>
+<div class="section" id="device-stability">
+<h2>Device - Stability<a class="headerlink" href="#device-stability" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/view_device_stability.png"><img alt="Serial console" src="_images/view_device_stability.png" style="width: 600px;"/></a>
+<p>Information page that can determine the stability of your hardware build.</p>
+<p>I have found that some of my hardware builds was not really stable so I added this
+feature to check the scale build before doing the final assembly.</p>
+<p>If you keep the browser open you can also see the history of the values (raw, kalman &amp; stable). This can help to show
+how your scale varies over time. Data is only stored in the browser so any refresh or page change will delete the graphs.</p>
+</div>
 <div class="section" id="device-wifi">
 <h2>Device - Wifi<a class="headerlink" href="#device-wifi" title="Permalink to this headline">¶</a></h2>
 <a class="reference internal image-reference" href="_images/view_device_wifi.png"><img alt="Device wifi" src="_images/view_device_wifi.png" style="width: 600px;"/></a>
@@ -271,8 +279,8 @@ check the measured value. If you are satisfied then you are done.</p>
 </li>
 </ul>
 </div>
-<div class="section" id="tap-settings">
-<h2>Tap Settings<a class="headerlink" href="#tap-settings" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="taps-settings">
+<h2>Taps - Settings<a class="headerlink" href="#taps-settings" title="Permalink to this headline">¶</a></h2>
 <a class="reference internal image-reference" href="_images/view_taps_settings.png"><img alt="Tap settings" src="_images/view_taps_settings.png" style="width: 600px;"/></a>
 <ul class="simple">
 <li><p><strong>Empty keg weight</strong>: Weight of the empty keg, used to determine how much beer is in the keg.</p></li>
@@ -281,14 +289,19 @@ check the measured value. If you are satisfied then you are done.</p>
 <li><p><strong>Beer FG</strong>: Used in formula for calculating the beer volume. FG has a slight impact on the weight / volume unit. If not defined 1 will be used for calculations.</p></li>
 </ul>
 </div>
-<div class="section" id="id2">
-<h2>Tap Settings<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="taps-beers">
+<h2>Taps - Beers<a class="headerlink" href="#taps-beers" title="Permalink to this headline">¶</a></h2>
 <a class="reference internal image-reference" href="_images/view_taps_beers.png"><img alt="Tap beers" src="_images/view_taps_beers.png" style="width: 600px;"/></a>
 <p>Shows information about beers on tap. Use the buttons to import from brewspy or brewfather.</p>
 </div>
+<div class="section" id="taps-history">
+<h2>Taps - History<a class="headerlink" href="#taps-history" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/view_taps_history.png"><img alt="Tap history" src="_images/view_taps_history.png" style="width: 600px;"/></a>
+<p>Shows information about the latest pours per tapbeers on tap.</p>
+</div>
 <div class="section" id="integration-home-assistant">
 <h2>Integration - Home Assistant<a class="headerlink" href="#integration-home-assistant" title="Permalink to this headline">¶</a></h2>
-<a class="reference internal image-reference" href="_images/view_integration_ha.png"><img alt="Home Assistant" src="_images/view_integration_ha.png" style="width: 600px;"/></a>
+<a class="reference internal image-reference" href="_images/view_integration_ha.png"><img alt="Home Assistant integration" src="_images/view_integration_ha.png" style="width: 600px;"/></a>
 <p>Setting for MQTT server that is used by Home Assistant.</p>
 </div>
 <div class="section" id="integration-brewfather">
@@ -298,21 +311,34 @@ check the measured value. If you are satisfied then you are done.</p>
 </div>
 <div class="section" id="integration-brewspy">
 <h2>Integration - Brewspy<a class="headerlink" href="#integration-brewspy" title="Permalink to this headline">¶</a></h2>
-<a class="reference internal image-reference" href="_images/view_integration_brewspy.png"><img alt="Brewspy" src="_images/view_integration_brewspy.png" style="width: 600px;"/></a>
+<a class="reference internal image-reference" href="_images/view_integration_brewspy.png"><img alt="Brewspy integration" src="_images/view_integration_brewspy.png" style="width: 600px;"/></a>
 <p>Brewspy tokens for keg 1 &amp; keg 2.</p>
+<p>Click on the taplist and the tap you want to connect. Under webhook URL copy the
+last code and enter that into kegmon.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This will not work on ESP8266 due to lack of RAM for using SSL connections.</p>
 </div>
-<div class="section" id="history">
-<h2>History<a class="headerlink" href="#history" title="Permalink to this headline">¶</a></h2>
-<p>TODO: Not yet implemented in new UI</p>
 </div>
-<div class="section" id="stability">
-<h2>Stability<a class="headerlink" href="#stability" title="Permalink to this headline">¶</a></h2>
-<p>TODO: Not yet implemented in new UI</p>
-<p>Information page that can determine the stability of your hardware build.</p>
-<p>I have found that some of my hardware builds was not really stable so I added this
-feature to check the scale build before doing the final assembly.</p>
-<p>If you keep the browser open you can also see the history of the values (raw, kalman &amp; stable). This can help to show
-how your scale varies over time. Data is only stored in the browser so any refresh or page change will delete the graphs.</p>
+<div class="section" id="integration-barhelper">
+<h2>Integration - Barhelper<a class="headerlink" href="#integration-barhelper" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/view_integration_barhelper.png"><img alt="Barhelper integration" src="_images/view_integration_barhelper.png" style="width: 600px;"/></a>
+<p>Barhelper API keys and name of monitors.</p>
+<p>You can get the API key from the settings part of Barhelper and enter this into
+kegmon. Make a copy of it since you will not be able to retrieve it again.</p>
+<p>The name of the monitors does not need to be registered, they will be added
+after the first run. Just connect the tap/keg to the monitor and the level will
+be the same as in kegmon.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>On ESP8266 the device will use a NON-SSL endpoint to send the data since there is
+not enough memory.</p>
+</div>
+</div>
+<div class="section" id="integration-influx">
+<h2>Integration - Influx<a class="headerlink" href="#integration-influx" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/view_integration_influx.png"><img alt="Influx integration" src="_images/view_integration_influx.png" style="width: 600px;"/></a>
+<p>Sends scale and internal parameters to an influx db v2 for debugging and detailed analysis.</p>
 </div>
 <div class="section" id="serial-console">
 <h2>Serial console<a class="headerlink" href="#serial-console" title="Permalink to this headline">¶</a></h2>
@@ -370,7 +396,7 @@ on your computer.</p>
         </div>
 
         <div class="related-information">
-              Copyright &#169; 2022-23, Magnus Persson |
+              Copyright &#169; 2022-2024, Magnus Persson |
           Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
           <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
         </div>
@@ -394,14 +420,16 @@ on your computer.</p>
 <li><a class="reference internal" href="#device-settings">Device - Settings</a></li>
 <li><a class="reference internal" href="#device-hardware">Device - Hardware</a></li>
 <li><a class="reference internal" href="#device-calibration">Device - Calibration</a></li>
+<li><a class="reference internal" href="#device-stability">Device - Stability</a></li>
 <li><a class="reference internal" href="#device-wifi">Device - Wifi</a></li>
-<li><a class="reference internal" href="#tap-settings">Tap Settings</a></li>
-<li><a class="reference internal" href="#id2">Tap Settings</a></li>
+<li><a class="reference internal" href="#taps-settings">Taps - Settings</a></li>
+<li><a class="reference internal" href="#taps-beers">Taps - Beers</a></li>
+<li><a class="reference internal" href="#taps-history">Taps - History</a></li>
 <li><a class="reference internal" href="#integration-home-assistant">Integration - Home Assistant</a></li>
 <li><a class="reference internal" href="#integration-brewfather">Integration - Brewfather</a></li>
 <li><a class="reference internal" href="#integration-brewspy">Integration - Brewspy</a></li>
-<li><a class="reference internal" href="#history">History</a></li>
-<li><a class="reference internal" href="#stability">Stability</a></li>
+<li><a class="reference internal" href="#integration-barhelper">Integration - Barhelper</a></li>
+<li><a class="reference internal" href="#integration-influx">Integration - Influx</a></li>
 <li><a class="reference internal" href="#serial-console">Serial console</a></li>
 <li><a class="reference internal" href="#backup-recovery">Backup &amp; Recovery</a></li>
 <li><a class="reference internal" href="#firmware-update">Firmware update</a></li>
