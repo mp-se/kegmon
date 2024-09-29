@@ -31,7 +31,7 @@ SOFTWARE.
 const char *volumeTemplate =
     "kegmon/${mdns}_volume${tap}/state:${volume}|"
     "kegmon/${mdns}_volume${tap}/"
-    "attr:{\"glasses\":${glasses}}|"
+    "attr:{\"glasses\":${glasses},\"keg_volume\":${keg-volume},\"glass_volume\":${glass-volume},\"keg_percent\":${keg-percent}}|"
     "homeassistant/sensor/${mdns}_volume${tap}/"
     "config:{\"device_class\":\"volume\",\"name\":\"${mdns}_volume${tap}\","
     "\"unit_of_measurement\":\"L\",\"state_topic\":\"kegmon/"
@@ -123,6 +123,10 @@ void HomeAssist::sendTapInformation(UnitIndex idx, float stableVol,
   tpl.setVal("${beer-abv}", myConfig.getBeerABV(idx));
   tpl.setVal("${beer-ibu}", myConfig.getBeerIBU(idx));
   tpl.setVal("${beer-ebc}", myConfig.getBeerEBC(idx));
+
+  tpl.setVal("${keg-volume}", myConfig.getKegVolume(idx));
+  tpl.setVal("${glass-volume}", myConfig.getGlassVolume(idx));
+  tpl.setVal("${keg-percent}", (stableVol / myConfig.getKegVolume(idx)) * 100);
 
   const char *out = tpl.create(volumeTemplate);
   EspSerial.print(out);
