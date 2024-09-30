@@ -74,7 +74,7 @@ void setup() {
     myDisplay.printLineCentered(UnitIndex::U1, 1, "WIFI Portal");
     myDisplay.printLineCentered(UnitIndex::U1, 2, "192.168.4.1");
     myDisplay.show(UnitIndex::U1);
-    myWifi.startPortal();
+    myWifi.startAP();
   }
 
   myWifi.connect();
