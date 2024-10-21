@@ -53,6 +53,8 @@ void KegConfig::createJson(JsonObject& doc) {
 
   doc[PARAM_BREWPI_URL] = getBrewpiUrl();
 
+  doc[PARAM_BREWLOGGER_URL] = getBrewLoggerUrl();
+
   doc[PARAM_BREWSPY_TOKEN1] = getBrewspyToken(UnitIndex::U1);
   doc[PARAM_BREWSPY_TOKEN2] = getBrewspyToken(UnitIndex::U2);
 
@@ -75,6 +77,7 @@ void KegConfig::createJson(JsonObject& doc) {
       getGlassVolume(UnitIndex::U1),
       getWeightPrecision()));  // Dont convert this part (drop down in UI)
   doc[PARAM_BEER_NAME1] = getBeerName(UnitIndex::U1);
+  doc[PARAM_BEER_ID1] = getBeerId(UnitIndex::U1);
   doc[PARAM_BEER_ABV1] = serialized(String(getBeerABV(UnitIndex::U1), 2));
   doc[PARAM_BEER_FG1] = serialized(String(getBeerFG(UnitIndex::U1), 2));
   doc[PARAM_BEER_EBC1] = getBeerEBC(UnitIndex::U1);
@@ -95,6 +98,7 @@ void KegConfig::createJson(JsonObject& doc) {
       serialized(String(getGlassVolume(UnitIndex::U2),
                         2));  // Dont convert this part (drop down in UI)
   doc[PARAM_BEER_NAME2] = getBeerName(UnitIndex::U2);
+  doc[PARAM_BEER_ID2] = getBeerId(UnitIndex::U2);
   doc[PARAM_BEER_ABV2] = serialized(String(getBeerABV(UnitIndex::U2), 2));
   doc[PARAM_BEER_FG2] = serialized(String(getBeerFG(UnitIndex::U2), 2));
   doc[PARAM_BEER_EBC2] = getBeerEBC(UnitIndex::U2);
@@ -155,6 +159,8 @@ void KegConfig::parseJson(JsonObject& doc) {
 
   if (!doc[PARAM_BREWPI_URL].isNull()) setBrewpiUrl(doc[PARAM_BREWPI_URL]);
 
+  if (!doc[PARAM_BREWLOGGER_URL].isNull()) setBrewLoggerUrl(doc[PARAM_BREWLOGGER_URL]);
+
   if (!doc[PARAM_BREWSPY_TOKEN1].isNull())
     setBrewspyToken(UnitIndex::U1, doc[PARAM_BREWSPY_TOKEN1]);
   if (!doc[PARAM_BREWSPY_TOKEN2].isNull())
@@ -202,6 +208,8 @@ void KegConfig::parseJson(JsonObject& doc) {
             .as<float>());  // No need to convert this, always in Liters
   if (!doc[PARAM_BEER_NAME1].isNull())
     setBeerName(UnitIndex::U1, doc[PARAM_BEER_NAME1]);
+  if (!doc[PARAM_BEER_ID1].isNull())
+    setBeerId(UnitIndex::U1, doc[PARAM_BEER_ID1]);
   if (!doc[PARAM_BEER_EBC1].isNull())
     setBeerEBC(UnitIndex::U1, doc[PARAM_BEER_EBC1].as<int>());
   if (!doc[PARAM_BEER_ABV1].isNull())
@@ -233,6 +241,8 @@ void KegConfig::parseJson(JsonObject& doc) {
             .as<float>());  // No need to convert this, always in Liters
   if (!doc[PARAM_BEER_NAME2].isNull())
     setBeerName(UnitIndex::U2, doc[PARAM_BEER_NAME2]);
+  if (!doc[PARAM_BEER_ID2].isNull())
+    setBeerId(UnitIndex::U2, doc[PARAM_BEER_ID2]);
   if (!doc[PARAM_BEER_EBC2].isNull())
     setBeerEBC(UnitIndex::U2, doc[PARAM_BEER_EBC2].as<int>());
   if (!doc[PARAM_BEER_ABV2].isNull())

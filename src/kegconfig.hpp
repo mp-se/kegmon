@@ -27,6 +27,7 @@ SOFTWARE.
 #include <baseconfig.hpp>
 #include <main.hpp>
 
+constexpr auto PARAM_BREWLOGGER_URL = "brewlogger_url";
 constexpr auto PARAM_BREWFATHER_USERKEY = "brewfather_userkey";
 constexpr auto PARAM_BREWFATHER_APIKEY = "brewfather_apikey";
 constexpr auto PARAM_BREWSPY_TOKEN1 = "brewspy_token1";
@@ -49,6 +50,8 @@ constexpr auto PARAM_GLASS_VOLUME1 = "glass_volume1";
 constexpr auto PARAM_GLASS_VOLUME2 = "glass_volume2";
 constexpr auto PARAM_BEER_NAME1 = "beer_name1";
 constexpr auto PARAM_BEER_NAME2 = "beer_name2";
+constexpr auto PARAM_BEER_ID1 = "beer_id1";
+constexpr auto PARAM_BEER_ID2 = "beer_id2";
 constexpr auto PARAM_BEER_ABV1 = "beer_abv1";
 constexpr auto PARAM_BEER_ABV2 = "beer_abv2";
 constexpr auto PARAM_BEER_IBU1 = "beer_ibu1";
@@ -82,6 +85,7 @@ struct BeerInfo {
   int _ebc = 0;
   int _ibu = 0;
   float _fg = 1;
+  String _brewfatherId = "";
 };
 
 struct HardwareInfo {
@@ -169,6 +173,8 @@ class KegConfig : public BaseConfig {
 
   String _brewpiUrl = "";
 
+  String _brewLoggerUrl = "";
+
   DisplayLayoutType _displayLayout = DisplayLayoutType::Default;
   TempSensorType _tempSensor = TempSensorType::SensorDS18B20;
   ScaleSensorType _scaleSensor = ScaleSensorType::ScaleHX711;
@@ -236,6 +242,12 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }
 
+  const char* getBrewLoggerUrl() { return _brewLoggerUrl.c_str(); }
+  void setBrewLoggerUrl(String s) {
+    _brewLoggerUrl = s;
+    _saveNeeded = true;
+  }
+
   const char* getBrewspyToken(UnitIndex idx) {
     return _brewspyToken[idx].c_str();
   }
@@ -247,6 +259,11 @@ class KegConfig : public BaseConfig {
   const char* getBeerName(UnitIndex idx) { return _beer[idx]._name.c_str(); }
   void setBeerName(UnitIndex idx, String s) {
     _beer[idx]._name = s;
+    _saveNeeded = true;
+  }
+  const char* getBeerId(UnitIndex idx) { return _beer[idx]._brewfatherId.c_str(); }
+  void setBeerId(UnitIndex idx, String s) {
+    _beer[idx]._brewfatherId = s;
     _saveNeeded = true;
   }
   float getBeerABV(UnitIndex idx) { return _beer[idx]._abv; }
