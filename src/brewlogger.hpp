@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-2024 Magnus
+Copyright (c) 2024 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,35 +21,37 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#include <kegpush.hpp>
-#include <log.hpp>
-#include <scale.hpp>
-#include <utils.hpp>
+#ifndef SRC_BREWLOGGER_HPP_
+#define SRC_BREWLOGGER_HPP_
 
-void KegPushHandler::pushTempInformation(float tempC, bool isLoop) {
-  if (isnan(tempC)) return;
+#include <basepush.hpp>
+#include <main.hpp>
 
-  _ha->sendTempInformation(tempC);
-}
+class BrewLogger {
+ protected:
+  BasePush *_push;
 
-void KegPushHandler::pushPourInformation(UnitIndex idx, float stableVol,
-                                         float pourVol, bool isLoop) {
-  if (!isLoop)  // Limit calls to brewspy
-    _brewspy->sendPourInformation(idx, pourVol);
+  bool _hasRun = false;
+  uint32_t _lastTimestamp = 0;
+  bool _lastStatus = false;
+  int _lastHttpError = 0;
+  String _lastResponse;
 
-  _ha->sendPourInformation(idx, pourVol);
-  _brewLogger->sendPourInformation(idx, pourVol, stableVol);
-}
+  void updateStatus(String &response);
 
-void KegPushHandler::pushKegInformation(UnitIndex idx, float stableVol,
-                                        float pourVol, float glasses,
-                                        bool isLoop) {
-  if (!isLoop)  // Limit calls to brewspy
-    _brewspy->sendTapInformation(idx, stableVol, pourVol);
+ public:
+  explicit BrewLogger(BasePush *push) { _push = push; }
 
-  _ha->sendTapInformation(idx, stableVol, glasses);
-  _barhelper->sendKegInformation(idx, stableVol);
-  _brewLogger->sendKegInformation(idx, stableVol);
-}
+  void sendPourInformation(UnitIndex idx, float pourVol, float kegVol);
+  void sendKegInformation(UnitIndex idx, float kegVol);
+
+  bool hasRun() { return _hasRun; }
+  uint32_t getLastTimeStamp() { return _lastTimestamp; }
+  bool getLastStatus() { return _lastStatus; }
+  int getLastError() { return _lastHttpError; }
+  String getLastResponse() { return _lastResponse; }
+};
+
+#endif  // SRC_BREWLOGGER_HPP_
 
 // EOF

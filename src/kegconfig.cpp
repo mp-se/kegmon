@@ -159,7 +159,8 @@ void KegConfig::parseJson(JsonObject& doc) {
 
   if (!doc[PARAM_BREWPI_URL].isNull()) setBrewpiUrl(doc[PARAM_BREWPI_URL]);
 
-  if (!doc[PARAM_BREWLOGGER_URL].isNull()) setBrewLoggerUrl(doc[PARAM_BREWLOGGER_URL]);
+  if (!doc[PARAM_BREWLOGGER_URL].isNull())
+    setBrewLoggerUrl(doc[PARAM_BREWLOGGER_URL]);
 
   if (!doc[PARAM_BREWSPY_TOKEN1].isNull())
     setBrewspyToken(UnitIndex::U1, doc[PARAM_BREWSPY_TOKEN1]);
