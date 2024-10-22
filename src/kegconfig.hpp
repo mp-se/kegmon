@@ -85,7 +85,7 @@ struct BeerInfo {
   int _ebc = 0;
   int _ibu = 0;
   float _fg = 1;
-  String _brewfatherId = "";
+  String _id = "";
 };
 
 struct HardwareInfo {
@@ -262,10 +262,10 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }
   const char* getBeerId(UnitIndex idx) {
-    return _beer[idx]._brewfatherId.c_str();
+    return _beer[idx]._id.c_str();
   }
   void setBeerId(UnitIndex idx, String s) {
-    _beer[idx]._brewfatherId = s;
+    _beer[idx]._id = s;
     _saveNeeded = true;
   }
   float getBeerABV(UnitIndex idx) { return _beer[idx]._abv; }
