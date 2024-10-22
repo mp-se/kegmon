@@ -261,9 +261,7 @@ class KegConfig : public BaseConfig {
     _beer[idx]._name = s;
     _saveNeeded = true;
   }
-  const char* getBeerId(UnitIndex idx) {
-    return _beer[idx]._id.c_str();
-  }
+  const char* getBeerId(UnitIndex idx) { return _beer[idx]._id.c_str(); }
   void setBeerId(UnitIndex idx, String s) {
     _beer[idx]._id = s;
     _saveNeeded = true;
