@@ -93,6 +93,7 @@ constexpr auto PARAM_UPTIME_DAYS = "uptime_days";
 constexpr auto PARAM_HOMEASSISTANT = "ha";
 constexpr auto PARAM_BARHELPER = "barhelper";
 constexpr auto PARAM_BREWSPY = "brewspy";
+constexpr auto PARAM_BREWLOGGER = "brewlogger";
 constexpr auto PARAM_PUSH_USED = "push_used";
 constexpr auto PARAM_PUSH_AGE = "push_age";
 constexpr auto PARAM_PUSH_STATUS = "push_status";
@@ -524,6 +525,17 @@ void KegWebHandler::webStatus(AsyncWebServerRequest *request) {
     o[PARAM_PUSH_CODE] = bar->getLastError();
     o[PARAM_PUSH_RESPONSE] = bar->getLastResponse();
     o[PARAM_PUSH_USED] = bar->hasRun();
+  }
+
+  // Brewlogger helper
+  if (strlen(myConfig.getBrewLoggerUrl()) > 0) {
+    JsonObject o = obj.createNestedObject(PARAM_BREWLOGGER);
+    BrewLogger *blog = myPush.getBrewLogger();
+    o[PARAM_PUSH_AGE] = abs((int32_t)(millis() - blog->getLastTimeStamp()));
+    o[PARAM_PUSH_STATUS] = blog->getLastStatus();
+    o[PARAM_PUSH_CODE] = blog->getLastError();
+    o[PARAM_PUSH_RESPONSE] = blog->getLastResponse();
+    o[PARAM_PUSH_USED] = blog->hasRun();
   }
 
   // Brewspy
