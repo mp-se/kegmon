@@ -25,6 +25,8 @@ SOFTWARE.
 #include <kegconfig.hpp>
 #include <log.hpp>
 
+constexpr auto BREWLOGGER_API = "/api/pour/public";
+
 void BrewLogger::sendPourInformation(UnitIndex idx, float pourVol,
                                      float kegVol) {
   if (strlen(myConfig.getBrewLoggerUrl()) == 0) return;
@@ -49,7 +51,9 @@ void BrewLogger::sendPourInformation(UnitIndex idx, float pourVol,
   EspSerial.print(CR);
   // #endif
 
-  out = _push->sendHttpPost(out, myConfig.getBrewLoggerUrl(),
+  String url = myConfig.getBrewLoggerUrl() + String(BREWLOGGER_API);
+
+  out = _push->sendHttpPost(out, url.c_str(),
                             "Content-Type: application/json", "");
   updateStatus(out);
   Log.info(F("BLOG: Response %s." CR), out.c_str());
@@ -77,7 +81,9 @@ void BrewLogger::sendKegInformation(UnitIndex idx, float kegVol) {
   EspSerial.print(CR);
   // #endif
 
-  out = _push->sendHttpPost(out, myConfig.getBrewLoggerUrl(),
+  String url = myConfig.getBrewLoggerUrl() + String(BREWLOGGER_API);
+
+  out = _push->sendHttpPost(out, url.c_str(),
                             "Content-Type: application/json", "");
   updateStatus(out);
   Log.info(F("BLOG: Response %s." CR), out.c_str());
