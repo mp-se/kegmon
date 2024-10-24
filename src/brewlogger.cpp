@@ -34,6 +34,7 @@ void BrewLogger::sendPourInformation(UnitIndex idx, float pourVol,
   doc["id"] = myConfig.getBeerId(idx);
   doc["pour"] = pourVol;
   doc["volume"] = kegVol;
+  doc["maxVolume"] = myConfig.getKegVolume(idx);
 
   Log.notice(F("BLOG: Sending pour information to brewlogger "
                "pour %Fl [%d]" CR),
@@ -61,6 +62,7 @@ void BrewLogger::sendKegInformation(UnitIndex idx, float kegVol) {
 
   doc["id"] = myConfig.getBeerId(idx);
   doc["volume"] = kegVol;
+  doc["maxVolume"] = myConfig.getKegVolume(idx);
 
   Log.notice(F("BLOG: Sending level information to brewlogger "
                "kegVol %Fl [%d]" CR),
