@@ -33,6 +33,7 @@ constexpr auto PARAM_BREWFATHER_APIKEY = "brewfather_apikey";
 constexpr auto PARAM_BREWSPY_TOKEN1 = "brewspy_token1";
 constexpr auto PARAM_BREWSPY_TOKEN2 = "brewspy_token2";
 constexpr auto PARAM_BREWPI_URL = "brewpi_url";
+constexpr auto PARAM_CHAMBERCTRL_URL = "chamberctrl_url";
 constexpr auto PARAM_BARHELPER_APIKEY = "barhelper_apikey";
 constexpr auto PARAM_BARHELPER_MONITOR1 = "barhelper_monitor1";
 constexpr auto PARAM_BARHELPER_MONITOR2 = "barhelper_monitor2";
@@ -147,7 +148,8 @@ enum TempSensorType {
   SensorDHT22 = 0,
   SensorDS18B20 = 1,
   SensorBME280 = 2,
-  SensorBrewPI = 3
+  SensorBrewPI = 3,
+  SensorChamberCtrl = 4
 };
 enum ScaleSensorType { ScaleHX711 = 0, ScaleNAU7802 = 1 };
 enum DisplayDriverType { OLED_1306 = 0, LCD = 1 };
@@ -172,6 +174,7 @@ class KegConfig : public BaseConfig {
   String _barhelperMonitor[2] = {"Kegmon TAP 1", "Kegmon TAP 2"};
 
   String _brewpiUrl = "";
+  String _chamberCtrlUrl = "";
 
   String _brewLoggerUrl = "";
 
@@ -239,6 +242,12 @@ class KegConfig : public BaseConfig {
   const char* getBrewpiUrl() { return _brewpiUrl.c_str(); }
   void setBrewpiUrl(String s) {
     _brewpiUrl = s;
+    _saveNeeded = true;
+  }
+
+  const char* getChamberCtrlUrl() { return _chamberCtrlUrl.c_str(); }
+  void setChamberCtrlUrl(String s) {
+    _chamberCtrlUrl = s;
     _saveNeeded = true;
   }
 

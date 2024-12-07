@@ -52,6 +52,7 @@ void KegConfig::createJson(JsonObject& doc) {
   doc[PARAM_BREWFATHER_USERKEY] = getBrewfatherUserKey();
 
   doc[PARAM_BREWPI_URL] = getBrewpiUrl();
+  doc[PARAM_CHAMBERCTRL_URL] = getChamberCtrlUrl();
 
   doc[PARAM_BREWLOGGER_URL] = getBrewLoggerUrl();
 
@@ -158,6 +159,7 @@ void KegConfig::parseJson(JsonObject& doc) {
     setBrewfatherUserKey(doc[PARAM_BREWFATHER_USERKEY]);
 
   if (!doc[PARAM_BREWPI_URL].isNull()) setBrewpiUrl(doc[PARAM_BREWPI_URL]);
+  if (!doc[PARAM_CHAMBERCTRL_URL].isNull()) setChamberCtrlUrl(doc[PARAM_CHAMBERCTRL_URL]);
 
   if (!doc[PARAM_BREWLOGGER_URL].isNull())
     setBrewLoggerUrl(doc[PARAM_BREWLOGGER_URL]);
