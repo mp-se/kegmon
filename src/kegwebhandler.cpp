@@ -714,8 +714,8 @@ void KegWebHandler::loop() {
     // Scan the i2c bus for devices
     // Wire.begin(PIN_SDA, PIN_SCL); // Should already have been done in
     // gyro.cpp
-    JsonObject i2c = obj[PARAM_I2C].as<JsonObject>();
-    JsonArray i2c_1 = i2c[PARAM_I2C_1].as<JsonArray>();
+    JsonObject i2c = obj[PARAM_I2C].to<JsonObject>();
+    JsonArray i2c_1 = i2c[PARAM_I2C_1].to<JsonArray>();
 
     // Scan bus #1
     for (int i = 1, j = 0; i < 127; i++) {
@@ -732,7 +732,7 @@ void KegWebHandler::loop() {
     }
 
 #if defined(ESP32)
-    JsonArray i2c_2 = i2c[PARAM_I2C_2].as<JsonArray>();
+    JsonArray i2c_2 = i2c[PARAM_I2C_2].to<JsonArray>();
 
     // Scan bus #2
     for (int i = 1, j = 0; i < 127; i++) {
@@ -785,7 +785,7 @@ void KegWebHandler::loop() {
       sensor[PARAM_RESOLUTION] = mySensors.getResolution();
     }*/
 
-    JsonObject cpu = obj[PARAM_CHIP].as<JsonObject>();
+    JsonObject cpu = obj[PARAM_CHIP].to<JsonObject>();
 
 #if defined(ESP8266)
     cpu[PARAM_FAMILY] = "ESP8266";
@@ -796,7 +796,7 @@ void KegWebHandler::loop() {
     cpu[PARAM_REVISION] = chip_info.revision;
     cpu[PARAM_CORES] = chip_info.cores;
 
-    JsonArray feature = cpu[PARAM_FEATURES].as<JsonArray>();
+    JsonArray feature = cpu[PARAM_FEATURES].to<JsonArray>();
 
     if (chip_info.features & CHIP_FEATURE_EMB_FLASH)
       feature.add("embedded flash");
