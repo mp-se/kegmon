@@ -31,7 +31,7 @@ void BrewLogger::sendPourInformation(UnitIndex idx, float pourVol,
                                      float kegVol) {
   if (strlen(myConfig.getBrewLoggerUrl()) == 0) return;
 
-  DynamicJsonDocument doc(300);
+  JsonDocument doc;
 
   doc["id"] = myConfig.getBeerId(idx);
   doc["pour"] = pourVol;
@@ -53,8 +53,8 @@ void BrewLogger::sendPourInformation(UnitIndex idx, float pourVol,
 
   String url = myConfig.getBrewLoggerUrl() + String(BREWLOGGER_API);
 
-  out = _push->sendHttpPost(out, url.c_str(),
-                            "Content-Type: application/json", "");
+  out = _push->sendHttpPost(out, url.c_str(), "Content-Type: application/json",
+                            "");
   updateStatus(out);
   Log.info(F("BLOG: Response %s." CR), out.c_str());
 }
@@ -62,7 +62,7 @@ void BrewLogger::sendPourInformation(UnitIndex idx, float pourVol,
 void BrewLogger::sendKegInformation(UnitIndex idx, float kegVol) {
   if (strlen(myConfig.getBrewLoggerUrl()) == 0) return;
 
-  DynamicJsonDocument doc(300);
+  JsonDocument doc;
 
   doc["id"] = myConfig.getBeerId(idx);
   doc["volume"] = kegVol;
@@ -83,8 +83,8 @@ void BrewLogger::sendKegInformation(UnitIndex idx, float kegVol) {
 
   String url = myConfig.getBrewLoggerUrl() + String(BREWLOGGER_API);
 
-  out = _push->sendHttpPost(out, url.c_str(),
-                            "Content-Type: application/json", "");
+  out = _push->sendHttpPost(out, url.c_str(), "Content-Type: application/json",
+                            "");
   updateStatus(out);
   Log.info(F("BLOG: Response %s." CR), out.c_str());
 }

@@ -29,7 +29,7 @@ SOFTWARE.
 constexpr auto PARAM_PLATFORM = "platform";
 
 KegConfig::KegConfig(String baseMDNS, String fileName)
-    : BaseConfig(baseMDNS, fileName, JSON_BUFFER_SIZE_XL) {}
+    : BaseConfig(baseMDNS, fileName) {}
 
 void KegConfig::createJson(JsonObject& doc) {
   // Call base class functions
@@ -159,7 +159,8 @@ void KegConfig::parseJson(JsonObject& doc) {
     setBrewfatherUserKey(doc[PARAM_BREWFATHER_USERKEY]);
 
   if (!doc[PARAM_BREWPI_URL].isNull()) setBrewpiUrl(doc[PARAM_BREWPI_URL]);
-  if (!doc[PARAM_CHAMBERCTRL_URL].isNull()) setChamberCtrlUrl(doc[PARAM_CHAMBERCTRL_URL]);
+  if (!doc[PARAM_CHAMBERCTRL_URL].isNull())
+    setChamberCtrlUrl(doc[PARAM_CHAMBERCTRL_URL]);
 
   if (!doc[PARAM_BREWLOGGER_URL].isNull())
     setBrewLoggerUrl(doc[PARAM_BREWLOGGER_URL]);
@@ -307,8 +308,8 @@ float convertIncomingWeight(float w) {
     r = convertLBStoKG(w);
 
 #if LOG_LEVEL == 6
-    // Log.verbose(F("CFG : Convering %F to %F (%s)." CR), w, r,
-    // myConfig.getWeightUnit());
+  // Log.verbose(F("CFG : Convering %F to %F (%s)." CR), w, r,
+  // myConfig.getWeightUnit());
 #endif
   return r;
 }
@@ -324,8 +325,8 @@ float convertIncomingVolume(float v) {
     r = convertUKOZtoCL(v);
 
 #if LOG_LEVEL == 6
-    // Log.verbose(F("CFG : Converting incoming volume %F to %F (%s)." CR), v,
-    // r, myConfig.getVolumeUnit());
+  // Log.verbose(F("CFG : Converting incoming volume %F to %F (%s)." CR), v,
+  // r, myConfig.getVolumeUnit());
 #endif
   return r;
 }
@@ -339,8 +340,8 @@ float convertOutgoingWeight(float w) {
     r = convertKGtoLBS(w);
 
 #if LOG_LEVEL == 6
-    // Log.verbose(F("CFG : Converting outgoing weight %F to %F (%s)." CR), w,
-    // r, myConfig.getWeightUnit());
+  // Log.verbose(F("CFG : Converting outgoing weight %F to %F (%s)." CR), w,
+  // r, myConfig.getWeightUnit());
 #endif
   return r;
 }
@@ -356,8 +357,8 @@ float convertOutgoingVolume(float v) {
     r = convertCLtoUKOZ(v == 0.0 ? 0.0 : v * 100.0);
 
 #if LOG_LEVEL == 6
-    // Log.verbose(F("CFG : Converting outgoing volume %F to %F (%s)." CR), v,
-    // r, myConfig.getVolumeUnit());
+  // Log.verbose(F("CFG : Converting outgoing volume %F to %F (%s)." CR), v,
+  // r, myConfig.getVolumeUnit());
 #endif
   return r;
 }
@@ -382,8 +383,8 @@ void KegConfig::migrateSettings() {
     return;
   }
 
-  DynamicJsonDocument doc(JSON_BUFFER_SIZE_XL);
-  DynamicJsonDocument doc2(JSON_BUFFER_SIZE_XL);
+  JsonDocument doc;
+  JsonDocument doc2;
 
   DeserializationError err = deserializeJson(doc, configFile);
   configFile.close();
@@ -393,8 +394,8 @@ void KegConfig::migrateSettings() {
     return;
   }
 
-  JsonObject obj = doc.as<JsonObject>();
-  JsonObject obj2 = doc2.createNestedObject();
+  JsonObject obj = doc.to<JsonObject>();
+  JsonObject obj2 = doc2.to<JsonObject>();
 
   serializeJson(obj, EspSerial);
   EspSerial.print(CR);

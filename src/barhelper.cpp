@@ -38,7 +38,7 @@ SOFTWARE.
   // }
   if (strlen(myConfig.getBarhelperApiKey()) == 0) return;
 
-  DynamicJsonDocument doc(100);
+  JsonDocument doc;
   String header = "Authorization: " + String(myConfig.getBarhelperApiKey());
 
   doc["name"] = myConfig.getBarhelperMonitor(idx);
@@ -99,7 +99,7 @@ void Barhelper::sendKegInformation(UnitIndex idx, float kegVol) {
   // }
   if (strlen(myConfig.getBarhelperApiKey()) == 0) return;
 
-  DynamicJsonDocument doc(300);
+  JsonDocument doc;
   String header = "Authorization: " + String(myConfig.getBarhelperApiKey());
 
   doc["name"] = myConfig.getBarhelperMonitor(idx);

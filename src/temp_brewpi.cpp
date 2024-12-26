@@ -48,7 +48,7 @@ TempReading TempSensorBrewpi::read() {
     if (_push->getLastResponseCode() == 200) {
       Log.notice(F("TEMP: Data received %s." CR), ret.c_str());
 
-      DynamicJsonDocument doc(200);
+      JsonDocument doc;
       DeserializationError err = deserializeJson(doc, ret);
 
       /* This is the  payload structure from BrewPI-ESP by Thorrak

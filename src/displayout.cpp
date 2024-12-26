@@ -21,6 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
+#include <cstdio>
 #include <display.hpp>
 #include <displayout.hpp>
 #include <levels.hpp>
@@ -30,7 +31,7 @@ constexpr auto DISPLAY_ITER_TIME = 4000;
 DisplayLayout::DisplayLayout() { _loopMillis = millis(); }
 
 void DisplayLayout::loop() {
-  if (abs((int32_t)(millis() - _loopMillis)) > DISPLAY_ITER_TIME) {
+  if (abs(static_cast<int32_t>((millis() - _loopMillis))) > DISPLAY_ITER_TIME) {
     _loopMillis = millis();
 
     switch (_iter) {

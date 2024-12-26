@@ -46,6 +46,8 @@ SOFTWARE.
 #include <esp_core_dump.h>
 #endif
 
+#include <cstdio>
+
 SerialDebug mySerial(115200L);
 KegConfig myConfig(CFG_MDNSNAME, CFG_FILENAME);
 WifiConnection myWifi(&myConfig, CFG_APPNAME, "password", CFG_MDNSNAME);
@@ -194,7 +196,7 @@ void loop() {
   myScale.loop(UnitIndex::U1);
   myScale.loop(UnitIndex::U2);
 
-  if (abs((int32_t)(millis() - loopMillis)) >
+  if (abs(static_cast<int32_t>((millis() - loopMillis))) >
       loopInterval) {  // 2 seconds loop interval
     loopMillis = millis();
     loopCounter++;

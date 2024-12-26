@@ -26,7 +26,9 @@ SOFTWARE.
 #include <temp_chamberctrl.hpp>
 #include <utils.hpp>
 
-TempSensorChamberCtrl::TempSensorChamberCtrl() { _push = new BasePush(&myConfig); }
+TempSensorChamberCtrl::TempSensorChamberCtrl() {
+  _push = new BasePush(&myConfig);
+}
 
 TempSensorChamberCtrl::~TempSensorChamberCtrl() {
   if (_push) delete _push;
@@ -48,7 +50,7 @@ TempReading TempSensorChamberCtrl::read() {
     if (_push->getLastResponseCode() == 200) {
       Log.notice(F("TEMP: Data received %s." CR), ret.c_str());
 
-      DynamicJsonDocument doc(200);
+      JsonDocument doc;
       DeserializationError err = deserializeJson(doc, ret);
 
       /* This is the  payload structure from BrewPI-ESP by Thorrak
