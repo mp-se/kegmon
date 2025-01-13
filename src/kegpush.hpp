@@ -26,6 +26,7 @@ SOFTWARE.
 
 #include <barhelper.hpp>
 #include <basepush.hpp>
+#include <brewlogger.hpp>
 #include <brewspy.hpp>
 #include <homeassist.hpp>
 #include <kegconfig.hpp>
@@ -35,12 +36,14 @@ class KegPushHandler : public BasePush {
   Brewspy* _brewspy = NULL;
   HomeAssist* _ha = NULL;
   Barhelper* _barhelper = NULL;
+  BrewLogger* _brewLogger = NULL;
 
  public:
   explicit KegPushHandler(KegConfig* config) : BasePush(config) {
     _brewspy = new Brewspy(this);
     _ha = new HomeAssist(this);
     _barhelper = new Barhelper(this);
+    _brewLogger = new BrewLogger(this);
   }
 
   void requestTapInfoFromBrewspy(JsonObject& obj, String token) {
@@ -48,13 +51,15 @@ class KegPushHandler : public BasePush {
   }
 
   void pushTempInformation(float tempC, bool isLoop = false);
-  void pushPourInformation(UnitIndex idx, float pourVol, bool isLoop = false);
+  void pushPourInformation(UnitIndex idx, float stableVol, float pourVol,
+                           bool isLoop = false);
   void pushKegInformation(UnitIndex idx, float stableVol, float pourVol,
                           float glasses, bool isLoop = false);
 
   Brewspy* getBrewspy() { return _brewspy; }
   HomeAssist* getHomeAssist() { return _ha; }
   Barhelper* getBarHelper() { return _barhelper; }
+  BrewLogger* getBrewLogger() { return _brewLogger; }
 };
 
 extern KegPushHandler myPush;

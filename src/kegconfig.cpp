@@ -29,7 +29,7 @@ SOFTWARE.
 constexpr auto PARAM_PLATFORM = "platform";
 
 KegConfig::KegConfig(String baseMDNS, String fileName)
-    : BaseConfig(baseMDNS, fileName, JSON_BUFFER_SIZE_XL) {}
+    : BaseConfig(baseMDNS, fileName) {}
 
 void KegConfig::createJson(JsonObject& doc) {
   // Call base class functions
@@ -52,6 +52,9 @@ void KegConfig::createJson(JsonObject& doc) {
   doc[PARAM_BREWFATHER_USERKEY] = getBrewfatherUserKey();
 
   doc[PARAM_BREWPI_URL] = getBrewpiUrl();
+  doc[PARAM_CHAMBERCTRL_URL] = getChamberCtrlUrl();
+
+  doc[PARAM_BREWLOGGER_URL] = getBrewLoggerUrl();
 
   doc[PARAM_BREWSPY_TOKEN1] = getBrewspyToken(UnitIndex::U1);
   doc[PARAM_BREWSPY_TOKEN2] = getBrewspyToken(UnitIndex::U2);
@@ -75,6 +78,7 @@ void KegConfig::createJson(JsonObject& doc) {
       getGlassVolume(UnitIndex::U1),
       getWeightPrecision()));  // Dont convert this part (drop down in UI)
   doc[PARAM_BEER_NAME1] = getBeerName(UnitIndex::U1);
+  doc[PARAM_BEER_ID1] = getBeerId(UnitIndex::U1);
   doc[PARAM_BEER_ABV1] = serialized(String(getBeerABV(UnitIndex::U1), 2));
   doc[PARAM_BEER_FG1] = serialized(String(getBeerFG(UnitIndex::U1), 2));
   doc[PARAM_BEER_EBC1] = getBeerEBC(UnitIndex::U1);
@@ -95,6 +99,7 @@ void KegConfig::createJson(JsonObject& doc) {
       serialized(String(getGlassVolume(UnitIndex::U2),
                         2));  // Dont convert this part (drop down in UI)
   doc[PARAM_BEER_NAME2] = getBeerName(UnitIndex::U2);
+  doc[PARAM_BEER_ID2] = getBeerId(UnitIndex::U2);
   doc[PARAM_BEER_ABV2] = serialized(String(getBeerABV(UnitIndex::U2), 2));
   doc[PARAM_BEER_FG2] = serialized(String(getBeerFG(UnitIndex::U2), 2));
   doc[PARAM_BEER_EBC2] = getBeerEBC(UnitIndex::U2);
@@ -154,6 +159,11 @@ void KegConfig::parseJson(JsonObject& doc) {
     setBrewfatherUserKey(doc[PARAM_BREWFATHER_USERKEY]);
 
   if (!doc[PARAM_BREWPI_URL].isNull()) setBrewpiUrl(doc[PARAM_BREWPI_URL]);
+  if (!doc[PARAM_CHAMBERCTRL_URL].isNull())
+    setChamberCtrlUrl(doc[PARAM_CHAMBERCTRL_URL]);
+
+  if (!doc[PARAM_BREWLOGGER_URL].isNull())
+    setBrewLoggerUrl(doc[PARAM_BREWLOGGER_URL]);
 
   if (!doc[PARAM_BREWSPY_TOKEN1].isNull())
     setBrewspyToken(UnitIndex::U1, doc[PARAM_BREWSPY_TOKEN1]);
@@ -202,6 +212,8 @@ void KegConfig::parseJson(JsonObject& doc) {
             .as<float>());  // No need to convert this, always in Liters
   if (!doc[PARAM_BEER_NAME1].isNull())
     setBeerName(UnitIndex::U1, doc[PARAM_BEER_NAME1]);
+  if (!doc[PARAM_BEER_ID1].isNull())
+    setBeerId(UnitIndex::U1, doc[PARAM_BEER_ID1]);
   if (!doc[PARAM_BEER_EBC1].isNull())
     setBeerEBC(UnitIndex::U1, doc[PARAM_BEER_EBC1].as<int>());
   if (!doc[PARAM_BEER_ABV1].isNull())
@@ -233,6 +245,8 @@ void KegConfig::parseJson(JsonObject& doc) {
             .as<float>());  // No need to convert this, always in Liters
   if (!doc[PARAM_BEER_NAME2].isNull())
     setBeerName(UnitIndex::U2, doc[PARAM_BEER_NAME2]);
+  if (!doc[PARAM_BEER_ID2].isNull())
+    setBeerId(UnitIndex::U2, doc[PARAM_BEER_ID2]);
   if (!doc[PARAM_BEER_EBC2].isNull())
     setBeerEBC(UnitIndex::U2, doc[PARAM_BEER_EBC2].as<int>());
   if (!doc[PARAM_BEER_ABV2].isNull())
@@ -294,8 +308,8 @@ float convertIncomingWeight(float w) {
     r = convertLBStoKG(w);
 
 #if LOG_LEVEL == 6
-    // Log.verbose(F("CFG : Convering %F to %F (%s)." CR), w, r,
-    // myConfig.getWeightUnit());
+  // Log.verbose(F("CFG : Convering %F to %F (%s)." CR), w, r,
+  // myConfig.getWeightUnit());
 #endif
   return r;
 }
@@ -311,8 +325,8 @@ float convertIncomingVolume(float v) {
     r = convertUKOZtoCL(v);
 
 #if LOG_LEVEL == 6
-    // Log.verbose(F("CFG : Converting incoming volume %F to %F (%s)." CR), v,
-    // r, myConfig.getVolumeUnit());
+  // Log.verbose(F("CFG : Converting incoming volume %F to %F (%s)." CR), v,
+  // r, myConfig.getVolumeUnit());
 #endif
   return r;
 }
@@ -326,8 +340,8 @@ float convertOutgoingWeight(float w) {
     r = convertKGtoLBS(w);
 
 #if LOG_LEVEL == 6
-    // Log.verbose(F("CFG : Converting outgoing weight %F to %F (%s)." CR), w,
-    // r, myConfig.getWeightUnit());
+  // Log.verbose(F("CFG : Converting outgoing weight %F to %F (%s)." CR), w,
+  // r, myConfig.getWeightUnit());
 #endif
   return r;
 }
@@ -343,8 +357,8 @@ float convertOutgoingVolume(float v) {
     r = convertCLtoUKOZ(v == 0.0 ? 0.0 : v * 100.0);
 
 #if LOG_LEVEL == 6
-    // Log.verbose(F("CFG : Converting outgoing volume %F to %F (%s)." CR), v,
-    // r, myConfig.getVolumeUnit());
+  // Log.verbose(F("CFG : Converting outgoing volume %F to %F (%s)." CR), v,
+  // r, myConfig.getVolumeUnit());
 #endif
   return r;
 }
@@ -369,8 +383,8 @@ void KegConfig::migrateSettings() {
     return;
   }
 
-  DynamicJsonDocument doc(JSON_BUFFER_SIZE_XL);
-  DynamicJsonDocument doc2(JSON_BUFFER_SIZE_XL);
+  JsonDocument doc;
+  JsonDocument doc2;
 
   DeserializationError err = deserializeJson(doc, configFile);
   configFile.close();
@@ -380,8 +394,8 @@ void KegConfig::migrateSettings() {
     return;
   }
 
-  JsonObject obj = doc.as<JsonObject>();
-  JsonObject obj2 = doc2.createNestedObject();
+  JsonObject obj = doc.to<JsonObject>();
+  JsonObject obj2 = doc2.to<JsonObject>();
 
   serializeJson(obj, EspSerial);
   EspSerial.print(CR);

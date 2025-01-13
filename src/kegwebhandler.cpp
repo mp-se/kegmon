@@ -93,14 +93,14 @@ constexpr auto PARAM_UPTIME_DAYS = "uptime_days";
 constexpr auto PARAM_HOMEASSISTANT = "ha";
 constexpr auto PARAM_BARHELPER = "barhelper";
 constexpr auto PARAM_BREWSPY = "brewspy";
+constexpr auto PARAM_BREWLOGGER = "brewlogger";
 constexpr auto PARAM_PUSH_USED = "push_used";
 constexpr auto PARAM_PUSH_AGE = "push_age";
 constexpr auto PARAM_PUSH_STATUS = "push_status";
 constexpr auto PARAM_PUSH_CODE = "push_code";
 constexpr auto PARAM_PUSH_RESPONSE = "push_response";
 
-KegWebHandler::KegWebHandler(KegConfig *config)
-    : BaseWebServer(config, JSON_BUFFER) {
+KegWebHandler::KegWebHandler(KegConfig *config) : BaseWebServer(config) {
   _config = config;
 }
 
@@ -120,26 +120,22 @@ void KegWebHandler::setupWebHandlers() {
   handler = new AsyncCallbackJsonWebHandler(
       "/api/scale/tare",
       std::bind(&KegWebHandler::webScaleTare, this, std::placeholders::_1,
-                std::placeholders::_2),
-      JSON_BUFFER_SIZE_S);
+                std::placeholders::_2));
   _server->addHandler(handler);
   handler = new AsyncCallbackJsonWebHandler(
       "/api/scale/factor",
       std::bind(&KegWebHandler::webScaleFactor, this, std::placeholders::_1,
-                std::placeholders::_2),
-      JSON_BUFFER_SIZE_S);
+                std::placeholders::_2));
   _server->addHandler(handler);
   _server->on("/api/scale", HTTP_GET,
               std::bind(&KegWebHandler::webScale, this, std::placeholders::_1));
-  handler = new AsyncCallbackJsonWebHandler(
-      "/api/config",
-      std::bind(&KegWebHandler::webConfigPost, this, std::placeholders::_1,
-                std::placeholders::_2),
-      JSON_BUFFER_SIZE_L);
-  _server->addHandler(handler);
   _server->on(
       "/api/config", HTTP_GET,
       std::bind(&KegWebHandler::webConfigGet, this, std::placeholders::_1));
+  handler = new AsyncCallbackJsonWebHandler(
+      "/api/config", std::bind(&KegWebHandler::webConfigPost, this,
+                               std::placeholders::_1, std::placeholders::_2));
+  _server->addHandler(handler);
   _server->on("/api/stability/clear", HTTP_GET,
               std::bind(&KegWebHandler::webStabilityClear, this,
                         std::placeholders::_1));
@@ -152,8 +148,7 @@ void KegWebHandler::setupWebHandlers() {
   handler = new AsyncCallbackJsonWebHandler(
       "/api/brewspy/tap",
       std::bind(&KegWebHandler::webHandleBrewspy, this, std::placeholders::_1,
-                std::placeholders::_2),
-      JSON_BUFFER_SIZE_S);
+                std::placeholders::_2));
   _server->addHandler(handler);
   _server->on("/api/logs/clear", HTTP_GET,
               std::bind(&KegWebHandler::webHandleLogsClear, this,
@@ -175,8 +170,7 @@ void KegWebHandler::webConfigGet(AsyncWebServerRequest *request) {
   }
 
   Log.notice(F("WEB : webServer callback for /api/config(read)." CR));
-  AsyncJsonResponse *response =
-      new AsyncJsonResponse(false, JSON_BUFFER_SIZE_XL);
+  AsyncJsonResponse *response = new AsyncJsonResponse(false);
   JsonObject obj = response->getRoot().as<JsonObject>();
   myConfig.createJson(obj);
   response->setLength();
@@ -196,8 +190,7 @@ void KegWebHandler::webHandleFactoryDefaults(AsyncWebServerRequest *request) {
   LittleFS.end();
   Log.notice(F("WEB : Deleted files in filesystem, rebooting." CR));
 
-  AsyncJsonResponse *response =
-      new AsyncJsonResponse(false, JSON_BUFFER_SIZE_S);
+  AsyncJsonResponse *response = new AsyncJsonResponse(false);
   JsonObject obj = response->getRoot().as<JsonObject>();
   obj[PARAM_SUCCESS] = true;
   obj[PARAM_MESSAGE] = "Factory reset completed, rebooting";
@@ -225,8 +218,7 @@ void KegWebHandler::webConfigPost(AsyncWebServerRequest *request,
   obj.clear();
   myConfig.saveFile();
 
-  AsyncJsonResponse *response =
-      new AsyncJsonResponse(false, JSON_BUFFER_SIZE_S);
+  AsyncJsonResponse *response = new AsyncJsonResponse(false);
   obj = response->getRoot().as<JsonObject>();
   obj[PARAM_SUCCESS] = true;
   obj[PARAM_MESSAGE] = "Configuration updated";
@@ -243,8 +235,7 @@ void KegWebHandler::webHandleLogsClear(AsyncWebServerRequest *request) {
   LittleFS.remove(LEVELS_FILENAME);
   LittleFS.remove(LEVELS_FILENAME2);
 
-  AsyncJsonResponse *response =
-      new AsyncJsonResponse(false, JSON_BUFFER_SIZE_S);
+  AsyncJsonResponse *response = new AsyncJsonResponse(false);
   JsonObject obj = response->getRoot().as<JsonObject>();
   obj[PARAM_SUCCESS] = true;
   obj[PARAM_MESSAGE] = "Logfiles removed";
@@ -259,8 +250,7 @@ void KegWebHandler::webHandleBrewspy(AsyncWebServerRequest *request,
   }
 
   JsonObject obj = json.as<JsonObject>();
-  AsyncJsonResponse *response =
-      new AsyncJsonResponse(false, JSON_BUFFER_SIZE_M);
+  AsyncJsonResponse *response = new AsyncJsonResponse(false);
   JsonObject obj2 = response->getRoot().as<JsonObject>();
   myPush.requestTapInfoFromBrewspy(obj2, obj[PARAM_TOKEN]);
   response->setLength();
@@ -274,8 +264,7 @@ void KegWebHandler::webScale(AsyncWebServerRequest *request) {
 
   Log.notice(F("WEB : webServer callback /api/scale." CR));
 
-  AsyncJsonResponse *response =
-      new AsyncJsonResponse(false, JSON_BUFFER_SIZE_L);
+  AsyncJsonResponse *response = new AsyncJsonResponse(false);
   JsonObject obj = response->getRoot().as<JsonObject>();
   populateScaleJson(obj);
   obj[PARAM_WEIGHT_UNIT] = myConfig.getWeightUnit();
@@ -303,8 +292,7 @@ void KegWebHandler::webScaleTare(AsyncWebServerRequest *request,
 
   myScale.scheduleTare(idx);
 
-  AsyncJsonResponse *response =
-      new AsyncJsonResponse(false, JSON_BUFFER_SIZE_S);
+  AsyncJsonResponse *response = new AsyncJsonResponse(false);
   JsonObject obj2 = response->getRoot().as<JsonObject>();
   obj2[PARAM_SUCCESS] = true;
   obj2[PARAM_MESSAGE] = "Scale tare schedule";
@@ -334,8 +322,7 @@ void KegWebHandler::webScaleFactor(AsyncWebServerRequest *request,
 
   myScale.scheduleFindFactor(idx, weight);
 
-  AsyncJsonResponse *response =
-      new AsyncJsonResponse(false, JSON_BUFFER_SIZE_S);
+  AsyncJsonResponse *response = new AsyncJsonResponse(false);
   JsonObject obj2 = response->getRoot().as<JsonObject>();
   obj2[PARAM_SUCCESS] = true;
   obj2[PARAM_MESSAGE] = "Scale tare is scheduled";
@@ -431,8 +418,7 @@ void KegWebHandler::populateScaleJson(JsonObject &doc) {
 void KegWebHandler::webStatus(AsyncWebServerRequest *request) {
   Log.notice(F("WEB : webServer callback /api/status." CR));
 
-  AsyncJsonResponse *response =
-      new AsyncJsonResponse(false, JSON_BUFFER_SIZE_XL);
+  AsyncJsonResponse *response = new AsyncJsonResponse(false);
   JsonObject obj = response->getRoot().as<JsonObject>();
   populateScaleJson(obj);
   obj[PARAM_MDNS] = myConfig.getMDNS();
@@ -506,9 +492,10 @@ void KegWebHandler::webStatus(AsyncWebServerRequest *request) {
 
   // Home Assistant
   if (myConfig.hasTargetMqtt()) {
-    JsonObject o = obj.createNestedObject(PARAM_HOMEASSISTANT);
+    JsonObject o = obj[PARAM_HOMEASSISTANT].as<JsonObject>();
     HomeAssist *ha = myPush.getHomeAssist();
-    o[PARAM_PUSH_AGE] = abs((int32_t)(millis() - ha->getLastTimeStamp()));
+    o[PARAM_PUSH_AGE] =
+        abs(static_cast<int32_t>((millis() - ha->getLastTimeStamp())));
     o[PARAM_PUSH_STATUS] = ha->getLastStatus();
     o[PARAM_PUSH_CODE] = ha->getLastError();
     o[PARAM_PUSH_RESPONSE] = "";
@@ -517,21 +504,35 @@ void KegWebHandler::webStatus(AsyncWebServerRequest *request) {
 
   // Bar helper
   if (strlen(myConfig.getBarhelperApiKey()) > 0) {
-    JsonObject o = obj.createNestedObject(PARAM_BARHELPER);
+    JsonObject o = obj[PARAM_BARHELPER].as<JsonObject>();
     Barhelper *bar = myPush.getBarHelper();
-    o[PARAM_PUSH_AGE] = abs((int32_t)(millis() - bar->getLastTimeStamp()));
+    o[PARAM_PUSH_AGE] =
+        abs(static_cast<int32_t>((millis() - bar->getLastTimeStamp())));
     o[PARAM_PUSH_STATUS] = bar->getLastStatus();
     o[PARAM_PUSH_CODE] = bar->getLastError();
     o[PARAM_PUSH_RESPONSE] = bar->getLastResponse();
     o[PARAM_PUSH_USED] = bar->hasRun();
   }
 
+  // Brewlogger helper
+  if (strlen(myConfig.getBrewLoggerUrl()) > 0) {
+    JsonObject o = obj[PARAM_BREWLOGGER].as<JsonObject>();
+    BrewLogger *blog = myPush.getBrewLogger();
+    o[PARAM_PUSH_AGE] =
+        abs(static_cast<int32_t>((millis() - blog->getLastTimeStamp())));
+    o[PARAM_PUSH_STATUS] = blog->getLastStatus();
+    o[PARAM_PUSH_CODE] = blog->getLastError();
+    o[PARAM_PUSH_RESPONSE] = blog->getLastResponse();
+    o[PARAM_PUSH_USED] = blog->hasRun();
+  }
+
   // Brewspy
   if (strlen(myConfig.getBrewspyToken(UnitIndex::U1)) > 0 ||
       strlen(myConfig.getBrewspyToken(UnitIndex::U2)) > 0) {
-    JsonObject o = obj.createNestedObject(PARAM_BREWSPY);
+    JsonObject o = obj[PARAM_BREWSPY].as<JsonObject>();
     Brewspy *brew = myPush.getBrewspy();
-    o[PARAM_PUSH_AGE] = abs((int32_t)(millis() - brew->getLastTimeStamp()));
+    o[PARAM_PUSH_AGE] =
+        abs(static_cast<int32_t>((millis() - brew->getLastTimeStamp())));
     o[PARAM_PUSH_STATUS] = brew->getLastStatus();
     o[PARAM_PUSH_CODE] = brew->getLastError();
     o[PARAM_PUSH_RESPONSE] = brew->getLastResponse();
@@ -566,8 +567,7 @@ void KegWebHandler::webStability(AsyncWebServerRequest *request) {
   constexpr auto PARAM_STABILITY_UBIASDEV1 = "stability_ubiasdev1";
   constexpr auto PARAM_STABILITY_UBIASDEV2 = "stability_ubiasdev2";
 
-  AsyncJsonResponse *response =
-      new AsyncJsonResponse(false, JSON_BUFFER_SIZE_L);
+  AsyncJsonResponse *response = new AsyncJsonResponse(false);
   JsonObject obj = response->getRoot().as<JsonObject>();
 
   Stability *stability1 = myLevelDetection.getStability(UnitIndex::U1);
@@ -652,8 +652,7 @@ void KegWebHandler::webStabilityClear(AsyncWebServerRequest *request) {
   myLevelDetection.getStability(UnitIndex::U1)->clear();
   myLevelDetection.getStability(UnitIndex::U2)->clear();
 
-  AsyncJsonResponse *response =
-      new AsyncJsonResponse(false, JSON_BUFFER_SIZE_S);
+  AsyncJsonResponse *response = new AsyncJsonResponse(false);
   JsonObject obj = response->getRoot().as<JsonObject>();
   obj[PARAM_SUCCESS] = true;
   obj[PARAM_MESSAGE] = "Stability data cleared";
@@ -669,8 +668,7 @@ void KegWebHandler::webHardwareScan(AsyncWebServerRequest *request) {
   Log.notice(F("WEB : webServer callback for /api/hardware." CR));
   _hardwareScanTask = true;
   _hardwareScanData = "";
-  AsyncJsonResponse *response =
-      new AsyncJsonResponse(false, JSON_BUFFER_SIZE_S);
+  AsyncJsonResponse *response = new AsyncJsonResponse(false);
   JsonObject obj = response->getRoot().as<JsonObject>();
   obj[PARAM_SUCCESS] = true;
   obj[PARAM_MESSAGE] = "Scheduled hardware scanning";
@@ -686,8 +684,7 @@ void KegWebHandler::webHardwareScanStatus(AsyncWebServerRequest *request) {
   Log.notice(F("WEB : webServer callback for /api/hardware/status." CR));
 
   if (_hardwareScanTask || !_hardwareScanData.length()) {
-    AsyncJsonResponse *response =
-        new AsyncJsonResponse(false, JSON_BUFFER_SIZE_L);
+    AsyncJsonResponse *response = new AsyncJsonResponse(false);
     JsonObject obj = response->getRoot().as<JsonObject>();
     obj[PARAM_STATUS] = static_cast<bool>(_hardwareScanTask);
     obj[PARAM_SUCCESS] = false;
@@ -707,8 +704,8 @@ void KegWebHandler::loop() {
   BaseWebServer::loop();
 
   if (_hardwareScanTask) {
-    DynamicJsonDocument doc(JSON_BUFFER_SIZE_L);
-    JsonObject obj = doc.createNestedObject();
+    JsonDocument doc;
+    JsonObject obj = doc.to<JsonObject>();
     obj[PARAM_STATUS] = false;
     obj[PARAM_SUCCESS] = true;
     obj[PARAM_MESSAGE] = "";
@@ -717,11 +714,11 @@ void KegWebHandler::loop() {
     // Scan the i2c bus for devices
     // Wire.begin(PIN_SDA, PIN_SCL); // Should already have been done in
     // gyro.cpp
-    JsonObject i2c = obj.createNestedObject(PARAM_I2C);
-    JsonArray i2c_1 = i2c.createNestedArray(PARAM_I2C_1);
+    JsonObject i2c = obj[PARAM_I2C].to<JsonObject>();
+    JsonArray i2c_1 = i2c[PARAM_I2C_1].to<JsonArray>();
 
     // Scan bus #1
-    for (int i = 1; i < 127; i++) {
+    for (int i = 1, j = 0; i < 127; i++) {
       // The i2c_scanner uses the return value of
       // the Write.endTransmisstion to see if
       // a device did acknowledge to the address.
@@ -729,16 +726,16 @@ void KegWebHandler::loop() {
       int err = Wire.endTransmission();
 
       if (err == 0) {
-        JsonObject sensor = i2c_1.createNestedObject();
-        sensor[PARAM_ADRESS] = "0x" + String(i, 16);
+        i2c_1[j][PARAM_ADRESS] = "0x" + String(i, 16);
+        j++;
       }
     }
 
 #if defined(ESP32)
-    JsonArray i2c_2 = i2c.createNestedArray(PARAM_I2C_2);
+    JsonArray i2c_2 = i2c[PARAM_I2C_2].to<JsonArray>();
 
     // Scan bus #2
-    for (int i = 1; i < 127; i++) {
+    for (int i = 1, j = 0; i < 127; i++) {
       // The i2c_scanner uses the return value of
       // the Write.endTransmisstion to see if
       // a device did acknowledge to the address.
@@ -746,8 +743,8 @@ void KegWebHandler::loop() {
       int err = Wire1.endTransmission();
 
       if (err == 0) {
-        JsonObject sensor = i2c_2.createNestedObject();
-        sensor[PARAM_ADRESS] = "0x" + String(i, 16);
+        i2c_2[j][PARAM_ADRESS] = "0x" + String(i, 16);
+        j++;
       }
     }
 #endif
@@ -788,7 +785,7 @@ void KegWebHandler::loop() {
       sensor[PARAM_RESOLUTION] = mySensors.getResolution();
     }*/
 
-    JsonObject cpu = obj.createNestedObject(PARAM_CHIP);
+    JsonObject cpu = obj[PARAM_CHIP].to<JsonObject>();
 
 #if defined(ESP8266)
     cpu[PARAM_FAMILY] = "ESP8266";
@@ -799,7 +796,7 @@ void KegWebHandler::loop() {
     cpu[PARAM_REVISION] = chip_info.revision;
     cpu[PARAM_CORES] = chip_info.cores;
 
-    JsonArray feature = cpu.createNestedArray(PARAM_FEATURES);
+    JsonArray feature = cpu[PARAM_FEATURES].to<JsonArray>();
 
     if (chip_info.features & CHIP_FEATURE_EMB_FLASH)
       feature.add("embedded flash");

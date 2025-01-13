@@ -38,7 +38,7 @@ SOFTWARE.
   // }
   if (strlen(myConfig.getBarhelperApiKey()) == 0) return;
 
-  DynamicJsonDocument doc(100);
+  JsonDocument doc;
   String header = "Authorization: " + String(myConfig.getBarhelperApiKey());
 
   doc["name"] = myConfig.getBarhelperMonitor(idx);
@@ -99,7 +99,7 @@ void Barhelper::sendKegInformation(UnitIndex idx, float kegVol) {
   // }
   if (strlen(myConfig.getBarhelperApiKey()) == 0) return;
 
-  DynamicJsonDocument doc(300);
+  JsonDocument doc;
   String header = "Authorization: " + String(myConfig.getBarhelperApiKey());
 
   doc["name"] = myConfig.getBarhelperMonitor(idx);
@@ -119,15 +119,15 @@ void Barhelper::sendKegInformation(UnitIndex idx, float kegVol) {
   // #endif
 
 #if defined(ESP8266)
-  constexpr auto BARHELPER_URL = "http://europe-west1-barhelper-app.cloudfunctions.net/api/customKegMon";
+  constexpr auto BARHELPER_URL =
+      "http://europe-west1-barhelper-app.cloudfunctions.net/api/customKegMon";
 #else
-  constexpr auto BARHELPER_URL = "https://europe-west1-barhelper-app.cloudfunctions.net/api/customKegMon";
+  constexpr auto BARHELPER_URL =
+      "https://europe-west1-barhelper-app.cloudfunctions.net/api/customKegMon";
 #endif
   Log.info(F("BARH: Using URL %s." CR), BARHELPER_URL);
-  out = _push->sendHttpPost(
-      out,
-      BARHELPER_URL,
-      "Content-Type: application/json", header.c_str());
+  out = _push->sendHttpPost(out, BARHELPER_URL,
+                            "Content-Type: application/json", header.c_str());
   updateStatus(out);
   Log.info(F("BARH: Response %s." CR), out.c_str());
 
@@ -135,7 +135,7 @@ void Barhelper::sendKegInformation(UnitIndex idx, float kegVol) {
   // print the value for now.
 
   /*
-  
+
   DeserializationError err = deserializeJson(doc, out);
 
   if (err) {

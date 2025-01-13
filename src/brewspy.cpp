@@ -51,7 +51,7 @@ void Brewspy::sendTapInformation(UnitIndex idx, float stableVol,
   // setting the last pour
   if (strlen(myConfig.getBrewspyToken(idx)) == 0) return;
 
-  DynamicJsonDocument doc(100);
+  JsonDocument doc;
 
   doc["token"] = myConfig.getBrewspyToken(idx);
   doc["unit"] = "l";
@@ -87,7 +87,7 @@ void Brewspy::sendPourInformation(UnitIndex idx, float pourVol) {
   // }
   if (strlen(myConfig.getBrewspyToken(idx)) == 0) return;
 
-  DynamicJsonDocument doc(100);
+  JsonDocument doc;
 
   doc["token"] = myConfig.getBrewspyToken(idx);
   doc["unit"] = "l";
@@ -118,7 +118,7 @@ void Brewspy::clearKegInformation(UnitIndex idx) {
   // }
   if (strlen(myConfig.getBrewspyToken(idx)) == 0) return;
 
-  DynamicJsonDocument doc(30);
+  JsonDocument doc;
 
   doc["token"] = myConfig.getBrewspyToken(idx);
   Log.notice(F("BSPY: Sending CLEAR to brewspy [%d]." CR), idx);
@@ -167,7 +167,7 @@ void Brewspy::getTapInformation(JsonObject& obj, const String token) {
   EspSerial.print(resp.c_str());
   EspSerial.print(CR);
 
-  DynamicJsonDocument doc(JSON_BUFFER_SIZE_M);
+  JsonDocument doc;
   DeserializationError error = deserializeJson(doc, resp);
 
   if (error) {

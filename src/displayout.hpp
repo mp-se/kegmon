@@ -24,6 +24,7 @@ SOFTWARE.
 #ifndef SRC_DISPLAYOUT_HPP_
 #define SRC_DISPLAYOUT_HPP_
 
+#include <cstdio>
 #include <kegconfig.hpp>
 #include <main.hpp>
 #include <utils.hpp>

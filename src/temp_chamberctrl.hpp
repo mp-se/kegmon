@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-2024 Magnus
+Copyright (c) 2024 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,35 +21,26 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#include <kegpush.hpp>
-#include <log.hpp>
-#include <scale.hpp>
-#include <utils.hpp>
+#ifndef SRC_TEMP_CHAMBERCTRL_HPP_
+#define SRC_TEMP_CHAMBERCTRL_HPP_
 
-void KegPushHandler::pushTempInformation(float tempC, bool isLoop) {
-  if (isnan(tempC)) return;
+#include <basepush.hpp>
+#include <temp_base.hpp>
 
-  _ha->sendTempInformation(tempC);
-}
+class TempSensorChamberCtrl : public TempSensorBase {
+ private:
+  BasePush* _push = NULL;
+  bool _hasSensor = false;
 
-void KegPushHandler::pushPourInformation(UnitIndex idx, float stableVol,
-                                         float pourVol, bool isLoop) {
-  if (!isLoop)  // Limit calls to brewspy
-    _brewspy->sendPourInformation(idx, pourVol);
+ public:
+  TempSensorChamberCtrl();
+  ~TempSensorChamberCtrl();
 
-  _ha->sendPourInformation(idx, pourVol);
-  _brewLogger->sendPourInformation(idx, pourVol, stableVol);
-}
+  void setup() override {}
+  bool hasSensor() override { return _hasSensor; }
+  TempReading read() override;
+};
 
-void KegPushHandler::pushKegInformation(UnitIndex idx, float stableVol,
-                                        float pourVol, float glasses,
-                                        bool isLoop) {
-  if (!isLoop)  // Limit calls to brewspy
-    _brewspy->sendTapInformation(idx, stableVol, pourVol);
-
-  _ha->sendTapInformation(idx, stableVol, glasses);
-  _barhelper->sendKegInformation(idx, stableVol);
-  _brewLogger->sendKegInformation(idx, stableVol);
-}
+#endif  // SRC_TEMP_CHAMBERCTRL_HPP_
 
 // EOF

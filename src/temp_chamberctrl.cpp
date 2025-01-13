@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-2024 Magnus
+Copyright (c) 2024 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,23 +23,25 @@ SOFTWARE.
  */
 #include <kegconfig.hpp>
 #include <main.hpp>
-#include <temp_brewpi.hpp>
+#include <temp_chamberctrl.hpp>
 #include <utils.hpp>
 
-TempSensorBrewpi::TempSensorBrewpi() { _push = new BasePush(&myConfig); }
+TempSensorChamberCtrl::TempSensorChamberCtrl() {
+  _push = new BasePush(&myConfig);
+}
 
-TempSensorBrewpi::~TempSensorBrewpi() {
+TempSensorChamberCtrl::~TempSensorChamberCtrl() {
   if (_push) delete _push;
 }
 
-TempReading TempSensorBrewpi::read() {
+TempReading TempSensorChamberCtrl::read() {
   TempReading reading = TEMP_READING_FAILED;
-  String url = myConfig.getBrewpiUrl();
+  String url = myConfig.getChamberCtrlUrl();
 
   if (url.length() > 0 || _push != NULL) {
     String ret;
 
-    url += "/api/temps/";
+    url += "/api/temps";
 
     Log.notice(F("TEMP: Fetching temperature from %s." CR), url.c_str());
 
@@ -52,20 +54,17 @@ TempReading TempSensorBrewpi::read() {
       DeserializationError err = deserializeJson(doc, ret);
 
       /* This is the  payload structure from BrewPI-ESP by Thorrak
-        {
-            "BeerTemp": 0,
-            "BeerSet": 0,
-            "BeerAnn": "",
-            "FridgeTemp": 0,
-            "FridgeSet": 0,
-            "FridgeAnn": "",
-            "RoomTemp": "",
-            "State": 0
-        }
-      */
+      {
+          "pid_beer_temp": 0,
+          "pid_fridge_temp": 19.5,
+          "pid_beer_target_temp": 0,
+          "pid_fridge_target_temp": 7,
+          "pid_temp_format": "C"
+      }
+     */
 
       if (!err) {
-        reading.temperature = doc["FridgeTemp"].as<float>();
+        reading.temperature = doc["pid_fridge_temp"].as<float>();
         _hasSensor = true;
         return reading;
       }

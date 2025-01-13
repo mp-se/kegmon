@@ -31,7 +31,8 @@ SOFTWARE.
 const char *volumeTemplate =
     "kegmon/${mdns}_volume${tap}/state:${volume}|"
     "kegmon/${mdns}_volume${tap}/"
-    "attr:{\"glasses\":${glasses},\"keg_volume\":${keg-volume},\"glass_volume\":${glass-volume},\"keg_percent\":${keg-percent}}|"
+    "attr:{\"glasses\":${glasses},\"keg_volume\":${keg-volume},\"glass_"
+    "volume\":${glass-volume},\"keg_percent\":${keg-percent}}|"
     "homeassistant/sensor/${mdns}_volume${tap}/"
     "config:{\"device_class\":\"volume\",\"name\":\"${mdns}_volume${tap}\","
     "\"unit_of_measurement\":\"L\",\"state_topic\":\"kegmon/"
