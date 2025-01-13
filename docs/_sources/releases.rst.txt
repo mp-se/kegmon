@@ -3,6 +3,12 @@
 Releases 
 ########
 
+v1.1.0
+======
+
+* Added new integration to BrewLogger (TapList/Pour Logging)
+* Added new integration to Chamber Controller (Temp Sensor)
+
 v1.0.0
 ======
 
