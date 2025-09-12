@@ -29,7 +29,6 @@ SOFTWARE.
 
 #include <log.hpp>
 
-constexpr auto CFG_APPNAME = "KegMon";
 constexpr auto CFG_MDNSNAME = "KegMon";
 constexpr auto CFG_FILENAME = "/kegmon1.json";
 constexpr auto STARTUP_FILENAME = "/startup.log";
