@@ -32,8 +32,8 @@ TempSensorBrewpi::~TempSensorBrewpi() {
   if (_push) delete _push;
 }
 
-TempReading TempSensorBrewpi::read() {
-  TempReading reading = TEMP_READING_FAILED;
+float TempSensorBrewpi::read() {
+  float temp = TEMP_READING_FAILED;
   String url = myConfig.getBrewpiUrl();
 
   if (url.length() > 0 || _push != NULL) {
@@ -65,15 +65,15 @@ TempReading TempSensorBrewpi::read() {
       */
 
       if (!err) {
-        reading.temperature = doc["FridgeTemp"].as<float>();
+        temp = doc["FridgeTemp"].as<float>();
         _hasSensor = true;
-        return reading;
+        return temp;
       }
     }
   }
 
   _hasSensor = false;
-  return reading;
+  return temp;
 }
 
 // EOF

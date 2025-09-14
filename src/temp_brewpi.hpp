@@ -39,7 +39,7 @@ class TempSensorBrewpi : public TempSensorBase {
 
   void setup() override {}
   bool hasSensor() override { return _hasSensor; }
-  TempReading read() override;
+  float read() override;
 };
 
 #endif  // SRC_TEMP_BREWPI_HPP_

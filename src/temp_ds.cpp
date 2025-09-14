@@ -26,13 +26,15 @@ SOFTWARE.
 #include <temp_ds.hpp>
 #include <utils.hpp>
 
+// TODO: Update this code and interface to handle one DS18B20 sensor per scale
+
 TempSensorDS::~TempSensorDS() {
   if (_oneWire) delete _oneWire;
   if (_dallas) delete _dallas;
 }
 
 void TempSensorDS::setup() {
-  _oneWire = new OneWire(myConfig.getPinTempData());
+  _oneWire = new OneWire(PIN_DS);
   _dallas = new DallasTemperature(_oneWire);
   _dallas->setResolution(12);
   _dallas->begin();
@@ -42,21 +44,19 @@ void TempSensorDS::setup() {
     _hasSensor = false;
 }
 
-TempReading TempSensorDS::read() {
-  TempReading reading = TEMP_READING_FAILED;
+float TempSensorDS::read() {
+  float temp = TEMP_READING_FAILED;
 
-  if (!_dallas) return reading;
+  if (!_dallas) return temp;
 
   if (_dallas->getDS18Count()) {
     _dallas->requestTemperatures();
-    reading.temperature = _dallas->getTempCByIndex(0);
-    reading.humidity = NAN;
-    reading.pressure = NAN;
+    temp = _dallas->getTempCByIndex(0);
   } else {
     Log.error(F("TEMP: No DS18B20 sensors found." CR));
   }
 
-  return reading;
+  return temp;
 }
 
 // EOF

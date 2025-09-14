@@ -22,42 +22,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 #include <kegconfig.hpp>
-#include <temp_bme.hpp>
 #include <temp_brewpi.hpp>
 #include <temp_chamberctrl.hpp>
-#include <temp_dht.hpp>
 #include <temp_ds.hpp>
 #include <temp_mgr.hpp>
-
-bool operator==(const TempReading& lhs, const TempReading& rhs) {
-  return lhs.humidity == rhs.humidity && lhs.temperature == rhs.temperature &&
-         lhs.pressure == rhs.pressure;
-}
 
 TempSensorManager::~TempSensorManager() {}
 
 void TempSensorManager::setup() {
-  Log.notice(F("SCAL: Initializing sensors on pins Power=%d,Data=%d." CR),
-             myConfig.getPinTempPower(), myConfig.getPinTempData());
-  pinMode(myConfig.getPinTempPower(), OUTPUT);
-  reset();
-  digitalWrite(myConfig.getPinTempPower(), HIGH);
-  delay(100);
+  Log.notice(F("SCAL: Initializing sensors on pins Data=%d." CR), PIN_DS);
 
   switch (myConfig.getTempSensorType()) {
-    case SensorDHT22:
-      Log.info(F("TEMP: Initializing temp sensor DHT22." CR));
-      _sensor.reset(new TempSensorDHT);
-      break;
-
     case SensorDS18B20:
       Log.info(F("TEMP: Initializing temp sensor DS18B20." CR));
       _sensor.reset(new TempSensorDS);
-      break;
-
-    case SensorBME280:
-      Log.info(F("TEMP: Initializing temp sensor BME280." CR));
-      _sensor.reset(new TempSensorBME);
       break;
 
     case SensorBrewPI:
@@ -78,7 +56,7 @@ void TempSensorManager::setup() {
   if (_sensor) {
     _sensor->setup();
   } else {
-    Log.error(F("TEMP: unable to allocate sensor." CR));
+    Log.error(F("TEMP: Unable to allocate sensor." CR));
     return;
   }
 
@@ -88,16 +66,10 @@ void TempSensorManager::setup() {
     Log.error(F("TEMP: Failed to fetch temperature from sensor." CR));
 }
 
-void TempSensorManager::reset() {
-  Log.notice(F("TEMP: Reset temperature sensor." CR));
-  digitalWrite(myConfig.getPinTempPower(), LOW);
-  delay(100);
-}
-
 void TempSensorManager::read() {
   if (!_sensor) return;
 
-  _last = _sensor->read();
+  _lastTemperature = _sensor->read();
 }
 
 // EOF

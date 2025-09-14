@@ -34,8 +34,8 @@ TempSensorChamberCtrl::~TempSensorChamberCtrl() {
   if (_push) delete _push;
 }
 
-TempReading TempSensorChamberCtrl::read() {
-  TempReading reading = TEMP_READING_FAILED;
+float TempSensorChamberCtrl::read() {
+  float temp = TEMP_READING_FAILED;
   String url = myConfig.getChamberCtrlUrl();
 
   if (url.length() > 0 || _push != NULL) {
@@ -64,15 +64,15 @@ TempReading TempSensorChamberCtrl::read() {
      */
 
       if (!err) {
-        reading.temperature = doc["pid_fridge_temp"].as<float>();
+        temp = doc["pid_fridge_temp"].as<float>();
         _hasSensor = true;
-        return reading;
+        return temp;
       }
     }
   }
 
   _hasSensor = false;
-  return reading;
+  return temp;
 }
 
 // EOF

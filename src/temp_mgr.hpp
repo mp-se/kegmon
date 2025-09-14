@@ -30,29 +30,24 @@ SOFTWARE.
 class TempSensorManager {
  private:
   std::unique_ptr<TempSensorBase> _sensor;
-  TempReading _last = TEMP_READING_FAILED;
+  float _lastTemperature = TEMP_READING_FAILED;
 
  public:
   TempSensorManager() {}
   ~TempSensorManager();
   TempSensorManager(const TempSensorManager&);
   TempSensorManager& operator=(const TempSensorManager&);
+
   void setup();
-  void reset();
   void read();
 
-  bool hasTemp() { return !isnan(_last.temperature); }
-  bool hasHumidity() { return !isnan(_last.humidity); }
-  bool hasPressure() { return !isnan(_last.pressure); }
+  bool hasTemp() { return !isnan(_lastTemperature); }
   bool hasSensor() { return _sensor.get()->hasSensor(); }
 
-  float getLastTempC() { return _last.temperature; }
+  float getLastTempC() { return _lastTemperature; }
   float getLastTempF() {
-    return isnan(_last.temperature) ? NAN : convertCtoF(_last.temperature);
+    return isnan(_lastTemperature) ? NAN : convertCtoF(_lastTemperature);
   }
-
-  float getLastHumidity() { return _last.humidity; }
-  float getLastPressure() { return _last.pressure; }
 };
 
 extern TempSensorManager myTemp;

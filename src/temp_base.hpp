@@ -26,15 +26,7 @@ SOFTWARE.
 
 #include <Arduino.h>
 
-struct TempReading {
-  float temperature;
-  float humidity;
-  float pressure;
-};
-
-bool operator==(const TempReading& lhs, const TempReading& rhs);
-
-constexpr TempReading TEMP_READING_FAILED = {NAN, NAN, NAN};
+constexpr float TEMP_READING_FAILED = NAN;
 
 class TempSensorBase {
  public:
@@ -43,7 +35,7 @@ class TempSensorBase {
 
   virtual void setup() = 0;
   virtual bool hasSensor() = 0;
-  virtual TempReading read() = 0;
+  virtual float read() = 0;
 };
 
 #endif  // SRC_TEMP_BASE_HPP_
