@@ -12,27 +12,14 @@ def after_build(source, target, env):
     dir    = env.GetLaunchDir()
     name   = env.get( "PIOENV" )
     
-    if name == "kegmon-debug" :
-        target = dir + "/bin/firmware-debug.bin"
+    if name == "kegmon-esp32s3-pro" :
+        target = dir + "/bin/firmware-32s3pro.bin"
         source = dir + "/.pio/build/" + name + "/firmware.bin"
         print( "Copy file : " + source + " -> " + target )
         shutil.copyfile( source, target )
 
-    if name == "kegmon-release":
-        target = dir + "/bin/firmware.bin"
-        source = dir + "/.pio/build/" + name + "/firmware.bin"
-        print( "Copy file : " + source + " -> " + target )
-        shutil.copyfile( source, target )
-
-    if name == "kegmon32s2-release":
-        target = dir + "/bin/firmware32s2.bin"
-        source = dir + "/.pio/build/" + name + "/firmware.bin"
-        print( "Copy file : " + source + " -> " + target )
-        shutil.copyfile( source, target )
-
-    if name == "kegmon32s3-release":
-        target = dir + "/bin/firmware32s3.bin"
-        source = dir + "/.pio/build/" + name + "/firmware.bin"
+        target = dir + "/bin/partition-32s3pro.bin"
+        source = dir + "/.pio/build/" + name + "/partitions.bin"
         print( "Copy file : " + source + " -> " + target )
         shutil.copyfile( source, target )
 

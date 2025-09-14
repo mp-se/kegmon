@@ -46,15 +46,7 @@ enum RunMode {
 };
 extern RunMode runMode;
 
-#if defined(ESP8266)
-constexpr auto PIN_LED = 2;
-#elif defined(ESP32S2)
 constexpr auto PIN_LED = BUILTIN_LED;
-#elif defined(ESP32S3)
-constexpr auto PIN_LED = BUILTIN_LED;
-#else
-#error "Undefined target platform"
-#endif
 
 enum UnitIndex { U1 = 0, U2 = 1 };
 /*
