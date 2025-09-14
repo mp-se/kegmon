@@ -32,41 +32,67 @@ constexpr auto PARAM_BREWFATHER_USERKEY = "brewfather_userkey";
 constexpr auto PARAM_BREWFATHER_APIKEY = "brewfather_apikey";
 constexpr auto PARAM_BREWSPY_TOKEN1 = "brewspy_token1";
 constexpr auto PARAM_BREWSPY_TOKEN2 = "brewspy_token2";
+constexpr auto PARAM_BREWSPY_TOKEN3 = "brewspy_token3";
+constexpr auto PARAM_BREWSPY_TOKEN4 = "brewspy_token4";
 constexpr auto PARAM_BREWPI_URL = "brewpi_url";
 constexpr auto PARAM_CHAMBERCTRL_URL = "chamberctrl_url";
 constexpr auto PARAM_BARHELPER_APIKEY = "barhelper_apikey";
 constexpr auto PARAM_BARHELPER_MONITOR1 = "barhelper_monitor1";
 constexpr auto PARAM_BARHELPER_MONITOR2 = "barhelper_monitor2";
+constexpr auto PARAM_BARHELPER_MONITOR3 = "barhelper_monitor3";
+constexpr auto PARAM_BARHELPER_MONITOR4 = "barhelper_monitor4";
 constexpr auto PARAM_DISPLAY_LAYOUT = "display_layout";
 constexpr auto PARAM_TEMP_SENSOR = "temp_sensor";
-constexpr auto PARAM_DISPLAY_DRIVER = "display_driver";
-constexpr auto PARAM_SCALE_SENSOR = "scale_sensor";
 constexpr auto PARAM_WEIGHT_UNIT = "weight_unit";
 constexpr auto PARAM_VOLUME_UNIT = "volume_unit";
 constexpr auto PARAM_KEG_WEIGHT1 = "keg_weight1";
 constexpr auto PARAM_KEG_WEIGHT2 = "keg_weight2";
+constexpr auto PARAM_KEG_WEIGHT3 = "keg_weight3";
+constexpr auto PARAM_KEG_WEIGHT4 = "keg_weight4";
 constexpr auto PARAM_KEG_VOLUME1 = "keg_volume1";
 constexpr auto PARAM_KEG_VOLUME2 = "keg_volume2";
+constexpr auto PARAM_KEG_VOLUME3 = "keg_volume3";
+constexpr auto PARAM_KEG_VOLUME4 = "keg_volume4";
 constexpr auto PARAM_GLASS_VOLUME1 = "glass_volume1";
 constexpr auto PARAM_GLASS_VOLUME2 = "glass_volume2";
+constexpr auto PARAM_GLASS_VOLUME3 = "glass_volume3";
+constexpr auto PARAM_GLASS_VOLUME4 = "glass_volume4";
 constexpr auto PARAM_BEER_NAME1 = "beer_name1";
 constexpr auto PARAM_BEER_NAME2 = "beer_name2";
+constexpr auto PARAM_BEER_NAME3 = "beer_name3";
+constexpr auto PARAM_BEER_NAME4 = "beer_name4";
 constexpr auto PARAM_BEER_ID1 = "beer_id1";
 constexpr auto PARAM_BEER_ID2 = "beer_id2";
+constexpr auto PARAM_BEER_ID3 = "beer_id3";
+constexpr auto PARAM_BEER_ID4 = "beer_id4";
 constexpr auto PARAM_BEER_ABV1 = "beer_abv1";
 constexpr auto PARAM_BEER_ABV2 = "beer_abv2";
+constexpr auto PARAM_BEER_ABV3 = "beer_abv3";
+constexpr auto PARAM_BEER_ABV4 = "beer_abv4";
 constexpr auto PARAM_BEER_IBU1 = "beer_ibu1";
 constexpr auto PARAM_BEER_IBU2 = "beer_ibu2";
+constexpr auto PARAM_BEER_IBU3 = "beer_ibu3";
+constexpr auto PARAM_BEER_IBU4 = "beer_ibu4";
 constexpr auto PARAM_BEER_EBC1 = "beer_ebc1";
 constexpr auto PARAM_BEER_EBC2 = "beer_ebc2";
+constexpr auto PARAM_BEER_EBC3 = "beer_ebc3";
+constexpr auto PARAM_BEER_EBC4 = "beer_ebc4";
 constexpr auto PARAM_BEER_FG1 = "beer_fg1";
 constexpr auto PARAM_BEER_FG2 = "beer_fg2";
+constexpr auto PARAM_BEER_FG3 = "beer_fg3";
+constexpr auto PARAM_BEER_FG4 = "beer_fg4";
 constexpr auto PARAM_SCALE_FACTOR1 = "scale_factor1";
 constexpr auto PARAM_SCALE_FACTOR2 = "scale_factor2";
+constexpr auto PARAM_SCALE_FACTOR3 = "scale_factor3";
+constexpr auto PARAM_SCALE_FACTOR4 = "scale_factor4";
 constexpr auto PARAM_SCALE_OFFSET1 = "scale_offset1";
 constexpr auto PARAM_SCALE_OFFSET2 = "scale_offset2";
+constexpr auto PARAM_SCALE_OFFSET3 = "scale_offset3";
+constexpr auto PARAM_SCALE_OFFSET4 = "scale_offset4";
 constexpr auto PARAM_SCALE_TEMP_FORMULA1 = "scale_temp_formula1";
 constexpr auto PARAM_SCALE_TEMP_FORMULA2 = "scale_temp_formula2";
+constexpr auto PARAM_SCALE_TEMP_FORMULA3 = "scale_temp_formula3";
+constexpr auto PARAM_SCALE_TEMP_FORMULA4 = "scale_temp_formula4";
 constexpr auto PARAM_SCALE_DEVIATION_INCREASE = "scale_deviation_increase";
 constexpr auto PARAM_SCALE_DEVIATION_DECREASE = "scale_deviation_decrease";
 constexpr auto PARAM_SCALE_DEVIATION_KALMAN = "scale_deviation_kalman";
@@ -89,48 +115,6 @@ struct BeerInfo {
   String _id = "";
 };
 
-struct HardwareInfo {
-#if defined(ESP8266)
-  int _displayData = D2;
-  int _displayClock = D1;
-  int _scale1Data = D3;
-  int _scale1Clock = D4;
-  int _scale2Data = D5;
-  int _scale2Clock = D8;
-  int _tempData = D7;
-  int _tempPower = D6;
-#elif defined(ESP32S2)
-  int _displayData = SDA;
-  int _displayClock = SCL;
-  int _scale1Data = A17;
-  int _scale1Clock = A15;
-  int _scale2Data = A6;
-  int _scale2Clock = A11;
-  int _tempData = A10;
-  int _tempPower = A8;
-#elif defined(ESP32S3)
-  int _displayData = SDA;
-  int _displayClock = SCL;
-  int _scale1Data = A17;
-  int _scale1Clock = A15;
-  int _scale2Data = A11;
-  int _scale2Clock = A9;
-  int _tempData = A10;
-  int _tempPower = A12;
-#else
-#error "Not a supported target"
-#endif
-};
-
-constexpr auto PARAM_PIN_DISPLAY_DATA = "pin_display_data";
-constexpr auto PARAM_PIN_DISPLAY_CLOCK = "pin_display_clock";
-constexpr auto PARAM_PIN_SCALE1_DATA = "pin_scale1_data";
-constexpr auto PARAM_PIN_SCALE1_CLOCK = "pin_scale1_clock";
-constexpr auto PARAM_PIN_SCALE2_DATA = "pin_scale2_data";
-constexpr auto PARAM_PIN_SCALE2_CLOCK = "pin_scale2_clock";
-constexpr auto PARAM_PIN_TEMP_DATA = "pin_temp_data";
-constexpr auto PARAM_PIN_TEMP_POWER = "pin_temp_power";
-
 constexpr auto WEIGHT_KG = "kg";
 constexpr auto WEIGHT_LBS = "lbs";
 
@@ -145,14 +129,10 @@ enum DisplayLayoutType {
   HardwareStats = 9
 };
 enum TempSensorType {
-  SensorDHT22 = 0,
-  SensorDS18B20 = 1,
-  SensorBME280 = 2,
-  SensorBrewPI = 3,
-  SensorChamberCtrl = 4
+  SensorDS18B20 = 0,
+  SensorBrewPI = 1,
+  SensorChamberCtrl = 2
 };
-enum ScaleSensorType { ScaleHX711 = 0, ScaleNAU7802 = 1 };
-enum DisplayDriverType { OLED_1306 = 0, LCD = 1 };
 
 float convertIncomingWeight(float w);
 float convertIncomingVolume(float v);
@@ -168,10 +148,11 @@ class KegConfig : public BaseConfig {
   String _brewfatherUserKey = "";
   String _brewfatherApiKey = "";
 
-  String _brewspyToken[2] = {"", ""};
+  String _brewspyToken[4] = {"", "", "", ""};
 
   String _barhelperApiKey = "";
-  String _barhelperMonitor[2] = {"Kegmon TAP 1", "Kegmon TAP 2"};
+  String _barhelperMonitor[4] = {"Kegmon TAP 1", "Kegmon TAP 2", "Kegmon TAP 3",
+                                 "Kegmon TAP 4"};
 
   String _brewpiUrl = "";
   String _chamberCtrlUrl = "";
@@ -180,15 +161,13 @@ class KegConfig : public BaseConfig {
 
   DisplayLayoutType _displayLayout = DisplayLayoutType::Default;
   TempSensorType _tempSensor = TempSensorType::SensorDS18B20;
-  ScaleSensorType _scaleSensor = ScaleSensorType::ScaleHX711;
-  DisplayDriverType _displayDriver = DisplayDriverType::OLED_1306;
 
-  float _scaleFactor[2] = {0, 0};
-  int32_t _scaleOffset[2] = {0, 0};
-  float _kegWeight[2] = {4, 4};          // Weight in kg
-  float _kegVolume[2] = {19, 19};        // Weight in liters
-  float _glassVolume[2] = {0.40, 0.40};  // Volume in liters
-  BeerInfo _beer[2];
+  float _scaleFactor[4] = {0, 0, 0, 0};
+  int32_t _scaleOffset[4] = {0, 0, 0, 0};
+  float _kegWeight[4] = {4, 4, 4, 4};                // Weight in kg
+  float _kegVolume[4] = {19, 19, 19, 19};            // Weight in liters
+  float _glassVolume[4] = {0.40, 0.40, 0.40, 0.40};  // Volume in liters
+  BeerInfo _beer[4];
 
   float _scaleDeviationIncreaseValue = 0.4;  // kg
   float _scaleDeviationDecreaseValue = 0.1;  // kg
@@ -199,14 +178,6 @@ class KegConfig : public BaseConfig {
   String _scaleTempCompensationFormula[2] = {"", ""};
 
   LevelDetectionType _levelDetection = LevelDetectionType::STATS;
-  HardwareInfo _pins;
-
-  /*
-  bool _kalmanActive = true;
-  float _kalmanMeasurement = 0.3;
-  float _kalmanEstimation = 2;
-  float _kalmanNoise = 0.01;
-  */
 
  public:
   KegConfig(String baseMDNS, String fileName);
@@ -370,28 +341,6 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }
 
-  ScaleSensorType getScaleSensorType() { return _scaleSensor; }
-  int getScaleSensorTypeAsInt() { return _scaleSensor; }
-  void setScaleSensorType(ScaleSensorType t) {
-    _scaleSensor = t;
-    _saveNeeded = true;
-  }
-  void setScaleSensorType(int t) {
-    _scaleSensor = (ScaleSensorType)t;
-    _saveNeeded = true;
-  }
-
-  DisplayDriverType getDisplayDriverType() { return _displayDriver; }
-  int getDisplayDriverTypeAsInt() { return _displayDriver; }
-  void setDisplayDriverType(DisplayDriverType t) {
-    _displayDriver = t;
-    _saveNeeded = true;
-  }
-  void setDisplayDriverType(int t) {
-    _displayDriver = (DisplayDriverType)t;
-    _saveNeeded = true;
-  }
-
   // This is the maximum allowed deviation
   float getScaleDeviationDecreaseValue() {
     return _scaleDeviationDecreaseValue;
@@ -476,51 +425,6 @@ class KegConfig : public BaseConfig {
   }
   void setScaleTempCompensationFormula(UnitIndex idx, String s) {
     _scaleTempCompensationFormula[idx] = s;
-    _saveNeeded = true;
-  }
-
-  // Hardware related methods
-  int getPinDisplayData() { return _pins._displayData; }
-  void setPinDisplayData(int pin) {
-    _pins._displayData = pin;
-    _saveNeeded = true;
-  }
-  int getPinDisplayClock() { return _pins._displayClock; }
-  void setPinDisplayClock(int pin) {
-    _pins._displayClock = pin;
-    _saveNeeded = true;
-  }
-
-  int getPinScale1Data() { return _pins._scale1Data; }
-  void setPinScale1Data(int pin) {
-    _pins._scale1Data = pin;
-    _saveNeeded = true;
-  }
-  int getPinScale1Clock() { return _pins._scale1Clock; }
-  void setPinScale1Clock(int pin) {
-    _pins._scale1Clock = pin;
-    _saveNeeded = true;
-  }
-
-  int getPinScale2Data() { return _pins._scale2Data; }
-  void setPinScale2Data(int pin) {
-    _pins._scale2Data = pin;
-    _saveNeeded = true;
-  }
-  int getPinScale2Clock() { return _pins._scale2Clock; }
-  void setPinScale2Clock(int pin) {
-    _pins._scale2Clock = pin;
-    _saveNeeded = true;
-  }
-
-  int getPinTempData() { return _pins._tempData; }
-  void setPinTempData(int pin) {
-    _pins._tempData = pin;
-    _saveNeeded = true;
-  }
-  int getPinTempPower() { return _pins._tempPower; }
-  void setPinTempPower(int pin) {
-    _pins._tempPower = pin;
     _saveNeeded = true;
   }
 
