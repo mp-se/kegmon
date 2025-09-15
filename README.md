@@ -16,14 +16,14 @@ For docs see: https://mp-se.github.io/kegmon/index.html
 
 # Hardware
 
-* Supports ESP8266 D1 mini, ESP32s2 mini or ESP32s3 mini
-* Loadcells and HX711/NAU7802 ADC converters
-* DS18B20, DHT22, BME280 or BrewPI(IP) temperature sensors
-* OLED 0.96" or LCD 20x4/20x2 displays
+* Supports Lolin ESP32 S3 PRO
+* Loadcells and HX711 ADC converters
+* DS18B20, BrewPI(IP), ChamberController(IP) temperature sensors
+* Lolin TFT 320x200
 
 # Features
 
-* Can measure weight from 1 or 2 scales
+* Can measure weight from 1 up to 4 scales
 * Stable scale presentation (data is filtered and processed)
 * Support temperature/humidity sensor in one scale base
 * Integration with Brewfather to retrive data on brew
