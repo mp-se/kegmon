@@ -37,21 +37,6 @@ configure it to use 3.3V digital signal levels (using VCC and VDD pins).
 The main option used in this project is the purple HX711 board. The green board dont have the same pin configiuration 
 so this will not work with the PCB design.
 
-NAU7802
-=======
-
-This is the alternative ADC which is quite new and I have not had the time yet to validate the long term stability. 
-
-These boards use the I2C bus for communication so these needs a differnt hardware wiring. Since you cannot change the 
-adress on these boards you need to an ESP32 if two scales will be connected since the ESP8266 only supports one I2C bus.
-
-.. note::
-  If you are using this you need to change this in the configuration menu and restart the device for it to work 
-  properly. 
-
-.. image:: images/nau7802.jpg
-  :width: 300
-  :alt: NAU7802
 
 Schema for HX711
 ================
@@ -67,23 +52,6 @@ This is the schema used for the default hardware options.
   :width: 600
   :alt: Default hardware options
 
-Schema for NAU7802
-==================
-
-This is the schema used for the NAU7802 boards. Scale 1 uses the same pins as the OLED displays. Scale 2 uses the same pins as 
-for the HX711. So D3/D4 is unused in this variant. 
-
-.. note::
-  I'm considering to update the hardware design to fit a larger OLED display 1.3" and multiple NAU7802 on the ESP8266 platform but 
-  this will require an i2c extender to avoid adress overlap. 
-
-.. note::
-  Note that the ESP8266 only supports one I2C bus so with that processor only one scale can be used. Recommend to use ESP32S2/S3 which 
-  can support both NAU7802 scales.
-
-.. image:: images/schema2.jpg
-  :width: 600
-  :alt: Schema NAU7802
 
 Case
 ====

@@ -184,9 +184,6 @@ Brewspy tokens for keg 1 & keg 2.
 Click on the taplist and the tap you want to connect. Under webhook URL copy the 
 last code and enter that into kegmon.
 
-.. note::
-  This will not work on ESP8266 due to lack of RAM for using SSL connections.
-
 
 Integration - Barhelper
 ***********************
@@ -203,10 +200,6 @@ kegmon. Make a copy of it since you will not be able to retrieve it again.
 The name of the monitors does not need to be registered, they will be added 
 after the first run. Just connect the tap/keg to the monitor and the level will 
 be the same as in kegmon.
-
-.. note::
-  On ESP8266 the device will use a NON-SSL endpoint to send the data since there is 
-  not enough memory.
 
 
 Integration - Influx

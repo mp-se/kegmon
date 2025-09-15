@@ -115,24 +115,19 @@ Credits to
 ==========
 Thanks to the following projects.
 
-* https://github.com/mp-se/gravitymon
 * https://github.com/mp-se/espframework
-* https://github.com/graphitemaster/incbin
 * https://github.com/thijse/Arduino-Log
 * https://github.com/bblanchon/ArduinoJson
 * https://getbootstrap.com
 * https://jquery.com
 * https://chartjs.org
 * https://github.com/bogde/HX711
-* https://github.com/ThingPulse/esp8266-oled-ssd1306
 * https://modelviewer.dev/
 * https://github.com/RobTillaart/Statistic
 * https://github.com/denyssene/SimpleKalmanFilter
 *	https://github.com/mp-se/ESPAsyncWebServer
 *	https://github.com/mp-se/ESPAsyncTCP
-* https://github.com/adafruit/Adafruit_BME280_Library
 * https://github.com/enjoyneering/LiquidCrystal_I2C
-* https://github.com/sparkfun/SparkFun_Qwiic_Scale_NAU7802_Arduino_Library
 
 .. toctree::
    :maxdepth: 2

@@ -3,7 +3,7 @@
 Development
 ===========
 
-Development of this project is done in VSCode with the PlatformIO extension using Arduino for ESP8266 and ESP32. 
+Development of this project is done in VSCode with the PlatformIO extension using Arduino for ESP32. 
 
 For the documentation we use SPINX and github pages for publishing.
 
