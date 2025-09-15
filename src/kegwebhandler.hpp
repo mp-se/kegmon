@@ -23,13 +23,7 @@ SOFTWARE.
  */
 #ifndef SRC_KEGWEBHANDLER_HPP_
 #define SRC_KEGWEBHANDLER_HPP_
-
-#if defined(ESP8266)
-#include <ESP8266WiFi.h>
-#include <ESP8266mDNS.h>
-#elif defined(ESP32S2) || defined(ESP32S3)
 #include <WiFi.h>
-#endif
 
 #include <basewebserver.hpp>
 #include <kegconfig.hpp>

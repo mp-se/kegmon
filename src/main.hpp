@@ -48,11 +48,27 @@ extern RunMode runMode;
 
 constexpr auto PIN_LED = BUILTIN_LED;
 
-enum UnitIndex { U1 = 0, U2 = 1 };
+enum UnitIndex { U1 = 0, U2 = 1, U3 = 2, U4 = 3 };
 /*
  * RAW: Last value read
  * STATS: Statistics applied and average value used over the last 20 seconds
  */
 enum LevelDetectionType { RAW = 0, STATS = 1 };
+
+// #if defined(LOLIN_S3_PRO)
+// Hardware config for Lolin S3 PRO
+// --------------------------------
+#define PIN_SCALE_SDA1 41
+#define PIN_SCALE_SCK1 42
+#define PIN_SCALE_SDA2 39
+#define PIN_SCALE_SCK2 40
+#define PIN_SCALE_SDA3 0
+#define PIN_SCALE_SCK3 38
+#define PIN_SCALE_SDA4 16
+#define PIN_SCALE_SCK4 17
+#define PIN_DS 1
+
+#define CFG_FILENAMEBIN "firmware_32s3pro.bin"
+// #endif
 
 #endif  // SRC_MAIN_HPP_

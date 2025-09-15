@@ -176,7 +176,7 @@ class Scale {
   bool isConnected(UnitIndex idx) { return _hxScale[idx] != 0 ? true : false; }
 #endif
 
-  float read(UnitIndex idx, bool skipValidation) {
+  float read(UnitIndex idx, bool skipValidation = false) {
 #if defined(DEBUG_LINK_SCALES)
     idx = UnitIndex::U1;
 #endif

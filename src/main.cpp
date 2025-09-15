@@ -35,16 +35,10 @@ SOFTWARE.
 #include <uptime.hpp>
 #include <utils.hpp>
 #include <wificonnection.hpp>
-#if CONFIG_IDF_TARGET_ESP32S2
-#include <esp32s2/rom/rtc.h>
-#endif
 #if CONFIG_IDF_TARGET_ESP32S3
-
 #include <esp32s3/rom/rtc.h>
 #endif
-#if defined(ESP32)
 #include <esp_core_dump.h>
-#endif
 
 #include <cstdio>
 
@@ -54,12 +48,10 @@ WifiConnection myWifi(&myConfig, CFG_APPNAME, "password", CFG_MDNSNAME);
 OtaUpdate myOta(&myConfig, CFG_APPVER);
 KegWebHandler myWebHandler(&myConfig);
 KegPushHandler myPush(&myConfig);
-Display myDisplay;
 Scale myScale;
 LevelDetection myLevelDetection;
 TempSensorManager myTemp;
 SerialWebSocket mySerialWebSocket;
-DisplayLayout myDisplayLayout;
 
 const int loopInterval = 2000;
 int loopCounter = 0;
@@ -78,11 +70,6 @@ void setup() {
 #endif
 
   PERF_BEGIN("setup");
-#if defined(ESP8266)
-  Log.notice(F("Main: Reset reason %s." CR), ESP.getResetInfo().c_str());
-  Log.notice(F("Main: Started setup for %s." CR),
-             String(ESP.getChipId(), HEX).c_str());
-#else
   // see: rtc.h for reset reasons
   Log.notice(F("Main: Reset reason %d." CR), rtc_get_reset_reason(0));
   Log.notice(F("Core dump check %d." CR), esp_core_dump_image_check());
@@ -94,7 +81,6 @@ void setup() {
   }
   snprintf(&cbuf[0], sizeof(cbuf), "%6x", chipId);
   Log.notice(F("Main: Started setup for %s." CR), &cbuf[0]);
-#endif
   Log.notice(F("Main: Build options: %s (%s) LOGLEVEL %d " CR), CFG_APPVER,
              CFG_GITREV, LOG_LEVEL);
 
@@ -107,22 +93,8 @@ void setup() {
 
   delay(4000);
 
-  Log.notice(F("Main: Initializing I2C bus #1 on pins SDA=%d, SCL=%d" CR),
-             myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
-#if defined(ESP8266)
-  Wire.begin(myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
-#else  // ESP32
-  Wire.setPins(myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
-  Wire.begin();
-#endif
-  Wire.setClock(400000);
-#if !defined(ESP8266)
-  Log.notice(F("Main: I2C bus clock=%d" CR), Wire.getClock());
-#endif
-  scanI2C(myConfig.getPinDisplayData(), myConfig.getPinDisplayClock());
-
   PERF_BEGIN("setup-display");
-  myDisplay.setup();
+  // myDisplay.setup();
   PERF_END("setup-display");
   PERF_BEGIN("setup-wifi");
   myWifi.init();
@@ -134,17 +106,12 @@ void setup() {
   myScale.setup();
   PERF_END("setup-scale");
 
-#if defined(ESP8266)
-  ESP.wdtDisable();
-  ESP.wdtEnable(5000);
-#endif
-
   // No stored config, move to portal
   if (!myWifi.hasConfig() || myWifi.isDoubleResetDetected()) {
     Log.notice(
         F("Main: Missing wifi config or double reset detected, entering wifi "
           "setup." CR));
-    myDisplayLayout.showWifiPortal();
+    // myDisplayLayout.showWifiPortal();
     myWifi.startAP();
     runMode = RunMode::wifiSetupMode;
   }
@@ -176,9 +143,9 @@ void setup() {
   PERF_END("setup-temp");
 
   Log.notice(F("Main: Setup completed." CR));
-  myDisplayLayout.showStartupDevices(myScale.isConnected(UnitIndex::U1),
-                                     myScale.isConnected(UnitIndex::U2),
-                                     !isnan(myTemp.getLastTempC()));
+  // myDisplayLayout.showStartupDevices(myScale.isConnected(UnitIndex::U1),
+  //                                    myScale.isConnected(UnitIndex::U2),
+  //                                    !isnan(myTemp.getLastTempC()));
 
   PERF_END("main-setup");
   PERF_PUSH();
@@ -195,6 +162,8 @@ void loop() {
   mySerialWebSocket.loop();
   myScale.loop(UnitIndex::U1);
   myScale.loop(UnitIndex::U2);
+  myScale.loop(UnitIndex::U3);
+  myScale.loop(UnitIndex::U4);
 
   if (abs(static_cast<int32_t>((millis() - loopMillis))) >
       loopInterval) {  // 2 seconds loop interval
@@ -216,12 +185,26 @@ void loop() {
             UnitIndex::U2, myLevelDetection.getBeerStableVolume(UnitIndex::U2),
             myLevelDetection.getPourVolume(UnitIndex::U2),
             myLevelDetection.getNoStableGlasses(UnitIndex::U2), true);
+
+      if (myLevelDetection.hasStableWeight(UnitIndex::U3))
+        myPush.pushKegInformation(
+            UnitIndex::U3, myLevelDetection.getBeerStableVolume(UnitIndex::U3),
+            myLevelDetection.getPourVolume(UnitIndex::U3),
+            myLevelDetection.getNoStableGlasses(UnitIndex::U3), true);
+
+      if (myLevelDetection.hasStableWeight(UnitIndex::U4))
+        myPush.pushKegInformation(
+            UnitIndex::U4, myLevelDetection.getBeerStableVolume(UnitIndex::U4),
+            myLevelDetection.getPourVolume(UnitIndex::U4),
+            myLevelDetection.getNoStableGlasses(UnitIndex::U4), true);
     }
 
     // Try to reconnect to scales if they are missing (60 seconds)
     if (!(loopCounter % 30)) {
       if (!myScale.isConnected(UnitIndex::U1) ||
-          !myScale.isConnected(UnitIndex::U2)) {
+          !myScale.isConnected(UnitIndex::U2) ||
+          !myScale.isConnected(UnitIndex::U3) ||
+          !myScale.isConnected(UnitIndex::U4)) {
         myScale.setup();  // Try to reconnect to scale
       }
     }
@@ -234,15 +217,12 @@ void loop() {
     // The temp sensor should not be read too often.
     if (!(loopCounter % 15)) {
       myTemp.read();
-      Log.notice(F("LOOP: Reading temperature=%F,humidity=%F,pressure=%F" CR),
-                 myTemp.getLastTempC(), myTemp.getLastPressure(),
-                 myTemp.getLastPressure());
+      Log.notice(F("LOOP: Reading temperature=%F" CR), myTemp.getLastTempC());
     }
 
     // Check if the temp sensor exist and try to reinitialize
     if (!(loopCounter % 10)) {
       if (!myTemp.hasSensor()) {
-        myTemp.reset();
         myTemp.setup();
       }
     }
@@ -256,30 +236,42 @@ void loop() {
     PERF_BEGIN("loop-scale-read2");
     myLevelDetection.update(UnitIndex::U2, myScale.read(UnitIndex::U2), t);
     PERF_END("loop-scale-read2");
+    PERF_BEGIN("loop-scale-read3");
+    myLevelDetection.update(UnitIndex::U3, myScale.read(UnitIndex::U3), t);
+    PERF_END("loop-scale-read3");
+    PERF_BEGIN("loop-scale-read4");
+    myLevelDetection.update(UnitIndex::U4, myScale.read(UnitIndex::U4), t);
+    PERF_END("loop-scale-read4");
 
     // Update screens
     PERF_BEGIN("loop-display-default");
-    myDisplayLayout.loop();
-    myDisplayLayout.showCurrent(
-        UnitIndex::U1, myScale.isConnected(UnitIndex::U1),
-        myLevelDetection.getBeerWeight(UnitIndex::U1, LevelDetectionType::RAW),
-        myLevelDetection.getBeerVolume(UnitIndex::U1, LevelDetectionType::RAW),
-        myLevelDetection.getNoGlasses(UnitIndex::U1, LevelDetectionType::STATS),
-        myLevelDetection.getPourVolume(UnitIndex::U1,
-                                       LevelDetectionType::STATS),
-        myTemp.getLastTempC(),
-        myLevelDetection.hasStableWeight(UnitIndex::U1,
-                                         LevelDetectionType::STATS));
-    myDisplayLayout.showCurrent(
-        UnitIndex::U2, myScale.isConnected(UnitIndex::U2),
-        myLevelDetection.getBeerWeight(UnitIndex::U2, LevelDetectionType::RAW),
-        myLevelDetection.getBeerVolume(UnitIndex::U2, LevelDetectionType::RAW),
-        myLevelDetection.getNoGlasses(UnitIndex::U2, LevelDetectionType::STATS),
-        myLevelDetection.getPourVolume(UnitIndex::U2,
-                                       LevelDetectionType::STATS),
-        myTemp.getLastTempC(),
-        myLevelDetection.hasStableWeight(UnitIndex::U2,
-                                         LevelDetectionType::STATS));
+    // myDisplayLayout.loop();
+    // myDisplayLayout.showCurrent(
+    //     UnitIndex::U1, myScale.isConnected(UnitIndex::U1),
+    //     myLevelDetection.getBeerWeight(UnitIndex::U1,
+    //     LevelDetectionType::RAW),
+    //     myLevelDetection.getBeerVolume(UnitIndex::U1,
+    //     LevelDetectionType::RAW),
+    //     myLevelDetection.getNoGlasses(UnitIndex::U1,
+    //     LevelDetectionType::STATS),
+    //     myLevelDetection.getPourVolume(UnitIndex::U1,
+    //                                    LevelDetectionType::STATS),
+    //     myTemp.getLastTempC(),
+    //     myLevelDetection.hasStableWeight(UnitIndex::U1,
+    //                                      LevelDetectionType::STATS));
+    // myDisplayLayout.showCurrent(
+    //     UnitIndex::U2, myScale.isConnected(UnitIndex::U2),
+    //     myLevelDetection.getBeerWeight(UnitIndex::U2,
+    //     LevelDetectionType::RAW),
+    //     myLevelDetection.getBeerVolume(UnitIndex::U2,
+    //     LevelDetectionType::RAW),
+    //     myLevelDetection.getNoGlasses(UnitIndex::U2,
+    //     LevelDetectionType::STATS),
+    //     myLevelDetection.getPourVolume(UnitIndex::U2,
+    //                                    LevelDetectionType::STATS),
+    //     myTemp.getLastTempC(),
+    //     myLevelDetection.hasStableWeight(UnitIndex::U2,
+    //                                      LevelDetectionType::STATS));
     PERF_END("loop-display-default");
     PERF_PUSH();
 
@@ -302,15 +294,21 @@ void loop() {
         myScale.getPourWeight(UnitIndex::U1),
         myScale.getPourWeight(UnitIndex::U2));*/
     Log.notice(
-        F("LOOP: Reading data raw1=%F,raw2=%F,stable1=%F, "
-          "stable2=%F,pour1=%F,"
-          "pour2=%F" CR),
+        F("LOOP: Reading data raw1=%F,raw2=%F,raw3=%F,raw4=%F,stable1=%F, "
+          "stable2=%F,stable3=%F,stable4=%F,pour1=%F,"
+          "pour2=%F,pour3=%F,pour4=%F" CR),
         myLevelDetection.getRawDetection(UnitIndex::U1)->getRawValue(),
         myLevelDetection.getRawDetection(UnitIndex::U2)->getRawValue(),
+        myLevelDetection.getRawDetection(UnitIndex::U3)->getRawValue(),
+        myLevelDetection.getRawDetection(UnitIndex::U4)->getRawValue(),
         myLevelDetection.getStatsDetection(UnitIndex::U1)->getStableValue(),
         myLevelDetection.getStatsDetection(UnitIndex::U2)->getStableValue(),
+        myLevelDetection.getStatsDetection(UnitIndex::U3)->getStableValue(),
+        myLevelDetection.getStatsDetection(UnitIndex::U4)->getStableValue(),
         myLevelDetection.getStatsDetection(UnitIndex::U1)->getPourValue(),
-        myLevelDetection.getStatsDetection(UnitIndex::U2)->getPourValue());
+        myLevelDetection.getStatsDetection(UnitIndex::U2)->getPourValue(),
+        myLevelDetection.getStatsDetection(UnitIndex::U3)->getPourValue(),
+        myLevelDetection.getStatsDetection(UnitIndex::U4)->getPourValue());
 
     if (myConfig.hasTargetInfluxDb2()) {
       Log.notice(F("LOOP: Sending data to configured influxdb" CR));
@@ -323,57 +321,89 @@ void loop() {
           myLevelDetection.getRawDetection(UnitIndex::U1)->getRawValue();
       float raw2 =
           myLevelDetection.getRawDetection(UnitIndex::U2)->getRawValue();
+      float raw3 =
+          myLevelDetection.getRawDetection(UnitIndex::U3)->getRawValue();
+      float raw4 =
+          myLevelDetection.getRawDetection(UnitIndex::U4)->getRawValue();
       float stb1 =
           myLevelDetection.getStatsDetection(UnitIndex::U1)->getStableValue();
       float stb2 =
           myLevelDetection.getStatsDetection(UnitIndex::U2)->getStableValue();
+      float stb3 =
+          myLevelDetection.getStatsDetection(UnitIndex::U3)->getStableValue();
+      float stb4 =
+          myLevelDetection.getStatsDetection(UnitIndex::U4)->getStableValue();
 
       String s;
       snprintf(&buf[0], sizeof(buf),
                "scale,host=%s,device=%s "
                "level-raw1=%f,"
-               "level-raw2=%f",
+               "level-raw2=%f,"
+               "level-raw3=%f,"
+               "level-raw4=%f,"
+               "level-stable1=%f,"
+               "level-stable2=%f,"
+               "level-stable3=%f,"
+               "level-stable4=%f",
                myConfig.getMDNS(), myConfig.getID(), isnan(raw1) ? 0 : raw1,
-               isnan(raw2) ? 0 : raw2);
+               isnan(raw2) ? 0 : raw2, isnan(raw3) ? 0 : raw3,
+               isnan(raw4) ? 0 : raw4, isnan(stb1) ? 0 : stb1,
+               isnan(stb2) ? 0 : stb2, isnan(stb3) ? 0 : stb3,
+               isnan(stb4) ? 0 : stb4);
       s = &buf[0];
 
       float ave1 =
           myLevelDetection.getRawDetection(UnitIndex::U1)->getAverageValue();
       float ave2 =
           myLevelDetection.getRawDetection(UnitIndex::U2)->getAverageValue();
+      float ave3 =
+          myLevelDetection.getRawDetection(UnitIndex::U3)->getAverageValue();
+      float ave4 =
+          myLevelDetection.getRawDetection(UnitIndex::U4)->getAverageValue();
 
-      snprintf(&buf[0], sizeof(buf), ",level-average1=%f,level-average2=%f",
-               isnan(ave1) ? 0 : ave1, isnan(ave2) ? 0 : ave2);
+      snprintf(&buf[0], sizeof(buf),
+               ",level-average1=%f,level-average2=%f,level-average3=%f,level-"
+               "average4=%f",
+               isnan(ave1) ? 0 : ave1, isnan(ave2) ? 0 : ave2,
+               isnan(ave3) ? 0 : ave3, isnan(ave4) ? 0 : ave4);
       s += &buf[0];
 
       float kal1 =
           myLevelDetection.getRawDetection(UnitIndex::U1)->getKalmanValue();
       float kal2 =
           myLevelDetection.getRawDetection(UnitIndex::U2)->getKalmanValue();
+      float kal3 =
+          myLevelDetection.getRawDetection(UnitIndex::U3)->getKalmanValue();
+      float kal4 =
+          myLevelDetection.getRawDetection(UnitIndex::U4)->getKalmanValue();
 
-      snprintf(&buf[0], sizeof(buf), ",level-kalman1=%f,level-kalman2=%f",
-               isnan(kal1) ? 0 : kal1, isnan(kal2) ? 0 : kal2);
+      snprintf(&buf[0], sizeof(buf),
+               ",level-kalman1=%f,level-kalman2=%f,level-kalman3=%f,level-"
+               "kalman4=%f",
+               isnan(kal1) ? 0 : kal1, isnan(kal2) ? 0 : kal2,
+               isnan(kal3) ? 0 : kal3, isnan(kal4) ? 0 : kal4);
       s += &buf[0];
 
       float stats1 =
           myLevelDetection.getStatsDetection(UnitIndex::U1)->getStableValue();
       float stats2 =
           myLevelDetection.getStatsDetection(UnitIndex::U2)->getStableValue();
+      float stats3 =
+          myLevelDetection.getStatsDetection(UnitIndex::U3)->getStableValue();
+      float stats4 =
+          myLevelDetection.getStatsDetection(UnitIndex::U4)->getStableValue();
 
-      snprintf(&buf[0], sizeof(buf), ",level-stats1=%f,level-stats2=%f",
+      snprintf(
+          &buf[0], sizeof(buf),
+          ",level-stats1=%f,level-stats2=%f,level-stats3=%f,level-stats4=%f",
 
-               isnan(stats1) ? 0 : stats1, isnan(stats2) ? 0 : stats2);
+          isnan(stats1) ? 0 : stats1, isnan(stats2) ? 0 : stats2,
+          isnan(stats3) ? 0 : stats3, isnan(stats4) ? 0 : stats4);
       s += &buf[0];
 
       if (!isnan(myTemp.getLastTempC())) {
         snprintf(&buf[0], sizeof(buf), ",tempC=%f,tempF=%f",
                  myTemp.getLastTempC(), myTemp.getLastTempF());
-        s = s + &buf[0];
-      }
-
-      if (!isnan(myTemp.getLastHumidity())) {
-        snprintf(&buf[0], sizeof(buf), ",humidity=%f",
-                 myTemp.getLastHumidity());
         s = s + &buf[0];
       }
 
@@ -387,6 +417,16 @@ void loop() {
         s = s + &buf[0];
       }
 
+      if (!isnan(stb3)) {
+        snprintf(&buf[0], sizeof(buf), ",stable3=%f", stb3);
+        s = s + &buf[0];
+      }
+
+      if (!isnan(stb4)) {
+        snprintf(&buf[0], sizeof(buf), ",stable4=%f", stb4);
+        s = s + &buf[0];
+      }
+
 #if LOG_LEVEL == 6
       Log.verbose(F("LOOP: %s" CR), s.c_str());
 #endif
@@ -397,48 +437,17 @@ void loop() {
   }
 }
 
-void scanI2C(int sda, int scl) {
-  byte error, address;
-  int n = 0;
-
-  Log.notice(F("Main: Scanning I2C bus on pins %d:%d for devices: "), sda, scl);
-
-  for (address = 1; address < 127; address++) {
-    // The i2c_scanner uses the return value of
-    // the Write.endTransmisstion to see if
-    // a device did acknowledge to the address.
-
-    Wire.beginTransmission(address);
-    error = Wire.endTransmission();
-
-    if (error == 0) {
-      EspSerial.print(address, HEX);
-      EspSerial.print(",");
-      n++;
-    }
-  }
-  EspSerial.print("\n");
-}
-
 void logStartup() {
   struct tm timeinfo;
   time_t now = time(nullptr);
   char s[100];
   gmtime_r(&now, &timeinfo);
 
-#if defined(ESP8266)
-  snprintf(&s[0], sizeof(s),
-           "%04d-%02d-%02d %02d:%02d:%02d;Starting up kegmon;%s\n",
-           1900 + timeinfo.tm_year, 1 + timeinfo.tm_mon, timeinfo.tm_mday,
-           timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec,
-           ESP.getResetInfo().c_str());
-#else
   snprintf(&s[0], sizeof(s),
            "%04d-%02d-%02d %02d:%02d:%02d;Starting up kegmon;%d\n",
            1900 + timeinfo.tm_year, 1 + timeinfo.tm_mon, timeinfo.tm_mday,
            timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec,
            rtc_get_reset_reason(0));
-#endif
 
   File f = LittleFS.open(STARTUP_FILENAME, "a");
 
@@ -449,11 +458,7 @@ void logStartup() {
   }
 
   if (f) {
-#if defined(ESP8266)
-    f.write(&s[0], strlen(&s[0]));
-#else
     f.write((unsigned char *)&s[0], strlen(&s[0]));
-#endif
     f.close();
   }
 }

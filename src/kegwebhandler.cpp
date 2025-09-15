@@ -37,8 +37,6 @@ constexpr auto PARAM_APP_VER = "app_ver";
 constexpr auto PARAM_APP_BUILD = "app_build";
 constexpr auto PARAM_PLATFORM = "platform";
 constexpr auto PARAM_TEMP = "temperature";
-constexpr auto PARAM_HUMIDITY = "humidity";
-constexpr auto PARAM_PRESSURE = "pressure";
 
 // Calibration input
 constexpr auto PARAM_WEIGHT = "weight";
@@ -48,22 +46,40 @@ constexpr auto PARAM_SCALE = "scale_index";
 constexpr auto PARAM_SCALE_BUSY = "scale_busy";
 constexpr auto PARAM_SCALE_WEIGHT1 = "scale_weight1";
 constexpr auto PARAM_SCALE_WEIGHT2 = "scale_weight2";
+constexpr auto PARAM_SCALE_WEIGHT3 = "scale_weight3";
+constexpr auto PARAM_SCALE_WEIGHT4 = "scale_weight4";
 constexpr auto PARAM_BEER_WEIGHT1 = "beer_weight1";
 constexpr auto PARAM_BEER_WEIGHT2 = "beer_weight2";
+constexpr auto PARAM_BEER_WEIGHT3 = "beer_weight3";
+constexpr auto PARAM_BEER_WEIGHT4 = "beer_weight4";
 constexpr auto PARAM_BEER_VOLUME1 = "beer_volume1";
 constexpr auto PARAM_BEER_VOLUME2 = "beer_volume2";
+constexpr auto PARAM_BEER_VOLUME3 = "beer_volume3";
+constexpr auto PARAM_BEER_VOLUME4 = "beer_volume4";
 constexpr auto PARAM_SCALE_RAW1 = "scale_raw1";
 constexpr auto PARAM_SCALE_RAW2 = "scale_raw2";
+constexpr auto PARAM_SCALE_RAW3 = "scale_raw3";
+constexpr auto PARAM_SCALE_RAW4 = "scale_raw4";
 constexpr auto PARAM_GLASS1 = "glass1";
 constexpr auto PARAM_GLASS2 = "glass2";
+constexpr auto PARAM_GLASS3 = "glass3";
+constexpr auto PARAM_GLASS4 = "glass4";
 constexpr auto PARAM_SCALE_STABLE_WEIGHT1 = "scale_stable_weight1";
 constexpr auto PARAM_SCALE_STABLE_WEIGHT2 = "scale_stable_weight2";
+constexpr auto PARAM_SCALE_STABLE_WEIGHT3 = "scale_stable_weight3";
+constexpr auto PARAM_SCALE_STABLE_WEIGHT4 = "scale_stable_weight4";
 constexpr auto PARAM_LAST_POUR_WEIGHT1 = "last_pour_weight1";
 constexpr auto PARAM_LAST_POUR_WEIGHT2 = "last_pour_weight2";
+constexpr auto PARAM_LAST_POUR_WEIGHT3 = "last_pour_weight3";
+constexpr auto PARAM_LAST_POUR_WEIGHT4 = "last_pour_weight4";
 constexpr auto PARAM_LAST_POUR_VOLUME1 = "last_pour_volume1";
 constexpr auto PARAM_LAST_POUR_VOLUME2 = "last_pour_volume2";
+constexpr auto PARAM_LAST_POUR_VOLUME3 = "last_pour_volume3";
+constexpr auto PARAM_LAST_POUR_VOLUME4 = "last_pour_volume4";
 constexpr auto PARAM_SCALE_CONNECTED1 = "scale_connected1";
 constexpr auto PARAM_SCALE_CONNECTED2 = "scale_connected2";
+constexpr auto PARAM_SCALE_CONNECTED3 = "scale_connected3";
+constexpr auto PARAM_SCALE_CONNECTED4 = "scale_connected4";
 
 // Other values
 constexpr auto PARAM_TOTAL_HEAP = "total_heap";
@@ -72,8 +88,6 @@ constexpr auto PARAM_IP = "ip";
 constexpr auto PARAM_I2C = "i2c";
 constexpr auto PARAM_I2C_1 = "bus_1";
 constexpr auto PARAM_I2C_2 = "bus_2";
-// constexpr auto PARAM_ONEWIRE = "onewire";
-// constexpr auto PARAM_RESOLUTION = "resolution";
 constexpr auto PARAM_ADRESS = "adress";
 constexpr auto PARAM_FAMILY = "family";
 constexpr auto PARAM_CHIP = "chip";
@@ -425,14 +439,10 @@ void KegWebHandler::webStatus(AsyncWebServerRequest *request) {
   obj[PARAM_ID] = myConfig.getID();
   obj[PARAM_RSSI] = WiFi.RSSI();
   obj[PARAM_SSID] = myConfig.getWifiSSID(0);
-#if defined(ESP8266)
-  obj[PARAM_PLATFORM] = "esp8266";
-#elif defined(ESP32S2)
-  obj[PARAM_PLATFORM] = "esp32s2";
-#elif defined(ESP32S3)
+#if defined(ESP32S3)
   obj[PARAM_PLATFORM] = "esp32s3";
 #else
-#error "Undefined target"
+  #error "Undefined target"
 #endif
   obj[PARAM_APP_VER] = CFG_APPVER;
   obj[PARAM_APP_BUILD] = CFG_GITREV;
@@ -467,27 +477,9 @@ void KegWebHandler::webStatus(AsyncWebServerRequest *request) {
     obj[PARAM_TEMP] = serialized(String(convertOutgoingTemperature(f), 2));
   }
 
-  float h = myTemp.getLastHumidity();
-
-  if (!isnan(h)) {
-    obj[PARAM_HUMIDITY] = serialized(String(h, 2));
-  }
-
-  float p = myTemp.getLastPressure();
-
-  if (!isnan(p)) {
-    obj[PARAM_PRESSURE] = serialized(String(p, 2));
-  }
-
-#if defined(ESP8266)
-  obj[PARAM_TOTAL_HEAP] = 81920;
-  obj[PARAM_FREE_HEAP] = ESP.getFreeHeap();
-  obj[PARAM_IP] = WiFi.localIP().toString();
-#else
   obj[PARAM_TOTAL_HEAP] = ESP.getHeapSize();
   obj[PARAM_FREE_HEAP] = ESP.getFreeHeap();
   obj[PARAM_IP] = WiFi.localIP().toString();
-#endif
   obj[PARAM_WIFI_SETUP] = (runMode == RunMode::wifiSetupMode) ? true : false;
 
   // Home Assistant
@@ -632,12 +624,6 @@ void KegWebHandler::webStability(AsyncWebServerRequest *request) {
     obj[PARAM_TEMP] = convertOutgoingTemperature(f);
   }
 
-  float h = myTemp.getLastHumidity();
-
-  if (!isnan(h)) {
-    obj[PARAM_HUMIDITY] = h;
-  }
-
   response->setLength();
   request->send(response);
 }
@@ -698,9 +684,6 @@ void KegWebHandler::webHardwareScanStatus(AsyncWebServerRequest *request) {
 }
 
 void KegWebHandler::loop() {
-#if defined(ESP8266)
-  MDNS.update();
-#endif
   BaseWebServer::loop();
 
   if (_hardwareScanTask) {
@@ -714,40 +697,40 @@ void KegWebHandler::loop() {
     // Scan the i2c bus for devices
     // Wire.begin(PIN_SDA, PIN_SCL); // Should already have been done in
     // gyro.cpp
-    JsonObject i2c = obj[PARAM_I2C].to<JsonObject>();
-    JsonArray i2c_1 = i2c[PARAM_I2C_1].to<JsonArray>();
+    // JsonObject i2c = obj[PARAM_I2C].to<JsonObject>();
+    // JsonArray i2c_1 = i2c[PARAM_I2C_1].to<JsonArray>();
 
-    // Scan bus #1
-    for (int i = 1, j = 0; i < 127; i++) {
-      // The i2c_scanner uses the return value of
-      // the Write.endTransmisstion to see if
-      // a device did acknowledge to the address.
-      Wire.beginTransmission(i);
-      int err = Wire.endTransmission();
+    // // Scan bus #1
+    // for (int i = 1, j = 0; i < 127; i++) {
+    //   // The i2c_scanner uses the return value of
+    //   // the Write.endTransmisstion to see if
+    //   // a device did acknowledge to the address.
+    //   Wire.beginTransmission(i);
+    //   int err = Wire.endTransmission();
 
-      if (err == 0) {
-        i2c_1[j][PARAM_ADRESS] = "0x" + String(i, 16);
-        j++;
-      }
-    }
+    //   if (err == 0) {
+    //     i2c_1[j][PARAM_ADRESS] = "0x" + String(i, 16);
+    //     j++;
+    //   }
+    // }
 
-#if defined(ESP32)
-    JsonArray i2c_2 = i2c[PARAM_I2C_2].to<JsonArray>();
+    // #if defined(ESP32)
+    //     JsonArray i2c_2 = i2c[PARAM_I2C_2].to<JsonArray>();
 
-    // Scan bus #2
-    for (int i = 1, j = 0; i < 127; i++) {
-      // The i2c_scanner uses the return value of
-      // the Write.endTransmisstion to see if
-      // a device did acknowledge to the address.
-      Wire1.beginTransmission(i);
-      int err = Wire1.endTransmission();
+    //     // Scan bus #2
+    //     for (int i = 1, j = 0; i < 127; i++) {
+    //       // The i2c_scanner uses the return value of
+    //       // the Write.endTransmisstion to see if
+    //       // a device did acknowledge to the address.
+    //       Wire1.beginTransmission(i);
+    //       int err = Wire1.endTransmission();
 
-      if (err == 0) {
-        i2c_2[j][PARAM_ADRESS] = "0x" + String(i, 16);
-        j++;
-      }
-    }
-#endif
+    //       if (err == 0) {
+    //         i2c_2[j][PARAM_ADRESS] = "0x" + String(i, 16);
+    //         j++;
+    //       }
+    //     }
+    // #endif
 
     // TODO: Scan for HX711 boards
 
@@ -787,9 +770,6 @@ void KegWebHandler::loop() {
 
     JsonObject cpu = obj[PARAM_CHIP].to<JsonObject>();
 
-#if defined(ESP8266)
-    cpu[PARAM_FAMILY] = "ESP8266";
-#else
     esp_chip_info_t chip_info;
     esp_chip_info(&chip_info);
 
@@ -830,7 +810,6 @@ void KegWebHandler::loop() {
         cpu[PARAM_FAMILY] = String(chip_info.model);
         break;
     }
-#endif
 
     serializeJson(obj, _hardwareScanData);
     Log.notice(F("WEB : Scan complete %s." CR), _hardwareScanData.c_str());
