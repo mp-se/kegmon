@@ -23,20 +23,14 @@ SOFTWARE.
  */
 #include <display.hpp>
 #include <kegconfig.hpp>
-#include <kegpush.hpp>
-#include <kegwebhandler.hpp>
 #include <main.hpp>
-#include <ota.hpp>
-#include <perf.hpp>
 #include <scale.hpp>
-#include <serialws.hpp>
 #include <temp_mgr.hpp>
 #include <utils.hpp>
-#include <wificonnection.hpp>
 
-SerialDebug mySerial(115200L);
+// SerialDebug mySerial(115200L);
+SerialDebug mySerial(9600L);
 KegConfig myConfig(CFG_MDNSNAME, CFG_FILENAME);
-WifiConnection myWifi(&myConfig, CFG_APPNAME, "password", CFG_MDNSNAME);
 Scale myScale;
 LevelDetection myLevelDetection;
 TempSensorManager myTemp;
@@ -46,6 +40,9 @@ int loopCounter = 0;
 uint32_t loopMillis = 0;
 
 void setup() {
+
+  delay(4000);
+
   char cbuf[20];
   uint32_t chipId = 0;
   for (int i = 0; i < 17; i = i + 8) {
@@ -57,24 +54,29 @@ void setup() {
   Log.notice(F("Main: Build options: %s (%s) LOGLEVEL %d " CR), CFG_APPVER,
              CFG_GITREV, LOG_LEVEL);
 
-  PERF_BEGIN("setup-display");
   // myDisplay.setup();
-  PERF_END("setup-display");
   myConfig.checkFileSystem();
-
   myConfig.loadFile();
 
   // Set a scale factor so we get values
   myConfig.setScaleFactor(UnitIndex::U1, 1); 
   myConfig.setScaleFactor(UnitIndex::U2, 1);
+  // myConfig.setScaleFactor(UnitIndex::U3, 1);
+  // myConfig.setScaleFactor(UnitIndex::U4, 1);
+
   myConfig.setScaleOffset(UnitIndex::U1, 1); 
   myConfig.setScaleOffset(UnitIndex::U2, 1); 
+  // myConfig.setScaleOffset(UnitIndex::U3, 1); 
+  // myConfig.setScaleOffset(UnitIndex::U4, 1); 
 
   myScale.setup();
-  myTemp.setup();
+  // myTemp.setup();
+
+  Log.notice(F("Main: Scale 1 connected=%d ready=%d." CR), myScale.isConnected(UnitIndex::U1), myScale.isReady(UnitIndex::U1));
+  Log.notice(F("Main: Scale 2 connected=%d ready=%d." CR), myScale.isConnected(UnitIndex::U2), myScale.isReady(UnitIndex::U2));
 
   Log.notice(F("Main: Setup completed." CR));
-  myTemp.read();
+  // myTemp.read();
 }
 
 // void draw(UnitIndex idx, float temp, float scale1, float scale2, int32_t raw1, int32_t raw2) {
@@ -101,10 +103,7 @@ void setup() {
 
 
 void loop() {
-  myScale.loop(UnitIndex::U1);
-  myScale.loop(UnitIndex::U2);
-  myScale.loop(UnitIndex::U3);
-  myScale.loop(UnitIndex::U4);
+  myScale.loop();
 
   if (abs((int32_t)(millis() - loopMillis)) >
       loopInterval) {  // 2 seconds loop interval
@@ -112,36 +111,39 @@ void loop() {
     loopCounter++;
 
     // Try to reconnect to scales if they are missing (6 seconds)
-    if (!(loopCounter % 3)) {
-      if (!myScale.isConnected(UnitIndex::U1) ||
-          !myScale.isConnected(UnitIndex::U2) ||
-          !myScale.isConnected(UnitIndex::U3) ||
-          !myScale.isConnected(UnitIndex::U4)) {
-        myScale.setup();  // Try to reconnect to scale
-      }
-    }
+    // if (!(loopCounter % 3)) {
+    //   if (!myScale.isConnected(UnitIndex::U1) ||
+    //       !myScale.isConnected(UnitIndex::U2) ||
+    //       !myScale.isConnected(UnitIndex::U3) ||
+    //       !myScale.isConnected(UnitIndex::U4)) {
+    //     myScale.setup();  // Try to reconnect to scale
+    //   }
+    // }
 
     // The temp sensor should not be read too often. Reading every 4 seconds.
-    if (!(loopCounter % 1)) {
-      myTemp.read();
-    }
+    // if (!(loopCounter % 1)) {
+    //   myTemp.read();
+    // }
 
     // Check if the temp sensor exist and try to reinitialize
-    if (!(loopCounter % 3)) {
-      if (!myTemp.hasSensor()) {
-        myTemp.setup();
-      }
-    }
+    // if (!(loopCounter % 3)) {
+    //   if (!myTemp.hasSensor()) {
+    //     myTemp.setup();
+    //   }
+    // }
 
-    float t = myTemp.getLastTempC();
+    // float t = myTemp.getLastTempC();
     float s1 = myScale.read(UnitIndex::U1, true);
     float s2 = myScale.read(UnitIndex::U2, true);
-    float s3 = myScale.read(UnitIndex::U3, true);
-    float s4 = myScale.read(UnitIndex::U4, true);
+    // float s3 = myScale.read(UnitIndex::U3, true);
+    // float s4 = myScale.read(UnitIndex::U4, true);
     int32_t l1 = myScale.readLastRaw(UnitIndex::U1);
     int32_t l2 = myScale.readLastRaw(UnitIndex::U2);
-    int32_t l3 = myScale.readLastRaw(UnitIndex::U3);
-    int32_t l4 = myScale.readLastRaw(UnitIndex::U4);
+    // int32_t l3 = myScale.readLastRaw(UnitIndex::U3);
+    // int32_t l4 = myScale.readLastRaw(UnitIndex::U4);
+
+    Log.notice(F("Main: Readings scale 1 weight=%F raw=%d" CR), s1, l1);
+    Log.notice(F("Main: Readings scale 2 weight=%F raw=%d" CR), s2, l2);
 
     // draw(UnitIndex::U1, t, s1, s2, l1, l2);
     // draw(UnitIndex::U2, t, s1, s2, l1, l2);

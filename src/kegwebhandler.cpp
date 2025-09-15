@@ -442,7 +442,7 @@ void KegWebHandler::webStatus(AsyncWebServerRequest *request) {
 #if defined(ESP32S3)
   obj[PARAM_PLATFORM] = "esp32s3";
 #else
-  #error "Undefined target"
+#error "Undefined target"
 #endif
   obj[PARAM_APP_VER] = CFG_APPVER;
   obj[PARAM_APP_BUILD] = CFG_GITREV;
