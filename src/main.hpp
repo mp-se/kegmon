@@ -29,8 +29,8 @@ SOFTWARE.
 
 #include <log.hpp>
 
-constexpr auto CFG_MDNSNAME = "KegMon";
-constexpr auto CFG_FILENAME = "/kegmon1.json";
+constexpr auto CFG_MDNSNAME = "Kegmon";
+constexpr auto CFG_FILENAME = "/kegmon2.json";
 constexpr auto STARTUP_FILENAME = "/startup.log";
 constexpr auto LEVELS_FILENAME = "/levels.log";
 constexpr auto LEVELS_FILENAME2 = "/levels2.log";

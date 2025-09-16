@@ -32,6 +32,8 @@ SOFTWARE.
 #include <perf.hpp>
 
 // #define DEBUG_LINK_SCALES  // For test rig to use one scale for both...
+// #define USE_HX711_MP // Use alternative HX library with different interface
+#define USE_HX711 // Use alternative HX library with different interface
 
 class Scale {
  private:
@@ -82,7 +84,7 @@ class Scale {
 #if defined(DEBUG_LINK_SCALES)
   bool isConnected(UnitIndex idx) { return true; }
 #else
-  bool isConnected(UnitIndex idx) const { return _hxScale[idx] != 0 ? true : false; }
+  bool isConnected(UnitIndex idx) const { return _hxScale[idx] ? true : false; }
 #endif
 
   float read(UnitIndex idx, bool skipValidation = false);

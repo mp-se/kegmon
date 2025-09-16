@@ -26,8 +26,11 @@ SOFTWARE.
 #include <scale.hpp>
 
 bool Scale::isReady(UnitIndex idx) const {
-  if(!_hxScale[idx]) return false;
-  return _hxScale[idx]->wait_ready_retry(3, 500);
+  if(!_hxScale[idx]) {
+    Log.verbose(F("SCAL: HX711 scale not ready [%d]." CR), idx);
+    return false;
+  }
+  return _hxScale[idx]->wait_ready_retry(3, 1000);
 }
 
 void Scale::tare(UnitIndex idx) {
@@ -92,15 +95,20 @@ void Scale::setupScale(UnitIndex idx, bool force, int pinData, int pinClock) {
                 myConfig.getScaleOffset(idx));
 #endif
     _hxScale[idx] = new HX711();
-    Log.notice(
-        F("SCAL: Initializing HX711 bus #%d on pins Data=%d,Clock=%d" CR),
-        idx + 1, pinData, pinClock);
-    _hxScale[idx]->begin(pinData, pinClock);
+    // _hxScale[idx]->begin(pinData, pinClock, 128); // Init of original bodge library
+    _hxScale[idx]->begin(pinData, pinClock, true);
+    delay(1000);
     _hxScale[idx]->set_offset(myConfig.getScaleOffset(idx));
+    _hxScale[idx]->set_raw_mode();
+    Log.notice(
+        F("SCAL: Initializing HX711 bus #%d on pins Data=%d,Clock=%d,rate=%d" CR),
+        idx + 1, pinData, pinClock, _hxScale[idx]->get_rate());
+    setScaleFactor(idx);
 
-    if (_hxScale[idx]->wait_ready_timeout(500)) {
+    if (_hxScale[idx]->is_ready()) {
+//    if (_hxScale[idx]->wait_ready_retry(3, 100)) {
       Log.notice(F("SCAL: HX711 scale [%d] found." CR), idx);
-      _hxScale[idx]->get_units(1);
+     // _hxScale[idx]->get_units(1);
     } else {
       Log.error(
           F("SCAL: HX711 scale [%d] not responding, disabling interface." CR),
@@ -109,14 +117,12 @@ void Scale::setupScale(UnitIndex idx, bool force, int pinData, int pinClock) {
       _hxScale[idx] = nullptr;
     }
   }
-
-  setScaleFactor(idx);
 }
 
 void Scale::setScaleFactor(UnitIndex idx) {
   if (!_hxScale[idx]) return;
 
-  float fs = myConfig.getScaleFactor(idx);
+  float fs = myConfig.getScaleFactor(idx); 
 
   if (fs == 0.0) fs = 1.0;
 

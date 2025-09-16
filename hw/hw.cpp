@@ -29,7 +29,7 @@ SOFTWARE.
 #include <utils.hpp>
 
 SerialDebug mySerial(115200L);
-KegConfig myConfig(CFG_MDNSNAME, CFG_FILENAME);
+KegConfig myConfig("KegmonHW", "./kegmon_hw.json");
 Scale myScale;
 Display myDisplay;
 LevelDetection myLevelDetection;
@@ -95,7 +95,7 @@ void setup() {
   myDisplay.printLineCentered(3, &buf[0]);
 
   for(int i = 0; i < 4; i++) {
-    snprintf(&buf[0], sizeof(buf), "%d: con=%s ready=%s", i+1, myScale.isConnected((UnitIndex)i) ? "yes" : "no", myScale.isReady((UnitIndex)i) ? "yes" : "no");
+    snprintf(&buf[0], sizeof(buf), "%d: con=%s rdy=%s", i+1, myScale.isConnected((UnitIndex)i) ? "yes" : "no", myScale.isReady((UnitIndex)i) ? "yes" : "no");
     myDisplay.printLineCentered(4+i, &buf[0]);
     Log.notice(F("Main: %s" CR), &buf[0]);
   }
