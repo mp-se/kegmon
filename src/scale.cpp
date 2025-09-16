@@ -125,16 +125,16 @@ void Scale::setScaleFactor(UnitIndex idx) {
 
 void Scale::setup(bool force) {
   setupScale(UnitIndex::U1, force, PIN_SCALE_SDA1, PIN_SCALE_SCK1);
-  // setupScale(UnitIndex::U2, force, PIN_SCALE_SDA2, PIN_SCALE_SCK2);
-  // setupScale(UnitIndex::U3, force, PIN_SCALE_SDA3, PIN_SCALE_SCK3);
-  // setupScale(UnitIndex::U4, force, PIN_SCALE_SDA4, PIN_SCALE_SCK4);
+  setupScale(UnitIndex::U2, force, PIN_SCALE_SDA2, PIN_SCALE_SCK2);
+  setupScale(UnitIndex::U3, force, PIN_SCALE_SDA3, PIN_SCALE_SCK3);
+  setupScale(UnitIndex::U4, force, PIN_SCALE_SDA4, PIN_SCALE_SCK4);
 }
 
 void Scale::loop() {
   loopScale(UnitIndex::U1);
-  // loopScale(UnitIndex::U2);
-  // loopScale(UnitIndex::U3);
-  // loopScale(UnitIndex::U4);
+  loopScale(UnitIndex::U2);
+  loopScale(UnitIndex::U3);
+  loopScale(UnitIndex::U4);
 }
 
 void Scale::loopScale(UnitIndex idx) {

@@ -28,20 +28,19 @@ SOFTWARE.
 #include <temp_mgr.hpp>
 #include <utils.hpp>
 
-// SerialDebug mySerial(115200L);
-SerialDebug mySerial(9600L);
+SerialDebug mySerial(115200L);
 KegConfig myConfig(CFG_MDNSNAME, CFG_FILENAME);
 Scale myScale;
+Display myDisplay;
 LevelDetection myLevelDetection;
 TempSensorManager myTemp;
 
-const int loopInterval = 2000;
+const int loopInterval = 1000;
 int loopCounter = 0;
 uint32_t loopMillis = 0;
 
 void setup() {
-
-  delay(4000);
+  delay(2000);
 
   char cbuf[20];
   uint32_t chipId = 0;
@@ -54,53 +53,73 @@ void setup() {
   Log.notice(F("Main: Build options: %s (%s) LOGLEVEL %d " CR), CFG_APPVER,
              CFG_GITREV, LOG_LEVEL);
 
-  // myDisplay.setup();
+#if defined(ENABLE_TFT)
+  Log.notice(F("Main: TOUCH_CS %d." CR), TOUCH_CS);
+  Log.notice(F("Main: TFT_BL %d." CR), TFT_BL);
+  Log.notice(F("Main: TFT_DC %d." CR), TFT_DC);
+  Log.notice(F("Main: TFT_MISO %d." CR), TFT_MISO);
+  Log.notice(F("Main: TFT_MOSI %d." CR), TFT_MOSI);
+  Log.notice(F("Main: TFT_SCLK %d." CR), TFT_SCLK);
+  Log.notice(F("Main: TFT_RST %d." CR), TFT_RST);
+  Log.notice(F("Main: TFT_CS %d." CR), TFT_CS);
+#endif
+
+  Log.notice(F("Main: Initialize display." CR));
+  myDisplay.setup();
+  myDisplay.setFont(FontSize::FONT_12);
+  myDisplay.printLineCentered(1, "Kegmon Hardware Test");
+
   myConfig.checkFileSystem();
   myConfig.loadFile();
 
   // Set a scale factor so we get values
   myConfig.setScaleFactor(UnitIndex::U1, 1); 
   myConfig.setScaleFactor(UnitIndex::U2, 1);
-  // myConfig.setScaleFactor(UnitIndex::U3, 1);
-  // myConfig.setScaleFactor(UnitIndex::U4, 1);
+  myConfig.setScaleFactor(UnitIndex::U3, 1);
+  myConfig.setScaleFactor(UnitIndex::U4, 1);
 
   myConfig.setScaleOffset(UnitIndex::U1, 1); 
   myConfig.setScaleOffset(UnitIndex::U2, 1); 
-  // myConfig.setScaleOffset(UnitIndex::U3, 1); 
-  // myConfig.setScaleOffset(UnitIndex::U4, 1); 
+  myConfig.setScaleOffset(UnitIndex::U3, 1); 
+  myConfig.setScaleOffset(UnitIndex::U4, 1); 
 
   myScale.setup();
-  // myTemp.setup();
+  myTemp.setup();
+  myTemp.read();
 
-  Log.notice(F("Main: Scale 1 connected=%d ready=%d." CR), myScale.isConnected(UnitIndex::U1), myScale.isReady(UnitIndex::U1));
-  Log.notice(F("Main: Scale 2 connected=%d ready=%d." CR), myScale.isConnected(UnitIndex::U2), myScale.isReady(UnitIndex::U2));
+  // Show what HX711 boards and temp sensors are connected
+  myDisplay.printLineCentered(2, "Showing connected sensors");
 
+  char buf[40];
+  snprintf(&buf[0], sizeof(buf), "temp: con=%s #=%d", myTemp.hasSensor() ? "yes" : "no", 0); // TODO: Show how many temp sensores are connected in total
+  myDisplay.printLineCentered(3, &buf[0]);
+
+  for(int i = 0; i < 4; i++) {
+    snprintf(&buf[0], sizeof(buf), "%d: con=%s ready=%s", i+1, myScale.isConnected((UnitIndex)i) ? "yes" : "no", myScale.isReady((UnitIndex)i) ? "yes" : "no");
+    myDisplay.printLineCentered(4+i, &buf[0]);
+    Log.notice(F("Main: %s" CR), &buf[0]);
+  }
+
+  delay(5000);
+
+  // Do a tare on the scales and show the offset.
+  myDisplay.printLineCentered(2, "Tare connected scales");
+  for(int i = 3; i < 8; i++) {
+    myDisplay.printLineCentered(i, ""); // Clear lines
+  }
+
+  for(int i = 0; i < 4; i++) {
+    myScale.scheduleTare((UnitIndex)i);
+    myScale.loop();
+
+    snprintf(&buf[0], sizeof(buf), "%d: offset=%d factor=%.2F", i+1, myConfig.getScaleOffset((UnitIndex)i), myConfig.getScaleFactor((UnitIndex)i));
+    myDisplay.printLineCentered(4+i, &buf[0]);
+    Log.notice(F("Main: %s" CR), &buf[0]);
+  }
+
+  delay(5000);
   Log.notice(F("Main: Setup completed." CR));
-  // myTemp.read();
 }
-
-// void draw(UnitIndex idx, float temp, float scale1, float scale2, int32_t raw1, int32_t raw2) {
-//   myDisplay.clear(idx);
-//   myDisplay.setFont(idx, FontSize::FONT_10);
-
-//   char buf[30];
-
-//   snprintf(&buf[0], sizeof(buf), "Temp   : %.3f", temp);
-//   myDisplay.printLine(idx, 0, &buf[0]);
-
-//   snprintf(&buf[0], sizeof(buf), "Scale 1: %.3f", scale1);
-//   myDisplay.printLine(idx, 1, &buf[0]);
-//   snprintf(&buf[0], sizeof(buf), "Scale 2: %.3f", scale2);
-//   myDisplay.printLine(idx, 2, &buf[0]);
-
-//   snprintf(&buf[0], sizeof(buf), "Raw   1: %d", raw1);
-//   myDisplay.printLine(idx, 3, &buf[0]);
-//   snprintf(&buf[0], sizeof(buf), "Raw   2: %d", raw2);
-//   myDisplay.printLine(idx, 4, &buf[0]);
-
-//   myDisplay.show(idx);
-// }
-
 
 void loop() {
   myScale.loop();
@@ -133,22 +152,23 @@ void loop() {
     // }
 
     // float t = myTemp.getLastTempC();
-    float s1 = myScale.read(UnitIndex::U1, true);
-    float s2 = myScale.read(UnitIndex::U2, true);
-    // float s3 = myScale.read(UnitIndex::U3, true);
-    // float s4 = myScale.read(UnitIndex::U4, true);
-    int32_t l1 = myScale.readLastRaw(UnitIndex::U1);
-    int32_t l2 = myScale.readLastRaw(UnitIndex::U2);
-    // int32_t l3 = myScale.readLastRaw(UnitIndex::U3);
-    // int32_t l4 = myScale.readLastRaw(UnitIndex::U4);
 
-    Log.notice(F("Main: Readings scale 1 weight=%F raw=%d" CR), s1, l1);
-    Log.notice(F("Main: Readings scale 2 weight=%F raw=%d" CR), s2, l2);
+    // Show the values
+    myDisplay.printLineCentered(2, "Measuring");
 
-    // draw(UnitIndex::U1, t, s1, s2, l1, l2);
-    // draw(UnitIndex::U2, t, s1, s2, l1, l2);
-    // draw(UnitIndex::U3, t, s3, s4, l3, l4);
-    // draw(UnitIndex::U4, t, s3, s4, l3, l4);
+    char buf[40];
+    myDisplay.printLineCentered(3, ""); // Clear line
+
+    for(int i = 0; i < 4; i++) {
+      if(!myScale.isConnected((UnitIndex)i)) {
+        snprintf(&buf[0], sizeof(buf), "%d: not connected", i+1);
+      } else {
+        snprintf(&buf[0], sizeof(buf), "%d: w=%.2F", i+1, myScale.read((UnitIndex)i, true));      
+      }
+
+      myDisplay.printLineCentered(4+i, &buf[0]);
+      Log.notice(F("Loop: %s" CR), &buf[0]);
+    }
   }
 }
 

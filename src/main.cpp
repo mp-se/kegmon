@@ -22,7 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 #include <display.hpp>
-#include <displayout.hpp>
 #include <kegconfig.hpp>
 #include <kegpush.hpp>
 #include <kegwebhandler.hpp>
@@ -35,7 +34,7 @@ SOFTWARE.
 #include <uptime.hpp>
 #include <utils.hpp>
 #include <wificonnection.hpp>
-#if CONFIG_IDF_TARGET_ESP32S3
+#if defined(ESP32S3)
 #include <esp32s3/rom/rtc.h>
 #endif
 #include <esp_core_dump.h>
@@ -49,6 +48,7 @@ OtaUpdate myOta(&myConfig, CFG_APPVER);
 KegWebHandler myWebHandler(&myConfig);
 KegPushHandler myPush(&myConfig);
 Scale myScale;
+Display myDisplay;
 LevelDetection myLevelDetection;
 TempSensorManager myTemp;
 SerialWebSocket mySerialWebSocket;

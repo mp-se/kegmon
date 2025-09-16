@@ -1,340 +1,494 @@
-// /*
-// MIT License
-
-// Copyright (c) 2021-2025 Magnus
-
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-//  */
-// #include <Wire.h>
-
-// #include <display.hpp>
-
-// // Custom characters for the LCD progress bar
-// byte START_DIV_0_OF_1[8] = {B01111, B11000, B10000, B10000,
-//                             B10000, B10000, B11000, B01111};  // Char start
-//                             0/1
-
-// byte START_DIV_1_OF_1[8] = {B01111, B11000, B10011, B10111,
-//                             B10111, B10011, B11000, B01111};  // Char start
-//                             1/1
-
-// byte DIV_0_OF_2[8] = {B11111, B00000, B00000, B00000,
-//                       B00000, B00000, B00000, B11111};  // Char middle 0/2
-
-// byte DIV_1_OF_2[8] = {B11111, B00000, B11000, B11000,
-//                       B11000, B11000, B00000, B11111};  // Middle tank 1/2
-
-// byte DIV_2_OF_2[8] = {B11111, B00000, B11011, B11011,
-//                       B11011, B11011, B00000, B11111};  // Middle tank 2/2
-
-// byte END_DIV_0_OF_1[8] = {B11110, B00011, B00001, B00001,
-//                           B00001, B00001, B00011, B11110};  // Char end 0/1
-
-// byte END_DIV_1_OF_1[8] = {B11110, B00011, B11001, B11101,
-//                           B11101, B11001, B00011, B11110};  // Char thin 1/1
-
-// Display::Display() {}
-
-// bool Display::checkInitialized(UnitIndex idx) {
-//   switch (_driver) {
-//     case DisplayDriverType::OLED_1306:
-//       if (!_displayOLED[idx]) return false;
-//       break;
-//     case DisplayDriverType::LCD:
-//       if (!_displayLCD[idx]) return false;
-//       break;
-//   }
-
-//   return true;
-// }
-
-// void Display::setup() {
-//   _driver = myConfig.getDisplayDriverType();
-
-//   switch (_driver) {
-//     case DisplayDriverType::OLED_1306:
-//       Log.notice(F("DISP: Using display driver for OLED 0.96\"" CR));
-
-//       _displayOLED[0] = new SH1106Wire(DISPLAY_ADR1, -1, -1);
-//       _displayOLED[1] = new SH1106Wire(DISPLAY_ADR2, -1, -1);
-//       _width[0] = 127;
-//       _width[1] = 127;
-//       _height[0] = 63;
-//       _height[1] = 63;
-//       _fontSize[0] = FontSize::FONT_10;
-//       _fontSize[1] = FontSize::FONT_10;
-
-//       _displayOLED[0]->init();
-//       _displayOLED[1]->init();
-//       _displayOLED[0]->displayOn();
-//       _displayOLED[1]->displayOn();
-//       _displayOLED[0]->flipScreenVertically();
-//       _displayOLED[1]->flipScreenVertically();
-//       break;
-
-//     case DisplayDriverType::LCD:
-//       Log.notice(F("DISP: Using display driver for LED 20x4" CR));
-
-//       _displayLCD[0] = new LiquidCrystal_I2C(PCF8574_ADDR_A21_A11_A01, 4, 5,
-//       6,
-//                                              16, 11, 12, 13, 14, POSITIVE);
-//       _displayLCD[1] = new LiquidCrystal_I2C(PCF8574_ADDR_A21_A11_A00, 4, 5,
-//       6,
-//                                              16, 11, 12, 13, 14, POSITIVE);
-//       _width[0] = 20;
-//       _width[1] = 20;
-//       _height[0] = 4;
-//       _height[1] = 4;
-//       _fontSize[0] = FontSize::FONT_1;
-//       _fontSize[0] = FontSize::FONT_1;
-
-//       _displayLCD[0]->begin(_width[0], _height[0]);
-//       _displayLCD[1]->begin(_width[1], _height[1]);
-
-//       _displayLCD[0]->createChar(0, START_DIV_0_OF_1);
-//       _displayLCD[0]->createChar(1, START_DIV_1_OF_1);
-//       _displayLCD[0]->createChar(2, DIV_0_OF_2);
-//       _displayLCD[0]->createChar(3, DIV_1_OF_2);
-//       _displayLCD[0]->createChar(4, DIV_2_OF_2);
-//       _displayLCD[0]->createChar(5, END_DIV_0_OF_1);
-//       _displayLCD[0]->createChar(6, END_DIV_1_OF_1);
-
-//       _displayLCD[1]->createChar(0, START_DIV_0_OF_1);
-//       _displayLCD[1]->createChar(1, START_DIV_1_OF_1);
-//       _displayLCD[1]->createChar(2, DIV_0_OF_2);
-//       _displayLCD[1]->createChar(3, DIV_1_OF_2);
-//       _displayLCD[1]->createChar(4, DIV_2_OF_2);
-//       _displayLCD[1]->createChar(5, END_DIV_0_OF_1);
-//       _displayLCD[1]->createChar(6, END_DIV_1_OF_1);
-//       break;
-//   }
-
-//   clear(UnitIndex::U1);
-//   clear(UnitIndex::U2);
-
-//   setFont(UnitIndex::U1, FontSize::FONT_16);
-//   printLineCentered(UnitIndex::U1, 0, CFG_APPNAME);
-//   printLineCentered(UnitIndex::U1, 2, "Loading");
-
-//   show(UnitIndex::U1);
-//   show(UnitIndex::U2);
-// }
-
-// void Display::setFont(UnitIndex idx, FontSize fs) {
-//   if (!checkInitialized(idx)) return;
-
-//   switch (_driver) {
-//     case DisplayDriverType::OLED_1306:
-//       _fontSize[idx] = fs;
-
-//       switch (fs) {
-//         case FontSize::FONT_1:
-//           return;
-
-//         case FontSize::FONT_10:
-//           _displayOLED[idx]->setFont(ArialMT_Plain_10);
-//           return;
-
-//         case FontSize::FONT_16:
-//           _displayOLED[idx]->setFont(ArialMT_Plain_16);
-//           return;
-
-//         case FontSize::FONT_24:
-//           _displayOLED[idx]->setFont(ArialMT_Plain_24);
-//           return;
-//       }
-//       break;
-
-//     case DisplayDriverType::LCD:
-//       _fontSize[idx] = FontSize::FONT_1;
-//       break;
-//   }
-// }
-
-// int Display::getTextWidth(UnitIndex idx, const String& text) {
-//   int w = 0;
-
-//   if (!checkInitialized(idx)) return -1;
-
-//   switch (_driver) {
-//     case DisplayDriverType::OLED_1306:
-//       w = _displayOLED[idx]->getStringWidth(text);
-//       break;
-
-//     case DisplayDriverType::LCD:
-//       w = text.length();
-//       break;
-//   }
-
-//   return w;
-// }
-
-// void Display::printPosition(UnitIndex idx, int x, int y, const String& text)
-// {
-//   if (!checkInitialized(idx)) return;
-
-//   if (x < 0) {
-//     int w = getTextWidth(idx, text);
-//     x = (_width[idx] - w) / 2;
-//   }
-
-//   switch (_driver) {
-//     case DisplayDriverType::OLED_1306:
-//       _displayOLED[idx]->drawString(x, y, text);
-//       break;
-
-//     case DisplayDriverType::LCD:
-//       if (y > (_height[idx] - 1)) return;
-
-//       _displayLCD[idx]->setCursor(x, y);
-//       _displayLCD[idx]->print(text);
-//       break;
-//   }
-// }
-
-// void Display::printLine(UnitIndex idx, int l, const String& text) {
-//   if (!checkInitialized(idx)) return;
-
-//   switch (_driver) {
-//     case DisplayDriverType::OLED_1306:
-//       printPosition(idx, 0, _fontSize[idx] * l, text);
-//       break;
-
-//     case DisplayDriverType::LCD:
-//       printPosition(idx, 0, _fontSize[idx] * l, text);
-//       break;
-//   }
-// }
-
-// void Display::printLineCentered(UnitIndex idx, int l, const String& text) {
-//   if (!checkInitialized(idx)) return;
-
-//   int w = getTextWidth(idx, text);
-
-//   switch (_driver) {
-//     case DisplayDriverType::OLED_1306:
-//       printPosition(idx, (_width[idx] - w) / 2, _fontSize[idx] * l, text);
-//       break;
-
-//     case DisplayDriverType::LCD:
-//       printPosition(idx, (_width[idx] - w) / 2, l, text);
-//       break;
-//   }
-// }
-
-// void Display::clear(UnitIndex idx) {
-//   if (!checkInitialized(idx)) return;
-
-//   switch (_driver) {
-//     case DisplayDriverType::OLED_1306:
-//       _displayOLED[idx]->clear();
-//       break;
-
-//     case DisplayDriverType::LCD:
-//       _displayLCD[idx]->clear();
-//       break;
-//   }
-// }
-
-// void Display::show(UnitIndex idx) {
-//   if (!checkInitialized(idx)) return;
-
-//   switch (_driver) {
-//     case DisplayDriverType::OLED_1306:
-//       _displayOLED[idx]->display();
-//       break;
-
-//     case DisplayDriverType::LCD:
-//       break;
-//   }
-// }
-
-// void Display::drawRect(UnitIndex idx, int x, int y, int w, int h) {
-//   if (!checkInitialized(idx)) return;
-
-//   switch (_driver) {
-//     case DisplayDriverType::OLED_1306:
-//       _displayOLED[idx]->drawRect(x, y, w, h);
-//       break;
-
-//     case DisplayDriverType::LCD:
-//       break;
-//   }
-// }
-
-// void Display::fillRect(UnitIndex idx, int x, int y, int w, int h) {
-//   if (!checkInitialized(idx)) return;
-
-//   switch (_driver) {
-//     case DisplayDriverType::OLED_1306:
-//       _displayOLED[idx]->fillRect(x, y, w, h);
-//       break;
-
-//     case DisplayDriverType::LCD:
-//       break;
-//   }
-// }
-
-// void Display::drawProgressBar(UnitIndex idx, int y, float percentage) {
-//   if (!checkInitialized(idx)) return;
-
-//   int col = 0;
-
-//   switch (_driver) {
-//     case DisplayDriverType::OLED_1306:
-//       col = map(percentage, 0, 100, 0, _width[idx]);
-
-//       _displayOLED[idx]->drawRect(1, y + 1, _width[idx] - 2,
-//                                   _fontSize[idx] - 2);
-//       _displayOLED[idx]->fillRect(1, y + 1, col, _fontSize[idx] - 2);
-//       break;
-
-//     case DisplayDriverType::LCD:
-//       _displayLCD[idx]->setCursor(0, y);
-
-//       // Each character displays 2 vertical bars, but the first and last
-//       // character displays only one. Map range (0 ~ 100) to range (0 ~
-//       // LCD_NB_COLUMNS * 2 - 2)
-//       col = map(percentage, 0, 100, 0, _width[idx] * 2 - 2);
-
-//       // Print the progress bar
-//       for (int i = 0; i < _width[idx]; ++i) {
-//         if (i == 0) {
-//           // Char 0 = empty start, Char 1 = full start
-//           _displayLCD[idx]->write(col == 0 ? 0 : 1);
-//           col -= 1;  // First item only have one halv bar
-//         } else if (i == (_width[idx] - 1)) {
-//           // Char 5 = full end, Char 6 = empty end
-//           _displayLCD[idx]->write(col > 0 ? 6 : 5);
-//         } else {
-//           if (col <= 0) {
-//             // Char 2 = empty middle
-//             _displayLCD[idx]->write(2);
-//           } else {
-//             // Char 3 = half middle, Char 4 = full middle
-//             _displayLCD[idx]->write(col >= 2 ? 4 : 3);
-//             col -= 2;  // One char equals to 1-2 indicators.
-//           }
-//         }
-//       }
-//       break;
-//   }
-// }
-
-// // EOF
+/*
+MIT License
+
+Copyright (c) 2024-2025 Magnus
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+ */
+#include <Arduino.h>
+#include <FS.h>
+#include <LittleFS.h>
+#include <Wire.h>
+
+#include <display.hpp>
+#include <fonts.hpp>
+#include <functional>
+#include <log.hpp>
+#include <looptimer.hpp>
+#include <main.hpp>
+
+constexpr auto TTF_CALIBRATION_FILENAME = "/tft.dat";
+
+TaskHandle_t lvglTaskHandler;
+
+#if defined(ENABLE_LVGL)
+struct LVGL_Data lvglData;
+#endif
+
+void Display::setup() {
+#if defined(ENABLE_TFT)
+  Log.notice(
+      F("DISP: TFT Config: MISO=%d, MOSI=%d, SCLK=%d, CS=%d, DC=%d, RST=%d, "
+        "TOUCH_CS=%d" CR),
+      TFT_MISO, TFT_MOSI, TFT_SCLK, TFT_CS, TFT_DC, TFT_RST, TOUCH_CS);
+
+  _tft = new TFT_eSPI();
+
+  if (!_tft) {
+    Log.warning(F("DISP: No TFT_eSPI driver is created!" CR));
+    return;
+  }
+
+  _tft->init();
+  _tft->setRotation(_rotation);
+  clear();
+  setFont(FontSize::FONT_9);
+#else 
+  Log.warning(F("DISP: TFT driver support is not included in this build!" CR));
+#endif
+}
+
+void Display::setRotation(Rotation r) {
+#if defined(ENABLE_TFT)
+  if (!_tft) {
+    return;
+  }
+
+  _rotation = r;
+  _tft->setRotation(_rotation);
+#endif
+}
+
+void Display::setFont(FontSize f) {
+#if defined(ENABLE_TFT)
+  if (!_tft) return;
+
+  switch (f) {
+    default:
+    case FontSize::FONT_9:
+      _tft->setFreeFont(FF17);
+      break;
+    case FontSize::FONT_12:
+      _tft->setFreeFont(FF18);
+      break;
+    case FontSize::FONT_18:
+      _tft->setFreeFont(FF19);
+      break;
+    case FontSize::FONT_24:
+      _tft->setFreeFont(FF20);
+      break;
+  }
+#endif
+}
+
+void Display::printLine(int l, const String &text) {
+#if defined(ENABLE_TFT)
+  if (!_tft) return;
+
+  uint16_t h = _tft->fontHeight();
+  _tft->fillRect(0, l * h, _tft->width(), h, _backgroundColor);
+  _tft->drawString(text.c_str(), 0, l * h, GFXFF);
+#endif
+}
+
+void Display::printLineCentered(int l, const String &text) {
+#if defined(ENABLE_TFT)
+  if (!_tft) return;
+
+  uint16_t h = _tft->fontHeight();
+  uint16_t w = _tft->textWidth(text);
+  _tft->fillRect(0, l * h, _tft->width(), h, _backgroundColor);
+  _tft->drawString(text.c_str(), (_tft->width() - w) / 2, l * h, GFXFF);
+#endif
+}
+
+void Display::clear(uint32_t color) {
+#if defined(ENABLE_TFT)
+  if (!_tft) return;
+
+  _backgroundColor = color;
+  _tft->fillScreen(_backgroundColor);
+  delay(1);
+#endif
+}
+
+void Display::updateButtons(bool beerEnabled, bool chamberEnabled) {
+#if defined(ENABLE_LVGL)
+  lvglData._showBeerBtn = beerEnabled;
+  lvglData._showChamberBtn = chamberEnabled;
+#endif
+}
+
+void Display::updateTemperatures(const char *mode, const char *state,
+                                 const char *statusBar, float beerTemp,
+                                 float chamberTemp, char tempFormat, bool darkmode) {
+#if defined(ENABLE_LVGL)
+  if (!_tft) return;
+
+  lvglData._darkmode = darkmode;
+  lvglData._tempFormat = tempFormat;
+  lvglData._dataMode = mode;
+  lvglData._dataState = state;
+  lvglData._dataStatusBar = statusBar;
+
+  char s[20];
+
+  // Beer Temp
+  if (isnan(beerTemp))
+    snprintf(s, sizeof(s), "-- °%c", tempFormat);
+  else
+    snprintf(s, sizeof(s), "%0.1F°%c", beerTemp, tempFormat);
+
+  lvglData._dataBeerTemp = s;
+
+  // Beer Temp
+  if (isnan(chamberTemp))
+    snprintf(s, sizeof(s), "-- °%c", tempFormat);
+  else
+    snprintf(s, sizeof(s), "%0.1F°%c", chamberTemp, tempFormat);
+
+  lvglData._dataChamberTemp = s;
+#endif
+}
+
+void Display::calibrateTouch() {
+#if defined(ENABLE_LVGL)
+  if (!_tft) return;
+
+  uint16_t x, y, pressed, i = 0;
+
+  myDisplay.printLineCentered(4, "Press screen to calibrate");
+
+  do {
+    delay(300);
+    pressed = _tft->getTouch(&x, &y, 600);
+    // Log.info(F("DISP: Screen touched %d." CR), pressed);
+  } while (!pressed && ++i < 10);
+
+  if (pressed) {
+    clear(TFT_GREEN);
+    myDisplay.printLineCentered(4, "Touch detected");
+    Log.info(F("DISP: Touch screen pressed, force calibration." CR));
+    delay(3000);
+  }
+
+  File file = LittleFS.open(TTF_CALIBRATION_FILENAME, "r");
+
+  if (file) {
+    Log.info(F("DISP: Loading touch calibration data from file." CR));
+    file.read(reinterpret_cast<uint8_t *>(&this->_touchCalibrationlData),
+              sizeof(_touchCalibrationlData));
+    file.close();
+  } else {
+    _touchCalibrationlData[0] = 0;
+  }
+
+  if (pressed || (_touchCalibrationlData[0] == 0)) {
+    Log.info(F("DISP: Running calibration sequence." CR));
+
+    clear();
+    myDisplay.printLineCentered(4, "Calibration started");
+    _tft->calibrateTouch(_touchCalibrationlData, TFT_GREEN, TFT_BLACK, 15);
+
+    file = LittleFS.open(TTF_CALIBRATION_FILENAME, "w");
+
+    if (file) {
+      file.write(reinterpret_cast<uint8_t *>(&this->_touchCalibrationlData),
+                 sizeof(_touchCalibrationlData));
+      file.close();
+    } else {
+      Log.warning(F("DISP: Failed to write calibration data to file." CR));
+    }
+
+    myDisplay.printLineCentered(4, "Touch calibration completed");
+    delay(3000);
+  }
+
+  myDisplay.printLineCentered(4, "");
+#endif
+}
+
+bool Display::getTouch(uint16_t *x, uint16_t *y) {
+#if defined(ENABLE_TFT)
+  uint16_t xt, yt;
+  uint8_t b = _tft->getTouch(&xt, &yt);
+
+  if (b) {
+    if (xt < 0) xt = 0;
+    if (yt < 0) yt = 0;
+
+    if (_rotation == Rotation::ROTATION_90) {
+      *x = yt;
+      *y = TFT_HEIGHT - xt;
+    } else {  // Rotation::ROTATION_270
+      *x = yt;
+      *y = TFT_HEIGHT - xt;
+    }
+  }
+
+  return b;
+#else
+  return false;
+#endif
+}
+
+void Display::createUI() {
+#if defined(ENABLE_LVGL)
+  if (!_tft) return;
+
+  Log.notice(F("DISP: Using LVL v%d.%d.%d." CR), lv_version_major(),
+             lv_version_minor(), lv_version_patch());
+
+  lv_init();
+  lv_log_register_print_cb(log_print);
+
+#define DRAW_BUF_SIZE (TFT_WIDTH * TFT_HEIGHT / 10 * (LV_COLOR_DEPTH / 8))
+
+  void *draw_buf = ps_malloc(DRAW_BUF_SIZE);
+
+  if (!draw_buf) {
+    Log.error(
+        F("DISP: Failed to allocate ps ram for display buffer, size=%d" CR),
+        DRAW_BUF_SIZE);
+  }
+
+  lvglData._display =
+      lv_tft_espi_create(TFT_WIDTH, TFT_HEIGHT, draw_buf, DRAW_BUF_SIZE);
+
+  if (_rotation == Rotation::ROTATION_90) {
+    lv_display_set_rotation(lvglData._display, LV_DISPLAY_ROTATION_90);
+  } else {  // Rotation::ROTATION_270
+    lv_display_set_rotation(lvglData._display, LV_DISPLAY_ROTATION_270);
+  }
+
+  // Initialize an LVGL input device object (Touchscreen)
+  lv_indev_t *indev = lv_indev_create();
+  lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
+  lv_indev_set_read_cb(indev, touchscreenHandler);
+
+  // Create components
+  lv_style_init(&lvglData._styleLeft);
+  lv_style_init(&lvglData._styleCenter);
+  lv_style_init(&lvglData._styleStatusBar);
+  lv_style_set_text_font(&lvglData._styleLeft, &lv_font_montserrat_18);
+  lv_style_set_text_font(&lvglData._styleCenter, &lv_font_montserrat_18);
+  lv_style_set_text_font(&lvglData._styleStatusBar, &lv_font_montserrat_12);
+  lv_style_set_text_align(&lvglData._styleLeft, LV_TEXT_ALIGN_LEFT);
+  lv_style_set_text_align(&lvglData._styleCenter, LV_TEXT_ALIGN_CENTER);
+  lv_style_set_text_align(&lvglData._styleStatusBar, LV_TEXT_ALIGN_CENTER);
+  // lv_style_set_outline_width(&_styleLeft, 1);
+  // lv_style_set_outline_width(&_styleCenter, 1);
+
+  Log.notice(F("DISP: Creating UI components." CR));
+
+  createLabel("Beer", 5, 82, 90, 26, &lvglData._styleLeft);
+  createLabel("Chamber", 5, 119, 90, 26, &lvglData._styleLeft);
+
+  lvglData._txtState = createLabel("", 5, 10, 195, 26, &lvglData._styleLeft);
+  lvglData._txtMode = createLabel("", 5, 44, 195, 26, &lvglData._styleLeft);
+  lvglData._txtBeerTemp =
+      createLabel("", 110, 82, 90, 26, &lvglData._styleLeft);
+  lvglData._txtChamberTemp =
+      createLabel("", 110, 119, 90, 26, &lvglData._styleLeft);
+  lvglData._txtTargetTemp =
+      createLabel("", 110, 171, 90, 26, &lvglData._styleCenter);
+  lvglData._txtStatusBar =
+      createLabel("", 5, 214, 305, 16, &lvglData._styleStatusBar);
+
+  lvglData._btnBeer =
+      createButton("Beer", 205, 10, 100, 44, btnBeerEventHandler);
+  lvglData._btnChamber =
+      createButton("Chamber", 205, 60, 100, 44, btnChamberEventHandler);
+  lvglData._btnOff = createButton("Off", 205, 110, 100, 44, btnOffEventHandler);
+  lvglData._btnUp = createButton("+", 230, 161, 44, 44, btnUpEventHandler);
+  lvglData._btnDown = createButton("-", 30, 161, 44, 44, btnDownEventHandler);
+
+  xTaskCreatePinnedToCore(lvgl_loop_handler,  // Function to implement the task
+                          "LVGL_Handler",     // Name of the task
+                          10000,              // Stack size in words
+                          NULL,               // Task input parameter
+                          0,                  // Priority of the task
+                          &lvglTaskHandler,   // Task handle.
+                          0);                 // Core where the task should run
+#endif
+}
+
+void Display::handleButtonEvent(char btn) {
+#if defined(ENABLE_LVGL)
+  Log.info(F("DISP: Button pressed, char=%c" CR), btn);
+
+  switch (btn) {
+    case 'o':
+    case 'b':
+    case 'f':
+      lvglData._mode = btn;
+      setNewControllerMode(lvglData._mode, lvglData._targetTemperature);
+      break;
+
+    case '+':
+      lvglData._targetTemperature += 0.5;
+      break;
+
+    case '-':
+      lvglData._targetTemperature -= 0.5;
+      break;
+  }
+#endif
+}
+
+// LVGL Wrappers and Handlers
+// **************************************************************************************************
+
+#if defined(ENABLE_LVGL)
+void log_print(lv_log_level_t level, const char *buf) {
+  LV_UNUSED(level);
+  Log.notice(F("LVGL: %s." CR), buf);
+}
+
+void touchscreenHandler(lv_indev_t *indev, lv_indev_data_t *data) {
+  uint16_t x = 0, y = 0;
+
+  if (myDisplay.getTouch(&x, &y)) {
+    data->state = LV_INDEV_STATE_PRESSED;
+    data->point.x = x;
+    data->point.y = y;
+
+    // Log.notice(F("LVGL : %d:%d." CR), x, y);
+  } else {
+    data->state = LV_INDEV_STATE_RELEASED;
+  }
+}
+
+void btnBeerEventHandler(lv_event_t *e) {
+  if (lv_event_get_code(e) == LV_EVENT_CLICKED) {
+    myDisplay.handleButtonEvent('b');
+  }
+}
+
+void btnChamberEventHandler(lv_event_t *e) {
+  if (lv_event_get_code(e) == LV_EVENT_CLICKED) {
+    myDisplay.handleButtonEvent('f');
+  }
+}
+
+void btnOffEventHandler(lv_event_t *e) {
+  if (lv_event_get_code(e) == LV_EVENT_CLICKED) {
+    myDisplay.handleButtonEvent('o');
+  }
+}
+
+void btnUpEventHandler(lv_event_t *e) {
+  if (lv_event_get_code(e) == LV_EVENT_CLICKED) {
+    myDisplay.handleButtonEvent('+');
+  }
+}
+
+void btnDownEventHandler(lv_event_t *e) {
+  if (lv_event_get_code(e) == LV_EVENT_CLICKED) {
+    myDisplay.handleButtonEvent('-');
+  }
+}
+
+lv_obj_t *createLabel(const char *label, int32_t x, int32_t y, int32_t w,
+                      int32_t h, lv_style_t *style) {
+  lv_obj_t *lbl = lv_label_create(lv_screen_active());
+  lv_label_set_text(lbl, label);
+  lv_obj_set_size(lbl, w, h);
+  lv_obj_set_pos(lbl, x, y);
+  lv_obj_add_style(lbl, style, 0);
+  return lbl;
+}
+
+void updateLabel(lv_obj_t *obj, const char *label) {
+  lv_label_set_text(obj, label);
+}
+
+lv_obj_t *createButton(const char *label, int32_t x, int32_t y, int32_t w,
+                       int32_t h, lv_event_cb_t handler) {
+  lv_obj_t *btn;
+  btn = lv_button_create(lv_screen_active());
+  lv_obj_set_size(btn, w, h);
+  lv_obj_set_pos(btn, x, y);
+  lv_obj_add_event_cb(btn, handler, LV_EVENT_ALL, NULL);
+  lv_obj_t *lbl = lv_label_create(btn);
+  lv_label_set_text(lbl, label);
+  lv_obj_center(lbl);
+  return btn;
+}
+
+void lvgl_loop_handler(void *parameter) {
+  LoopTimer taskLoop(500);
+
+  for (;;) {
+    if (taskLoop.hasExpired()) {
+      taskLoop.reset();
+
+      // Set dark mode if this is enabled in the settings
+      lv_obj_t *scr = lv_scr_act();
+      lv_color_t color;
+
+      if(lvglData._darkmode) { 
+        lv_obj_set_style_bg_color(scr, lv_color_hex(0x1F1F1F), LV_PART_MAIN);
+        lv_obj_set_style_bg_opa(scr, LV_OPA_COVER, LV_PART_MAIN);
+        color = lv_color_white();
+      } else {
+        lv_obj_set_style_bg_color(scr, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
+        lv_obj_set_style_bg_opa(scr, LV_OPA_COVER, LV_PART_MAIN);
+        color = lv_color_black();
+      }
+
+      lv_obj_set_style_text_color(lvglData._txtState, color, 0);
+      lv_obj_set_style_text_color(lvglData._txtMode, color, 0);
+      lv_obj_set_style_text_color(lvglData._txtBeerTemp, color, 0);
+      lv_obj_set_style_text_color(lvglData._txtChamberTemp, color, 0);
+      lv_obj_set_style_text_color(lvglData._txtTargetTemp, color, 0);
+      lv_obj_set_style_text_color(lvglData._txtStatusBar, color, 0);
+
+      // Show/Hide buttons
+      if (!lvglData._showBeerBtn)
+        lv_obj_add_flag(lvglData._btnBeer, LV_OBJ_FLAG_HIDDEN);
+      else
+        lv_obj_remove_flag(lvglData._btnBeer, LV_OBJ_FLAG_HIDDEN);
+
+      if (!lvglData._showChamberBtn)
+        lv_obj_add_flag(lvglData._btnChamber, LV_OBJ_FLAG_HIDDEN);
+      else
+        lv_obj_remove_flag(lvglData._btnChamber, LV_OBJ_FLAG_HIDDEN);
+
+      // Update text
+      char s[20];
+      snprintf(s, sizeof(s), "%0.1F°%c", lvglData._targetTemperature,
+               lvglData._tempFormat);
+      updateLabel(lvglData._txtTargetTemp, s);
+
+      updateLabel(lvglData._txtState, lvglData._dataState.c_str());
+      updateLabel(lvglData._txtMode, lvglData._dataMode.c_str());
+      updateLabel(lvglData._txtBeerTemp, lvglData._dataBeerTemp.c_str());
+      updateLabel(lvglData._txtChamberTemp, lvglData._dataChamberTemp.c_str());
+      updateLabel(lvglData._txtStatusBar, lvglData._dataStatusBar.c_str());
+    }
+
+    lv_task_handler();
+    lv_tick_inc(5);
+    delay(5);
+  }
+}
+#endif
+
+// EOF
