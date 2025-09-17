@@ -69,7 +69,8 @@ void TempSensorManager::setup() {
 void TempSensorManager::read() {
   if (!_sensor) return;
 
-  _lastTemperature = _sensor->read();
+  for (int i = 0; i < getSensorCount() && i < 5; i++)
+    _lastTemperature[i] = _sensor->read(i);
 }
 
 // EOF

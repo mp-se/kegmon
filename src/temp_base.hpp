@@ -26,16 +26,15 @@ SOFTWARE.
 
 #include <Arduino.h>
 
-constexpr float TEMP_READING_FAILED = NAN;
-
 class TempSensorBase {
  public:
   TempSensorBase() = default;
   virtual ~TempSensorBase() {}
 
   virtual void setup() = 0;
-  virtual bool hasSensor() = 0;
-  virtual float read() = 0;
+  virtual float read(int index) = 0;
+  virtual bool hasSensor() const = 0;
+  virtual int getSensorCount() const = 0;
 };
 
 #endif  // SRC_TEMP_BASE_HPP_

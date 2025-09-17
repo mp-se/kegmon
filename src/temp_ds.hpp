@@ -40,8 +40,9 @@ class TempSensorDS : public TempSensorBase {
   ~TempSensorDS();
 
   void setup() override;
-  bool hasSensor() override { return _hasSensor; }
-  float read() override;
+  float read(int index) override;
+  bool hasSensor() const override { return _hasSensor; }
+  int getSensorCount() const override;
 };
 
 #endif  // SRC_TEMP_DS_HPP_

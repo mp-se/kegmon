@@ -34,8 +34,8 @@ TempSensorChamberCtrl::~TempSensorChamberCtrl() {
   if (_push) delete _push;
 }
 
-float TempSensorChamberCtrl::read() {
-  float temp = TEMP_READING_FAILED;
+float TempSensorChamberCtrl::read(int) {
+  float temp = NAN;
   String url = myConfig.getChamberCtrlUrl();
 
   if (url.length() > 0 || _push != NULL) {

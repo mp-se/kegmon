@@ -30,7 +30,8 @@ SOFTWARE.
 class TempSensorManager {
  private:
   std::unique_ptr<TempSensorBase> _sensor;
-  float _lastTemperature = TEMP_READING_FAILED;
+  float _lastTemperature[5] = {NAN, NAN, NAN, NAN,
+                               NAN};  // Support for scale bases + one extra
 
  public:
   TempSensorManager() {}
@@ -41,12 +42,21 @@ class TempSensorManager {
   void setup();
   void read();
 
-  bool hasTemp() { return !isnan(_lastTemperature); }
-  bool hasSensor() { return _sensor.get()->hasSensor(); }
+  bool hasTemp(int index = 0) const {
+    if (index < 0 || index >= 5) return false;
+    return !isnan(_lastTemperature[index]);
+  }
+  bool hasSensor() const { return _sensor.get()->hasSensor(); }
+  int getSensorCount() const { return _sensor.get()->getSensorCount(); }
 
-  float getLastTempC() { return _lastTemperature; }
-  float getLastTempF() {
-    return isnan(_lastTemperature) ? NAN : convertCtoF(_lastTemperature);
+  float getLastTempC(int index = 0) const {
+    if (index < 0 || index >= 5) return NAN;
+    return _lastTemperature[index];
+  }
+  float getLastTempF(int index = 0) const {
+    return isnan(_lastTemperature[index])
+               ? NAN
+               : convertCtoF(_lastTemperature[index]);
   }
 };
 

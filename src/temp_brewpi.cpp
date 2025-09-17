@@ -32,8 +32,8 @@ TempSensorBrewpi::~TempSensorBrewpi() {
   if (_push) delete _push;
 }
 
-float TempSensorBrewpi::read() {
-  float temp = TEMP_READING_FAILED;
+float TempSensorBrewpi::read(int) {
+  float temp = NAN;
   String url = myConfig.getBrewpiUrl();
 
   if (url.length() > 0 || _push != NULL) {

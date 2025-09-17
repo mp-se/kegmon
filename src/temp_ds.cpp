@@ -44,19 +44,26 @@ void TempSensorDS::setup() {
     _hasSensor = false;
 }
 
-float TempSensorDS::read() {
-  float temp = TEMP_READING_FAILED;
+float TempSensorDS::read(int index) {
+  float temp = NAN;
 
   if (!_dallas) return temp;
 
   if (_dallas->getDS18Count()) {
     _dallas->requestTemperatures();
-    temp = _dallas->getTempCByIndex(0);
+    temp = _dallas->getTempCByIndex(index);
   } else {
     Log.error(F("TEMP: No DS18B20 sensors found." CR));
   }
 
   return temp;
+}
+
+int TempSensorDS::getSensorCount() const {
+  if (_dallas)
+    return _dallas->getDS18Count();
+  else
+    return 0;
 }
 
 // EOF

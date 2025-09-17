@@ -37,8 +37,9 @@ class TempSensorChamberCtrl : public TempSensorBase {
   ~TempSensorChamberCtrl();
 
   void setup() override {}
-  bool hasSensor() override { return _hasSensor; }
-  float read() override;
+  float read(int index) override;
+  bool hasSensor() const override { return _hasSensor; }
+  int getSensorCount() const override { return _hasSensor ? 1 : 0; }
 };
 
 #endif  // SRC_TEMP_CHAMBERCTRL_HPP_
