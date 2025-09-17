@@ -1,7 +1,7 @@
 //
 //    FILE: HX711.cpp
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.6.2
+// VERSION: 0.6.3
 // PURPOSE: Library for load cells for UNO
 //     URL: https://github.com/RobTillaart/HX711_MP
 //     URL: https://github.com/RobTillaart/HX711
@@ -27,7 +27,7 @@ HX711::~HX711()
 }
 
 
-void HX711::begin(uint8_t dataPin, uint8_t clockPin, bool fastProcessor )
+void HX711::begin(uint8_t dataPin, uint8_t clockPin, bool fastProcessor, bool doReset )
 {
   _dataPin  = dataPin;
   _clockPin = clockPin;
@@ -37,14 +37,14 @@ void HX711::begin(uint8_t dataPin, uint8_t clockPin, bool fastProcessor )
   pinMode(_clockPin, OUTPUT);
   digitalWrite(_clockPin, LOW);
 
-  reset();
+  if (doReset) reset();
 }
 
 
 void HX711::reset()
 {
-  // power_down(); // Doing the power up / down will need a 418 ms delay before the board is usable again
-  // power_up();
+  power_down();
+  power_up();
   _gain     = HX711_CHANNEL_A_GAIN_128;
   _offset   = 0;
   _scale    = 1;
@@ -409,17 +409,17 @@ void HX711::power_down()
 void HX711::power_up()
 {
   digitalWrite(_clockPin, LOW);
+  delay(510); // wait for the HX711 to boot up
 }
 
 
 ///////////////////////////////////////////////////////////////
 //
-//  EXPERIMENTAL
 //  RATE PIN - works only if rate pin is exposed.
 //
 void HX711::set_rate_pin(uint8_t pin)
 {
-  _ratePin = pin; // Fix
+  _ratePin = pin;
   pinMode(_ratePin, OUTPUT);
   set_rate_10SPS();
 }

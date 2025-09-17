@@ -96,8 +96,8 @@ void Scale::setupScale(UnitIndex idx, bool force, int pinData, int pinClock) {
 #endif
     _hxScale[idx] = new HX711();
     // _hxScale[idx]->begin(pinData, pinClock, 128); // Init of original bodge library
-    _hxScale[idx]->begin(pinData, pinClock, true);
-    delay(1000);
+    _hxScale[idx]->begin(pinData, pinClock, true, true);
+    // delay(1000);
     _hxScale[idx]->set_offset(myConfig.getScaleOffset(idx));
     _hxScale[idx]->set_raw_mode();
     Log.notice(
