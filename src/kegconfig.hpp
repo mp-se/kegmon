@@ -130,8 +130,8 @@ enum DisplayLayoutType {
 };
 enum TempSensorType {
   SensorDS18B20 = 0,
-  SensorBrewPI = 1,
-  SensorChamberCtrl = 2
+  SensorChamberCtrl = 1,
+  SensorBrewPI = 2,
 };
 
 float convertIncomingWeight(float w);
