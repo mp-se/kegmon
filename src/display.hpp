@@ -24,6 +24,8 @@ SOFTWARE.
 #ifndef SRC_DISPLAY_HPP_
 #define SRC_DISPLAY_HPP_
 
+#include <Arduino.h>
+
 #if defined(ENABLE_TFT)
 #include <TFT_eSPI.h>
 #else
@@ -82,7 +84,7 @@ class Display {
 
  private:
   // Basic TFT variables
-  TFT_eSPI* _tft = NULL;
+  TFT_eSPI* _tft = nullptr;
   FontSize _fontSize = FontSize::FONT_9;
   uint16_t _touchCalibrationlData[5] = {0, 0, 0, 0, 0};
   Rotation _rotation = ROTATION_90;

@@ -160,15 +160,14 @@ void loop() {
   myWebHandler.loop();
   myWifi.loop();
   mySerialWebSocket.loop();
-  myScale.loop(UnitIndex::U1);
-  myScale.loop(UnitIndex::U2);
-  myScale.loop(UnitIndex::U3);
-  myScale.loop(UnitIndex::U4);
+  myScale.loop(); // For running scheduled tasks
 
   if (abs(static_cast<int32_t>((millis() - loopMillis))) >
       loopInterval) {  // 2 seconds loop interval
     loopMillis = millis();
     loopCounter++;
+
+    // TODO: Reading of scale should be moved to its own background thread on the other CPU
 
     // Send updates to push targets at regular intervals (300 seconds / 5min)
     if (!(loopCounter % 300)) {
