@@ -102,14 +102,14 @@ class Display {
   void setRotation(Rotation rotation);
 
   // Misc methods
-  void setTargetTemperature(float t) { 
+  void setTargetTemperature(float t) {
 #if defined(ENABLE_LVGL)
-    lvglData._targetTemperature = t; 
+    lvglData._targetTemperature = t;
 #endif
   }
-  void setMode(char m) { 
+  void setMode(char m) {
 #if defined(ENABLE_LVGL)
-    lvglData._mode = m; 
+    lvglData._mode = m;
 #endif
   }
   void updateTemperatures(const char* mode, const char* state,
