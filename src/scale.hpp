@@ -33,7 +33,7 @@ SOFTWARE.
 
 // #define DEBUG_LINK_SCALES  // For test rig to use one scale for both...
 // #define USE_HX711_MP // Use alternative HX library with different interface
-#define USE_HX711 // Use alternative HX library with different interface
+#define USE_HX711  // Use alternative HX library with different interface
 
 class Scale {
  private:
@@ -41,23 +41,23 @@ class Scale {
    public:
     bool tare = false;
     bool findFactor = false;
-    float factorWeight = 0;
+    float factorWeight = 0.0;
   };
 
   HX711* _hxScale[4] = {nullptr, nullptr, nullptr, nullptr};
 
   Schedule _sched[4];
-  int32_t _lastRaw[4] = {0, 0, 0, 0};
+  float _lastRaw[4] = {0.0, 0.0, 0.0, 0.0};
 
   Scale(const Scale&) = delete;
   void operator=(const Scale&) = delete;
 
   void tare(UnitIndex idx);
   void findFactor(UnitIndex idx, float weight);
-  int32_t readRaw(UnitIndex idx);
   void setupScale(UnitIndex idx, bool force, int pinData, int pinClock);
   void loopScale(UnitIndex idx);
   void setScaleFactor(UnitIndex idx);
+  float readRaw(UnitIndex idx);
 
  public:
   Scale() {}

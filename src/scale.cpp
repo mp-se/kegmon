@@ -26,7 +26,7 @@ SOFTWARE.
 #include <scale.hpp>
 
 bool Scale::isReady(UnitIndex idx) const {
-  if(!_hxScale[idx]) {
+  if (!_hxScale[idx]) {
     Log.verbose(F("SCAL: HX711 scale not ready [%d]." CR), idx);
     return false;
   }
@@ -66,7 +66,7 @@ void Scale::findFactor(UnitIndex idx, float weight) {
   read(idx, true);
 }
 
-int32_t Scale::readRaw(UnitIndex idx) {
+float Scale::readRaw(UnitIndex idx) {
 #if defined(DEBUG_LINK_SCALES)
   idx = UnitIndex::U1;
 #endif
@@ -75,7 +75,7 @@ int32_t Scale::readRaw(UnitIndex idx) {
 #endif
   if (!_hxScale[idx]) return 0;
   PERF_BEGIN("scale-readraw");
-  int32_t l = _hxScale[idx]->read_average(
+  float l = _hxScale[idx]->read_average(
       myConfig.getScaleReadCountCalibration());  // get the raw value without
                                                  // applying scaling factor
   _lastRaw[idx] = l;
@@ -91,27 +91,23 @@ void Scale::setupScale(UnitIndex idx, bool force, int pinData, int pinClock) {
     if (_hxScale[idx]) delete _hxScale[idx];
 
 #if LOG_LEVEL == 6
-    Log.verbose(F("SCAL: HX711 initializing scale [0], using offset %l." CR),
-                myConfig.getScaleOffset(idx));
+    Log.verbose(F("SCAL: HX711 initializing scale, using offset %l [%d]." CR),
+                myConfig.getScaleOffset(idx), idx);
 #endif
     _hxScale[idx] = new HX711();
-    // _hxScale[idx]->begin(pinData, pinClock, 128); // Init of original bodge library
     _hxScale[idx]->begin(pinData, pinClock, true, true);
-    // delay(1000);
     _hxScale[idx]->set_offset(myConfig.getScaleOffset(idx));
     _hxScale[idx]->set_raw_mode();
     Log.notice(
-        F("SCAL: Initializing HX711 bus #%d on pins Data=%d,Clock=%d,rate=%d" CR),
-        idx + 1, pinData, pinClock, _hxScale[idx]->get_rate());
+        F("SCAL: Initializing HX711 on pins Data=%d,Clock=%d,rate=%d [%d]." CR),
+        pinData, pinClock, _hxScale[idx]->get_rate(), idx);
     setScaleFactor(idx);
 
     if (_hxScale[idx]->is_ready()) {
-//    if (_hxScale[idx]->wait_ready_retry(3, 100)) {
-      Log.notice(F("SCAL: HX711 scale [%d] found." CR), idx);
-     // _hxScale[idx]->get_units(1);
+      Log.notice(F("SCAL: HX711 scale found [%d]." CR), idx);
     } else {
       Log.error(
-          F("SCAL: HX711 scale [%d] not responding, disabling interface." CR),
+          F("SCAL: HX711 scale not responding, disabling interface [%d]." CR),
           idx);
       delete _hxScale[idx];
       _hxScale[idx] = nullptr;
@@ -122,7 +118,7 @@ void Scale::setupScale(UnitIndex idx, bool force, int pinData, int pinClock) {
 void Scale::setScaleFactor(UnitIndex idx) {
   if (!_hxScale[idx]) return;
 
-  float fs = myConfig.getScaleFactor(idx); 
+  float fs = myConfig.getScaleFactor(idx);
 
   if (fs == 0.0) fs = 1.0;
 
