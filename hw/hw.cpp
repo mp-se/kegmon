@@ -91,7 +91,7 @@ void setup() {
   myDisplay.printLineCentered(2, "Showing connected sensors");
 
   char buf[40];
-  snprintf(&buf[0], sizeof(buf), "temp: con=%s #=%d", myTemp.hasSensor() ? "yes" : "no", 0); // TODO: Show how many temp sensores are connected in total
+  snprintf(&buf[0], sizeof(buf), "temp: con=%s cnt=%d", myTemp.hasSensor() ? "yes" : "no", myTemp.getSensorCount());
   myDisplay.printLineCentered(3, &buf[0]);
 
   for(int i = 0; i < 4; i++) {
@@ -115,6 +115,7 @@ void setup() {
     snprintf(&buf[0], sizeof(buf), "%d: offset=%d factor=%.2F", i+1, myConfig.getScaleOffset((UnitIndex)i), myConfig.getScaleFactor((UnitIndex)i));
     myDisplay.printLineCentered(4+i, &buf[0]);
     Log.notice(F("Main: %s" CR), &buf[0]);
+    yield();
   }
 
   delay(5000);
@@ -129,41 +130,18 @@ void loop() {
     loopMillis = millis();
     loopCounter++;
 
-    // Try to reconnect to scales if they are missing (6 seconds)
-    // if (!(loopCounter % 3)) {
-    //   if (!myScale.isConnected(UnitIndex::U1) ||
-    //       !myScale.isConnected(UnitIndex::U2) ||
-    //       !myScale.isConnected(UnitIndex::U3) ||
-    //       !myScale.isConnected(UnitIndex::U4)) {
-    //     myScale.setup();  // Try to reconnect to scale
-    //   }
-    // }
-
-    // The temp sensor should not be read too often. Reading every 4 seconds.
-    // if (!(loopCounter % 1)) {
-    //   myTemp.read();
-    // }
-
-    // Check if the temp sensor exist and try to reinitialize
-    // if (!(loopCounter % 3)) {
-    //   if (!myTemp.hasSensor()) {
-    //     myTemp.setup();
-    //   }
-    // }
-
-    // float t = myTemp.getLastTempC();
-
     // Show the values
     myDisplay.printLineCentered(2, "Measuring");
 
     char buf[40];
-    myDisplay.printLineCentered(3, ""); // Clear line
 
     for(int i = 0; i < 4; i++) {
+      float t = myTemp.getLastTempC(i);
+
       if(!myScale.isConnected((UnitIndex)i)) {
-        snprintf(&buf[0], sizeof(buf), "%d: not connected", i+1);
+        snprintf(&buf[0], sizeof(buf), "%d: w=missing, t=%.1F", i+1, t);
       } else {
-        snprintf(&buf[0], sizeof(buf), "%d: w=%.2F", i+1, myScale.read((UnitIndex)i, true));      
+        snprintf(&buf[0], sizeof(buf), "%d: w=%.2F, t=%.1F", i+1, myScale.read((UnitIndex)i, true), t);
       }
 
       myDisplay.printLineCentered(4+i, &buf[0]);
