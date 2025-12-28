@@ -128,40 +128,36 @@ void KegWebHandler::setupWebHandlers() {
                 std::placeholders::_2));
   _server->addHandler(handler);
   _server->on("/api/scale", HTTP_GET,
-              std::bind(&KegWebHandler::webScale, this, std::placeholders::_1));
+              [this](AsyncWebServerRequest *request) { this->webScale(request); });
   _server->on(
       "/api/config", HTTP_GET,
-      std::bind(&KegWebHandler::webConfigGet, this, std::placeholders::_1));
+      [this](AsyncWebServerRequest *request) { this->webConfigGet(request); });
   handler = new AsyncCallbackJsonWebHandler(
       "/api/config", std::bind(&KegWebHandler::webConfigPost, this,
                                std::placeholders::_1, std::placeholders::_2));
   _server->addHandler(handler);
   _server->on("/api/stability/clear", HTTP_GET,
-              std::bind(&KegWebHandler::webStabilityClear, this,
-                        std::placeholders::_1));
+              [this](AsyncWebServerRequest *request) { this->webStabilityClear(request); });
   _server->on(
       "/api/stability", HTTP_GET,
-      std::bind(&KegWebHandler::webStability, this, std::placeholders::_1));
+      [this](AsyncWebServerRequest *request) { this->webStability(request); });
   _server->on(
       "/api/status", HTTP_GET,
-      std::bind(&KegWebHandler::webStatus, this, std::placeholders::_1));
+      [this](AsyncWebServerRequest *request) { this->webStatus(request); });
   handler = new AsyncCallbackJsonWebHandler(
       "/api/brewspy/tap",
       std::bind(&KegWebHandler::webHandleBrewspy, this, std::placeholders::_1,
                 std::placeholders::_2));
   _server->addHandler(handler);
   _server->on("/api/logs/clear", HTTP_GET,
-              std::bind(&KegWebHandler::webHandleLogsClear, this,
-                        std::placeholders::_1));
+              [this](AsyncWebServerRequest *request) { this->webHandleLogsClear(request); });
   _server->on("/api/hardware/status", HTTP_GET,
-              std::bind(&KegWebHandler::webHardwareScanStatus, this,
-                        std::placeholders::_1));
+              [this](AsyncWebServerRequest *request) { this->webHardwareScanStatus(request); });
   _server->on(
       "/api/hardware", HTTP_GET,
-      std::bind(&KegWebHandler::webHardwareScan, this, std::placeholders::_1));
+      [this](AsyncWebServerRequest *request) { this->webHardwareScan(request); });
   _server->on("/api/factory", HTTP_GET,
-              std::bind(&KegWebHandler::webHandleFactoryDefaults, this,
-                        std::placeholders::_1));
+              [this](AsyncWebServerRequest *request) { this->webHandleFactoryDefaults(request); });
 }
 
 void KegWebHandler::webConfigGet(AsyncWebServerRequest *request) {
