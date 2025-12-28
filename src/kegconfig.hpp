@@ -173,8 +173,8 @@ class KegConfig : public BaseConfig {
   float _scaleDeviationDecreaseValue = 0.1;  // kg
   float _scaleKalmanDeviation = 0.05;
   uint32_t _scaleStableCount = 8;
-  int _scaleReadCount = 3;
-  int _scaleReadCountCalibration = 30;
+  int _scaleReadCount = 7; // Default in HX711 library, should be odd number 
+  int _scaleReadCountCalibration = 29;
   String _scaleTempCompensationFormula[2] = {"", ""};
 
   LevelDetectionType _levelDetection = LevelDetectionType::STATS;
@@ -369,22 +369,22 @@ class KegConfig : public BaseConfig {
   // This is the number of values in the statistics for the average value to be
   // classifed as stable. Loop interval is 2s
   uint32_t getScaleStableCount() { return _scaleStableCount; }
-  void setScaleStableCount(uint32_t i) {
+  /*void setScaleStableCount(uint32_t i) {
     _scaleStableCount = i;
     _saveNeeded = true;
-  }
+  }*/
 
   int getScaleReadCount() { return _scaleReadCount; }
-  void setScaleReadCount(uint32_t i) {
+  /*void setScaleReadCount(uint32_t i) {
     _scaleReadCount = i;
     _saveNeeded = true;
-  }
+  }*/
 
   int getScaleReadCountCalibration() { return _scaleReadCountCalibration; }
-  void setScaleReadCountCalibration(uint32_t i) {
+  /*void setScaleReadCountCalibration(uint32_t i) {
     _scaleReadCountCalibration = i;
     _saveNeeded = true;
-  }
+  }*/
 
   LevelDetectionType getLevelDetection() { return _levelDetection; }
   int getLevelDetectionAsInt() { return _levelDetection; }

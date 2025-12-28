@@ -62,7 +62,7 @@ enum LevelDetectionType { RAW = 0, STATS = 1 };
 #define PIN_SCALE_SCK1 42
 #define PIN_SCALE_SDA2 39
 #define PIN_SCALE_SCK2 40
-#define PIN_SCALE_SDA3 0
+#define PIN_SCALE_SDA3 18
 #define PIN_SCALE_SCK3 38
 #define PIN_SCALE_SDA4 16
 #define PIN_SCALE_SCK4 17

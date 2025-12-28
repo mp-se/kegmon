@@ -344,12 +344,12 @@ void KegConfig::parseJson(JsonObject& doc) {
     setScaleDeviationIncreaseValue(doc[PARAM_SCALE_DEVIATION_INCREASE]);
   if (!doc[PARAM_SCALE_DEVIATION_KALMAN].isNull())
     setScaleKalmanDeviationValue(doc[PARAM_SCALE_DEVIATION_KALMAN]);
-  if (!doc[PARAM_SCALE_READ_COUNT].isNull())
-    setScaleReadCount(doc[PARAM_SCALE_READ_COUNT]);
-  if (!doc[PARAM_SCALE_READ_COUNT_CALIBRATION].isNull())
-    setScaleReadCountCalibration(doc[PARAM_SCALE_READ_COUNT_CALIBRATION]);
-  if (!doc[PARAM_SCALE_STABLE_COUNT].isNull())
-    setScaleStableCount(doc[PARAM_SCALE_STABLE_COUNT]);
+  /*if (!doc[PARAM_SCALE_READ_COUNT].isNull())
+    setScaleReadCount(doc[PARAM_SCALE_READ_COUNT]);*/
+  /*if (!doc[PARAM_SCALE_READ_COUNT_CALIBRATION].isNull())
+    setScaleReadCountCalibration(doc[PARAM_SCALE_READ_COUNT_CALIBRATION]);*/
+  /*if (!doc[PARAM_SCALE_STABLE_COUNT].isNull())
+    setScaleStableCount(doc[PARAM_SCALE_STABLE_COUNT]);*/
 }
 
 float convertIncomingWeight(float w) {

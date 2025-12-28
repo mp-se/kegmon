@@ -95,9 +95,8 @@ void Scale::setupScale(UnitIndex idx, bool force, int pinData, int pinClock) {
                 myConfig.getScaleOffset(idx), idx);
 #endif
     _hxScale[idx] = new HX711();
-    _hxScale[idx]->begin(pinData, pinClock, true, true);
+    _hxScale[idx]->begin(pinData, pinClock, true, false);
     _hxScale[idx]->set_offset(myConfig.getScaleOffset(idx));
-    _hxScale[idx]->set_raw_mode();
     Log.notice(
         F("SCAL: Initializing HX711 on pins Data=%d,Clock=%d,rate=%d [%d]." CR),
         pinData, pinClock, _hxScale[idx]->get_rate(), idx);
@@ -177,6 +176,10 @@ float Scale::read(UnitIndex idx, bool skipValidation) {
 #endif
 
   PERF_BEGIN("scale-read");
+  // _hxScale[idx]->set_raw_mode(); // raw read
+  // _hxScale[idx]->set_average_mode(); // get average of multiple raw reads
+  // _hxScale[idx]->set_median_mode(); // Get median of multiple raw reads
+  _hxScale[idx]->set_medavg_mode(); // Get average of "middle half" of multiple raw reads.
   float raw = _hxScale[idx]->get_units(myConfig.getScaleReadCount());
 #if LOG_LEVEL == 6
   Log.verbose(F("SCAL: HX711 Reading weight=%F [%d]" CR), raw, idx);

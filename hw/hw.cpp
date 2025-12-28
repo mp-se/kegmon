@@ -66,7 +66,7 @@ void setup() {
 
   Log.notice(F("Main: Initialize display." CR));
   myDisplay.setup();
-  myDisplay.setFont(FontSize::FONT_12);
+  myDisplay.setFont(FontSize::FONT_9);
   myDisplay.printLineCentered(1, "Kegmon Hardware Test");
 
   myConfig.checkFileSystem();
@@ -112,7 +112,7 @@ void setup() {
     myScale.scheduleTare((UnitIndex)i);
     myScale.loop();
 
-    snprintf(&buf[0], sizeof(buf), "%d: offset=%d factor=%.2F", i+1, myConfig.getScaleOffset((UnitIndex)i), myConfig.getScaleFactor((UnitIndex)i));
+    snprintf(&buf[0], sizeof(buf), "%d: off=%d fact=%.2F", i+1, myConfig.getScaleOffset((UnitIndex)i), myConfig.getScaleFactor((UnitIndex)i));
     myDisplay.printLineCentered(4+i, &buf[0]);
     Log.notice(F("Main: %s" CR), &buf[0]);
     yield();
@@ -141,7 +141,11 @@ void loop() {
       if(!myScale.isConnected((UnitIndex)i)) {
         snprintf(&buf[0], sizeof(buf), "%d: w=missing, t=%.1F", i+1, t);
       } else {
-        snprintf(&buf[0], sizeof(buf), "%d: w=%.2F, t=%.1F", i+1, myScale.read((UnitIndex)i, true), t);
+        uint32_t timer = millis();
+        float w = myScale.read((UnitIndex)i, true); // Read without validation, no real scaling has been done
+
+        timer = millis() - timer;
+        snprintf(&buf[0], sizeof(buf), "%d: w=%.2F, t=%.1F, s=%d", i+1, w, t, timer);
       }
 
       myDisplay.printLineCentered(4+i, &buf[0]);
