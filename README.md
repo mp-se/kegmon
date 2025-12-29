@@ -5,6 +5,9 @@
 ![pr](https://img.shields.io/github/issues-pr/mp-se/kegmon)
 ![dev_build](https://img.shields.io/github/actions/workflow/status/mp-se/kegmon/pio-build.yaml?branch=dev)
 ![doc_build](https://img.shields.io/github/actions/workflow/status/mp-se/kegmon/doc-build.yaml?branch=master)
+![License](https://img.shields.io/github/license/mp-se/kegmon)
+![GitHub Stars](https://img.shields.io/github/stars/mp-se/kegmon)
+![Last Commit](https://img.shields.io/github/last-commit/mp-se/kegmon)
 
 # KegMon - Monitoring the volume in your kegs
 
