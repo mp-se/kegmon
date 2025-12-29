@@ -104,6 +104,7 @@ void setup() {
   PERF_BEGIN("setup-config");
   myConfig.loadFile();
   PERF_END("setup-config");
+  myConfig.setWifiScanAP(true);
 
   delay(4000);
 
@@ -145,6 +146,7 @@ void setup() {
         F("Main: Missing wifi config or double reset detected, entering wifi "
           "setup." CR));
     myDisplayLayout.showWifiPortal();
+    myWifi.enableImprov(true);
     myWifi.startAP();
     runMode = RunMode::wifiSetupMode;
   }
@@ -203,6 +205,8 @@ void loop() {
 
     // Send updates to push targets at regular intervals (300 seconds / 5min)
     if (!(loopCounter % 300)) {
+      Log.info(F("LOOP: Pushing updates to configured targets." CR));
+
       myPush.pushTempInformation(myTemp.getLastTempC(), true);
 
       if (myLevelDetection.hasStableWeight(UnitIndex::U1))

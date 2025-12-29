@@ -31,7 +31,7 @@ constexpr auto PARAM_PLATFORM = "platform";
 KegConfig::KegConfig(String baseMDNS, String fileName)
     : BaseConfig(baseMDNS, fileName) {}
 
-void KegConfig::createJson(JsonObject& doc) {
+void KegConfig::createJson(JsonObject& doc) const {
   // Call base class functions
   createJsonBase(doc);
   createJsonWifi(doc);
