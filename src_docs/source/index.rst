@@ -7,7 +7,7 @@ Welcome to KegMon - Keg Level Monitor
 -------------------------------------
 
 .. note::
-  Reflects version *v1.0.0 beta2*, Last updated 2024-09-09
+  Reflects version *v1.2.0*, Last updated 2025-12-29
 
 Introduction
 ============

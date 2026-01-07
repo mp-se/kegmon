@@ -182,27 +182,29 @@ class KegConfig : public BaseConfig {
  public:
   KegConfig(String baseMDNS, String fileName);
 
-  void createJson(JsonObject& doc);
+  void createJson(JsonObject& doc) const;
   void parseJson(JsonObject& doc);
   void migrateSettings();
 
-  const char* getBrewfatherUserKey() { return _brewfatherUserKey.c_str(); }
+  const char* getBrewfatherUserKey() const {
+    return _brewfatherUserKey.c_str();
+  }
   void setBrewfatherUserKey(String s) {
     _brewfatherUserKey = s;
     _saveNeeded = true;
   }
-  const char* getBrewfatherApiKey() { return _brewfatherApiKey.c_str(); }
+  const char* getBrewfatherApiKey() const { return _brewfatherApiKey.c_str(); }
   void setBrewfatherApiKey(String s) {
     _brewfatherApiKey = s;
     _saveNeeded = true;
   }
 
-  const char* getBarhelperApiKey() { return _barhelperApiKey.c_str(); }
+  const char* getBarhelperApiKey() const { return _barhelperApiKey.c_str(); }
   void setBarhelperApiKey(String s) {
     _barhelperApiKey = s;
     _saveNeeded = true;
   }
-  const char* getBarhelperMonitor(UnitIndex idx) {
+  const char* getBarhelperMonitor(UnitIndex idx) const {
     return _barhelperMonitor[idx].c_str();
   }
   void setBarhelperMonitor(UnitIndex idx, String s) {
@@ -210,25 +212,25 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }
 
-  const char* getBrewpiUrl() { return _brewpiUrl.c_str(); }
+  const char* getBrewpiUrl() const { return _brewpiUrl.c_str(); }
   void setBrewpiUrl(String s) {
     _brewpiUrl = s;
     _saveNeeded = true;
   }
 
-  const char* getChamberCtrlUrl() { return _chamberCtrlUrl.c_str(); }
+  const char* getChamberCtrlUrl() const { return _chamberCtrlUrl.c_str(); }
   void setChamberCtrlUrl(String s) {
     _chamberCtrlUrl = s;
     _saveNeeded = true;
   }
 
-  const char* getBrewLoggerUrl() { return _brewLoggerUrl.c_str(); }
+  const char* getBrewLoggerUrl() const { return _brewLoggerUrl.c_str(); }
   void setBrewLoggerUrl(String s) {
     _brewLoggerUrl = s;
     _saveNeeded = true;
   }
 
-  const char* getBrewspyToken(UnitIndex idx) {
+  const char* getBrewspyToken(UnitIndex idx) const {
     return _brewspyToken[idx].c_str();
   }
   void setBrewspyToken(UnitIndex idx, String s) {
@@ -236,58 +238,60 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }
 
-  const char* getBeerName(UnitIndex idx) { return _beer[idx]._name.c_str(); }
+  const char* getBeerName(UnitIndex idx) const {
+    return _beer[idx]._name.c_str();
+  }
   void setBeerName(UnitIndex idx, String s) {
     _beer[idx]._name = s;
     _saveNeeded = true;
   }
-  const char* getBeerId(UnitIndex idx) { return _beer[idx]._id.c_str(); }
+  const char* getBeerId(UnitIndex idx) const { return _beer[idx]._id.c_str(); }
   void setBeerId(UnitIndex idx, String s) {
     _beer[idx]._id = s;
     _saveNeeded = true;
   }
-  float getBeerABV(UnitIndex idx) { return _beer[idx]._abv; }
+  float getBeerABV(UnitIndex idx) const { return _beer[idx]._abv; }
   void setBeerABV(UnitIndex idx, float f) {
     _beer[idx]._abv = f;
     _saveNeeded = true;
   }
-  float getBeerFG(UnitIndex idx) { return _beer[idx]._fg; }
+  float getBeerFG(UnitIndex idx) const { return _beer[idx]._fg; }
   void setBeerFG(UnitIndex idx, float f) {
     _beer[idx]._fg = f;
     _saveNeeded = true;
   }
-  int getBeerEBC(UnitIndex idx) { return _beer[idx]._ebc; }
+  int getBeerEBC(UnitIndex idx) const { return _beer[idx]._ebc; }
   void setBeerEBC(UnitIndex idx, int i) {
     _beer[idx]._ebc = i;
     _saveNeeded = true;
   }
-  int getBeerIBU(UnitIndex idx) { return _beer[idx]._ibu; }
+  int getBeerIBU(UnitIndex idx) const { return _beer[idx]._ibu; }
   void setBeerIBU(UnitIndex idx, int i) {
     _beer[idx]._ibu = i;
     _saveNeeded = true;
   }
 
-  float getKegWeight(UnitIndex idx) { return _kegWeight[idx]; }
+  float getKegWeight(UnitIndex idx) const { return _kegWeight[idx]; }
   void setKegWeight(UnitIndex idx, float f) {
     _kegWeight[idx] = f;
     _saveNeeded = true;
   }
 
-  float getKegVolume(UnitIndex idx) { return _kegVolume[idx]; }
+  float getKegVolume(UnitIndex idx) const { return _kegVolume[idx]; }
   void setKegVolume(UnitIndex idx, float f) {
     _kegVolume[idx] = f;
     _saveNeeded = true;
   }
 
-  float getGlassVolume(UnitIndex idx) { return _glassVolume[idx]; }
+  float getGlassVolume(UnitIndex idx) const { return _glassVolume[idx]; }
   void setGlassVolume(UnitIndex idx, float f) {
     _glassVolume[idx] = f;
     _saveNeeded = true;
   }
 
-  const char* getWeightUnit() { return _weightUnit.c_str(); }
-  bool isWeightUnitKG() { return _weightUnit.equals(WEIGHT_KG); }
-  bool isWeightUnitLBS() { return _weightUnit.equals(WEIGHT_LBS); }
+  const char* getWeightUnit() const { return _weightUnit.c_str(); }
+  bool isWeightUnitKG() const { return _weightUnit.equals(WEIGHT_KG); }
+  bool isWeightUnitLBS() const { return _weightUnit.equals(WEIGHT_LBS); }
   void setWeightUnit(String s) {
     if (!s.compareTo(WEIGHT_KG) || !s.compareTo(WEIGHT_LBS)) {
       _weightUnit = s;
@@ -295,10 +299,10 @@ class KegConfig : public BaseConfig {
     }
   }
 
-  const char* getVolumeUnit() { return _volumeUnit.c_str(); }
-  bool isVolumeUnitCL() { return _volumeUnit.equals(VOLUME_CL); }
-  bool isVolumeUnitUSOZ() { return _volumeUnit.equals(VOLUME_US); }
-  bool isVolumeUnitUKOZ() { return _volumeUnit.equals(VOLUME_UK); }
+  const char* getVolumeUnit() const { return _volumeUnit.c_str(); }
+  bool isVolumeUnitCL() const { return _volumeUnit.equals(VOLUME_CL); }
+  bool isVolumeUnitUSOZ() const { return _volumeUnit.equals(VOLUME_US); }
+  bool isVolumeUnitUKOZ() const { return _volumeUnit.equals(VOLUME_UK); }
   void setVolumeUnit(String s) {
     if (!s.compareTo(VOLUME_CL) || !s.compareTo(VOLUME_UK) ||
         !s.compareTo(VOLUME_US)) {
@@ -307,20 +311,20 @@ class KegConfig : public BaseConfig {
     }
   }
 
-  int32_t getScaleOffset(UnitIndex idx) { return _scaleOffset[idx]; }
+  int32_t getScaleOffset(UnitIndex idx) const { return _scaleOffset[idx]; }
   void setScaleOffset(UnitIndex idx, int32_t l) {
     _scaleOffset[idx] = l;
     _saveNeeded = true;
   }
 
-  float getScaleFactor(UnitIndex idx) { return _scaleFactor[idx]; }
+  float getScaleFactor(UnitIndex idx) const { return _scaleFactor[idx]; }
   void setScaleFactor(UnitIndex idx, float f) {
     _scaleFactor[idx] = f;
     _saveNeeded = true;
   }
 
-  DisplayLayoutType getDisplayLayoutType() { return _displayLayout; }
-  int getDisplayLayoutTypeAsInt() { return _displayLayout; }
+  DisplayLayoutType getDisplayLayoutType() const { return _displayLayout; }
+  int getDisplayLayoutTypeAsInt() const { return _displayLayout; }
   void setDisplayLayoutType(DisplayLayoutType d) {
     _displayLayout = d;
     _saveNeeded = true;
@@ -330,8 +334,8 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }
 
-  TempSensorType getTempSensorType() { return _tempSensor; }
-  int getTempSensorTypeAsInt() { return _tempSensor; }
+  TempSensorType getTempSensorType() const { return _tempSensor; }
+  int getTempSensorTypeAsInt() const { return _tempSensor; }
   void setTempSensorType(TempSensorType t) {
     _tempSensor = t;
     _saveNeeded = true;
@@ -342,7 +346,7 @@ class KegConfig : public BaseConfig {
   }
 
   // This is the maximum allowed deviation
-  float getScaleDeviationDecreaseValue() {
+  float getScaleDeviationDecreaseValue() const {
     return _scaleDeviationDecreaseValue;
   }  // 0.1 kg
   void setScaleDeviationDecreaseValue(float f) {
@@ -350,7 +354,7 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }
 
-  float getScaleDeviationIncreaseValue() {
+  float getScaleDeviationIncreaseValue() const {
     return _scaleDeviationIncreaseValue;
   }  // 0.1 kg
   void setScaleDeviationIncreaseValue(float f) {
@@ -360,7 +364,7 @@ class KegConfig : public BaseConfig {
 
   // This is the maximum allowed deviation between kalman and raw value for
   // level checking to work.
-  float getScaleKalmanDeviationValue() { return _scaleKalmanDeviation; }
+  float getScaleKalmanDeviationValue() const { return _scaleKalmanDeviation; }
   void setScaleKalmanDeviationValue(float f) {
     _scaleKalmanDeviation = f;
     _saveNeeded = true;
@@ -386,8 +390,8 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }*/
 
-  LevelDetectionType getLevelDetection() { return _levelDetection; }
-  int getLevelDetectionAsInt() { return _levelDetection; }
+  LevelDetectionType getLevelDetection() const { return _levelDetection; }
+  int getLevelDetectionAsInt() const { return _levelDetection; }
   /*void setLevelDetection(LevelDetectionType l) {
     _levelDetection = l;
     _saveNeeded = true;
@@ -420,7 +424,7 @@ class KegConfig : public BaseConfig {
   }
   */
 
-  const char* getScaleTempCompensationFormula(UnitIndex idx) {
+  const char* getScaleTempCompensationFormula(UnitIndex idx) const {
     return _scaleTempCompensationFormula[idx].c_str();
   }
   void setScaleTempCompensationFormula(UnitIndex idx, String s) {
@@ -429,8 +433,8 @@ class KegConfig : public BaseConfig {
   }
 
   // These are helper function to assist with formatting of values
-  int getWeightPrecision() { return 2; }  // 2 decimans for kg
-  int getVolumePrecision() { return 0; }  // no decimals for cl
+  int getWeightPrecision() const { return 2; }  // 2 decimans for kg
+  int getVolumePrecision() const { return 0; }  // no decimals for cl
 };
 
 extern KegConfig myConfig;
