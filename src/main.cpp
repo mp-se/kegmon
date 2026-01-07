@@ -452,18 +452,19 @@ void logStartup() {
            timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec,
            rtc_get_reset_reason(0));
 
-  File f = LittleFS.open(STARTUP_FILENAME, "a");
+  // TODO: Use the SD card for the log files
+  // File f = LittleFS.open(STARTUP_FILENAME, "a");
 
-  if (f && f.size() > 2000) {
-    f.close();
-    LittleFS.remove(STARTUP_FILENAME);
-    f = LittleFS.open(STARTUP_FILENAME, "a");
-  }
+  // if (f && f.size() > 2000) {
+  //   f.close();
+  //   LittleFS.remove(STARTUP_FILENAME);
+  //   f = LittleFS.open(STARTUP_FILENAME, "a");
+  // }
 
-  if (f) {
-    f.write((unsigned char *)&s[0], strlen(&s[0]));
-    f.close();
-  }
+  // if (f) {
+  //   f.write((unsigned char *)&s[0], strlen(&s[0]));
+  //   f.close();
+  // }
 }
 
 void checkCoreDump() {
