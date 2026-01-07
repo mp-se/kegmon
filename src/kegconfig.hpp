@@ -129,9 +129,7 @@ enum DisplayLayoutType {
   HardwareStats = 9
 };
 enum TempSensorType {
-  SensorDS18B20 = 0,
-  SensorChamberCtrl = 1,
-  SensorBrewPI = 2,
+  SensorDS18B20 = 0
 };
 
 float convertIncomingWeight(float w);

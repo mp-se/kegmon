@@ -22,8 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 #include <kegconfig.hpp>
-#include <temp_brewpi.hpp>
-#include <temp_chamberctrl.hpp>
 #include <temp_ds.hpp>
 #include <temp_mgr.hpp>
 
@@ -38,15 +36,6 @@ void TempSensorManager::setup() {
       _sensor.reset(new TempSensorDS);
       break;
 
-    case SensorBrewPI:
-      Log.info(F("TEMP: Initializing temp sensor BrewPI." CR));
-      _sensor.reset(new TempSensorBrewpi);
-      break;
-
-    case SensorChamberCtrl:
-      Log.info(F("TEMP: Initializing temp sensor Chamber Controller." CR));
-      _sensor.reset(new TempSensorChamberCtrl);
-      break;
 
     default:
       Log.error(F("TEMP: Unable to find sensor type, exiting." CR));

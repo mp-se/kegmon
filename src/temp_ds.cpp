@@ -38,6 +38,7 @@ void TempSensorDS::setup() {
   _dallas = new DallasTemperature(_oneWire);
   _dallas->setResolution(12);
   _dallas->begin();
+  
   if (_dallas->getDS18Count())
     _hasSensor = true;
   else
@@ -46,14 +47,16 @@ void TempSensorDS::setup() {
 
 float TempSensorDS::read(int index) {
   float temp = NAN;
-
+  
   if (!_dallas) return temp;
 
-  if (_dallas->getDS18Count()) {
+  int cnt = _dallas->getDS18Count();
+
+  if (cnt > index) {
     _dallas->requestTemperatures();
     temp = _dallas->getTempCByIndex(index);
   } else {
-    Log.error(F("TEMP: No DS18B20 sensors found." CR));
+    Log.error(F("TEMP: No DS18B20 sensor found at index %d." CR), index);
   }
 
   return temp;
