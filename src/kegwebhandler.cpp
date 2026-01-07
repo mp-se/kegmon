@@ -23,6 +23,7 @@ SOFTWARE.
  */
 #include <OneWire.h>
 
+#include <esp_chip_info.h>
 #include <kegpush.hpp>
 #include <kegwebhandler.hpp>
 #include <levels.hpp>
@@ -125,10 +126,11 @@ void KegWebHandler::setupWebHandlers() {
 
   MDNS.addService("kegmon", "tcp", 80);
 
+  // TODO: Serve static files from SD card
   // Note! For the async implementation the order matters
-  _server->serveStatic("/levels2", LittleFS, LEVELS_FILENAME2);
-  _server->serveStatic("/levels", LittleFS, LEVELS_FILENAME);
-  _server->serveStatic("/startup", LittleFS, STARTUP_FILENAME);
+  // _server->serveStatic("/levels2", LittleFS, LEVELS_FILENAME2);
+  // _server->serveStatic("/levels", LittleFS, LEVELS_FILENAME);
+  // _server->serveStatic("/startup", LittleFS, STARTUP_FILENAME);
 
   AsyncCallbackJsonWebHandler *handler;
   handler = new AsyncCallbackJsonWebHandler(
@@ -203,9 +205,9 @@ void KegWebHandler::webHandleFactoryDefaults(AsyncWebServerRequest *request) {
 
   Log.notice(F("WEB : webServer callback for /api/factory." CR));
   myConfig.saveFileWifiOnly();
-  LittleFS.remove(ERR_FILENAME);
-  LittleFS.remove(LEVELS_FILENAME);
-  LittleFS.remove(LEVELS_FILENAME2);
+  // LittleFS.remove(ERR_FILENAME);
+  // LittleFS.remove(LEVELS_FILENAME);
+  // LittleFS.remove(LEVELS_FILENAME2);
   LittleFS.end();
   Log.notice(F("WEB : Deleted files in filesystem, rebooting." CR));
 
@@ -251,8 +253,9 @@ void KegWebHandler::webHandleLogsClear(AsyncWebServerRequest *request) {
   }
 
   Log.notice(F("WEB : webServer callback for /api/logs/clear." CR));
-  LittleFS.remove(LEVELS_FILENAME);
-  LittleFS.remove(LEVELS_FILENAME2);
+  // TODO: Use the SD card for the log files
+  // LittleFS.remove(LEVELS_FILENAME);
+  // LittleFS.remove(LEVELS_FILENAME2);
 
   AsyncJsonResponse *response = new AsyncJsonResponse(false);
   JsonObject obj = response->getRoot().as<JsonObject>();

@@ -138,22 +138,23 @@ void LevelDetection::logLevels(float kegVolume1, float kegVolume2,
 
   Log.notice(F("LVL : Logging level change %s" CR), &s[0]);
 
-  File f = LittleFS.open(LEVELS_FILENAME, "a");
+  // TODO: Use the SD card for the log files
+  // File f = LittleFS.open(LEVELS_FILENAME, "a");
 
-  if (f && f.size() > LEVELS_FILEMAXSIZE) {
-    f.close();
-    LittleFS.remove(LEVELS_FILENAME2);
-    LittleFS.rename(LEVELS_FILENAME, LEVELS_FILENAME2);
-    f = LittleFS.open(LEVELS_FILENAME, "a");
-    Log.notice(F("LVL : Logfile maximum size reached, renaming files." CR));
-  }
+  // if (f && f.size() > LEVELS_FILEMAXSIZE) {
+  //   f.close();
+  //   LittleFS.remove(LEVELS_FILENAME2);
+  //   LittleFS.rename(LEVELS_FILENAME, LEVELS_FILENAME2);
+  //   f = LittleFS.open(LEVELS_FILENAME, "a");
+  //   Log.notice(F("LVL : Logfile maximum size reached, renaming files." CR));
+  // }
 
-  if (f) {
-    f.write((unsigned char*)&s[0], strlen(&s[0]));
-    f.close();
-  } else {
-    Log.error(F("LVL : Failed to write to levels log." CR));
-  }
+  // if (f) {
+  //   f.write((unsigned char*)&s[0], strlen(&s[0]));
+  //   f.close();
+  // } else {
+  //   Log.error(F("LVL : Failed to write to levels log." CR));
+  // }
 }
 
 bool LevelDetection::hasStableWeight(UnitIndex idx, LevelDetectionType type) {
