@@ -372,19 +372,19 @@ class KegConfig : public BaseConfig {
 
   // This is the number of values in the statistics for the average value to be
   // classifed as stable. Loop interval is 2s
-  uint32_t getScaleStableCount() { return _scaleStableCount; }
+  uint32_t getScaleStableCount() const { return _scaleStableCount; }
   /*void setScaleStableCount(uint32_t i) {
     _scaleStableCount = i;
     _saveNeeded = true;
   }*/
 
-  int getScaleReadCount() { return _scaleReadCount; }
+  int getScaleReadCount() const { return _scaleReadCount; }
   /*void setScaleReadCount(uint32_t i) {
     _scaleReadCount = i;
     _saveNeeded = true;
   }*/
 
-  int getScaleReadCountCalibration() { return _scaleReadCountCalibration; }
+  int getScaleReadCountCalibration() const { return _scaleReadCountCalibration; }
   /*void setScaleReadCountCalibration(uint32_t i) {
     _scaleReadCountCalibration = i;
     _saveNeeded = true;
@@ -402,22 +402,22 @@ class KegConfig : public BaseConfig {
   }*/
 
   /*
-  float getKalmanEstimation() { return _kalmanEstimation; }
+  float getKalmanEstimation() const { return _kalmanEstimation; }
   void setKalmanEstimation(float f) {
     _kalmanEstimation = f;
     _saveNeeded = true;
   }
-  float getKalmanMeasurement() { return _kalmanMeasurement; }
+  float getKalmanMeasurement() const { return _kalmanMeasurement; }
   void setKalmanMeasurement(float f) {
     _kalmanMeasurement = f;
     _saveNeeded = true;
   }
-  float getKalmanNoise() { return _kalmanNoise; }
+  float getKalmanNoise() const { return _kalmanNoise; }
   void setKalmanNoise(float f) {
     _kalmanNoise = f;
     _saveNeeded = true;
   }
-  bool isKalmanActive() { return _kalmanActive; }
+  bool isKalmanActive() const { return _kalmanActive; }
   void setKalmanActive(bool b) {
     _kalmanActive = b;
     _saveNeeded = true;
