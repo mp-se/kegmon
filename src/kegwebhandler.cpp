@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-2025 Magnus
+Copyright (c) 2021-2026 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 #include <OneWire.h>
-
 #include <esp_chip_info.h>
+
 #include <kegpush.hpp>
 #include <kegwebhandler.hpp>
 #include <levels.hpp>
@@ -126,7 +126,7 @@ void KegWebHandler::setupWebHandlers() {
 
   MDNS.addService("kegmon", "tcp", 80);
 
-  // TODO: Serve static files from SD card
+  // TODO(mpse) : Serve static files from SD card
   // Note! For the async implementation the order matters
   // _server->serveStatic("/levels2", LittleFS, LEVELS_FILENAME2);
   // _server->serveStatic("/levels", LittleFS, LEVELS_FILENAME);
@@ -253,7 +253,7 @@ void KegWebHandler::webHandleLogsClear(AsyncWebServerRequest *request) {
   }
 
   Log.notice(F("WEB : webServer callback for /api/logs/clear." CR));
-  // TODO: Use the SD card for the log files
+  // TODO(mpse) : Use the SD card for the log files
   // LittleFS.remove(LEVELS_FILENAME);
   // LittleFS.remove(LEVELS_FILENAME2);
 
@@ -575,7 +575,7 @@ void KegWebHandler::webStability(AsyncWebServerRequest *request) {
 
   obj[PARAM_WEIGHT_UNIT] = myConfig.getWeightUnit();
 
-  // TODO: Fix formatting of the stability values
+  // TODO(mpse) : Fix formatting of the stability values
 
   if (stability1->count() > 1) {
     obj[PARAM_STABILITY_COUNT1] = stability1->count();
@@ -740,9 +740,9 @@ void KegWebHandler::loop() {
     //     }
     // #endif
 
-    // TODO: Scan for HX711 boards
+    // TODO(mpse) : Scan for HX711 boards
 
-    // TODO: Scan for all temperature sensors
+    // TODO(mpse) : Scan for all temperature sensors
 
     // Scan onewire
     /*

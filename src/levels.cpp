@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-2025 Magnus
+Copyright (c) 2021-2026 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -138,7 +138,7 @@ void LevelDetection::logLevels(float kegVolume1, float kegVolume2,
 
   Log.notice(F("LVL : Logging level change %s" CR), &s[0]);
 
-  // TODO: Use the SD card for the log files
+  // TODO(mpse) : Use the SD card for the log files
   // File f = LittleFS.open(LEVELS_FILENAME, "a");
 
   // if (f && f.size() > LEVELS_FILEMAXSIZE) {

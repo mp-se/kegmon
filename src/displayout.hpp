@@ -1,7 +1,7 @@
 // /*
 // MIT License
 
-// Copyright (c) 2023-2025 Magnus
+// Copyright (c) 2023-2026 Magnus
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,8 +21,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 //  */
-// #ifndef SRC_DISPLAYOUT_HPP_
-// #define SRC_DISPLAYOUT_HPP_
+#ifndef SRC_DISPLAYOUT_HPP_
+#define SRC_DISPLAYOUT_HPP_
 
 // #include <cstdio>
 // #include <kegconfig.hpp>
@@ -121,6 +121,6 @@
 
 // extern DisplayLayout myDisplayLayout;
 
-// #endif  // SRC_DISPLAYOUT_HPP_
+#endif  // SRC_DISPLAYOUT_HPP_
 
 // // EOF

@@ -1,7 +1,7 @@
 // /*
 // MIT License
 
-// Copyright (c) 2023-2025 Magnus
+// Copyright (c) 2023-2026 Magnus
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,10 +21,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 //  */
-// #include <cstdio>
-// #include <display.hpp>
-// #include <displayout.hpp>
-// #include <levels.hpp>
+#include <cstdio>
+#include <display.hpp>
+#include <displayout.hpp>
+#include <levels.hpp>
 
 // constexpr auto DISPLAY_ITER_TIME = 4000;
 
