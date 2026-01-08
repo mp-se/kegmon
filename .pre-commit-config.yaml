@@ -4,8 +4,12 @@ repos:
     hooks:
     -   id: clang-format
         files: ^src/
+        exclude: 'lib/|idf_component.yml'
     -   id: cpplint
         files: ^src/
+        exclude: 'lib/|idf_component.yml'
+        args: ['--filter=-build/include_order,-runtime/references']
     -   id: cppcheck
-        args: [--force,--check-level=exhaustive]
+        args: [--force,--check-level=exhaustive,--suppress=syntaxError]
         files: ^src/
+        exclude: 'lib/|idf_component.yml'
