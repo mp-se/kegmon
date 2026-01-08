@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2022-2025 Magnus
+Copyright (c) 2022-2026 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -162,14 +162,15 @@ void loop() {
   myWebHandler.loop();
   myWifi.loop();
   mySerialWebSocket.loop();
-  myScale.loop(); // For running scheduled tasks
+  myScale.loop();  // For running scheduled tasks
 
   if (abs(static_cast<int32_t>((millis() - loopMillis))) >
       loopInterval) {  // 2 seconds loop interval
     loopMillis = millis();
     loopCounter++;
 
-    // TODO: Reading of scale should be moved to its own background thread on the other CPU
+    // TODO(mpse) : Reading of scale should be moved to its own background
+    // thread on the other CPU
 
     // Send updates to push targets at regular intervals (300 seconds / 5min)
     if (!(loopCounter % 300)) {
@@ -452,7 +453,7 @@ void logStartup() {
            timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec,
            rtc_get_reset_reason(0));
 
-  // TODO: Use the SD card for the log files
+  // TODO(mpse) : Use the SD card for the log files
   // File f = LittleFS.open(STARTUP_FILENAME, "a");
 
   // if (f && f.size() > 2000) {

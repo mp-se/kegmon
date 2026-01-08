@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-2024 Magnus
+Copyright (c) 2021-2026 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,6 @@ void TempSensorManager::setup() {
       Log.info(F("TEMP: Initializing temp sensor DS18B20." CR));
       _sensor.reset(new TempSensorDS);
       break;
-
 
     default:
       Log.error(F("TEMP: Unable to find sensor type, exiting." CR));

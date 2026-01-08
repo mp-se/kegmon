@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-2025 Magnus
+Copyright (c) 2021-2026 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -128,9 +128,7 @@ enum DisplayLayoutType {
   GraphOne = 2,
   HardwareStats = 9
 };
-enum TempSensorType {
-  SensorDS18B20 = 0
-};
+enum TempSensorType { SensorDS18B20 = 0 };
 
 float convertIncomingWeight(float w);
 float convertIncomingVolume(float v);
@@ -171,7 +169,7 @@ class KegConfig : public BaseConfig {
   float _scaleDeviationDecreaseValue = 0.1;  // kg
   float _scaleKalmanDeviation = 0.05;
   uint32_t _scaleStableCount = 8;
-  int _scaleReadCount = 7; // Default in HX711 library, should be odd number 
+  int _scaleReadCount = 7;  // Default in HX711 library, should be odd number
   int _scaleReadCountCalibration = 29;
   String _scaleTempCompensationFormula[2] = {"", ""};
 
@@ -382,7 +380,9 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }*/
 
-  int getScaleReadCountCalibration() const { return _scaleReadCountCalibration; }
+  int getScaleReadCountCalibration() const {
+    return _scaleReadCountCalibration;
+  }
   /*void setScaleReadCountCalibration(uint32_t i) {
     _scaleReadCountCalibration = i;
     _saveNeeded = true;

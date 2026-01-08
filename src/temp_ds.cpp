@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-2025 Magnus
+Copyright (c) 2021-2026 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,8 @@ SOFTWARE.
 #include <temp_ds.hpp>
 #include <utils.hpp>
 
-// TODO: Update this code and interface to handle one DS18B20 sensor per scale
+// TODO(mpse) : We need to map the id of each sensor to a specific base (index)
+// so we show the correct temp per scale
 
 TempSensorDS::~TempSensorDS() {
   if (_oneWire) delete _oneWire;
@@ -38,7 +39,7 @@ void TempSensorDS::setup() {
   _dallas = new DallasTemperature(_oneWire);
   _dallas->setResolution(12);
   _dallas->begin();
-  
+
   if (_dallas->getDS18Count())
     _hasSensor = true;
   else
@@ -47,7 +48,7 @@ void TempSensorDS::setup() {
 
 float TempSensorDS::read(int index) {
   float temp = NAN;
-  
+
   if (!_dallas) return temp;
 
   int cnt = _dallas->getDS18Count();
