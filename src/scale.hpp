@@ -128,27 +128,27 @@ class Scale {
     float factorWeight = 0.0;
   };
 
-  std::unique_ptr<HX711> _hxScale[4] = {nullptr, nullptr, nullptr, nullptr};
+  std::unique_ptr<HX711> _hxScale[MAX_SCALES] = {nullptr, nullptr, nullptr, nullptr};
 
-  Schedule _sched[4];
-  float _lastRaw[4] = {0.0, 0.0, 0.0, 0.0};
+  Schedule _sched[MAX_SCALES];
+  float _lastRaw[MAX_SCALES] = {0.0, 0.0, 0.0, 0.0};
 
   // Filter instances
-  std::unique_ptr<ScaleFilter> _filter_ma[4];
-  std::unique_ptr<ScaleFilter> _filter_ema[4];
-  std::unique_ptr<ScaleFilter> _filter_wma[4];
-  std::unique_ptr<ScaleFilter> _filter_median[4];
-  std::unique_ptr<ScaleFilter> _filter_zscore[4];
-  std::unique_ptr<ScaleFilter> _filter_hampel[4];
-  std::unique_ptr<ScaleFilter> _filter_complementary[4];
-  std::unique_ptr<ScaleFilter> _filter_alphabeta[4];
-  std::unique_ptr<ScaleFilter> _filter_butterworth[4];
-  std::unique_ptr<ScaleFilter> _filter_fir[4];
-  std::unique_ptr<ScaleFilter> _filter_chebyshev[4];
-  std::unique_ptr<ScaleFilter> _filter_kalman[4];
+  std::unique_ptr<ScaleFilter> _filter_ma[MAX_SCALES];
+  std::unique_ptr<ScaleFilter> _filter_ema[MAX_SCALES];
+  std::unique_ptr<ScaleFilter> _filter_wma[MAX_SCALES];
+  std::unique_ptr<ScaleFilter> _filter_median[MAX_SCALES];
+  std::unique_ptr<ScaleFilter> _filter_zscore[MAX_SCALES];
+  std::unique_ptr<ScaleFilter> _filter_hampel[MAX_SCALES];
+  std::unique_ptr<ScaleFilter> _filter_complementary[MAX_SCALES];
+  std::unique_ptr<ScaleFilter> _filter_alphabeta[MAX_SCALES];
+  std::unique_ptr<ScaleFilter> _filter_butterworth[MAX_SCALES];
+  std::unique_ptr<ScaleFilter> _filter_fir[MAX_SCALES];
+  std::unique_ptr<ScaleFilter> _filter_chebyshev[MAX_SCALES];
+  std::unique_ptr<ScaleFilter> _filter_kalman[MAX_SCALES];
 
   // Latest reading results for each scale
-  ScaleReadingResult _lastResult[4];
+  ScaleReadingResult _lastResult[MAX_SCALES];
 
   // Statistics manager
   ScaleStatisticsManager _stats;
@@ -177,7 +177,7 @@ class Scale {
     _sched[idx].factorWeight = weight;
   }
   bool isScheduleRunning() const {
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < MAX_SCALES; i++) {
       if (_sched[i].findFactor || _sched[i].tare) {
         return true;
       }

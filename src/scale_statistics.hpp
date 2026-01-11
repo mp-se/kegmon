@@ -53,7 +53,6 @@ struct ScaleStatistics {
   uint64_t lastDriftCheckMs = 0;
   float lastDriftCheckRaw = 0.0f;
 
-  // Getters
   float getReadingQuality() const {
     if (totalReadings == 0) return 0.0f;
     return (static_cast<float>(validReadings) / totalReadings) * 100.0f;
@@ -72,7 +71,6 @@ struct ScaleStatistics {
     return rawSum / totalReadings;
   }
 
-  // Record a new reading
   void recordReading(float rawValue, bool isValid, uint64_t timestampMs) {
     totalReadings++;
     if (isValid) {
@@ -93,7 +91,6 @@ struct ScaleStatistics {
     lastReadingTimeMs = timestampMs;
   }
 
-  // Record variance during stable state
   void recordStableVariance(float variance) {
     if (stableStateSamples == 0) {
       stableStateVariance = variance;
@@ -106,7 +103,6 @@ struct ScaleStatistics {
     stableStateSamples++;
   }
 
-  // Reset statistics
   void reset() {
     totalReadings = 0;
     validReadings = 0;
@@ -165,3 +161,5 @@ class ScaleStatisticsManager {
 };
 
 #endif  // SRC_SCALE_STATISTICS_HPP_
+
+// EOF
