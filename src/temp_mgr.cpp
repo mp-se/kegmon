@@ -49,9 +49,6 @@ void TempSensorManager::setup() {
   }
 
   read();
-
-  if (!hasTemp())
-    Log.error(F("TEMP: Failed to fetch temperature from sensor." CR));
 }
 
 void TempSensorManager::read() {

@@ -35,6 +35,7 @@ class TempSensorBase {
   virtual float read(int index) = 0;
   virtual bool hasSensor() const = 0;
   virtual int getSensorCount() const = 0;
+  virtual String getSensorId(int index) const = 0;
 };
 
 #endif  // SRC_TEMP_BASE_HPP_

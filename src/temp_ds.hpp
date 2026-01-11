@@ -43,6 +43,7 @@ class TempSensorDS : public TempSensorBase {
   float read(int index) override;
   bool hasSensor() const override { return _hasSensor; }
   int getSensorCount() const override;
+  String getSensorId(int index) const override;
 };
 
 #endif  // SRC_TEMP_DS_HPP_

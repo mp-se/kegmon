@@ -42,21 +42,21 @@ class TempSensorManager {
   void setup();
   void read();
 
-  bool hasTemp(int index = 0) const {
+  bool hasTemp(int index) const {
     if (index < 0 || index >= 5) return false;
     return !isnan(_lastTemperature[index]);
   }
   bool hasSensor() const { return _sensor.get()->hasSensor(); }
   int getSensorCount() const { return _sensor.get()->getSensorCount(); }
 
-  float getLastTempC(int index = 0) const {
-    if (index < 0 || index >= 5) return NAN;
-    return _lastTemperature[index];
+  String getSensorId(int index) const {
+    if (index < 0 || index >= getSensorCount()) return "";
+    return _sensor.get()->getSensorId(index);
   }
-  float getLastTempF(int index = 0) const {
-    return isnan(_lastTemperature[index])
-               ? NAN
-               : convertCtoF(_lastTemperature[index]);
+
+  float getLastTempC(int index) const {
+    if (index < 0 || index > getSensorCount()) return NAN;
+    return _lastTemperature[index];
   }
 };
 

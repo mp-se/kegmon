@@ -26,9 +26,6 @@ SOFTWARE.
 #include <temp_ds.hpp>
 #include <utils.hpp>
 
-// TODO(mpse) : We need to map the id of each sensor to a specific base (index)
-// so we show the correct temp per scale
-
 TempSensorDS::~TempSensorDS() {
   if (_oneWire) delete _oneWire;
   if (_dallas) delete _dallas;
@@ -68,6 +65,14 @@ int TempSensorDS::getSensorCount() const {
     return _dallas->getDS18Count();
   else
     return 0;
+}
+
+String TempSensorDS::getSensorId(int index) const {
+  DeviceAddress adr;
+  _dallas->getAddress(&adr[0], index);
+  return String(adr[0], 16) + String(adr[1], 16) + String(adr[2], 16) +
+         String(adr[3], 16) + String(adr[4], 16) + String(adr[5], 16) +
+         String(adr[6], 16) + String(adr[7], 16);
 }
 
 // EOF
