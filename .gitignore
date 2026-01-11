@@ -4,3 +4,4 @@
 src_docs/_build/*
 test/__pycache__/*
 .DS_Store
+idf_*
