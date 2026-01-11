@@ -24,7 +24,6 @@ SOFTWARE.
 #include <algorithm>
 #include <changedetection.hpp>
 
-// ChangeDetectionEventQueue::push
 bool ChangeDetectionEventQueue::push(const ChangeDetectionEvent& event) {
   portENTER_CRITICAL(&_lock);
   size_t nextTail = nextIndex(_tail);
@@ -40,7 +39,6 @@ bool ChangeDetectionEventQueue::push(const ChangeDetectionEvent& event) {
   return true;
 }
 
-// ChangeDetectionEventQueue::pop
 bool ChangeDetectionEventQueue::pop(ChangeDetectionEvent& event) {
   portENTER_CRITICAL(&_lock);
 
@@ -56,10 +54,8 @@ bool ChangeDetectionEventQueue::pop(ChangeDetectionEvent& event) {
   return true;
 }
 
-// ChangeDetectionEventQueue::isEmpty
 bool ChangeDetectionEventQueue::isEmpty() const { return _head == _tail; }
 
-// ChangeDetectionEventQueue::count
 size_t ChangeDetectionEventQueue::count() const {
   portENTER_CRITICAL(reinterpret_cast<portMUX_TYPE*>(&_lock));
   size_t result =
@@ -68,24 +64,20 @@ size_t ChangeDetectionEventQueue::count() const {
   return result;
 }
 
-// ChangeDetection::isWeightValid
 bool ChangeDetection::isWeightValid(float weight, UnitIndex idx) const {
   float minValidWeight = 0.0f;
   float maxValidWeight = myConfig.getBeerVolumeToWeight(idx);
   return weight >= minValidWeight && weight <= maxValidWeight;
 }
 
-// ChangeDetection::isWeightAbsent
 bool ChangeDetection::isWeightAbsent(float weight) const {
   return weight < _weightAbsentThreshold;
 }
 
-// ChangeDetection::isWeightPresent
 bool ChangeDetection::isWeightPresent(float weight, UnitIndex idx) const {
   return weight >= myConfig.getKegWeight(idx);
 }
 
-// ChangeDetection::isWithinStabilityWindow
 bool ChangeDetection::isWithinStabilityWindow(float weight,
                                               float stableWeight) const {
   // Asymmetric thresholds: allow small decreases (pours), but reject increases
@@ -99,7 +91,6 @@ bool ChangeDetection::isWithinStabilityWindow(float weight,
   }
 }
 
-// ChangeDetection::transitionState
 void ChangeDetection::transitionState(UnitIndex idx,
                                       ChangeDetectionState newState,
                                       uint64_t timestampMs) {
@@ -117,7 +108,6 @@ void ChangeDetection::transitionState(UnitIndex idx,
   }
 }
 
-// ChangeDetection::fireEvent
 void ChangeDetection::fireEvent(UnitIndex idx,
                                 ChangeDetectionEventType eventType,
                                 uint64_t timestampMs) {
@@ -181,7 +171,6 @@ void ChangeDetection::fireEvent(UnitIndex idx,
   _eventQueue.push(event);
 }
 
-// ChangeDetection::calculateSlope
 float ChangeDetection::calculateSlope(UnitIndex idx, float currentValue,
                                       uint64_t timestampMs) {
   ChangeDetectionInstance& scale = _scales[static_cast<int>(idx)];
@@ -210,7 +199,6 @@ float ChangeDetection::calculateSlope(UnitIndex idx, float currentValue,
   return 0.0f;
 }
 
-// ChangeDetection::getAverageSlope
 float ChangeDetection::getAverageSlope(UnitIndex idx) const {
   const ChangeDetectionInstance& scale = _scales[static_cast<int>(idx)];
   if (scale.slopeReadings > 0) {
@@ -219,14 +207,12 @@ float ChangeDetection::getAverageSlope(UnitIndex idx) const {
   return 0.0f;
 }
 
-// ChangeDetection::resetSlope
 void ChangeDetection::resetSlope(UnitIndex idx) {
   ChangeDetectionInstance& scale = _scales[static_cast<int>(idx)];
   scale.accumulatedSlope = 0.0f;
   scale.slopeReadings = 0;
 }
 
-// ChangeDetection::ChangeDetection (constructor)
 ChangeDetection::ChangeDetection()
     : _stabilityFilter(FilterType::FILTER_MEDIAN),
       _pourDetectionFilter(FilterType::FILTER_KALMAN),
@@ -241,7 +227,6 @@ ChangeDetection::ChangeDetection()
   loadConfiguration();
 }
 
-// ChangeDetection::loadConfiguration
 void ChangeDetection::loadConfiguration() {
   _stabilityFilter =
       static_cast<FilterType>(myConfig.getStabilityDetectionFilterIndex());
@@ -259,7 +244,6 @@ void ChangeDetection::loadConfiguration() {
   _pourSlopeThreshold = myConfig.getPourSlopeThreshold();
 }
 
-// ChangeDetection::fireStartupEvent
 void ChangeDetection::fireStartupEvent(uint64_t timestampMs) {
   ChangeDetectionEvent event;
   event.type = ChangeDetectionEventType::SYSTEM_STARTUP;
@@ -268,7 +252,6 @@ void ChangeDetection::fireStartupEvent(uint64_t timestampMs) {
   _eventQueue.push(event);
 }
 
-// ChangeDetection::fireMultiplePourEvents
 // Splits oversized pours into multiple events based on configured glass volume
 void ChangeDetection::fireMultiplePourEvents(
     UnitIndex idx, const ChangeDetectionEvent& originalEvent,
@@ -307,7 +290,6 @@ void ChangeDetection::fireMultiplePourEvents(
   }
 }
 
-// ChangeDetection::firePourCompletedWithSplitting
 // Constructs POUR_COMPLETED event and handles multi-pour splitting
 void ChangeDetection::firePourCompletedWithSplitting(UnitIndex idx,
                                                      uint64_t timestampMs) {
@@ -330,7 +312,6 @@ void ChangeDetection::firePourCompletedWithSplitting(UnitIndex idx,
   fireMultiplePourEvents(idx, event, timestampMs);
 }
 
-// ChangeDetection::checkPassiveDetection
 // Passive detection: when stabilizing at a new level, check if weight dropped
 // This catches pours that may have been missed by active slope detection
 void ChangeDetection::checkPassiveDetection(UnitIndex idx,
@@ -378,7 +359,6 @@ void ChangeDetection::checkPassiveDetection(UnitIndex idx,
   }
 }
 
-// ChangeDetection::update - Main state machine
 void ChangeDetection::update(UnitIndex idx, const ScaleReadingResult& result,
                              uint64_t timestampMs) {
   ChangeDetectionInstance& scale = _scales[static_cast<int>(idx)];
@@ -502,7 +482,6 @@ void ChangeDetection::update(UnitIndex idx, const ScaleReadingResult& result,
           // Check passive detection: did weight drop significantly?
           // This catches pours missed by active slope detection
           checkPassiveDetection(idx, timestampMs);
-
           resetSlope(idx);
         }
       } else {
@@ -550,22 +529,18 @@ void ChangeDetection::update(UnitIndex idx, const ScaleReadingResult& result,
   }
 }
 
-// ChangeDetection::getState
 ChangeDetectionState ChangeDetection::getState(UnitIndex idx) const {
   return _scales[static_cast<int>(idx)].state;
 }
 
-// ChangeDetection::getStableWeight
 float ChangeDetection::getStableWeight(UnitIndex idx) const {
   return _scales[static_cast<int>(idx)].stableWeight;
 }
 
-// ChangeDetection::getPourVolume
 float ChangeDetection::getPourVolume(UnitIndex idx) const {
   return _scales[static_cast<int>(idx)].pourVolume;
 }
 
-// ChangeDetection::getStateString
 const char* ChangeDetection::getStateString(UnitIndex idx) const {
   switch (getState(idx)) {
     case ChangeDetectionState::Idle:
@@ -589,7 +564,6 @@ const char* ChangeDetection::getStateString(UnitIndex idx) const {
   }
 }
 
-// ChangeDetection::getConfidence
 float ChangeDetection::getConfidence(UnitIndex idx) const {
   const ChangeDetectionInstance& scale = _scales[static_cast<int>(idx)];
   uint64_t timeInState = (millis() - scale.stateEntryTimeMs);
@@ -627,15 +601,14 @@ float ChangeDetection::getConfidence(UnitIndex idx) const {
   return std::min(confidence, 100.0f);
 }
 
-// ChangeDetection::getNextEvent
 bool ChangeDetection::getNextEvent(ChangeDetectionEvent& event) {
   return _eventQueue.pop(event);
 }
 
-// ChangeDetection::hasQueuedEvents
 bool ChangeDetection::hasQueuedEvents() const { return !_eventQueue.isEmpty(); }
 
-// ChangeDetection::getPendingEventCount
 size_t ChangeDetection::getPendingEventCount() const {
   return _eventQueue.count();
 }
+
+// EOF

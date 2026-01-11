@@ -129,11 +129,11 @@ struct ChangeDetectionInstance {
       0.0f;  // Stable weight baseline for passive detection
 };
 
-// Stage 2: Multi-scale change detection with consensus voting
+// Multi-scale change detection with consensus voting
 // Manages pour detection and keg absence detection for all 4 scales
 class ChangeDetection {
  private:
-  ChangeDetectionInstance _scales[4];
+  ChangeDetectionInstance _scales[MAX_SCALES];
   ChangeDetectionEventQueue _eventQueue;
 
   // Configuration (shared across all scales)
@@ -191,7 +191,6 @@ class ChangeDetection {
   void update(UnitIndex idx, const ScaleReadingResult& result,
               uint64_t timestampMs);
 
-  // Getters for per-scale state
   ChangeDetectionState getState(UnitIndex idx) const;
   float getStableWeight(UnitIndex idx) const;
   float getPourVolume(UnitIndex idx) const;
@@ -215,4 +214,8 @@ class ChangeDetection {
   void resetAllStatistics() { _stats.resetAllStatistics(); }
 };
 
+extern ChangeDetection myChangeDetection;
+
 #endif  // SRC_CHANGEDETECTION_HPP_
+
+// EOF

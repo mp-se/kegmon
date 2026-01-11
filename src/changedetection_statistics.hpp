@@ -26,6 +26,7 @@ SOFTWARE.
 
 #include <Arduino.h>
 #include <cstdint>
+#include <main.hpp>
 
 enum class ChangeDetectionState;
 
@@ -60,7 +61,6 @@ struct ChangeDetectionStatistics {
   uint64_t lastStableTimeMs = 0;
   uint64_t lastKegRemovalTimeMs = 0;
 
-  // Getters
   float avgPourVolumeL() const {
     if (totalPours == 0) return 0.0f;
     return totalPourVolume / totalPours;
@@ -80,7 +80,6 @@ struct ChangeDetectionStatistics {
     return getCurrentKegAgeMs() / (1000UL * 60UL * 60UL);
   }
 
-  // Record a pour completion
   void recordPour(float volumeL, uint64_t durationMs) {
     totalPours++;
     totalPourVolume += volumeL;
@@ -95,7 +94,6 @@ struct ChangeDetectionStatistics {
     lastPourTimeMs = millis();
   }
 
-  // Record keg replacement
   void recordKegReplacement(float newKegWeight) {
     kegReplacements++;
     lastKegReplacementMs = millis();
@@ -103,7 +101,6 @@ struct ChangeDetectionStatistics {
     lastKegWeight = newKegWeight;
   }
 
-  // Record state change
   void recordStateChange(int previousStateIndex, int newStateIndex,
                          uint64_t durationInPreviousStateMs) {
     stateTransitions++;
@@ -131,7 +128,6 @@ struct ChangeDetectionStatistics {
     }
   }
 
-  // Get average time in state (milliseconds)
   float getAvgTimeInStateMs(int stateIndex) const {
     if (stateIndex < 0 || stateIndex >= 8) return 0.0f;
     if (stateEnterCount[stateIndex] == 0) return 0.0f;
@@ -139,13 +135,11 @@ struct ChangeDetectionStatistics {
            stateEnterCount[stateIndex];
   }
 
-  // Get total time in state (seconds)
   float getTotalTimeInStateSec(int stateIndex) const {
     if (stateIndex < 0 || stateIndex >= 8) return 0.0f;
     return static_cast<float>(timeInStateMs[stateIndex]) / 1000.0f;
   }
 
-  // Reset statistics
   void reset() {
     totalPours = 0;
     totalPourVolume = 0.0f;
@@ -178,19 +172,19 @@ struct ChangeDetectionStatistics {
 // Global statistics manager for all 4 scales
 class ChangeDetectionStatisticsManager {
  private:
-  ChangeDetectionStatistics _scales[4];
+  ChangeDetectionStatistics _scales[MAX_SCALES];
 
  public:
   ChangeDetectionStatisticsManager() = default;
 
   void recordPour(int scaleIndex, float volumeL, uint64_t durationMs) {
-    if (scaleIndex < 4) {
+    if (scaleIndex < MAX_SCALES && scaleIndex >= 0) {
       _scales[scaleIndex].recordPour(volumeL, durationMs);
     }
   }
 
   void recordKegReplacement(int scaleIndex, float newKegWeight) {
-    if (scaleIndex < 4) {
+    if (scaleIndex < MAX_SCALES && scaleIndex >= 0) {
       _scales[scaleIndex].recordKegReplacement(newKegWeight);
     }
   }
@@ -198,7 +192,7 @@ class ChangeDetectionStatisticsManager {
   void recordStateChange(int scaleIndex, int previousStateIndex,
                          int newStateIndex,
                          uint64_t durationInPreviousStateMs) {
-    if (scaleIndex < 4) {
+    if (scaleIndex < MAX_SCALES && scaleIndex >= 0) {
       _scales[scaleIndex].recordStateChange(previousStateIndex, newStateIndex,
                                             durationInPreviousStateMs);
     }
