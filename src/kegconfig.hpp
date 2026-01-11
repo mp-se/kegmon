@@ -42,7 +42,8 @@ constexpr auto PARAM_BARHELPER_MONITOR2 = "barhelper_monitor2";
 constexpr auto PARAM_BARHELPER_MONITOR3 = "barhelper_monitor3";
 constexpr auto PARAM_BARHELPER_MONITOR4 = "barhelper_monitor4";
 constexpr auto PARAM_DISPLAY_LAYOUT = "display_layout";
-constexpr auto PARAM_TEMP_SENSOR = "temp_sensor";
+// UNUSED: Currently not persisted in config
+// constexpr auto PARAM_TEMP_SENSOR = "temp_sensor";
 constexpr auto PARAM_WEIGHT_UNIT = "weight_unit";
 constexpr auto PARAM_VOLUME_UNIT = "volume_unit";
 constexpr auto PARAM_KEG_WEIGHT1 = "keg_weight1";
@@ -89,22 +90,6 @@ constexpr auto PARAM_SCALE_OFFSET1 = "scale_offset1";
 constexpr auto PARAM_SCALE_OFFSET2 = "scale_offset2";
 constexpr auto PARAM_SCALE_OFFSET3 = "scale_offset3";
 constexpr auto PARAM_SCALE_OFFSET4 = "scale_offset4";
-constexpr auto PARAM_SCALE_TEMP_FORMULA1 = "scale_temp_formula1";
-constexpr auto PARAM_SCALE_TEMP_FORMULA2 = "scale_temp_formula2";
-constexpr auto PARAM_SCALE_TEMP_FORMULA3 = "scale_temp_formula3";
-constexpr auto PARAM_SCALE_TEMP_FORMULA4 = "scale_temp_formula4";
-constexpr auto PARAM_SCALE_DEVIATION_INCREASE = "scale_deviation_increase";
-constexpr auto PARAM_SCALE_DEVIATION_DECREASE = "scale_deviation_decrease";
-constexpr auto PARAM_SCALE_DEVIATION_KALMAN = "scale_deviation_kalman";
-constexpr auto PARAM_SCALE_READ_COUNT = "scale_read_count";
-constexpr auto PARAM_SCALE_READ_COUNT_CALIBRATION =
-    "scale_read_count_calibration";
-constexpr auto PARAM_SCALE_STABLE_COUNT = "scale_stable_count";
-constexpr auto PARAM_LEVEL_DETECTION = "level_detection";
-constexpr auto PARAM_KALMAN_NOISE = "kalman_noise";
-constexpr auto PARAM_KALMAN_MEASUREMENT = "kalman_measurement";
-constexpr auto PARAM_KALMAN_ESTIMATION = "kalman_estimation";
-constexpr auto PARAM_KALMAN_ACTIVE = "kalman_active";
 
 struct BeerInfo {
   String _name = "";
@@ -115,6 +100,14 @@ struct BeerInfo {
   String _id = "";
 };
 
+struct KegInfo {
+  float scaleFactor = 0.0f;
+  int32_t scaleOffset = 0;
+  float kegWeight = 4.0f;    // Weight in kg
+  float kegVolume = 19.0f;   // Volume in liters
+  float glassVolume = 0.40f; // Volume in liters
+};
+
 constexpr auto WEIGHT_KG = "kg";
 constexpr auto WEIGHT_LBS = "lbs";
 
@@ -123,10 +116,7 @@ constexpr auto VOLUME_US = "us-oz";
 constexpr auto VOLUME_UK = "uk-oz";
 
 enum DisplayLayoutType {
-  Default = 0,
-  Graph = 1,
-  GraphOne = 2,
-  HardwareStats = 9
+  Default = 0
 };
 enum TempSensorType { SensorDS18B20 = 0 };
 
@@ -158,22 +148,25 @@ class KegConfig : public BaseConfig {
   DisplayLayoutType _displayLayout = DisplayLayoutType::Default;
   TempSensorType _tempSensor = TempSensorType::SensorDS18B20;
 
-  float _scaleFactor[4] = {0, 0, 0, 0};
-  int32_t _scaleOffset[4] = {0, 0, 0, 0};
-  float _kegWeight[4] = {4, 4, 4, 4};                // Weight in kg
-  float _kegVolume[4] = {19, 19, 19, 19};            // Weight in liters
-  float _glassVolume[4] = {0.40, 0.40, 0.40, 0.40};  // Volume in liters
+  KegInfo _kegs[4];
   BeerInfo _beer[4];
 
-  float _scaleDeviationIncreaseValue = 0.4;  // kg
-  float _scaleDeviationDecreaseValue = 0.1;  // kg
-  float _scaleKalmanDeviation = 0.05;
-  uint32_t _scaleStableCount = 8;
   int _scaleReadCount = 7;  // Default in HX711 library, should be odd number
   int _scaleReadCountCalibration = 29;
-  String _scaleTempCompensationFormula[2] = {"", ""};
 
-  LevelDetectionType _levelDetection = LevelDetectionType::STATS;
+  // Change detection parameters 
+  int _stabilityDetectionFilterIndex = 12;  // FILTER_KALMAN
+  int _pourDetectionFilterIndex = 12;       // FILTER_KALMAN
+  uint32_t _levelStabilizationDurationSeconds =
+      3;                                     // Reduced for rapid pour detection
+  uint32_t _pourDurationSeconds = 2;         // Reduced for smaller pours
+  uint32_t _kegAbsenceDurationSeconds = 30;  // Reduced from 60
+  uint32_t _kegReplacementDurationSeconds = 30;  // Reduced from 60
+  float _weightAbsentThreshold = 0.1f;           // kg
+  float _levelIncreaseThreshold = 0.4f;  // kg (keg replacement, ignore drift)
+  float _levelDecreaseThreshold = 0.1f;  // kg (pour detection, 100-150g pours)
+  float _pourSlopeThreshold =
+      -0.002f;  // kg/sec minimum downward slope (for slow pours)
 
  public:
   KegConfig(String baseMDNS, String fileName);
@@ -267,21 +260,21 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }
 
-  float getKegWeight(UnitIndex idx) const { return _kegWeight[idx]; }
+  float getKegWeight(UnitIndex idx) const { return _kegs[idx].kegWeight; }
   void setKegWeight(UnitIndex idx, float f) {
-    _kegWeight[idx] = f;
+    _kegs[idx].kegWeight = f;
     _saveNeeded = true;
   }
 
-  float getKegVolume(UnitIndex idx) const { return _kegVolume[idx]; }
+  float getKegVolume(UnitIndex idx) const { return _kegs[idx].kegVolume; }
   void setKegVolume(UnitIndex idx, float f) {
-    _kegVolume[idx] = f;
+    _kegs[idx].kegVolume = f;
     _saveNeeded = true;
   }
 
-  float getGlassVolume(UnitIndex idx) const { return _glassVolume[idx]; }
+  float getGlassVolume(UnitIndex idx) const { return _kegs[idx].glassVolume; }
   void setGlassVolume(UnitIndex idx, float f) {
-    _glassVolume[idx] = f;
+    _kegs[idx].glassVolume = f;
     _saveNeeded = true;
   }
 
@@ -307,15 +300,15 @@ class KegConfig : public BaseConfig {
     }
   }
 
-  int32_t getScaleOffset(UnitIndex idx) const { return _scaleOffset[idx]; }
+  int32_t getScaleOffset(UnitIndex idx) const { return _kegs[idx].scaleOffset; }
   void setScaleOffset(UnitIndex idx, int32_t l) {
-    _scaleOffset[idx] = l;
+    _kegs[idx].scaleOffset = l;
     _saveNeeded = true;
   }
 
-  float getScaleFactor(UnitIndex idx) const { return _scaleFactor[idx]; }
+  float getScaleFactor(UnitIndex idx) const { return _kegs[idx].scaleFactor; }
   void setScaleFactor(UnitIndex idx, float f) {
-    _scaleFactor[idx] = f;
+    _kegs[idx].scaleFactor = f;
     _saveNeeded = true;
   }
 
@@ -331,103 +324,104 @@ class KegConfig : public BaseConfig {
   }
 
   TempSensorType getTempSensorType() const { return _tempSensor; }
-  int getTempSensorTypeAsInt() const { return _tempSensor; }
-  void setTempSensorType(TempSensorType t) {
-    _tempSensor = t;
-    _saveNeeded = true;
-  }
-  void setTempSensorType(int t) {
-    _tempSensor = (TempSensorType)t;
-    _saveNeeded = true;
-  }
-
-  // This is the maximum allowed deviation
-  float getScaleDeviationDecreaseValue() const {
-    return _scaleDeviationDecreaseValue;
-  }  // 0.1 kg
-  void setScaleDeviationDecreaseValue(float f) {
-    _scaleDeviationDecreaseValue = f;
-    _saveNeeded = true;
-  }
-
-  float getScaleDeviationIncreaseValue() const {
-    return _scaleDeviationIncreaseValue;
-  }  // 0.1 kg
-  void setScaleDeviationIncreaseValue(float f) {
-    _scaleDeviationIncreaseValue = f;
-    _saveNeeded = true;
-  }
-
-  // This is the maximum allowed deviation between kalman and raw value for
-  // level checking to work.
-  float getScaleKalmanDeviationValue() const { return _scaleKalmanDeviation; }
-  void setScaleKalmanDeviationValue(float f) {
-    _scaleKalmanDeviation = f;
-    _saveNeeded = true;
-  }
-
-  // This is the number of values in the statistics for the average value to be
-  // classifed as stable. Loop interval is 2s
-  uint32_t getScaleStableCount() const { return _scaleStableCount; }
-  /*void setScaleStableCount(uint32_t i) {
-    _scaleStableCount = i;
-    _saveNeeded = true;
-  }*/
+  // UNUSED: Not persisted in config - use runtime defaults only
+  // int getTempSensorTypeAsInt() const { return _tempSensor; }
+  // void setTempSensorType(TempSensorType t) {
+  //   _tempSensor = t;
+  //   _saveNeeded = true;
+  // }
+  // void setTempSensorType(int t) {
+  //   _tempSensor = (TempSensorType)t;
+  //   _saveNeeded = true;
+  // }
 
   int getScaleReadCount() const { return _scaleReadCount; }
-  /*void setScaleReadCount(uint32_t i) {
-    _scaleReadCount = i;
-    _saveNeeded = true;
-  }*/
-
   int getScaleReadCountCalibration() const {
     return _scaleReadCountCalibration;
   }
-  /*void setScaleReadCountCalibration(uint32_t i) {
-    _scaleReadCountCalibration = i;
-    _saveNeeded = true;
-  }*/
 
-  LevelDetectionType getLevelDetection() const { return _levelDetection; }
-  int getLevelDetectionAsInt() const { return _levelDetection; }
-  /*void setLevelDetection(LevelDetectionType l) {
-    _levelDetection = l;
-    _saveNeeded = true;
+  int getStabilityDetectionFilterIndex() const {
+    return _stabilityDetectionFilterIndex;
   }
-  void setLevelDetection(int l) {
-    _levelDetection = (LevelDetectionType)l;
-    _saveNeeded = true;
-  }*/
+  // UNUSED: Not persisted in config - use runtime defaults only
+  // void setStabilityDetectionFilterIndex(int i) {
+  //   _stabilityDetectionFilterIndex = i;
+  //   _saveNeeded = true;
+  // }
 
-  /*
-  float getKalmanEstimation() const { return _kalmanEstimation; }
-  void setKalmanEstimation(float f) {
-    _kalmanEstimation = f;
-    _saveNeeded = true;
-  }
-  float getKalmanMeasurement() const { return _kalmanMeasurement; }
-  void setKalmanMeasurement(float f) {
-    _kalmanMeasurement = f;
-    _saveNeeded = true;
-  }
-  float getKalmanNoise() const { return _kalmanNoise; }
-  void setKalmanNoise(float f) {
-    _kalmanNoise = f;
-    _saveNeeded = true;
-  }
-  bool isKalmanActive() const { return _kalmanActive; }
-  void setKalmanActive(bool b) {
-    _kalmanActive = b;
-    _saveNeeded = true;
-  }
-  */
+  int getPourDetectionFilterIndex() const { return _pourDetectionFilterIndex; }
+  // UNUSED: Not persisted in config - use runtime defaults only
+  // void setPourDetectionFilterIndex(int i) {
+  //   _pourDetectionFilterIndex = i;
+  //   _saveNeeded = true;
+  // }
 
-  const char* getScaleTempCompensationFormula(UnitIndex idx) const {
-    return _scaleTempCompensationFormula[idx].c_str();
+  float getLevelStabilizationDurationSeconds() const {
+    return _levelStabilizationDurationSeconds;
   }
-  void setScaleTempCompensationFormula(UnitIndex idx, String s) {
-    _scaleTempCompensationFormula[idx] = s;
-    _saveNeeded = true;
+  // UNUSED: Not persisted in config - use runtime defaults only
+  // void setLevelStabilizationDurationSeconds(uint32_t i) {
+  //   _levelStabilizationDurationSeconds = i;
+  //   _saveNeeded = true;
+  // }
+
+  uint32_t getPourDurationSeconds() const { return _pourDurationSeconds; }
+  // UNUSED: Not persisted in config - use runtime defaults only
+  // void setPourDurationSeconds(uint32_t i) {
+  //   _pourDurationSeconds = i;
+  //   _saveNeeded = true;
+  // }
+
+  uint32_t getKegAbsenceDurationSeconds() const {
+    return _kegAbsenceDurationSeconds;
+  }
+  // UNUSED: Not persisted in config - use runtime defaults only
+  // void setKegAbsenceDurationSeconds(uint32_t i) {
+  //   _kegAbsenceDurationSeconds = i;
+  //   _saveNeeded = true;
+  // }
+
+  uint32_t getKegReplacementDurationSeconds() const {
+    return _kegReplacementDurationSeconds;
+  }
+  // UNUSED: Not persisted in config - use runtime defaults only
+  // void setKegReplacementDurationSeconds(uint32_t i) {
+  //   _kegReplacementDurationSeconds = i;
+  //   _saveNeeded = true;
+  // }
+
+  float getWeightAbsentThreshold() const { return _weightAbsentThreshold; }
+  // UNUSED: Not persisted in config - use runtime defaults only
+  // void setWeightAbsentThreshold(float f) {
+  //   _weightAbsentThreshold = f;
+  //   _saveNeeded = true;
+  // }
+
+  float getLevelIncreaseThreshold() const { return _levelIncreaseThreshold; }
+  // UNUSED: Not persisted in config - use runtime defaults only
+  // void setLevelIncreaseThreshold(float f) {
+  //   _levelIncreaseThreshold = f;
+  //   _saveNeeded = true;
+  // }
+
+  float getLevelDecreaseThreshold() const { return _levelDecreaseThreshold; }
+  // UNUSED: Not persisted in config - use runtime defaults only
+  // void setLevelDecreaseThreshold(float f) {
+  //   _levelDecreaseThreshold = f;
+  //   _saveNeeded = true;
+  // }
+
+  float getPourSlopeThreshold() const { return _pourSlopeThreshold; }
+  // UNUSED: Not persisted in config - use runtime defaults only
+  // void setPourSlopeThreshold(float f) {
+  //   _pourSlopeThreshold = f;
+  //   _saveNeeded = true;
+  // }
+
+  float getBeerVolumeToWeight(UnitIndex idx) const {
+    // Assume beer density of ~1.0 kg/L (slightly less than water)
+    // Returns max weight = keg weight + beer weight
+    return _kegs[idx].kegWeight + _kegs[idx].kegVolume;
   }
 
   // These are helper function to assist with formatting of values

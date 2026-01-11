@@ -41,7 +41,8 @@ void KegConfig::createJson(JsonObject& doc) const {
   doc[PARAM_VOLUME_UNIT] = getVolumeUnit();
 
   doc[PARAM_DISPLAY_LAYOUT] = getDisplayLayoutTypeAsInt();
-  doc[PARAM_TEMP_SENSOR] = getTempSensorTypeAsInt();
+  // UNUSED: Currently not persisted in config
+  // doc[PARAM_TEMP_SENSOR] = getTempSensorTypeAsInt();
 
   doc[PARAM_BREWFATHER_APIKEY] = getBrewfatherApiKey();
   doc[PARAM_BREWFATHER_USERKEY] = getBrewfatherUserKey();
@@ -62,8 +63,9 @@ void KegConfig::createJson(JsonObject& doc) const {
   doc[PARAM_BARHELPER_MONITOR3] = getBarhelperMonitor(UnitIndex::U3);
   doc[PARAM_BARHELPER_MONITOR4] = getBarhelperMonitor(UnitIndex::U4);
 
-  doc[PARAM_SCALE_TEMP_FORMULA1] =
-      getScaleTempCompensationFormula(UnitIndex::U1);
+  // DEPRECATED: v1 only - temp compensation formula no longer used
+  // doc[PARAM_SCALE_TEMP_FORMULA1] =
+  //     getScaleTempCompensationFormula(UnitIndex::U1);
   doc[PARAM_SCALE_FACTOR1] =
       serialized(String(getScaleFactor(UnitIndex::U1), 5));
   doc[PARAM_SCALE_OFFSET1] = getScaleOffset(UnitIndex::U1);
@@ -83,8 +85,9 @@ void KegConfig::createJson(JsonObject& doc) const {
   doc[PARAM_BEER_EBC1] = getBeerEBC(UnitIndex::U1);
   doc[PARAM_BEER_IBU1] = getBeerIBU(UnitIndex::U1);
 
-  doc[PARAM_SCALE_TEMP_FORMULA2] =
-      getScaleTempCompensationFormula(UnitIndex::U2);
+  // DEPRECATED: v1 only - temp compensation formula no longer used
+  // doc[PARAM_SCALE_TEMP_FORMULA2] =
+  //     getScaleTempCompensationFormula(UnitIndex::U2);
   doc[PARAM_SCALE_FACTOR2] =
       serialized(String(getScaleFactor(UnitIndex::U2), 5));
   doc[PARAM_SCALE_OFFSET2] = getScaleOffset(UnitIndex::U2);
@@ -104,8 +107,9 @@ void KegConfig::createJson(JsonObject& doc) const {
   doc[PARAM_BEER_EBC2] = getBeerEBC(UnitIndex::U2);
   doc[PARAM_BEER_IBU2] = getBeerIBU(UnitIndex::U2);
 
-  doc[PARAM_SCALE_TEMP_FORMULA3] =
-      getScaleTempCompensationFormula(UnitIndex::U3);
+  // DEPRECATED: v1 only - temp compensation formula no longer used
+  // doc[PARAM_SCALE_TEMP_FORMULA3] =
+  //     getScaleTempCompensationFormula(UnitIndex::U3);
   doc[PARAM_SCALE_FACTOR3] =
       serialized(String(getScaleFactor(UnitIndex::U3), 5));
   doc[PARAM_SCALE_OFFSET3] = getScaleOffset(UnitIndex::U3);
@@ -125,8 +129,9 @@ void KegConfig::createJson(JsonObject& doc) const {
   doc[PARAM_BEER_EBC3] = getBeerEBC(UnitIndex::U3);
   doc[PARAM_BEER_IBU3] = getBeerIBU(UnitIndex::U3);
 
-  doc[PARAM_SCALE_TEMP_FORMULA4] =
-      getScaleTempCompensationFormula(UnitIndex::U4);
+  // DEPRECATED: v1 only - temp compensation formula no longer used
+  // doc[PARAM_SCALE_TEMP_FORMULA4] =
+  //     getScaleTempCompensationFormula(UnitIndex::U4);
   doc[PARAM_SCALE_FACTOR4] =
       serialized(String(getScaleFactor(UnitIndex::U4), 5));
   doc[PARAM_SCALE_OFFSET4] = getScaleOffset(UnitIndex::U4);
@@ -146,15 +151,16 @@ void KegConfig::createJson(JsonObject& doc) const {
   doc[PARAM_BEER_EBC4] = getBeerEBC(UnitIndex::U4);
   doc[PARAM_BEER_IBU4] = getBeerIBU(UnitIndex::U4);
 
-  doc[PARAM_SCALE_DEVIATION_INCREASE] =
-      serialized(String(getScaleDeviationIncreaseValue(), 2));
-  doc[PARAM_SCALE_DEVIATION_DECREASE] =
-      serialized(String(getScaleDeviationDecreaseValue(), 2));
-  doc[PARAM_SCALE_DEVIATION_KALMAN] =
-      serialized(String(getScaleKalmanDeviationValue(), 2));
-  doc[PARAM_SCALE_READ_COUNT] = getScaleReadCount();
-  doc[PARAM_SCALE_READ_COUNT_CALIBRATION] = getScaleReadCountCalibration();
-  doc[PARAM_SCALE_STABLE_COUNT] = getScaleStableCount();
+  // DEPRECATED: v1 only - use Stage 2 ChangeDetection parameters instead
+  // doc[PARAM_SCALE_DEVIATION_INCREASE] =
+  //     serialized(String(getScaleDeviationIncreaseValue(), 2));
+  // doc[PARAM_SCALE_DEVIATION_DECREASE] =
+  //     serialized(String(getScaleDeviationDecreaseValue(), 2));
+  // doc[PARAM_SCALE_DEVIATION_KALMAN] =
+  //     serialized(String(getScaleKalmanDeviationValue(), 2));
+  // doc[PARAM_SCALE_READ_COUNT] = getScaleReadCount();
+  // doc[PARAM_SCALE_READ_COUNT_CALIBRATION] = getScaleReadCountCalibration();
+  // doc[PARAM_SCALE_STABLE_COUNT] = getScaleStableCount();
 }
 
 void KegConfig::parseJson(JsonObject& doc) {
@@ -203,12 +209,10 @@ void KegConfig::parseJson(JsonObject& doc) {
 
   if (!doc[PARAM_DISPLAY_LAYOUT].isNull())
     setDisplayLayoutType(doc[PARAM_DISPLAY_LAYOUT].as<int>());
-  if (!doc[PARAM_TEMP_SENSOR].isNull())
-    setTempSensorType(doc[PARAM_TEMP_SENSOR].as<int>());
+  // UNUSED: Currently not persisted in config
+  // if (!doc[PARAM_TEMP_SENSOR].isNull())
+  //   setTempSensorType(doc[PARAM_TEMP_SENSOR].as<int>());
 
-  if (!doc[PARAM_SCALE_TEMP_FORMULA1].isNull())
-    setScaleTempCompensationFormula(UnitIndex::U1,
-                                    doc[PARAM_SCALE_TEMP_FORMULA1]);
   if (!doc[PARAM_SCALE_FACTOR1].isNull())
     setScaleFactor(UnitIndex::U1, doc[PARAM_SCALE_FACTOR1].as<float>());
   if (!doc[PARAM_SCALE_OFFSET1].isNull())
@@ -239,9 +243,6 @@ void KegConfig::parseJson(JsonObject& doc) {
   if (!doc[PARAM_BEER_FG1].isNull())
     setBeerFG(UnitIndex::U1, doc[PARAM_BEER_FG1].as<float>());
 
-  if (!doc[PARAM_SCALE_TEMP_FORMULA2].isNull())
-    setScaleTempCompensationFormula(UnitIndex::U2,
-                                    doc[PARAM_SCALE_TEMP_FORMULA2]);
   if (!doc[PARAM_SCALE_FACTOR2].isNull())
     setScaleFactor(UnitIndex::U2, doc[PARAM_SCALE_FACTOR2].as<float>());
   if (!doc[PARAM_SCALE_OFFSET2].isNull())
@@ -272,9 +273,6 @@ void KegConfig::parseJson(JsonObject& doc) {
   if (!doc[PARAM_BEER_FG2].isNull())
     setBeerFG(UnitIndex::U2, doc[PARAM_BEER_FG2].as<float>());
 
-  if (!doc[PARAM_SCALE_TEMP_FORMULA3].isNull())
-    setScaleTempCompensationFormula(UnitIndex::U3,
-                                    doc[PARAM_SCALE_TEMP_FORMULA3]);
   if (!doc[PARAM_SCALE_FACTOR3].isNull())
     setScaleFactor(UnitIndex::U3, doc[PARAM_SCALE_FACTOR3].as<float>());
   if (!doc[PARAM_SCALE_OFFSET3].isNull())
@@ -305,9 +303,6 @@ void KegConfig::parseJson(JsonObject& doc) {
   if (!doc[PARAM_BEER_FG3].isNull())
     setBeerFG(UnitIndex::U3, doc[PARAM_BEER_FG3].as<float>());
 
-  if (!doc[PARAM_SCALE_TEMP_FORMULA4].isNull())
-    setScaleTempCompensationFormula(UnitIndex::U4,
-                                    doc[PARAM_SCALE_TEMP_FORMULA4]);
   if (!doc[PARAM_SCALE_FACTOR4].isNull())
     setScaleFactor(UnitIndex::U4, doc[PARAM_SCALE_FACTOR4].as<float>());
   if (!doc[PARAM_SCALE_OFFSET4].isNull())
@@ -338,12 +333,13 @@ void KegConfig::parseJson(JsonObject& doc) {
   if (!doc[PARAM_BEER_FG4].isNull())
     setBeerFG(UnitIndex::U4, doc[PARAM_BEER_FG4].as<float>());
 
-  if (!doc[PARAM_SCALE_DEVIATION_DECREASE].isNull())
-    setScaleDeviationDecreaseValue(doc[PARAM_SCALE_DEVIATION_DECREASE]);
-  if (!doc[PARAM_SCALE_DEVIATION_INCREASE].isNull())
-    setScaleDeviationIncreaseValue(doc[PARAM_SCALE_DEVIATION_INCREASE]);
-  if (!doc[PARAM_SCALE_DEVIATION_KALMAN].isNull())
-    setScaleKalmanDeviationValue(doc[PARAM_SCALE_DEVIATION_KALMAN]);
+  // DEPRECATED: v1 only - use Stage 2 ChangeDetection parameters instead
+  // if (!doc[PARAM_SCALE_DEVIATION_DECREASE].isNull())
+  //   setScaleDeviationDecreaseValue(doc[PARAM_SCALE_DEVIATION_DECREASE]);
+  // if (!doc[PARAM_SCALE_DEVIATION_INCREASE].isNull())
+  //   setScaleDeviationIncreaseValue(doc[PARAM_SCALE_DEVIATION_INCREASE]);
+  // if (!doc[PARAM_SCALE_DEVIATION_KALMAN].isNull())
+  //   setScaleKalmanDeviationValue(doc[PARAM_SCALE_DEVIATION_KALMAN]);
   /*if (!doc[PARAM_SCALE_READ_COUNT].isNull())
     setScaleReadCount(doc[PARAM_SCALE_READ_COUNT]);*/
   /*if (!doc[PARAM_SCALE_READ_COUNT_CALIBRATION].isNull())
