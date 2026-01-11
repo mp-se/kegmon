@@ -30,12 +30,12 @@ SOFTWARE.
 #include <display.hpp>
 #include <kegconfig.hpp>
 #include <kegpush.hpp>
+#include <looptimer.hpp>
 #include <main.hpp>
 #include <scale.hpp>
 #include <temp_mgr.hpp>
 #include <utils.hpp>
 #include <wificonnection.hpp>
-#include <looptimer.hpp>
 
 // #define SCALE_AUTO_TARE 1
 // #define SCALE_RUN_CALIBRATION 1
@@ -50,20 +50,21 @@ const auto CONST_INFLUXDB_TOKEN = "";
 const auto CONST_INFLUXDB_BUCKET = "";
 
 // Calibration constants for testing
-const auto CONST_SCALE_OFFSET_U1 = -192039.0f; // Set your scale offsets here.
+const auto CONST_SCALE_OFFSET_U1 = -192039.0f;  // Set your scale offsets here.
 const auto CONST_SCALE_OFFSET_U2 = 1.0f;
 const auto CONST_SCALE_OFFSET_U3 = 1.0f;
 const auto CONST_SCALE_OFFSET_U4 = 1.0f;
 
-const auto CONST_SCALE_FACTOR_U1 = 22986.79f; // Set your scale factors here.
+const auto CONST_SCALE_FACTOR_U1 = 22986.79f;  // Set your scale factors here.
 const auto CONST_SCALE_FACTOR_U2 = 1.0f;
 const auto CONST_SCALE_FACTOR_U3 = 1.0f;
 const auto CONST_SCALE_FACTOR_U4 = 1.0f;
 
-const auto CONST_CALIBRATE_WEIGHT = 6.1f; // Set your calibration weight here (kg)
+const auto CONST_CALIBRATE_WEIGHT =
+    6.1f;  // Set your calibration weight here (kg)
 
-LoopTimer myLoopTimer(1000); // Main loop timer
-LoopTimer myInfluxTimer(1000); // InfluxDB send timer
+LoopTimer myLoopTimer(1000);    // Main loop timer
+LoopTimer myInfluxTimer(1000);  // InfluxDB send timer
 
 SerialDebug mySerial(115200L);
 KegConfig myConfig("KegmonHW", "./kegmon_hw.json");
@@ -106,7 +107,7 @@ void scaleDetectionTask(void* parameter) {
     }
 
     // Send raw measurement data to InfluxDB periodically (every 1 second)
-    if(myInfluxTimer.hasExpired() && myConfig.hasTargetInfluxDb2()) {
+    if (myInfluxTimer.hasExpired() && myConfig.hasTargetInfluxDb2()) {
       myInfluxTimer.reset();
 
       String s;
@@ -122,11 +123,6 @@ void scaleDetectionTask(void* parameter) {
         v = myTemp.getLastTempC(i);
         if (!isnan(v)) {
           snprintf(&buf[0], sizeof(buf), "tempC%i=%f,", i + 1, v);
-          s = s + &buf[0];
-        }
-        v = myTemp.getLastTempF(i);
-        if (!isnan(v)) {
-          snprintf(&buf[0], sizeof(buf), "tempF%i=%f,", i + 1, v);
           s = s + &buf[0];
         }
       }
@@ -378,7 +374,7 @@ void loop() {
   // Core 1 Main loop (Core 0) handles: display updates, event processing, and
   // InfluxDB sending
 
-  if(myLoopTimer.hasExpired()) {
+  if (myLoopTimer.hasExpired()) {
     myLoopTimer.reset();
 
     // Show the values on the display
