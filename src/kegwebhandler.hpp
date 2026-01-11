@@ -38,9 +38,8 @@ class KegWebHandler : public BaseWebServer {
   String _hardwareScanData;
 
   void setupWebHandlers();
-  void populateScaleJson(JsonObject &doc);
 
-  void webScale(AsyncWebServerRequest *request);
+  void webFeature(AsyncWebServerRequest *request);
   void webScaleTare(AsyncWebServerRequest *request, JsonVariant &json);
   void webScaleFactor(AsyncWebServerRequest *request, JsonVariant &json);
   void webHardwareScan(AsyncWebServerRequest *request);
@@ -48,9 +47,8 @@ class KegWebHandler : public BaseWebServer {
   void webConfigGet(AsyncWebServerRequest *request);
   void webConfigPost(AsyncWebServerRequest *request, JsonVariant &json);
   void webStatus(AsyncWebServerRequest *request);
-  void webStability(AsyncWebServerRequest *request);
-  void webStabilityClear(AsyncWebServerRequest *request);
-  void webHandleLogsClear(AsyncWebServerRequest *request);
+  void webStatistic(AsyncWebServerRequest *request);
+  void webStatisticClear(AsyncWebServerRequest *request);
   void webHandleBrewspy(AsyncWebServerRequest *request, JsonVariant &json);
   void webHandleFactoryDefaults(AsyncWebServerRequest *request);
 

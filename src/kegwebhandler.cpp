@@ -24,9 +24,9 @@ SOFTWARE.
 #include <OneWire.h>
 #include <esp_chip_info.h>
 
+#include <changedetection.hpp>
 #include <kegpush.hpp>
 #include <kegwebhandler.hpp>
-#include <levels.hpp>
 #include <main.hpp>
 #include <scale.hpp>
 #include <temp_mgr.hpp>
@@ -38,6 +38,11 @@ constexpr auto PARAM_APP_VER = "app_ver";
 constexpr auto PARAM_APP_BUILD = "app_build";
 constexpr auto PARAM_PLATFORM = "platform";
 constexpr auto PARAM_TEMP = "temperature";
+constexpr auto PARAM_BOARD = "board";
+constexpr auto PARAM_CHIP_ID = "chip_id";
+constexpr auto PARAM_FIRMWARE_FILE = "firmware_file";
+constexpr auto PARAM_FEATURE_NO_SCALES = "no_scales";
+constexpr auto PARAM_FEATURE_TFT = "tft";
 
 // Calibration input
 constexpr auto PARAM_WEIGHT = "weight";
@@ -45,42 +50,6 @@ constexpr auto PARAM_SCALE = "scale_index";
 
 // Additional scale values
 constexpr auto PARAM_SCALE_BUSY = "scale_busy";
-constexpr auto PARAM_SCALE_WEIGHT1 = "scale_weight1";
-constexpr auto PARAM_SCALE_WEIGHT2 = "scale_weight2";
-constexpr auto PARAM_SCALE_WEIGHT3 = "scale_weight3";
-constexpr auto PARAM_SCALE_WEIGHT4 = "scale_weight4";
-constexpr auto PARAM_BEER_WEIGHT1 = "beer_weight1";
-constexpr auto PARAM_BEER_WEIGHT2 = "beer_weight2";
-constexpr auto PARAM_BEER_WEIGHT3 = "beer_weight3";
-constexpr auto PARAM_BEER_WEIGHT4 = "beer_weight4";
-constexpr auto PARAM_BEER_VOLUME1 = "beer_volume1";
-constexpr auto PARAM_BEER_VOLUME2 = "beer_volume2";
-constexpr auto PARAM_BEER_VOLUME3 = "beer_volume3";
-constexpr auto PARAM_BEER_VOLUME4 = "beer_volume4";
-constexpr auto PARAM_SCALE_RAW1 = "scale_raw1";
-constexpr auto PARAM_SCALE_RAW2 = "scale_raw2";
-constexpr auto PARAM_SCALE_RAW3 = "scale_raw3";
-constexpr auto PARAM_SCALE_RAW4 = "scale_raw4";
-constexpr auto PARAM_GLASS1 = "glass1";
-constexpr auto PARAM_GLASS2 = "glass2";
-constexpr auto PARAM_GLASS3 = "glass3";
-constexpr auto PARAM_GLASS4 = "glass4";
-constexpr auto PARAM_SCALE_STABLE_WEIGHT1 = "scale_stable_weight1";
-constexpr auto PARAM_SCALE_STABLE_WEIGHT2 = "scale_stable_weight2";
-constexpr auto PARAM_SCALE_STABLE_WEIGHT3 = "scale_stable_weight3";
-constexpr auto PARAM_SCALE_STABLE_WEIGHT4 = "scale_stable_weight4";
-constexpr auto PARAM_LAST_POUR_WEIGHT1 = "last_pour_weight1";
-constexpr auto PARAM_LAST_POUR_WEIGHT2 = "last_pour_weight2";
-constexpr auto PARAM_LAST_POUR_WEIGHT3 = "last_pour_weight3";
-constexpr auto PARAM_LAST_POUR_WEIGHT4 = "last_pour_weight4";
-constexpr auto PARAM_LAST_POUR_VOLUME1 = "last_pour_volume1";
-constexpr auto PARAM_LAST_POUR_VOLUME2 = "last_pour_volume2";
-constexpr auto PARAM_LAST_POUR_VOLUME3 = "last_pour_volume3";
-constexpr auto PARAM_LAST_POUR_VOLUME4 = "last_pour_volume4";
-constexpr auto PARAM_SCALE_CONNECTED1 = "scale_connected1";
-constexpr auto PARAM_SCALE_CONNECTED2 = "scale_connected2";
-constexpr auto PARAM_SCALE_CONNECTED3 = "scale_connected3";
-constexpr auto PARAM_SCALE_CONNECTED4 = "scale_connected4";
 
 // Other values
 constexpr auto PARAM_TOTAL_HEAP = "total_heap";
@@ -104,6 +73,12 @@ constexpr auto PARAM_UPTIME_MINUTES = "uptime_minutes";
 constexpr auto PARAM_UPTIME_HOURS = "uptime_hours";
 constexpr auto PARAM_UPTIME_DAYS = "uptime_days";
 
+// Temperature sensor parameters
+constexpr auto PARAM_SENSORS = "sensors";
+constexpr auto PARAM_SENSOR_INDEX = "index";
+constexpr auto PARAM_SENSOR_ID = "id";
+constexpr auto PARAM_SENSOR_TEMPERATURE = "temperature";
+
 // Push status
 constexpr auto PARAM_HOMEASSISTANT = "ha";
 constexpr auto PARAM_BARHELPER = "barhelper";
@@ -114,6 +89,18 @@ constexpr auto PARAM_PUSH_AGE = "push_age";
 constexpr auto PARAM_PUSH_STATUS = "push_status";
 constexpr auto PARAM_PUSH_CODE = "push_code";
 constexpr auto PARAM_PUSH_RESPONSE = "push_response";
+
+// Scale status parameters (used in webStatus)
+constexpr auto PARAM_SCALE_INDEX = "index";
+constexpr auto PARAM_STATE = "state";
+constexpr auto PARAM_STABLE_WEIGHT = "stable_weight";
+constexpr auto PARAM_POUR_VOLUME = "pour_volume";
+constexpr auto PARAM_CONNECTED = "connected";
+
+// Generic scale field names for array structures
+constexpr auto PARAM_SCALE_WEIGHT = "scale_weight";
+constexpr auto PARAM_SCALE_RAW = "scale_raw";
+constexpr auto PARAM_GLASS = "glass";
 
 KegWebHandler::KegWebHandler(KegConfig *config) : BaseWebServer(config) {
   _config = config;
@@ -143,8 +130,8 @@ void KegWebHandler::setupWebHandlers() {
       std::bind(&KegWebHandler::webScaleFactor, this, std::placeholders::_1,
                 std::placeholders::_2));
   _server->addHandler(handler);
-  _server->on("/api/scale", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    this->webScale(request);
+  _server->on("/api/feature", HTTP_GET, [this](AsyncWebServerRequest *request) {
+    this->webFeature(request);
   });
   _server->on("/api/config", HTTP_GET, [this](AsyncWebServerRequest *request) {
     this->webConfigGet(request);
@@ -153,13 +140,13 @@ void KegWebHandler::setupWebHandlers() {
       "/api/config", std::bind(&KegWebHandler::webConfigPost, this,
                                std::placeholders::_1, std::placeholders::_2));
   _server->addHandler(handler);
-  _server->on("/api/stability/clear", HTTP_GET,
+  _server->on("/api/statistic/clear", HTTP_GET,
               [this](AsyncWebServerRequest *request) {
-                this->webStabilityClear(request);
+                this->webStatisticClear(request);
               });
   _server->on(
-      "/api/stability", HTTP_GET,
-      [this](AsyncWebServerRequest *request) { this->webStability(request); });
+      "/api/statistic", HTTP_GET,
+      [this](AsyncWebServerRequest *request) { this->webStatistic(request); });
   _server->on("/api/status", HTTP_GET, [this](AsyncWebServerRequest *request) {
     this->webStatus(request);
   });
@@ -168,10 +155,6 @@ void KegWebHandler::setupWebHandlers() {
       std::bind(&KegWebHandler::webHandleBrewspy, this, std::placeholders::_1,
                 std::placeholders::_2));
   _server->addHandler(handler);
-  _server->on("/api/logs/clear", HTTP_GET,
-              [this](AsyncWebServerRequest *request) {
-                this->webHandleLogsClear(request);
-              });
   _server->on("/api/hardware/status", HTTP_GET,
               [this](AsyncWebServerRequest *request) {
                 this->webHardwareScanStatus(request);
@@ -205,9 +188,7 @@ void KegWebHandler::webHandleFactoryDefaults(AsyncWebServerRequest *request) {
 
   Log.notice(F("WEB : webServer callback for /api/factory." CR));
   myConfig.saveFileWifiOnly();
-  // LittleFS.remove(ERR_FILENAME);
-  // LittleFS.remove(LEVELS_FILENAME);
-  // LittleFS.remove(LEVELS_FILENAME2);
+  LittleFS.remove(ERR_FILENAME);
   LittleFS.end();
   Log.notice(F("WEB : Deleted files in filesystem, rebooting." CR));
 
@@ -229,12 +210,6 @@ void KegWebHandler::webConfigPost(AsyncWebServerRequest *request,
 
   Log.notice(F("WEB : webServer callback for /api/config(write)." CR));
   JsonObject obj = json.as<JsonObject>();
-
-  /*for (JsonPair kv : obj) {
-    Log.notice(F("WEB : %s=%s." CR), kv.key().c_str(),
-  kv.value().as<String>().c_str());
-  }*/
-
   myConfig.parseJson(obj);
   obj.clear();
   myConfig.saveFile();
@@ -243,24 +218,6 @@ void KegWebHandler::webConfigPost(AsyncWebServerRequest *request,
   obj = response->getRoot().as<JsonObject>();
   obj[PARAM_SUCCESS] = true;
   obj[PARAM_MESSAGE] = "Configuration updated";
-  response->setLength();
-  request->send(response);
-}
-
-void KegWebHandler::webHandleLogsClear(AsyncWebServerRequest *request) {
-  if (!isAuthenticated(request)) {
-    return;
-  }
-
-  Log.notice(F("WEB : webServer callback for /api/logs/clear." CR));
-  // TODO(mpse) : Use the SD card for the log files
-  // LittleFS.remove(LEVELS_FILENAME);
-  // LittleFS.remove(LEVELS_FILENAME2);
-
-  AsyncJsonResponse *response = new AsyncJsonResponse(false);
-  JsonObject obj = response->getRoot().as<JsonObject>();
-  obj[PARAM_SUCCESS] = true;
-  obj[PARAM_MESSAGE] = "Logfiles removed";
   response->setLength();
   request->send(response);
 }
@@ -275,22 +232,6 @@ void KegWebHandler::webHandleBrewspy(AsyncWebServerRequest *request,
   AsyncJsonResponse *response = new AsyncJsonResponse(false);
   JsonObject obj2 = response->getRoot().as<JsonObject>();
   myPush.requestTapInfoFromBrewspy(obj2, obj[PARAM_TOKEN]);
-  response->setLength();
-  request->send(response);
-}
-
-void KegWebHandler::webScale(AsyncWebServerRequest *request) {
-  if (!isAuthenticated(request)) {
-    return;
-  }
-
-  Log.notice(F("WEB : webServer callback /api/scale." CR));
-
-  AsyncJsonResponse *response = new AsyncJsonResponse(false);
-  JsonObject obj = response->getRoot().as<JsonObject>();
-  populateScaleJson(obj);
-  obj[PARAM_WEIGHT_UNIT] = myConfig.getWeightUnit();
-  obj[PARAM_VOLUME_UNIT] = myConfig.getVolumeUnit();
   response->setLength();
   request->send(response);
 }
@@ -352,89 +293,35 @@ void KegWebHandler::webScaleFactor(AsyncWebServerRequest *request,
   request->send(response);
 }
 
-void KegWebHandler::populateScaleJson(JsonObject &doc) {
-  // This will return the raw weight so that that we get the actual values.
-  doc[PARAM_SCALE_BUSY] = myScale.isScheduleRunning();
+void KegWebHandler::webFeature(AsyncWebServerRequest *request) {
+  Log.notice(F("WEB : webServer callback /api/feature." CR));
 
-  doc[PARAM_SCALE_CONNECTED1] = myScale.isConnected(UnitIndex::U1);
-  doc[PARAM_SCALE_CONNECTED2] = myScale.isConnected(UnitIndex::U2);
+  AsyncJsonResponse *response = new AsyncJsonResponse(false);
+  JsonObject obj = response->getRoot().as<JsonObject>();
 
-  doc[PARAM_SCALE_FACTOR1] = myConfig.getScaleFactor(UnitIndex::U1);
-  doc[PARAM_SCALE_FACTOR2] = myConfig.getScaleFactor(UnitIndex::U2);
-  if (myScale.isConnected(UnitIndex::U1)) {
-    float w = myLevelDetection.getTotalRawWeight(UnitIndex::U1);
-    if (!isnan(w)) {
-      doc[PARAM_SCALE_WEIGHT1] = serialized(
-          String(convertOutgoingWeight(w), myConfig.getWeightPrecision()));
-    }
-    doc[PARAM_SCALE_RAW1] = myScale.readLastRaw(UnitIndex::U1);
-    doc[PARAM_SCALE_OFFSET1] = myConfig.getScaleOffset(UnitIndex::U1);
-
-    w = myLevelDetection.getBeerWeight(UnitIndex::U1);
-    if (!isnan(w)) {
-      doc[PARAM_BEER_WEIGHT1] = serialized(
-          String(convertOutgoingWeight(w), myConfig.getWeightPrecision()));
-    }
-    doc[PARAM_BEER_VOLUME1] = serialized(String(
-        convertOutgoingVolume(myLevelDetection.getBeerVolume(UnitIndex::U1)),
-        myConfig.getVolumePrecision()));
-  }
-
-  if (myScale.isConnected(UnitIndex::U2)) {
-    float w = myLevelDetection.getTotalRawWeight(UnitIndex::U2);
-    if (!isnan(w)) {
-      doc[PARAM_SCALE_WEIGHT2] = serialized(
-          String(convertOutgoingWeight(w), myConfig.getWeightPrecision()));
-    }
-    doc[PARAM_SCALE_RAW2] = myScale.readLastRaw(UnitIndex::U2);
-    doc[PARAM_SCALE_OFFSET2] = myConfig.getScaleOffset(UnitIndex::U2);
-
-    w = myLevelDetection.getBeerWeight(UnitIndex::U2);
-    if (!isnan(w)) {
-      doc[PARAM_BEER_WEIGHT2] = serialized(
-          String(convertOutgoingWeight(w), myConfig.getWeightPrecision()));
-    }
-    doc[PARAM_BEER_VOLUME2] = serialized(String(
-        convertOutgoingVolume(myLevelDetection.getBeerVolume(UnitIndex::U2)),
-        myConfig.getVolumePrecision()));
-  }
-
-  if (myLevelDetection.hasStableWeight(UnitIndex::U1)) {
-    doc[PARAM_SCALE_STABLE_WEIGHT1] = serialized(
-        String(convertOutgoingWeight(
-                   myLevelDetection.getTotalStableWeight(UnitIndex::U1)),
-               myConfig.getWeightPrecision()));
-  }
-
-  if (myLevelDetection.hasStableWeight(UnitIndex::U2)) {
-    doc[PARAM_SCALE_STABLE_WEIGHT2] = serialized(
-        String(convertOutgoingWeight(
-                   myLevelDetection.getTotalStableWeight(UnitIndex::U2)),
-               myConfig.getWeightPrecision()));
-  }
-
-  if (myLevelDetection.hasPourWeight(UnitIndex::U1)) {
-    doc[PARAM_LAST_POUR_WEIGHT1] = serialized(String(
-        convertOutgoingWeight(myLevelDetection.getPourWeight(UnitIndex::U1)),
-        myConfig.getWeightPrecision()));
-    doc[PARAM_LAST_POUR_VOLUME1] = serialized(String(
-        convertOutgoingVolume(myLevelDetection.getPourVolume(UnitIndex::U1)),
-        myConfig.getVolumePrecision()));
-  }
-
-  if (myLevelDetection.hasPourWeight(UnitIndex::U2)) {
-    doc[PARAM_LAST_POUR_WEIGHT2] = serialized(String(
-        convertOutgoingWeight(myLevelDetection.getPourWeight(UnitIndex::U2)),
-        myConfig.getWeightPrecision()));
-    doc[PARAM_LAST_POUR_VOLUME2] = serialized(String(
-        convertOutgoingVolume(myLevelDetection.getPourVolume(UnitIndex::U2)),
-        myConfig.getVolumePrecision()));
-  }
-
-#if LOG_LEVEL == 6
-  serializeJson(doc, Serial);
-  EspSerial.print(CR);
+#if defined(ESP32S3)
+  obj[PARAM_PLATFORM] = "esp32s3";
+#else
+#error "Undefined target"
 #endif
+#if defined(BOARD)
+  obj[PARAM_BOARD] = BOARD;
+#else
+  obj[PARAM_BOARD] = "UNDEFINED";
+#endif
+  obj[PARAM_APP_VER] = CFG_APPVER;
+  obj[PARAM_APP_BUILD] = CFG_GITREV;
+  obj[PARAM_CHIP_ID] = String(ESP.getEfuseMac(), HEX);
+  obj[PARAM_FIRMWARE_FILE] = CFG_FILENAMEBIN;
+  obj[PARAM_FEATURE_NO_SCALES] = MAX_SCALES;
+#if defined(ENABLE_TFT)
+  obj[PARAM_FEATURE_TFT] = true;
+#else
+  obj[PARAM_FEATURE_TFT] = false;
+#endif
+
+  response->setLength();
+  request->send(response);
 }
 
 void KegWebHandler::webStatus(AsyncWebServerRequest *request) {
@@ -442,18 +329,10 @@ void KegWebHandler::webStatus(AsyncWebServerRequest *request) {
 
   AsyncJsonResponse *response = new AsyncJsonResponse(false);
   JsonObject obj = response->getRoot().as<JsonObject>();
-  populateScaleJson(obj);
   obj[PARAM_MDNS] = myConfig.getMDNS();
   obj[PARAM_ID] = myConfig.getID();
   obj[PARAM_RSSI] = WiFi.RSSI();
   obj[PARAM_SSID] = myConfig.getWifiSSID(0);
-#if defined(ESP32S3)
-  obj[PARAM_PLATFORM] = "esp32s3";
-#else
-#error "Undefined target"
-#endif
-  obj[PARAM_APP_VER] = CFG_APPVER;
-  obj[PARAM_APP_BUILD] = CFG_GITREV;
   obj[PARAM_WEIGHT_UNIT] = myConfig.getWeightUnit();
   obj[PARAM_VOLUME_UNIT] = myConfig.getVolumeUnit();
   obj[PARAM_TEMP_FORMAT] = String(myConfig.getTempFormat());
@@ -463,26 +342,72 @@ void KegWebHandler::webStatus(AsyncWebServerRequest *request) {
   obj[PARAM_UPTIME_HOURS] = myUptime.getHours();
   obj[PARAM_UPTIME_DAYS] = myUptime.getDays();
 
+  // Scale busy status
+  obj[PARAM_SCALE_BUSY] = myScale.isScheduleRunning();
+
   // For this we use the last value read from the scale to avoid having to much
   // communication. The value will be updated regulary second in the main loop.
-  if (myLevelDetection.hasStableWeight(UnitIndex::U1)) {
-    obj[PARAM_GLASS1] = serialized(
-        String(myLevelDetection.getNoStableGlasses(UnitIndex::U1), 1));
+  // Return array of all scales with current state
+  JsonArray scales_array = obj[PARAM_SCALES].to<JsonArray>();
+  for (int i = 0; i < MAX_SCALES; i++) {
+    UnitIndex idx = static_cast<UnitIndex>(i);
+    JsonObject scale = scales_array.add<JsonObject>();
+
+    // Basic info always included
+    scale[PARAM_SCALE_INDEX] = i;
+    scale[PARAM_CONNECTED] = myScale.isConnected(idx);
+
+    // Legacy scale factor and offset fields
+    scale[PARAM_SCALE_FACTOR] = myConfig.getScaleFactor(idx);
+    scale[PARAM_SCALE_OFFSET] = myConfig.getScaleOffset(idx);
+
+    // Only add other data if scale is connected
+    if (myScale.isConnected(idx)) {
+      scale[PARAM_STATE] = myChangeDetection.getStateString(idx);
+
+      // Weight and volume data (in kg and cl)
+      scale[PARAM_STABLE_WEIGHT] = myChangeDetection.getStableWeight(idx);
+      scale[PARAM_POUR_VOLUME] = myChangeDetection.getPourVolume(idx);
+
+      // Keg volume in centiliters
+      float keg_volume_liters = myConfig.getKegVolume(idx);
+      scale[PARAM_KEG_VOLUME] =
+          serialized(String(keg_volume_liters * 100.0f, 0));
+
+      // Calculate number of glasses (glass volume from config)
+      float glass_volume_liters = myConfig.getGlassVolume(idx);
+      if (glass_volume_liters > 0.0f &&
+          myChangeDetection.getStableWeight(idx) > 0.0f) {
+        // Approximate: remaining weight / keg weight * keg liters / glass
+        // liters
+        float keg_weight = myConfig.getKegWeight(idx);
+        float remaining_liters =
+            (myChangeDetection.getStableWeight(idx) / keg_weight) *
+            keg_volume_liters;
+        scale[PARAM_GLASS] =
+            serialized(String(remaining_liters / glass_volume_liters, 1));
+      }
+
+      // Legacy raw weight field
+      scale[PARAM_SCALE_RAW] = myScale.readLastRaw(idx);
+    }
   }
-  if (myLevelDetection.hasStableWeight(UnitIndex::U2)) {
-    obj[PARAM_GLASS2] = serialized(
-        String(myLevelDetection.getNoStableGlasses(UnitIndex::U2), 1));
-  }
 
-  obj[PARAM_KEG_VOLUME1] =
-      convertOutgoingVolume(myConfig.getKegVolume(UnitIndex::U1));
-  obj[PARAM_KEG_VOLUME2] =
-      convertOutgoingVolume(myConfig.getKegVolume(UnitIndex::U2));
+  // Return array of all temperature sensors
+  if (myTemp.hasSensor()) {
+    JsonArray sensors_array = obj[PARAM_SENSORS].to<JsonArray>();
+    int sensor_count = myTemp.getSensorCount();
+    for (int i = 0; i < sensor_count; i++) {
+      JsonObject sensor = sensors_array.add<JsonObject>();
 
-  float f = myTemp.getLastTempC();
+      sensor[PARAM_SENSOR_INDEX] = i;
+      sensor[PARAM_SENSOR_ID] = myTemp.getSensorId(i);
 
-  if (!isnan(f)) {
-    obj[PARAM_TEMP] = serialized(String(convertOutgoingTemperature(f), 2));
+      float temp_c = myTemp.getLastTempC(i);
+      if (!isnan(temp_c)) {
+        sensor[PARAM_SENSOR_TEMPERATURE] = serialized(String(temp_c, 2));
+      }
+    }
   }
 
   obj[PARAM_TOTAL_HEAP] = ESP.getHeapSize();
@@ -542,114 +467,107 @@ void KegWebHandler::webStatus(AsyncWebServerRequest *request) {
   response->setLength();
   request->send(response);
 }
-
-void KegWebHandler::webStability(AsyncWebServerRequest *request) {
+void KegWebHandler::webStatistic(AsyncWebServerRequest *request) {
   if (!isAuthenticated(request)) {
     return;
   }
 
   Log.notice(F("WEB : webServer callback /api/stability." CR));
 
-  constexpr auto PARAM_STABILITY_COUNT1 = "stability_count1";
-  constexpr auto PARAM_STABILITY_COUNT2 = "stability_count2";
-  constexpr auto PARAM_STABILITY_SUM1 = "stability_sum1";
-  constexpr auto PARAM_STABILITY_SUM2 = "stability_sum2";
-  constexpr auto PARAM_STABILITY_MIN1 = "stability_min1";
-  constexpr auto PARAM_STABILITY_MIN2 = "stability_min2";
-  constexpr auto PARAM_STABILITY_MAX1 = "stability_max1";
-  constexpr auto PARAM_STABILITY_MAX2 = "stability_max2";
-  constexpr auto PARAM_STABILITY_AVE1 = "stability_ave1";
-  constexpr auto PARAM_STABILITY_AVE2 = "stability_ave2";
-  constexpr auto PARAM_STABILITY_VAR1 = "stability_var1";
-  constexpr auto PARAM_STABILITY_VAR2 = "stability_var2";
-  constexpr auto PARAM_STABILITY_POPDEV1 = "stability_popdev1";
-  constexpr auto PARAM_STABILITY_POPDEV2 = "stability_popdev2";
-  constexpr auto PARAM_STABILITY_UBIASDEV1 = "stability_ubiasdev1";
-  constexpr auto PARAM_STABILITY_UBIASDEV2 = "stability_ubiasdev2";
-
   AsyncJsonResponse *response = new AsyncJsonResponse(false);
   JsonObject obj = response->getRoot().as<JsonObject>();
 
-  Stability *stability1 = myLevelDetection.getStability(UnitIndex::U1);
-  Stability *stability2 = myLevelDetection.getStability(UnitIndex::U2);
+  // Level statistics array (ChangeDetection v2 statistics)
+  JsonArray level_statistics = obj["level_statistics"].to<JsonArray>();
+  for (int i = 0; i < MAX_SCALES; i++) {
+    UnitIndex idx = static_cast<UnitIndex>(i);
+    JsonObject stat = level_statistics.add<JsonObject>();
 
-  obj[PARAM_WEIGHT_UNIT] = myConfig.getWeightUnit();
+    // Basic scale info
+    stat[PARAM_SCALE_INDEX] = i;
+    stat[PARAM_CONNECTED] = myScale.isConnected(idx);
+    stat[PARAM_STATE] = myChangeDetection.getStateString(idx);
+    stat["confidence"] = myChangeDetection.getConfidence(idx);
 
-  // TODO(mpse) : Fix formatting of the stability values
+    // Get statistics for this scale
+    const auto &stats = myChangeDetection.getStatistics(idx);
 
-  if (stability1->count() > 1) {
-    obj[PARAM_STABILITY_COUNT1] = stability1->count();
-    obj[PARAM_STABILITY_SUM1] = stability1->sum();
-    obj[PARAM_STABILITY_MIN1] = stability1->min();
-    obj[PARAM_STABILITY_MAX1] = stability1->max();
-    obj[PARAM_STABILITY_AVE1] = stability1->average();
-    obj[PARAM_STABILITY_VAR1] = stability1->variance();
-    obj[PARAM_STABILITY_POPDEV1] = stability1->popStdev();
-    obj[PARAM_STABILITY_UBIASDEV1] = stability1->unbiasedStdev();
+    // Pour statistics (in liters)
+    stat["total_pours"] = stats.totalPours;
+    stat["total_pour_volume"] = stats.totalPourVolume;
+    stat["avg_pour_volume"] = stats.avgPourVolume;
+    stat["max_pour_volume"] = stats.maxPourVolume;
+    stat["min_pour_volume"] = stats.minPourVolume;
+    stat["avg_pour_duration_sec"] = stats.avgPourDurationMs / 1000.0f;
+
+    // Keg statistics
+    stat["keg_replacements"] = stats.kegReplacements;
+    stat["current_keg_age_hours"] = stats.getCurrentKegAgeHours();
+    stat["last_keg_weight"] = stats.lastKegWeight;
+
+    // State machine statistics
+    stat["state_transitions"] = stats.stateTransitions;
+    stat["stabilization_count"] = stats.stabilizationCount;
+    stat["avg_stabilization_time_ms"] = stats.avgStabilizationTimeMs;
+
+    // Event timestamps
+    stat["last_pour_time_ms"] = static_cast<uint64_t>(stats.lastPourTimeMs);
+    stat["last_stable_time_ms"] = static_cast<uint64_t>(stats.lastStableTimeMs);
+    stat["last_keg_removal_time_ms"] =
+        static_cast<uint64_t>(stats.lastKegRemovalTimeMs);
   }
 
-  if (stability2->count() > 1) {
-    obj[PARAM_STABILITY_COUNT2] = stability2->count();
-    obj[PARAM_STABILITY_SUM2] = stability2->sum();
-    obj[PARAM_STABILITY_MIN2] = stability2->min();
-    obj[PARAM_STABILITY_MAX2] = stability2->max();
-    obj[PARAM_STABILITY_AVE2] = stability2->average();
-    obj[PARAM_STABILITY_VAR2] = stability2->variance();
-    obj[PARAM_STABILITY_POPDEV2] = stability2->popStdev();
-    obj[PARAM_STABILITY_UBIASDEV2] = stability2->unbiasedStdev();
-  }
+  // Scale statistics array (hardware reading statistics)
+  JsonArray scale_stats = obj["scale_statistics"].to<JsonArray>();
+  for (int i = 0; i < MAX_SCALES; i++) {
+    JsonObject ss = scale_stats.add<JsonObject>();
+    const auto &scaleStats = myScale.getStatistics(static_cast<UnitIndex>(i));
 
-  constexpr auto PARAM_LEVEL_RAW1 = "level_raw1";
-  constexpr auto PARAM_LEVEL_RAW2 = "level_raw2";
-  constexpr auto PARAM_LEVEL_KALMAN1 = "level_kalman1";
-  constexpr auto PARAM_LEVEL_KALMAN2 = "level_kalman2";
-  constexpr auto PARAM_LEVEL_STATISTIC1 = "level_stable1";
-  constexpr auto PARAM_LEVEL_STATISTIC2 = "level_stable2";
-
-  if (myLevelDetection.getRawDetection(UnitIndex::U1)->hasRawValue())
-    obj[PARAM_LEVEL_RAW1] =
-        myLevelDetection.getRawDetection(UnitIndex::U1)->getRawValue();
-  if (myLevelDetection.getRawDetection(UnitIndex::U1)->hasKalmanValue())
-    obj[PARAM_LEVEL_KALMAN1] =
-        myLevelDetection.getRawDetection(UnitIndex::U1)->getKalmanValue();
-  if (myLevelDetection.getStatsDetection(UnitIndex::U1)->hasStableValue())
-    obj[PARAM_LEVEL_STATISTIC1] =
-        myLevelDetection.getStatsDetection(UnitIndex::U1)->getStableValue();
-
-  if (myLevelDetection.getRawDetection(UnitIndex::U2)->hasRawValue())
-    obj[PARAM_LEVEL_RAW2] =
-        myLevelDetection.getRawDetection(UnitIndex::U2)->getRawValue();
-  if (myLevelDetection.getRawDetection(UnitIndex::U2)->hasKalmanValue())
-    obj[PARAM_LEVEL_KALMAN2] =
-        myLevelDetection.getRawDetection(UnitIndex::U2)->getKalmanValue();
-  if (myLevelDetection.getStatsDetection(UnitIndex::U2)->hasStableValue())
-    obj[PARAM_LEVEL_STATISTIC2] =
-        myLevelDetection.getStatsDetection(UnitIndex::U2)->getStableValue();
-
-  float f = myTemp.getLastTempC();
-
-  if (!isnan(f)) {
-    obj[PARAM_TEMP] = convertOutgoingTemperature(f);
+    ss[PARAM_SCALE_INDEX] = i;
+    ss["total_readings"] = scaleStats.totalReadings;
+    ss["valid_readings"] = scaleStats.validReadings;
+    ss["invalid_readings"] = scaleStats.invalidReadings;
+    ss["reading_quality"] =
+        serialized(String(scaleStats.getReadingQuality(), 1));
+    ss["reading_frequency"] =
+        serialized(String(scaleStats.getReadingFrequency(), 2));
+    ss["last_reading_time_ms"] =
+        static_cast<uint64_t>(scaleStats.lastReadingTimeMs);
+    ss["first_reading_time_ms"] =
+        static_cast<uint64_t>(scaleStats.firstReadingTimeMs);
+    ss["raw_min"] = serialized(String(scaleStats.rawMin, 0));
+    ss["raw_max"] = serialized(String(scaleStats.rawMax, 0));
+    ss["raw_average"] = serialized(String(scaleStats.getRawAverage(), 0));
+    ss["current_variance"] = serialized(String(scaleStats.currentVariance, 2));
+    ss["stable_state_variance"] =
+        serialized(String(scaleStats.stableStateVariance, 2));
+    ss["stable_state_samples"] = scaleStats.stableStateSamples;
+    ss["calibration_drift_per_hour"] =
+        serialized(String(scaleStats.calibrationDriftPerHour, 3));
   }
 
   response->setLength();
   request->send(response);
 }
 
-void KegWebHandler::webStabilityClear(AsyncWebServerRequest *request) {
+void KegWebHandler::webStatisticClear(AsyncWebServerRequest *request) {
   if (!isAuthenticated(request)) {
     return;
   }
 
-  Log.notice(F("WEB : webServer callback /api/stability/clear." CR));
+  Log.notice(F("WEB : webServer callback /api/statistic/clear." CR));
 
-  myLevelDetection.getStability(UnitIndex::U1)->clear();
-  myLevelDetection.getStability(UnitIndex::U2)->clear();
+  // Clear statistics and reset state for all scales
+  for (int i = 0; i < MAX_SCALES; i++) {
+    UnitIndex idx = static_cast<UnitIndex>(i);
+    myChangeDetection.resetStatistics(idx);
+    myScale.resetStatistics(idx);
+  }
 
   AsyncJsonResponse *response = new AsyncJsonResponse(false);
   JsonObject obj = response->getRoot().as<JsonObject>();
   obj[PARAM_SUCCESS] = true;
-  obj[PARAM_MESSAGE] = "Stability data cleared";
+  obj[PARAM_MESSAGE] = "Statistics cleared for all scales";
   response->setLength();
   request->send(response);
 }
