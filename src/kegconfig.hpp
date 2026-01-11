@@ -30,66 +30,36 @@ SOFTWARE.
 constexpr auto PARAM_BREWLOGGER_URL = "brewlogger_url";
 constexpr auto PARAM_BREWFATHER_USERKEY = "brewfather_userkey";
 constexpr auto PARAM_BREWFATHER_APIKEY = "brewfather_apikey";
-constexpr auto PARAM_BREWSPY_TOKEN1 = "brewspy_token1";
-constexpr auto PARAM_BREWSPY_TOKEN2 = "brewspy_token2";
-constexpr auto PARAM_BREWSPY_TOKEN3 = "brewspy_token3";
-constexpr auto PARAM_BREWSPY_TOKEN4 = "brewspy_token4";
 constexpr auto PARAM_BREWPI_URL = "brewpi_url";
 constexpr auto PARAM_CHAMBERCTRL_URL = "chamberctrl_url";
 constexpr auto PARAM_BARHELPER_APIKEY = "barhelper_apikey";
-constexpr auto PARAM_BARHELPER_MONITOR1 = "barhelper_monitor1";
-constexpr auto PARAM_BARHELPER_MONITOR2 = "barhelper_monitor2";
-constexpr auto PARAM_BARHELPER_MONITOR3 = "barhelper_monitor3";
-constexpr auto PARAM_BARHELPER_MONITOR4 = "barhelper_monitor4";
 constexpr auto PARAM_DISPLAY_LAYOUT = "display_layout";
 // UNUSED: Currently not persisted in config
 // constexpr auto PARAM_TEMP_SENSOR = "temp_sensor";
 constexpr auto PARAM_WEIGHT_UNIT = "weight_unit";
 constexpr auto PARAM_VOLUME_UNIT = "volume_unit";
-constexpr auto PARAM_KEG_WEIGHT1 = "keg_weight1";
-constexpr auto PARAM_KEG_WEIGHT2 = "keg_weight2";
-constexpr auto PARAM_KEG_WEIGHT3 = "keg_weight3";
-constexpr auto PARAM_KEG_WEIGHT4 = "keg_weight4";
-constexpr auto PARAM_KEG_VOLUME1 = "keg_volume1";
-constexpr auto PARAM_KEG_VOLUME2 = "keg_volume2";
-constexpr auto PARAM_KEG_VOLUME3 = "keg_volume3";
-constexpr auto PARAM_KEG_VOLUME4 = "keg_volume4";
-constexpr auto PARAM_GLASS_VOLUME1 = "glass_volume1";
-constexpr auto PARAM_GLASS_VOLUME2 = "glass_volume2";
-constexpr auto PARAM_GLASS_VOLUME3 = "glass_volume3";
-constexpr auto PARAM_GLASS_VOLUME4 = "glass_volume4";
-constexpr auto PARAM_BEER_NAME1 = "beer_name1";
-constexpr auto PARAM_BEER_NAME2 = "beer_name2";
-constexpr auto PARAM_BEER_NAME3 = "beer_name3";
-constexpr auto PARAM_BEER_NAME4 = "beer_name4";
-constexpr auto PARAM_BEER_ID1 = "beer_id1";
-constexpr auto PARAM_BEER_ID2 = "beer_id2";
-constexpr auto PARAM_BEER_ID3 = "beer_id3";
-constexpr auto PARAM_BEER_ID4 = "beer_id4";
-constexpr auto PARAM_BEER_ABV1 = "beer_abv1";
-constexpr auto PARAM_BEER_ABV2 = "beer_abv2";
-constexpr auto PARAM_BEER_ABV3 = "beer_abv3";
-constexpr auto PARAM_BEER_ABV4 = "beer_abv4";
-constexpr auto PARAM_BEER_IBU1 = "beer_ibu1";
-constexpr auto PARAM_BEER_IBU2 = "beer_ibu2";
-constexpr auto PARAM_BEER_IBU3 = "beer_ibu3";
-constexpr auto PARAM_BEER_IBU4 = "beer_ibu4";
-constexpr auto PARAM_BEER_EBC1 = "beer_ebc1";
-constexpr auto PARAM_BEER_EBC2 = "beer_ebc2";
-constexpr auto PARAM_BEER_EBC3 = "beer_ebc3";
-constexpr auto PARAM_BEER_EBC4 = "beer_ebc4";
-constexpr auto PARAM_BEER_FG1 = "beer_fg1";
-constexpr auto PARAM_BEER_FG2 = "beer_fg2";
-constexpr auto PARAM_BEER_FG3 = "beer_fg3";
-constexpr auto PARAM_BEER_FG4 = "beer_fg4";
-constexpr auto PARAM_SCALE_FACTOR1 = "scale_factor1";
-constexpr auto PARAM_SCALE_FACTOR2 = "scale_factor2";
-constexpr auto PARAM_SCALE_FACTOR3 = "scale_factor3";
-constexpr auto PARAM_SCALE_FACTOR4 = "scale_factor4";
-constexpr auto PARAM_SCALE_OFFSET1 = "scale_offset1";
-constexpr auto PARAM_SCALE_OFFSET2 = "scale_offset2";
-constexpr auto PARAM_SCALE_OFFSET3 = "scale_offset3";
-constexpr auto PARAM_SCALE_OFFSET4 = "scale_offset4";
+
+// JSON array field names for per-scale configuration
+constexpr auto PARAM_BREWSPY_TOKENS = "brewspy_tokens";
+constexpr auto PARAM_BARHELPER_MONITORS = "barhelper_monitors";
+constexpr auto PARAM_SCALES = "scales";
+constexpr auto PARAM_BEERS = "beers";
+
+// Nested object keys (used within the above arrays)
+constexpr auto PARAM_BREWSPY_TOKEN = "brewspy_token";
+constexpr auto PARAM_BARHELPER_MONITOR = "barhelper_monitor";
+constexpr auto PARAM_SCALE_FACTOR = "scale_factor";
+constexpr auto PARAM_SCALE_OFFSET = "scale_offset";
+constexpr auto PARAM_KEG_WEIGHT = "keg_weight";
+constexpr auto PARAM_KEG_VOLUME = "keg_volume";
+constexpr auto PARAM_GLASS_VOLUME = "glass_volume";
+constexpr auto PARAM_TEMP_SENSOR_ID = "temp_sensor_id";
+constexpr auto PARAM_BEER_NAME = "beer_name";
+constexpr auto PARAM_BEER_ID = "beer_id";
+constexpr auto PARAM_BEER_ABV = "beer_abv";
+constexpr auto PARAM_BEER_FG = "beer_fg";
+constexpr auto PARAM_BEER_EBC = "beer_ebc";
+constexpr auto PARAM_BEER_IBU = "beer_ibu";
 
 struct BeerInfo {
   String _name = "";
@@ -106,6 +76,7 @@ struct KegInfo {
   float kegWeight = 4.0f;    // Weight in kg
   float kegVolume = 19.0f;   // Volume in liters
   float glassVolume = 0.40f; // Volume in liters
+  String tempSensorId = "";  // OneWire sensor ID for this keg
 };
 
 constexpr auto WEIGHT_KG = "kg";
@@ -134,10 +105,10 @@ class KegConfig : public BaseConfig {
   String _brewfatherUserKey = "";
   String _brewfatherApiKey = "";
 
-  String _brewspyToken[4] = {"", "", "", ""};
+  String _brewspyToken[MAX_SCALES] = {"", "", "", ""};
 
   String _barhelperApiKey = "";
-  String _barhelperMonitor[4] = {"Kegmon TAP 1", "Kegmon TAP 2", "Kegmon TAP 3",
+  String _barhelperMonitor[MAX_SCALES] = {"Kegmon TAP 1", "Kegmon TAP 2", "Kegmon TAP 3",
                                  "Kegmon TAP 4"};
 
   String _brewpiUrl = "";
@@ -148,8 +119,8 @@ class KegConfig : public BaseConfig {
   DisplayLayoutType _displayLayout = DisplayLayoutType::Default;
   TempSensorType _tempSensor = TempSensorType::SensorDS18B20;
 
-  KegInfo _kegs[4];
-  BeerInfo _beer[4];
+  KegInfo _kegs[MAX_SCALES];
+  BeerInfo _beer[MAX_SCALES];
 
   int _scaleReadCount = 7;  // Default in HX711 library, should be odd number
   int _scaleReadCountCalibration = 29;
@@ -275,6 +246,14 @@ class KegConfig : public BaseConfig {
   float getGlassVolume(UnitIndex idx) const { return _kegs[idx].glassVolume; }
   void setGlassVolume(UnitIndex idx, float f) {
     _kegs[idx].glassVolume = f;
+    _saveNeeded = true;
+  }
+
+  const char* getTempSensorId(UnitIndex idx) const { 
+    return _kegs[idx].tempSensorId.c_str(); 
+  }
+  void setTempSensorId(UnitIndex idx, String s) {
+    _kegs[idx].tempSensorId = s;
     _saveNeeded = true;
   }
 
