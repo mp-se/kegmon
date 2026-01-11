@@ -203,7 +203,7 @@ class ChangeDetectionStatisticsManager {
   }
 
   void resetStatistics(int scaleIndex) {
-    if (scaleIndex < 4) {
+    if (scaleIndex < MAX_SCALES) {
       _scales[scaleIndex].reset();
     }
   }
@@ -216,3 +216,5 @@ class ChangeDetectionStatisticsManager {
 };
 
 #endif  // SRC_CHANGEDETECTION_STATISTICS_HPP_
+
+// EOF
