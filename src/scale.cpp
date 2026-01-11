@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021-2025 Magnus
+Copyright (c) 2021-2026 Magnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,20 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
+#include <filters/filter_alphabeta.hpp>
+#include <filters/filter_butterworth.hpp>
+#include <filters/filter_chebyshev.hpp>
+#include <filters/filter_complementary.hpp>
+#include <filters/filter_ema.hpp>
+#include <filters/filter_fir.hpp>
+#include <filters/filter_hampel.hpp>
+#include <filters/filter_kalman.hpp>
+#include <filters/filter_median.hpp>
+#include <filters/filter_movingaverage.hpp>
+#include <filters/filter_weightedma.hpp>
+#include <filters/filter_zscore.hpp>
 #include <kegpush.hpp>
+#include <memory>
 #include <perf.hpp>
 #include <scale.hpp>
 
@@ -63,13 +76,10 @@ void Scale::findFactor(UnitIndex idx, float weight) {
   myConfig.saveFile();  // save the factor to file
 
   setScaleFactor(idx);  // apply the factor after it has been saved
-  read(idx, true);
+  read(idx);
 }
 
 float Scale::readRaw(UnitIndex idx) {
-#if defined(DEBUG_LINK_SCALES)
-  idx = UnitIndex::U1;
-#endif
 #if LOG_LEVEL == 6
   Log.verbose(F("SCAL: HX711 Reading raw scale for [%d]." CR), idx);
 #endif
@@ -86,15 +96,83 @@ float Scale::readRaw(UnitIndex idx) {
   return l;
 }
 
+ScaleReadingResult Scale::read(UnitIndex idx) {
+  if (!_hxScale[idx]) {
+    return _lastResult[idx];
+  }
+
+  if (myConfig.getScaleFactor(idx) == 0 ||
+      myConfig.getScaleOffset(idx) == 0) {  // Not initialized
+    Log.verbose(F("SCAL: HX711 scale not initialized [%d]." CR), idx);
+    return _lastResult[idx];
+  }
+
+#if LOG_LEVEL == 6
+  Log.verbose(F("SCAL: HX711 reading scale for [%d]." CR), idx);
+#endif
+
+  PERF_BEGIN("scale-read");
+  _hxScale[idx]->set_medavg_mode();
+  float raw = _hxScale[idx]->get_units(myConfig.getScaleReadCount());
+
+#if LOG_LEVEL == 6
+  Log.verbose(F("SCAL: HX711 Reading weight=%F [%d]" CR), raw, idx);
+#endif
+
+  // Validate raw reading
+  bool isValid = true;
+  if (raw > 100) {
+    Log.error(F("SCAL: HX711 Ignoring value since it's higher than 100kg, %F "
+                "[%d]." CR),
+              raw, idx);
+    PERF_END("scale-read");
+    isValid = false;
+    _stats.recordReading(static_cast<int>(idx), raw, isValid, millis());
+    return _lastResult[idx];
+  }
+
+  if (raw < -100) {
+    Log.error(
+        F("SCAL: HX711 Ignoring value since it's less than -100kg %F [%d]." CR),
+        raw, idx);
+    PERF_END("scale-read");
+    isValid = false;
+    _stats.recordReading(static_cast<int>(idx), raw, isValid, millis());
+    return _lastResult[idx];
+  }
+
+  // Update all filters with new raw reading
+  ScaleReadingResult result;
+  result.raw = raw;
+  result.moving_average = _filter_ma[idx]->update(raw);
+  result.ema = _filter_ema[idx]->update(raw);
+  result.weighted_ma = _filter_wma[idx]->update(raw);
+  result.median = _filter_median[idx]->update(raw);
+  result.zscore = _filter_zscore[idx]->update(raw);
+  result.hampel = _filter_hampel[idx]->update(raw);
+  result.complementary = _filter_complementary[idx]->update(raw);
+  result.alphabeta = _filter_alphabeta[idx]->update(raw);
+  result.butterworth = _filter_butterworth[idx]->update(raw);
+  result.fir = _filter_fir[idx]->update(raw);
+  result.chebyshev = _filter_chebyshev[idx]->update(raw);
+  result.kalman = _filter_kalman[idx]->update(raw);
+
+  _lastResult[idx] = result;
+
+  // Record statistics
+  _stats.recordReading(static_cast<int>(idx), raw, isValid, millis());
+
+  PERF_END("scale-read");
+  return result;
+}
+
 void Scale::setupScale(UnitIndex idx, bool force, int pinData, int pinClock) {
   if (!_hxScale[idx] || force) {
-    if (_hxScale[idx]) delete _hxScale[idx];
-
 #if LOG_LEVEL == 6
     Log.verbose(F("SCAL: HX711 initializing scale, using offset %l [%d]." CR),
                 myConfig.getScaleOffset(idx), idx);
 #endif
-    _hxScale[idx] = new HX711();
+    _hxScale[idx] = std::make_unique<HX711>();
     _hxScale[idx]->begin(pinData, pinClock, true, false);
     _hxScale[idx]->set_offset(myConfig.getScaleOffset(idx));
     Log.notice(
@@ -108,8 +186,7 @@ void Scale::setupScale(UnitIndex idx, bool force, int pinData, int pinClock) {
       Log.error(
           F("SCAL: HX711 scale not responding, disabling interface [%d]." CR),
           idx);
-      delete _hxScale[idx];
-      _hxScale[idx] = nullptr;
+      _hxScale[idx].reset();
     }
   }
 }
@@ -129,13 +206,30 @@ void Scale::setup(bool force) {
   setupScale(UnitIndex::U2, force, PIN_SCALE_SDA2, PIN_SCALE_SCK2);
   setupScale(UnitIndex::U3, force, PIN_SCALE_SDA3, PIN_SCALE_SCK3);
   setupScale(UnitIndex::U4, force, PIN_SCALE_SDA4, PIN_SCALE_SCK4);
+
+  // Initialize all filters for each scale
+  for (int i = 0; i < 4; ++i) {
+    _filter_ma[i] = std::make_unique<MovingAverageFilter>(5);
+    _filter_ema[i] = std::make_unique<ExponentialMovingAverageFilter>(0.3f);
+    _filter_wma[i] = std::make_unique<WeightedMovingAverageFilter>(5);
+    _filter_median[i] = std::make_unique<MedianFilter>(5);
+    _filter_zscore[i] = std::make_unique<ModifiedZScoreFilter>(5, 3.5f);
+    _filter_hampel[i] = std::make_unique<HampelFilter>(5, 3.0f);
+    _filter_complementary[i] = std::make_unique<ComplementaryFilter>(0.7f);
+    _filter_alphabeta[i] = std::make_unique<AlphaBetaFilter>(0.9f, 0.5f);
+    _filter_butterworth[i] =
+        std::make_unique<ButterworthLowPassFilter>(2.0f, 10.0f);
+    _filter_fir[i] = std::make_unique<FIRLowPassFilter>(5);
+    _filter_chebyshev[i] =
+        std::make_unique<ChebyshevLowPassFilter>(2.0f, 10.0f);
+    _filter_kalman[i] = std::make_unique<KalmanLowPassFilter>(0.001f, 0.1f);
+  }
+
+  Log.notice(F("SCAL: All filters initialized for all 4 scales."));
 }
 
 void Scale::loop() {
-  loopScale(UnitIndex::U1);
-  loopScale(UnitIndex::U2);
-  loopScale(UnitIndex::U3);
-  loopScale(UnitIndex::U4);
+  for (int i = 0; i < 4; i++) loopScale((UnitIndex)i);
 }
 
 void Scale::loopScale(UnitIndex idx) {
@@ -156,56 +250,9 @@ void Scale::loopScale(UnitIndex idx) {
     readRaw(idx);
     _sched[idx].findFactor = false;
   }
+
+  // Update all filters with latest reading
+  read(idx);
 }
 
-float Scale::read(UnitIndex idx, bool skipValidation) {
-#if defined(DEBUG_LINK_SCALES)
-  idx = UnitIndex::U1;
-#endif
-
-  if (!_hxScale[idx]) return 0;
-
-  if (myConfig.getScaleFactor(idx) == 0 ||
-      myConfig.getScaleOffset(idx) == 0) {  // Not initialized, just return zero
-    Log.verbose(F("SCAL: HX711 scale not initialized [%d]." CR), idx);
-    return 0;
-  }
-
-#if LOG_LEVEL == 6
-  Log.verbose(F("SCAL: HX711 reading scale for [%d]." CR), idx);
-#endif
-
-  PERF_BEGIN("scale-read");
-  // _hxScale[idx]->set_raw_mode(); // raw read
-  // _hxScale[idx]->set_average_mode(); // get average of multiple raw reads
-  // _hxScale[idx]->set_median_mode(); // Get median of multiple raw reads
-  _hxScale[idx]->set_medavg_mode(); // Get average of "middle half" of multiple raw reads.
-  float raw = _hxScale[idx]->get_units(myConfig.getScaleReadCount());
-#if LOG_LEVEL == 6
-  Log.verbose(F("SCAL: HX711 Reading weight=%F [%d]" CR), raw, idx);
-#endif
-
-  if (!skipValidation) {
-    // If the value is higher/lower than 100 kb/lbs then the reading is
-    // proably wrong, just ignore the reading
-    if (raw > 100) {
-      Log.error(F("SCAL: HX711 Ignoring value since it's higher than 100kg, %F "
-                  "[%d]." CR),
-                raw, idx);
-      PERF_END("scale-read");
-      return NAN;
-    }
-
-    if (raw < -100) {
-      Log.error(F("SCAL: HX711 Ignoring value since it's less than -100kg %F "
-                  "[%d]." CR),
-                raw, idx);
-      PERF_END("scale-read");
-      return NAN;
-    }
-  }
-
-  PERF_END("scale-read");
-  return raw;
-}
 // EOF
