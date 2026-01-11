@@ -122,23 +122,23 @@ struct ScaleStatistics {
   }
 };
 
-// Global statistics manager for all 4 scales
+// Global statistics manager for all scales
 class ScaleStatisticsManager {
  private:
-  ScaleStatistics _scales[4];
+  ScaleStatistics _scales[MAX_SCALES];
 
  public:
   ScaleStatisticsManager() = default;
 
   void recordReading(int scaleIndex, float rawValue, bool isValid,
                      uint64_t timestampMs) {
-    if (scaleIndex < 4) {
+    if (scaleIndex < MAX_SCALES) {
       _scales[scaleIndex].recordReading(rawValue, isValid, timestampMs);
     }
   }
 
   void recordStableVariance(int scaleIndex, float variance) {
-    if (scaleIndex < 4) {
+    if (scaleIndex < MAX_SCALES) {
       _scales[scaleIndex].recordStableVariance(variance);
     }
   }
@@ -148,13 +148,13 @@ class ScaleStatisticsManager {
   }
 
   void resetStatistics(int scaleIndex) {
-    if (scaleIndex < 4) {
+    if (scaleIndex < MAX_SCALES) {
       _scales[scaleIndex].reset();
     }
   }
 
   void resetAllStatistics() {
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < MAX_SCALES; i++) {
       _scales[i].reset();
     }
   }

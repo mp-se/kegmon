@@ -229,7 +229,7 @@ void Scale::setup(bool force) {
 }
 
 void Scale::loop() {
-  for (int i = 0; i < 4; i++) loopScale((UnitIndex)i);
+  for (int i = 0; i < MAX_SCALES; i++) loopScale((UnitIndex)i);
 }
 
 void Scale::loopScale(UnitIndex idx) {
