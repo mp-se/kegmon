@@ -24,6 +24,7 @@ SOFTWARE.
 #ifndef SRC_CHANGEDETECTION_STATISTICS_HPP_
 #define SRC_CHANGEDETECTION_STATISTICS_HPP_
 
+#include <Arduino.h>
 #include <cstdint>
 
 enum class ChangeDetectionState;
