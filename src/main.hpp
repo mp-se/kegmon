@@ -31,14 +31,7 @@ SOFTWARE.
 
 constexpr auto CFG_MDNSNAME = "Kegmon";
 constexpr auto CFG_FILENAME = "/kegmon2.json";
-constexpr auto STARTUP_FILENAME = "/startup.log";
-constexpr auto LEVELS_FILENAME = "/levels.log";
-constexpr auto LEVELS_FILENAME2 = "/levels2.log";
 
-constexpr auto DISPLAY_ADR1 = 0x3c;
-constexpr auto DISPLAY_ADR2 = 0x3d;
-
-constexpr auto JSON_BUFFER = 3000;
 
 enum RunMode {
   normalMode = 0,
@@ -46,18 +39,14 @@ enum RunMode {
 };
 extern RunMode runMode;
 
-constexpr auto PIN_LED = BUILTIN_LED;
+constexpr int MAX_SCALES = 4;
 
 enum UnitIndex { U1 = 0, U2 = 1, U3 = 2, U4 = 3 };
-/*
- * RAW: Last value read
- * STATS: Statistics applied and average value used over the last 20 seconds
- */
-enum LevelDetectionType { RAW = 0, STATS = 1 };
 
-// #if defined(LOLIN_S3_PRO)
+#if defined(LOLIN_S3_PRO)
 // Hardware config for Lolin S3 PRO
 // --------------------------------
+constexpr auto PIN_LED = BUILTIN_LED;
 #define PIN_SCALE_SDA1 41
 #define PIN_SCALE_SCK1 42
 #define PIN_SCALE_SDA2 39
@@ -69,6 +58,6 @@ enum LevelDetectionType { RAW = 0, STATS = 1 };
 #define PIN_DS 1
 
 #define CFG_FILENAMEBIN "firmware_32s3pro.bin"
-// #endif
+#endif
 
 #endif  // SRC_MAIN_HPP_
