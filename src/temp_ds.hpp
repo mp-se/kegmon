@@ -34,6 +34,7 @@ class TempSensorDS : public TempSensorBase {
   OneWire* _oneWire = 0;
   DallasTemperature* _dallas = 0;
   bool _hasSensor = false;
+  String _sensorIds[MAX_SCALES + 1] = {};
 
  public:
   TempSensorDS() {}

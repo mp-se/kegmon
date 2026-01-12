@@ -41,6 +41,17 @@ void TempSensorDS::setup() {
     _hasSensor = true;
   else
     _hasSensor = false;
+
+  // Cache sensor IDs during setup to avoid repeated OneWire communication
+  int cnt = _dallas->getDS18Count();
+  for (int i = 0; i < cnt && i <= MAX_SCALES; i++) {
+    DeviceAddress adr;
+    _dallas->getAddress(&adr[0], i);
+    _sensorIds[i] = String(adr[0], 16) + String(adr[1], 16) +
+                    String(adr[2], 16) + String(adr[3], 16) +
+                    String(adr[4], 16) + String(adr[5], 16) +
+                    String(adr[6], 16) + String(adr[7], 16);
+  }
 }
 
 float TempSensorDS::read(int index) {
@@ -68,11 +79,8 @@ int TempSensorDS::getSensorCount() const {
 }
 
 String TempSensorDS::getSensorId(int index) const {
-  DeviceAddress adr;
-  _dallas->getAddress(&adr[0], index);
-  return String(adr[0], 16) + String(adr[1], 16) + String(adr[2], 16) +
-         String(adr[3], 16) + String(adr[4], 16) + String(adr[5], 16) +
-         String(adr[6], 16) + String(adr[7], 16);
+  if (index < 0 || index > MAX_SCALES || index >= getSensorCount()) return "";
+  return _sensorIds[index];
 }
 
 // EOF
