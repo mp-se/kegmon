@@ -103,7 +103,7 @@ ScaleReadingResult Scale::read(UnitIndex idx) {
 
   if (myConfig.getScaleFactor(idx) == 0 ||
       myConfig.getScaleOffset(idx) == 0) {  // Not initialized
-    Log.verbose(F("SCAL: HX711 scale not initialized [%d]." CR), idx);
+    // Log.verbose(F("SCAL: HX711 has no configuration [%d]." CR), idx);
     return _lastResult[idx];
   }
 
@@ -202,13 +202,20 @@ void Scale::setScaleFactor(UnitIndex idx) {
 }
 
 void Scale::setup(bool force) {
-  setupScale(UnitIndex::U1, force, PIN_SCALE_SDA1, PIN_SCALE_SCK1);
-  setupScale(UnitIndex::U2, force, PIN_SCALE_SDA2, PIN_SCALE_SCK2);
-  setupScale(UnitIndex::U3, force, PIN_SCALE_SDA3, PIN_SCALE_SCK3);
-  setupScale(UnitIndex::U4, force, PIN_SCALE_SDA4, PIN_SCALE_SCK4);
+  if (MAX_SCALES > 0)
+    setupScale(UnitIndex::U1, force, PIN_SCALE_SDA1, PIN_SCALE_SCK1);
+
+  if (MAX_SCALES > 1)
+    setupScale(UnitIndex::U2, force, PIN_SCALE_SDA2, PIN_SCALE_SCK2);
+
+  if (MAX_SCALES > 2)
+    setupScale(UnitIndex::U3, force, PIN_SCALE_SDA3, PIN_SCALE_SCK3);
+
+  if (MAX_SCALES > 3)
+    setupScale(UnitIndex::U4, force, PIN_SCALE_SDA4, PIN_SCALE_SCK4);
 
   // Initialize all filters for each scale
-  for (int i = 0; i < 4; ++i) {
+  for (int i = 0; i < MAX_SCALES; ++i) {
     _filter_ma[i] = std::make_unique<MovingAverageFilter>(5);
     _filter_ema[i] = std::make_unique<ExponentialMovingAverageFilter>(0.3f);
     _filter_wma[i] = std::make_unique<WeightedMovingAverageFilter>(5);
