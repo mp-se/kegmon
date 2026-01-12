@@ -21,6 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
+#include <DallasTemperature.h>
 #include <OneWire.h>
 #include <esp_chip_info.h>
 
@@ -37,27 +38,16 @@ SOFTWARE.
 constexpr auto PARAM_APP_VER = "app_ver";
 constexpr auto PARAM_APP_BUILD = "app_build";
 constexpr auto PARAM_PLATFORM = "platform";
-constexpr auto PARAM_TEMP = "temperature";
 constexpr auto PARAM_BOARD = "board";
 constexpr auto PARAM_CHIP_ID = "chip_id";
 constexpr auto PARAM_FIRMWARE_FILE = "firmware_file";
 constexpr auto PARAM_FEATURE_NO_SCALES = "no_scales";
 constexpr auto PARAM_FEATURE_TFT = "tft";
 
-// Calibration input
-constexpr auto PARAM_WEIGHT = "weight";
-constexpr auto PARAM_SCALE = "scale_index";
-
-// Additional scale values
-constexpr auto PARAM_SCALE_BUSY = "scale_busy";
-
 // Other values
 constexpr auto PARAM_TOTAL_HEAP = "total_heap";
 constexpr auto PARAM_FREE_HEAP = "free_heap";
 constexpr auto PARAM_IP = "ip";
-constexpr auto PARAM_I2C = "i2c";
-constexpr auto PARAM_I2C_1 = "bus_1";
-constexpr auto PARAM_I2C_2 = "bus_2";
 constexpr auto PARAM_ADRESS = "adress";
 constexpr auto PARAM_FAMILY = "family";
 constexpr auto PARAM_CHIP = "chip";
@@ -66,7 +56,6 @@ constexpr auto PARAM_CORES = "cores";
 constexpr auto PARAM_FEATURES = "features";
 constexpr auto PARAM_WIFI_SETUP = "wifi_setup";
 constexpr auto PARAM_ONEWIRE = "onewire";
-constexpr auto PARAM_RESOLUTION = "resolution";
 
 constexpr auto PARAM_UPTIME_SECONDS = "uptime_seconds";
 constexpr auto PARAM_UPTIME_MINUTES = "uptime_minutes";
@@ -90,14 +79,15 @@ constexpr auto PARAM_PUSH_STATUS = "push_status";
 constexpr auto PARAM_PUSH_CODE = "push_code";
 constexpr auto PARAM_PUSH_RESPONSE = "push_response";
 
-// Scale status parameters (used in webStatus)
+// Scale parameters
 constexpr auto PARAM_SCALE_INDEX = "index";
 constexpr auto PARAM_STATE = "state";
 constexpr auto PARAM_STABLE_WEIGHT = "stable_weight";
 constexpr auto PARAM_POUR_VOLUME = "pour_volume";
 constexpr auto PARAM_CONNECTED = "connected";
-
-// Generic scale field names for array structures
+constexpr auto PARAM_WEIGHT = "weight";
+constexpr auto PARAM_SCALE = "scale_index";
+constexpr auto PARAM_SCALE_BUSY = "scale_busy";
 constexpr auto PARAM_SCALE_WEIGHT = "scale_weight";
 constexpr auto PARAM_SCALE_RAW = "scale_raw";
 constexpr auto PARAM_GLASS = "glass";
@@ -130,6 +120,9 @@ void KegWebHandler::setupWebHandlers() {
       std::bind(&KegWebHandler::webScaleFactor, this, std::placeholders::_1,
                 std::placeholders::_2));
   _server->addHandler(handler);
+  _server->on("/api/scale", HTTP_GET, [this](AsyncWebServerRequest *request) {
+    this->webScale(request);
+  });
   _server->on("/api/feature", HTTP_GET, [this](AsyncWebServerRequest *request) {
     this->webFeature(request);
   });
@@ -236,6 +229,40 @@ void KegWebHandler::webHandleBrewspy(AsyncWebServerRequest *request,
   request->send(response);
 }
 
+void KegWebHandler::webScale(AsyncWebServerRequest *request) {
+  Log.notice(F("WEB : webServer callback /api/scale." CR));
+
+  AsyncJsonResponse *response = new AsyncJsonResponse(false);
+  JsonObject obj = response->getRoot().as<JsonObject>();
+  obj[PARAM_WEIGHT_UNIT] = myConfig.getWeightUnit();
+  obj[PARAM_VOLUME_UNIT] = myConfig.getVolumeUnit();
+  obj[PARAM_TEMP_UNIT] = String(myConfig.getTempUnit());
+
+  // Return array of all scales with current state
+  JsonArray scales_array = obj[PARAM_SCALES].to<JsonArray>();
+  for (int i = 0; i < MAX_SCALES; i++) {
+    UnitIndex idx = static_cast<UnitIndex>(i);
+    JsonObject scale = scales_array.add<JsonObject>();
+
+    scale[PARAM_SCALE_INDEX] = i;
+    scale[PARAM_CONNECTED] = myScale.isConnected(idx);
+
+    scale[PARAM_SCALE_FACTOR] = myConfig.getScaleFactor(idx);
+    scale[PARAM_SCALE_OFFSET] = myConfig.getScaleOffset(idx);
+
+    // Only add other data if scale is connected
+    if (myScale.isConnected(idx)) {
+      scale[PARAM_STATE] = myChangeDetection.getStateString(idx);
+
+      scale[PARAM_STABLE_WEIGHT] = myChangeDetection.getStableWeight(idx);
+      scale[PARAM_SCALE_RAW] = myScale.readLastRaw(idx);
+    }
+  }
+
+  response->setLength();
+  request->send(response);
+}
+
 void KegWebHandler::webScaleTare(AsyncWebServerRequest *request,
                                  JsonVariant &json) {
   if (!isAuthenticated(request)) {
@@ -271,7 +298,7 @@ void KegWebHandler::webScaleFactor(AsyncWebServerRequest *request,
 
   JsonObject obj = json.as<JsonObject>();
   UnitIndex idx;
-  float weight = convertIncomingWeight(obj[PARAM_WEIGHT].as<float>());
+  float weight = obj[PARAM_WEIGHT].as<float>();
 
   // Request will contain 1 or 2, but we need 0 or 1 for indexing.
   if (obj[PARAM_SCALE].as<int>() == 1)
@@ -342,24 +369,18 @@ void KegWebHandler::webStatus(AsyncWebServerRequest *request) {
   obj[PARAM_UPTIME_HOURS] = myUptime.getHours();
   obj[PARAM_UPTIME_DAYS] = myUptime.getDays();
 
-  // Scale busy status
   obj[PARAM_SCALE_BUSY] = myScale.isScheduleRunning();
 
-  // For this we use the last value read from the scale to avoid having to much
-  // communication. The value will be updated regulary second in the main loop.
   // Return array of all scales with current state
   JsonArray scales_array = obj[PARAM_SCALES].to<JsonArray>();
   for (int i = 0; i < MAX_SCALES; i++) {
     UnitIndex idx = static_cast<UnitIndex>(i);
     JsonObject scale = scales_array.add<JsonObject>();
 
-    // Basic info always included
     scale[PARAM_SCALE_INDEX] = i;
     scale[PARAM_CONNECTED] = myScale.isConnected(idx);
-
-    // Legacy scale factor and offset fields
-    scale[PARAM_SCALE_FACTOR] = myConfig.getScaleFactor(idx);
-    scale[PARAM_SCALE_OFFSET] = myConfig.getScaleOffset(idx);
+    // scale[PARAM_SCALE_FACTOR] = myConfig.getScaleFactor(idx);
+    // scale[PARAM_SCALE_OFFSET] = myConfig.getScaleOffset(idx);
 
     // Only add other data if scale is connected
     if (myScale.isConnected(idx)) {
@@ -388,8 +409,7 @@ void KegWebHandler::webStatus(AsyncWebServerRequest *request) {
             serialized(String(remaining_liters / glass_volume_liters, 1));
       }
 
-      // Legacy raw weight field
-      scale[PARAM_SCALE_RAW] = myScale.readLastRaw(idx);
+      // scale[PARAM_SCALE_RAW] = myScale.readLastRaw(idx);
     }
   }
 
@@ -467,6 +487,7 @@ void KegWebHandler::webStatus(AsyncWebServerRequest *request) {
   response->setLength();
   request->send(response);
 }
+
 void KegWebHandler::webStatistic(AsyncWebServerRequest *request) {
   if (!isAuthenticated(request)) {
     return;
@@ -620,61 +641,31 @@ void KegWebHandler::loop() {
     obj[PARAM_MESSAGE] = "";
     Log.notice(F("WEB : Scanning hardware." CR));
 
-    // Scan the i2c bus for devices
-    // Wire.begin(PIN_SDA, PIN_SCL); // Should already have been done in
-    // gyro.cpp
-    // JsonObject i2c = obj[PARAM_I2C].to<JsonObject>();
-    // JsonArray i2c_1 = i2c[PARAM_I2C_1].to<JsonArray>();
+    // For this we use the last value read from the scale to avoid having to
+    // much communication. The value will be updated regulary second in the main
+    // loop. Return array of all scales with current state
+    JsonArray scales_array = obj[PARAM_SCALES].to<JsonArray>();
+    for (int i = 0; i < MAX_SCALES; i++) {
+      UnitIndex idx = static_cast<UnitIndex>(i);
+      JsonObject scale = scales_array.add<JsonObject>();
 
-    // // Scan bus #1
-    // for (int i = 1, j = 0; i < 127; i++) {
-    //   // The i2c_scanner uses the return value of
-    //   // the Write.endTransmisstion to see if
-    //   // a device did acknowledge to the address.
-    //   Wire.beginTransmission(i);
-    //   int err = Wire.endTransmission();
-
-    //   if (err == 0) {
-    //     i2c_1[j][PARAM_ADRESS] = "0x" + String(i, 16);
-    //     j++;
-    //   }
-    // }
-
-    // #if defined(ESP32)
-    //     JsonArray i2c_2 = i2c[PARAM_I2C_2].to<JsonArray>();
-
-    //     // Scan bus #2
-    //     for (int i = 1, j = 0; i < 127; i++) {
-    //       // The i2c_scanner uses the return value of
-    //       // the Write.endTransmisstion to see if
-    //       // a device did acknowledge to the address.
-    //       Wire1.beginTransmission(i);
-    //       int err = Wire1.endTransmission();
-
-    //       if (err == 0) {
-    //         i2c_2[j][PARAM_ADRESS] = "0x" + String(i, 16);
-    //         j++;
-    //       }
-    //     }
-    // #endif
-
-    // TODO(mpse) : Scan for HX711 boards
-
-    // TODO(mpse) : Scan for all temperature sensors
+      scale[PARAM_SCALE_INDEX] = i;
+      scale[PARAM_CONNECTED] = myScale.isConnected(idx);
+    }
 
     // Scan onewire
-    /*
-    JsonArray onew = obj.createNestedArray(PARAM_ONEWIRE);
+    JsonArray sensors_array = obj[PARAM_ONEWIRE].to<JsonArray>();
 
-    for (int i = 0; i < mySensors.getDS18Count(); i++) {
-      DeviceAddress adr;
-      JsonObject sensor = onew.createNestedObject();
-      mySensors.getAddress(&adr[0], i);
-      sensor[PARAM_ADRESS] = String(adr[0], 16) + String(adr[1], 16) +
-                             String(adr[2], 16) + String(adr[3], 16) +
-                             String(adr[4], 16) + String(adr[5], 16) +
-                             String(adr[6], 16) + String(adr[7], 16);
-      switch (adr[0]) {
+    for (int i = 0; i < myTemp.getSensorCount(); i++) {
+      JsonObject sensor = sensors_array.add<JsonObject>();
+      String id = myTemp.getSensorId(i);
+      int type = id.length() > 2
+                     ? (strtol(id.substring(0, 2).c_str(), nullptr, 16))
+                     : 0;
+      sensor[PARAM_SENSOR_INDEX] = i;
+      sensor[PARAM_ADRESS] = id;
+
+      switch (type) {
         case DS18S20MODEL:
           sensor[PARAM_FAMILY] = "DS18S20";
           break;
@@ -690,9 +681,11 @@ void KegWebHandler::loop() {
         case DS28EA00MODEL:
           sensor[PARAM_FAMILY] = "DS28EA00";
           break;
+        default:
+          sensor[PARAM_FAMILY] = String(type, HEX);
+          break;
       }
-      sensor[PARAM_RESOLUTION] = mySensors.getResolution();
-    }*/
+    }
 
     JsonObject cpu = obj[PARAM_CHIP].to<JsonObject>();
 
@@ -702,20 +695,22 @@ void KegWebHandler::loop() {
     cpu[PARAM_REVISION] = chip_info.revision;
     cpu[PARAM_CORES] = chip_info.cores;
 
-    JsonArray feature = cpu[PARAM_FEATURES].to<JsonArray>();
+    JsonArray feature_array = cpu[PARAM_FEATURES].to<JsonArray>();
 
     if (chip_info.features & CHIP_FEATURE_EMB_FLASH)
-      feature.add("embedded flash");
+      feature_array.add("embedded flash");
     if (chip_info.features & CHIP_FEATURE_WIFI_BGN)
-      feature.add("Embedded Flash");
-    if (chip_info.features & CHIP_FEATURE_EMB_FLASH) feature.add("2.4Ghz WIFI");
-    if (chip_info.features & CHIP_FEATURE_BLE) feature.add("Bluetooth LE");
-    if (chip_info.features & CHIP_FEATURE_BT) feature.add("Bluetooth Classic");
+      feature_array.add("Embedded Flash");
+    if (chip_info.features & CHIP_FEATURE_EMB_FLASH)
+      feature_array.add("2.4Ghz WIFI");
+    if (chip_info.features & CHIP_FEATURE_BLE)
+      feature_array.add("Bluetooth LE");
+    if (chip_info.features & CHIP_FEATURE_BT)
+      feature_array.add("Bluetooth Classic");
     if (chip_info.features & CHIP_FEATURE_IEEE802154)
-      feature.add("IEEE 802.15.4/LR-WPAN");
+      feature_array.add("IEEE 802.15.4/LR-WPAN");
     if (chip_info.features & CHIP_FEATURE_EMB_PSRAM)
-      feature.add("Embedded PSRAM");
-
+      feature_array.add("Embedded PSRAM");
     switch (chip_info.model) {
       case CHIP_ESP32:
         cpu[PARAM_FAMILY] = "ESP32";
