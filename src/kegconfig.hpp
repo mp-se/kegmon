@@ -379,6 +379,18 @@ class KegConfig : public BaseConfig {
     return _kegs[idx].kegWeight + _kegs[idx].kegVolume;
   }
 
+  float getMinValidWeight(UnitIndex idx) const {
+    // Minimum valid weight with 15% tolerance for sensor inaccuracy
+    // Allows down to 85% of keg weight (empty) - more lenient for empty detection
+    return _kegs[idx].kegWeight * 0.85f;
+  }
+
+  float getMaxValidWeight(UnitIndex idx) const {
+    // Maximum valid weight with 10% tolerance for sensor inaccuracy
+    // Allows up to 110% of keg weight + beer volume (full) - stricter for overfill detection
+    return (_kegs[idx].kegWeight + _kegs[idx].kegVolume) * 1.10f;
+  }
+
   // These are helper function to assist with formatting of values
   int getWeightPrecision() const { return 2; }  // 2 decimans for kg
   int getVolumePrecision() const { return 0; }  // no decimals for cl
