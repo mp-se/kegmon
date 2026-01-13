@@ -26,6 +26,7 @@ SOFTWARE.
 
 #include <HX711.h>
 
+#include <atomic>
 #include <filters/filter_base.hpp>
 #include <filters/filter_kalman.hpp>
 #include <kegconfig.hpp>
@@ -123,9 +124,9 @@ class Scale {
  private:
   class Schedule {
    public:
-    bool tare = false;
-    bool findFactor = false;
-    float factorWeight = 0.0;
+    std::atomic<bool> tare = false;
+    std::atomic<bool> findFactor = false;
+    float factorWeight = 0.0;  // Protected by factorWeight atomic read/write
   };
 
   std::unique_ptr<HX711> _hxScale[MAX_SCALES] = {nullptr, nullptr, nullptr, nullptr};

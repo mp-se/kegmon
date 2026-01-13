@@ -119,22 +119,25 @@ ScaleReadingResult Scale::read(UnitIndex idx) {
   Log.verbose(F("SCAL: HX711 Reading weight=%F [%d]" CR), raw, idx);
 #endif
 
-  // Validate raw reading
+  // Validate raw reading against hardware sensor limits (±50kg)
+  constexpr float MAX_VALID_SENSOR_KG = 50.0f;
+  constexpr float MIN_VALID_SENSOR_KG = -50.0f;
+
   bool isValid = true;
-  if (raw > 100) {
-    Log.error(F("SCAL: HX711 Ignoring value since it's higher than 100kg, %F "
+  if (raw > MAX_VALID_SENSOR_KG) {
+    Log.error(F("SCAL: HX711 Ignoring value since it's higher than %F kg, %F "
                 "[%d]." CR),
-              raw, idx);
+              MAX_VALID_SENSOR_KG, raw, idx);
     PERF_END("scale-read");
     isValid = false;
     _stats.recordReading(static_cast<int>(idx), raw, isValid, millis());
     return _lastResult[idx];
   }
 
-  if (raw < -100) {
+  if (raw < MIN_VALID_SENSOR_KG) {
     Log.error(
-        F("SCAL: HX711 Ignoring value since it's less than -100kg %F [%d]." CR),
-        raw, idx);
+        F("SCAL: HX711 Ignoring value since it's less than %F kg %F [%d]." CR),
+        MIN_VALID_SENSOR_KG, raw, idx);
     PERF_END("scale-read");
     isValid = false;
     _stats.recordReading(static_cast<int>(idx), raw, isValid, millis());
