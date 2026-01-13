@@ -49,7 +49,8 @@ enum class ChangeDetectionEventType {
   POUR_STARTED,     // Entered Pouring state
   POUR_COMPLETED,   // Exiting Pouring state (pour finished)
   KEG_REMOVED,      // Entered KegAbsent state
-  KEG_REPLACED      // Entered ReplacingKeg state
+  KEG_REPLACED,     // Entered ReplacingKeg state
+  INVALID_WEIGHT    // Sensor reading out of valid range
 };
 
 // Self-contained event with all data needed for processing
@@ -80,6 +81,13 @@ struct ChangeDetectionEvent {
     float previousWeightKg = 0.0f;
     float currentWeightKg = 0.0f;
   } weight;
+
+  // Data for INVALID_WEIGHT
+  struct {
+    float weightKg = 0.0f;            // Weight that triggered invalid state
+    float minValidWeightKg = 0.0f;    // Minimum valid weight
+    float maxValidWeightKg = 0.0f;    // Maximum valid weight
+  } invalid;
 };
 
 // Thread-safe circular queue for change detection events
@@ -186,6 +194,10 @@ class ChangeDetection {
 
   // Fire a startup event to mark the beginning of a monitoring session
   void fireStartupEvent(uint64_t timestampMs);
+
+  // Fire an invalid weight event when sensor reading is out of valid range
+  void fireInvalidWeightEvent(UnitIndex idx, float currentWeight,
+                              uint64_t timestampMs);
 
   // Update the state machine for a single scale
   void update(UnitIndex idx, const ScaleReadingResult& result,

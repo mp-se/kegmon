@@ -164,6 +164,11 @@ void ChangeDetection::fireEvent(UnitIndex idx,
       break;
     }
 
+    case ChangeDetectionEventType::INVALID_WEIGHT: {
+      // Note: invalid weight data is populated by fireInvalidWeightEvent()
+      break;
+    }
+
     default:
       break;
   }
@@ -249,6 +254,20 @@ void ChangeDetection::fireStartupEvent(uint64_t timestampMs) {
   event.type = ChangeDetectionEventType::SYSTEM_STARTUP;
   event.unitIndex = UnitIndex(0);
   event.timestampMs = timestampMs;
+  _eventQueue.push(event);
+}
+
+void ChangeDetection::fireInvalidWeightEvent(UnitIndex idx, float currentWeight,
+                                             uint64_t timestampMs) {
+  ChangeDetectionEvent event;
+  event.type = ChangeDetectionEventType::INVALID_WEIGHT;
+  event.unitIndex = idx;
+  event.timestampMs = timestampMs;
+
+  event.invalid.weightKg = currentWeight;
+  event.invalid.minValidWeightKg = myConfig.getMinValidWeight(idx);
+  event.invalid.maxValidWeightKg = myConfig.getMaxValidWeight(idx);
+
   _eventQueue.push(event);
 }
 
@@ -372,6 +391,7 @@ void ChangeDetection::update(UnitIndex idx, const ScaleReadingResult& result,
     case ChangeDetectionState::Idle:
       if (!isWeightValid(currentWeight, idx)) {
         transitionState(idx, ChangeDetectionState::InvalidWeight, timestampMs);
+        fireInvalidWeightEvent(idx, currentWeight, timestampMs);
       } else if (isWeightAbsent(currentWeight)) {
         transitionState(idx, ChangeDetectionState::KegAbsent, timestampMs);
       } else {
@@ -382,6 +402,7 @@ void ChangeDetection::update(UnitIndex idx, const ScaleReadingResult& result,
     case ChangeDetectionState::Stabilizing:
       if (!isWeightValid(currentWeight, idx)) {
         transitionState(idx, ChangeDetectionState::InvalidWeight, timestampMs);
+        fireInvalidWeightEvent(idx, currentWeight, timestampMs);
       } else if (isWeightAbsent(currentWeight)) {
         transitionState(idx, ChangeDetectionState::KegAbsent, timestampMs);
       } else if (isWithinStabilityWindow(currentWeight, scale.stableWeight) ||
@@ -402,6 +423,7 @@ void ChangeDetection::update(UnitIndex idx, const ScaleReadingResult& result,
     case ChangeDetectionState::Stable:
       if (!isWeightValid(currentWeight, idx)) {
         transitionState(idx, ChangeDetectionState::InvalidWeight, timestampMs);
+        fireInvalidWeightEvent(idx, currentWeight, timestampMs);
       } else if (isWeightAbsent(currentWeight)) {
         scale.previousWeight = scale.stableWeight;
         transitionState(idx, ChangeDetectionState::KegAbsent, timestampMs);
@@ -435,6 +457,7 @@ void ChangeDetection::update(UnitIndex idx, const ScaleReadingResult& result,
     case ChangeDetectionState::Pouring:
       if (!isWeightValid(currentWeight, idx)) {
         transitionState(idx, ChangeDetectionState::InvalidWeight, timestampMs);
+        fireInvalidWeightEvent(idx, currentWeight, timestampMs);
       } else if (isWeightAbsent(currentWeight)) {
         scale.previousWeight = scale.stableWeight;
         transitionState(idx, ChangeDetectionState::KegAbsent, timestampMs);
@@ -469,6 +492,7 @@ void ChangeDetection::update(UnitIndex idx, const ScaleReadingResult& result,
     case ChangeDetectionState::Restabilizing:
       if (!isWeightValid(currentWeight, idx)) {
         transitionState(idx, ChangeDetectionState::InvalidWeight, timestampMs);
+        fireInvalidWeightEvent(idx, currentWeight, timestampMs);
       } else if (isWeightAbsent(currentWeight)) {
         scale.previousWeight = scale.stableWeight;
         transitionState(idx, ChangeDetectionState::KegAbsent, timestampMs);
