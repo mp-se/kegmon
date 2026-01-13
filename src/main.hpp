@@ -31,15 +31,13 @@ SOFTWARE.
 
 constexpr auto CFG_MDNSNAME = "Kegmon";
 constexpr auto CFG_FILENAME = "/kegmon2.json";
-
+constexpr int MAX_SCALES = 4;
 
 enum RunMode {
   normalMode = 0,
   wifiSetupMode = 2,
 };
 extern RunMode runMode;
-
-constexpr int MAX_SCALES = 4;
 
 enum UnitIndex { U1 = 0, U2 = 1, U3 = 2, U4 = 3 };
 
