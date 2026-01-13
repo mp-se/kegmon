@@ -24,6 +24,7 @@ SOFTWARE.
 #include <DallasTemperature.h>
 #include <OneWire.h>
 #include <esp_chip_info.h>
+#include <freertos/FreeRTOS.h>
 
 #include <changedetection.hpp>
 #include <kegpush.hpp>
@@ -88,6 +89,35 @@ constexpr auto PARAM_CONNECTED = "connected";
 constexpr auto PARAM_WEIGHT = "weight";
 constexpr auto PARAM_SCALE = "scale_index";
 constexpr auto PARAM_SCALE_BUSY = "scale_busy";
+constexpr auto PARAM_RECENT_EVENTS = "recent_events";
+const auto PARAM_TYPE = "type";
+const auto PARAM_UNIT = "unit";
+const auto PARAM_TIMESTAMP_MS = "timestamp_ms";
+const auto PARAM_NAME = "name";
+const auto PARAM_DATA = "data";
+const auto PARAM_STABLE_WEIGHT_KG = "stable_weight_kg";
+const auto PARAM_STABLE_VOLUME_L = "stable_volume_l";
+const auto PARAM_DURATION_MS = "duration_ms";
+const auto PARAM_PRE_WEIGHT_KG = "pre_weight_kg";
+const auto PARAM_POST_WEIGHT_KG = "post_weight_kg";
+const auto PARAM_WEIGHT_KG = "weight_kg";
+const auto PARAM_VOLUME_L = "volume_l";
+const auto PARAM_AVG_SLOPE_KG_SEC = "avg_slope_kg_sec";
+const auto PARAM_PREVIOUS_WEIGHT_KG = "previous_weight_kg";
+const auto PARAM_CURRENT_WEIGHT_KG = "current_weight_kg";
+const auto PARAM_EVENT_STARTUP = "startup";
+const auto PARAM_EVENT_STABLE_DETECTED = "stable_detected";
+const auto PARAM_EVENT_POUR_STARTED = "pour_started";
+const auto PARAM_EVENT_POUR_COMPLETED = "pour_completed";
+const auto PARAM_EVENT_KEG_REMOVED = "keg_removed";
+const auto PARAM_EVENT_KEG_REPLACED = "keg_replaced";
+const auto PARAM_EVENT_INVALID_WEIGHT = "invalid_weight";
+const auto PARAM_INVALID_WEIGHT_KG = "weight_kg";
+const auto PARAM_MIN_VALID_WEIGHT_KG = "min_valid_weight_kg";
+const auto PARAM_MAX_VALID_WEIGHT_KG = "max_valid_weight_kg";
+
+// Forward declaration
+static void eventToJson(const ChangeDetectionEvent &event, JsonObject obj);
 constexpr auto PARAM_SCALE_WEIGHT = "scale_weight";
 constexpr auto PARAM_SCALE_RAW = "scale_raw";
 constexpr auto PARAM_GLASS = "glass";
@@ -230,6 +260,10 @@ void KegWebHandler::webHandleBrewspy(AsyncWebServerRequest *request,
 }
 
 void KegWebHandler::webScale(AsyncWebServerRequest *request) {
+  if (!isAuthenticated(request)) {
+    return;
+  }
+
   Log.notice(F("WEB : webServer callback /api/scale." CR));
 
   AsyncJsonResponse *response = new AsyncJsonResponse(false);
@@ -237,6 +271,8 @@ void KegWebHandler::webScale(AsyncWebServerRequest *request) {
   obj[PARAM_WEIGHT_UNIT] = myConfig.getWeightUnit();
   obj[PARAM_VOLUME_UNIT] = myConfig.getVolumeUnit();
   obj[PARAM_TEMP_UNIT] = String(myConfig.getTempUnit());
+
+  obj[PARAM_SCALE_BUSY] = myScale.isScheduleRunning();
 
   // Return array of all scales with current state
   JsonArray scales_array = obj[PARAM_SCALES].to<JsonArray>();
@@ -482,6 +518,19 @@ void KegWebHandler::webStatus(AsyncWebServerRequest *request) {
     o[PARAM_PUSH_CODE] = brew->getLastError();
     o[PARAM_PUSH_RESPONSE] = brew->getLastResponse();
     o[PARAM_PUSH_USED] = brew->hasRun();
+  }
+
+  // Recent events from change detection
+  {
+    ChangeDetectionEvent recentEvents[10];  // RECENT_EVENTS_SIZE
+    size_t eventCount = 0;
+    this->getRecentEvents(recentEvents, eventCount);
+
+    JsonArray events_array = obj[PARAM_RECENT_EVENTS].to<JsonArray>();
+    for (size_t i = 0; i < eventCount; i++) {
+      JsonObject event_obj = events_array.add<JsonObject>();
+      eventToJson(recentEvents[i], event_obj);
+    }
   }
 
   response->setLength();
@@ -735,6 +784,127 @@ void KegWebHandler::loop() {
     serializeJson(obj, _hardwareScanData);
     Log.notice(F("WEB : Scan complete %s." CR), _hardwareScanData.c_str());
     _hardwareScanTask = false;
+  }
+}
+
+void KegWebHandler::queueEvent(const ChangeDetectionEvent &event) {
+  portENTER_CRITICAL(&_eventLock);
+
+  // Store event in ringbuffer at head position
+  size_t head = _eventHead.load();
+  _recentEvents[head] = event;
+  _eventHead.store((head + 1) % RECENT_EVENTS_SIZE);
+
+  // Track count (max out at RECENT_EVENTS_SIZE)
+  size_t count = _eventCount.load();
+  if (count < RECENT_EVENTS_SIZE) {
+    _eventCount.store(count + 1);
+  }
+
+  portEXIT_CRITICAL(&_eventLock);
+}
+
+void KegWebHandler::getRecentEvents(ChangeDetectionEvent *outEvents,
+                                    size_t &count) {
+  // Snapshot the count to ensure consistent read
+  count = _eventCount.load();
+
+  // Copy events in chronological order (oldest first)
+  if (count > 0) {
+    size_t startIdx = (count < RECENT_EVENTS_SIZE) ? 0 : _eventHead.load();
+
+    for (size_t i = 0; i < count; i++) {
+      size_t srcIdx = (startIdx + i) % RECENT_EVENTS_SIZE;
+      outEvents[i] = _recentEvents[srcIdx];
+    }
+  }
+}
+
+// Convert ChangeDetectionEvent to JSON
+static void eventToJson(const ChangeDetectionEvent &event, JsonObject obj) {
+  // Base event fields
+  obj[PARAM_TYPE] = static_cast<int>(event.type);
+  obj[PARAM_UNIT] = static_cast<int>(event.unitIndex);
+  obj[PARAM_TIMESTAMP_MS] = static_cast<uint32_t>(event.timestampMs);
+
+  // Event-specific data
+  switch (event.type) {
+    case ChangeDetectionEventType::SYSTEM_STARTUP:
+      obj[PARAM_NAME] = PARAM_EVENT_STARTUP;
+      break;
+
+    case ChangeDetectionEventType::STABLE_DETECTED:
+      obj[PARAM_NAME] = PARAM_EVENT_STABLE_DETECTED;
+      {
+        JsonObject stable = obj[PARAM_DATA].to<JsonObject>();
+        stable[PARAM_STABLE_WEIGHT_KG] =
+            serialized(String(event.stable.stableWeightKg, 4));
+        stable[PARAM_STABLE_VOLUME_L] =
+            serialized(String(event.stable.stableVolumeL, 4));
+        stable[PARAM_DURATION_MS] =
+            static_cast<uint32_t>(event.stable.durationMs);
+      }
+      break;
+
+    case ChangeDetectionEventType::POUR_STARTED:
+      obj[PARAM_NAME] = PARAM_EVENT_POUR_STARTED;
+      {
+        JsonObject pour = obj[PARAM_DATA].to<JsonObject>();
+        pour[PARAM_PRE_WEIGHT_KG] =
+            serialized(String(event.pour.prePourWeightKg, 4));
+      }
+      break;
+
+    case ChangeDetectionEventType::POUR_COMPLETED:
+      obj[PARAM_NAME] = PARAM_EVENT_POUR_COMPLETED;
+      {
+        JsonObject pour = obj[PARAM_DATA].to<JsonObject>();
+        pour[PARAM_PRE_WEIGHT_KG] =
+            serialized(String(event.pour.prePourWeightKg, 4));
+        pour[PARAM_POST_WEIGHT_KG] =
+            serialized(String(event.pour.postPourWeightKg, 4));
+        pour[PARAM_WEIGHT_KG] = serialized(String(event.pour.pourWeightKg, 4));
+        pour[PARAM_VOLUME_L] = serialized(String(event.pour.pourVolumeL, 4));
+        pour[PARAM_DURATION_MS] = static_cast<uint32_t>(event.pour.durationMs);
+        pour[PARAM_AVG_SLOPE_KG_SEC] =
+            serialized(String(event.pour.averageSlopeKgSec, 6));
+      }
+      break;
+
+    case ChangeDetectionEventType::KEG_REMOVED:
+      obj[PARAM_NAME] = PARAM_EVENT_KEG_REMOVED;
+      {
+        JsonObject weight = obj[PARAM_DATA].to<JsonObject>();
+        weight[PARAM_PREVIOUS_WEIGHT_KG] =
+            serialized(String(event.weight.previousWeightKg, 4));
+        weight[PARAM_CURRENT_WEIGHT_KG] =
+            serialized(String(event.weight.currentWeightKg, 4));
+      }
+      break;
+
+    case ChangeDetectionEventType::KEG_REPLACED:
+      obj[PARAM_NAME] = PARAM_EVENT_KEG_REPLACED;
+      {
+        JsonObject weight = obj[PARAM_DATA].to<JsonObject>();
+        weight[PARAM_PREVIOUS_WEIGHT_KG] =
+            serialized(String(event.weight.previousWeightKg, 4));
+        weight[PARAM_CURRENT_WEIGHT_KG] =
+            serialized(String(event.weight.currentWeightKg, 4));
+      }
+      break;
+
+    case ChangeDetectionEventType::INVALID_WEIGHT:
+      obj[PARAM_NAME] = PARAM_EVENT_INVALID_WEIGHT;
+      {
+        JsonObject invalid = obj[PARAM_DATA].to<JsonObject>();
+        invalid[PARAM_INVALID_WEIGHT_KG] =
+            serialized(String(event.invalid.weightKg, 4));
+        invalid[PARAM_MIN_VALID_WEIGHT_KG] =
+            serialized(String(event.invalid.minValidWeightKg, 4));
+        invalid[PARAM_MAX_VALID_WEIGHT_KG] =
+            serialized(String(event.invalid.maxValidWeightKg, 4));
+      }
+      break;
   }
 }
 
