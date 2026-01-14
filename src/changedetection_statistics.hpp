@@ -25,6 +25,7 @@ SOFTWARE.
 #define SRC_CHANGEDETECTION_STATISTICS_HPP_
 
 #include <Arduino.h>
+
 #include <cstdint>
 #include <main.hpp>
 

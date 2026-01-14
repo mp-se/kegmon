@@ -84,9 +84,9 @@ struct ChangeDetectionEvent {
 
   // Data for INVALID_WEIGHT
   struct {
-    float weightKg = 0.0f;            // Weight that triggered invalid state
-    float minValidWeightKg = 0.0f;    // Minimum valid weight
-    float maxValidWeightKg = 0.0f;    // Maximum valid weight
+    float weightKg = 0.0f;          // Weight that triggered invalid state
+    float minValidWeightKg = 0.0f;  // Minimum valid weight
+    float maxValidWeightKg = 0.0f;  // Maximum valid weight
   } invalid;
 };
 
@@ -205,7 +205,9 @@ class ChangeDetection {
 
   ChangeDetectionState getState(UnitIndex idx) const;
   float getStableWeight(UnitIndex idx) const;
-  float getPourVolume(UnitIndex idx) const;
+  float getPouringVolume(UnitIndex idx) const;
+  float getStableVolume(UnitIndex idx) const;
+  float getLastPourVolume(UnitIndex idx) const;
   const char* getStateString(UnitIndex idx) const;
   float getConfidence(UnitIndex idx) const;
 

@@ -71,10 +71,10 @@ struct BeerInfo {
 struct KegInfo {
   float scaleFactor = 0.0f;
   int32_t scaleOffset = 0;
-  float kegWeight = 4.0f;    // Weight in kg
-  float kegVolume = 19.0f;   // Volume in liters
-  float glassVolume = 0.40f; // Volume in liters
-  String tempSensorId = "";  // OneWire sensor ID for this keg
+  float kegWeight = 4.0f;     // Weight in kg
+  float kegVolume = 19.0f;    // Volume in liters
+  float glassVolume = 0.40f;  // Volume in liters
+  String tempSensorId = "";   // OneWire sensor ID for this keg
 };
 
 constexpr auto WEIGHT_KG = "kg";
@@ -84,9 +84,7 @@ constexpr auto VOLUME_CL = "cl";
 constexpr auto VOLUME_US = "us-oz";
 constexpr auto VOLUME_UK = "uk-oz";
 
-enum DisplayLayoutType {
-  Default = 0
-};
+enum DisplayLayoutType { Default = 0 };
 enum TempSensorType { SensorDS18B20 = 0 };
 
 class KegConfig : public BaseConfig {
@@ -100,8 +98,8 @@ class KegConfig : public BaseConfig {
   String _brewspyToken[MAX_SCALES] = {"", "", "", ""};
 
   String _barhelperApiKey = "";
-  String _barhelperMonitor[MAX_SCALES] = {"Kegmon TAP 1", "Kegmon TAP 2", "Kegmon TAP 3",
-                                 "Kegmon TAP 4"};
+  String _barhelperMonitor[MAX_SCALES] = {"Kegmon TAP 1", "Kegmon TAP 2",
+                                          "Kegmon TAP 3", "Kegmon TAP 4"};
 
   String _brewLoggerUrl = "";
 
@@ -114,7 +112,7 @@ class KegConfig : public BaseConfig {
   int _scaleReadCount = 7;  // Default in HX711 library, should be odd number
   int _scaleReadCountCalibration = 29;
 
-  // Change detection parameters 
+  // Change detection parameters
   int _stabilityDetectionFilterIndex = 12;  // FILTER_KALMAN
   int _pourDetectionFilterIndex = 12;       // FILTER_KALMAN
   uint32_t _levelStabilizationDurationSeconds =
@@ -225,8 +223,8 @@ class KegConfig : public BaseConfig {
     _saveNeeded = true;
   }
 
-  const char* getTempSensorId(UnitIndex idx) const { 
-    return _kegs[idx].tempSensorId.c_str(); 
+  const char* getTempSensorId(UnitIndex idx) const {
+    return _kegs[idx].tempSensorId.c_str();
   }
   void setTempSensorId(UnitIndex idx, String s) {
     _kegs[idx].tempSensorId = s;
@@ -381,13 +379,15 @@ class KegConfig : public BaseConfig {
 
   float getMinValidWeight(UnitIndex idx) const {
     // Minimum valid weight with 15% tolerance for sensor inaccuracy
-    // Allows down to 85% of keg weight (empty) - more lenient for empty detection
+    // Allows down to 85% of keg weight (empty) - more lenient for empty
+    // detection
     return _kegs[idx].kegWeight * 0.85f;
   }
 
   float getMaxValidWeight(UnitIndex idx) const {
     // Maximum valid weight with 10% tolerance for sensor inaccuracy
-    // Allows up to 110% of keg weight + beer volume (full) - stricter for overfill detection
+    // Allows up to 110% of keg weight + beer volume (full) - stricter for
+    // overfill detection
     return (_kegs[idx].kegWeight + _kegs[idx].kegVolume) * 1.10f;
   }
 

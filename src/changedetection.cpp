@@ -561,8 +561,19 @@ float ChangeDetection::getStableWeight(UnitIndex idx) const {
   return _scales[static_cast<int>(idx)].stableWeight;
 }
 
-float ChangeDetection::getPourVolume(UnitIndex idx) const {
+float ChangeDetection::getPouringVolume(UnitIndex idx) const {
   return _scales[static_cast<int>(idx)].pourVolume;
+}
+
+float ChangeDetection::getStableVolume(UnitIndex idx) const {
+  // Convert stable weight to beer volume using FG
+  WeightVolumeConverter converter(idx);
+  return converter.weightToVolume(getStableWeight(idx));
+}
+
+float ChangeDetection::getLastPourVolume(UnitIndex idx) const {
+  // Return the last/max pour volume from statistics
+  return getStatistics(idx).maxPourVolume;
 }
 
 const char* ChangeDetection::getStateString(UnitIndex idx) const {

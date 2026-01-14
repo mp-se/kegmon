@@ -129,7 +129,8 @@ class Scale {
     float factorWeight = 0.0;  // Protected by factorWeight atomic read/write
   };
 
-  std::unique_ptr<HX711> _hxScale[MAX_SCALES] = {nullptr, nullptr, nullptr, nullptr};
+  std::unique_ptr<HX711> _hxScale[MAX_SCALES] = {nullptr, nullptr, nullptr,
+                                                 nullptr};
 
   Schedule _sched[MAX_SCALES];
   float _lastRaw[MAX_SCALES] = {0.0, 0.0, 0.0, 0.0};
@@ -187,22 +188,25 @@ class Scale {
   }
   int32_t readLastRaw(UnitIndex idx) { return _lastRaw[idx]; }
   bool isConnected(UnitIndex idx) const { return _hxScale[idx] ? true : false; }
+  int getConnectedScaleCount() const {
+    int count = 0;
+    for (int i = 0; i < MAX_SCALES; i++) {
+      if (isConnected(static_cast<UnitIndex>(i))) {
+        count++;
+      }
+    }
+    return count;
+  }
   ScaleReadingResult read(UnitIndex idx);
-
-  // Get the last reading result (for thread-safe access from main loop)
   inline ScaleReadingResult getLastResult(UnitIndex idx) const {
     return _lastResult[static_cast<int>(idx)];
   }
-
-  // Statistics access
   const ScaleStatistics& getStatistics(UnitIndex idx) const {
     return _stats.getStatistics(static_cast<int>(idx));
   }
-
   void resetStatistics(UnitIndex idx) {
     _stats.resetStatistics(static_cast<int>(idx));
   }
-
   void resetAllStatistics() { _stats.resetAllStatistics(); }
 };
 

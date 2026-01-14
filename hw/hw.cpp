@@ -189,7 +189,7 @@ void scaleDetectionTask(void* parameter) {
 
         // Change detection state data
         float stableWeight = myChangeDetection.getStableWeight((UnitIndex)i);
-        float pourVolume = myChangeDetection.getPourVolume((UnitIndex)i);
+        float pourVolume = myChangeDetection.getPouringVolume((UnitIndex)i);
         float confidence = myChangeDetection.getConfidence((UnitIndex)i);
 
         snprintf(&buf[0], sizeof(buf), "state%i=\"%s\",", i + 1,

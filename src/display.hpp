@@ -24,127 +24,109 @@ SOFTWARE.
 #ifndef SRC_DISPLAY_HPP_
 #define SRC_DISPLAY_HPP_
 
-#include <Arduino.h>
+#include <SPI.h>
+
+#include <changedetection.hpp>
+#include <kegconfig.hpp>
+#include <main.hpp>
+
+#if defined(ENABLE_LVGL)
+#include <lvgl.h>
+#endif // ENABLE_LVGL
 
 #if defined(ENABLE_TFT)
 #include <TFT_eSPI.h>
-#else
-#define TFT_eSPI void
-#define TFT_BLACK 0
-#endif
-#if defined(ENABLE_LVGL)
-#include <lvgl.h>
-#endif
+#include <freertos/semphr.h>
+#include <ui_helpers.hpp>
+#include <ui_kegmon.hpp>
+#endif // ENABLE_TFT
 
 enum FontSize { FONT_9 = 9, FONT_12 = 12, FONT_18 = 18, FONT_24 = 24 };
 
-#if defined(ENABLE_LVGL)
-struct LVGL_Data {
-  lv_obj_t* _txtMode;
-  lv_obj_t* _txtState;
-  lv_obj_t* _txtBeerTemp;
-  lv_obj_t* _txtChamberTemp;
-  lv_obj_t* _txtTargetTemp;
-  lv_obj_t* _txtStatusBar;
-  lv_obj_t* _btnBeer;
-  lv_obj_t* _btnChamber;
-  lv_obj_t* _btnOff;
-  lv_obj_t* _btnUp;
-  lv_obj_t* _btnDown;
-  lv_style_t _styleLeft;
-  lv_style_t _styleCenter;
-  lv_style_t _styleStatusBar;
-  lv_style_t _styleBtnSelected;
-  lv_style_t _styleBtnStandard;
-  lv_display_t* _display;
-  String _dataMode;
-  String _dataState;
-  String _dataBeerTemp;
-  String _dataChamberTemp;
-  String _dataStatusBar;
-  bool _showBeerBtn;
-  bool _showChamberBtn;
-  volatile float _targetTemperature;
-  volatile char _mode;
-  char _tempFormat = 'C';
-  bool _darkmode = false;
-};
-
-extern struct LVGL_Data lvglData;
-#endif
-
 class Display {
- public:
-  enum Rotation {
-    // ROTATION_0 = 0, // Not supported
-    ROTATION_90 = 1,
-    // ROTATION_180 = 2,  // Not supported
-    ROTATION_270 = 3
-  };
-
  private:
-  // Basic TFT variables
+#if defined(ENABLE_TFT)
   TFT_eSPI* _tft = nullptr;
-  FontSize _fontSize = FontSize::FONT_9;
-  uint16_t _touchCalibrationlData[5] = {0, 0, 0, 0, 0};
-  Rotation _rotation = ROTATION_90;
   uint32_t _backgroundColor = TFT_BLACK;
+  // uint16_t _touchCalibrationlData[5] = {0, 0, 0, 0, 0};
+  SemaphoreHandle_t _uiSemaphore = nullptr;
+#endif
+#if defined(ENABLE_LVGL)
+  lv_display_t* _display = nullptr;
+#endif // ENABLE_LVGL
+
+  FontSize _fontSize = FontSize::FONT_9;
+  // Rotation _rotation = ROTATION_90;
 
  public:
-  Display() {}
-
-  // Basic TFT methods
+  Display();
   void setup();
-  void calibrateTouch();
-  void clear(uint32_t color = TFT_BLACK);
+  // void calibrateTouch();
+
+  SPIClass& getSPI() {
+#if defined(ENABLE_TFT)
+    return _tft->getSPIinstance();
+#else
+    return SPI;
+#endif
+  }
+
+  void clear(uint32_t color);
   void setFont(FontSize f);
   void printLine(int l, const String& text);
   void printLineCentered(int l, const String& text);
-  Rotation getRotation() { return _rotation; }
-  void setRotation(Rotation rotation);
+  // Rotation getRotation() { return _rotation; }
+  // void setRotation(Rotation rotation);
 
-  // Misc methods
-  void setTargetTemperature(float t) {
-#if defined(ENABLE_LVGL)
-    lvglData._targetTemperature = t;
-#endif
-  }
-  void setMode(char m) {
-#if defined(ENABLE_LVGL)
-    lvglData._mode = m;
-#endif
-  }
-  void updateTemperatures(const char* mode, const char* state,
-                          const char* statusBar, float beerTemp,
-                          float chamberTemp, char tempFormat, bool darkmode);
+  void createUI(uint8_t layoutId = 0);
 
-  void updateButtons(bool beerEnabled, bool chamberEnabled);
+  // Keg/Scale Data API (continuous sensor readings)
+  void setScaleData(uint8_t index, float stable_weight, float stable_volume,
+                    float last_pour_volume, float temperature, bool connected,
+                    const char* state_str);
+
+  // Keg Event API (discrete events from event loop)
+  void setScaleEvent(uint8_t index, ChangeDetectionEventType event_type);
+
+  // Keg Hardware Info API
+  void setKegInfo(uint8_t index, uint32_t keg_volume);
+
+  // Beer Info API
+  void setBeerInfo(uint8_t index, const char* name, float abv, int ebc,
+                   int ibu);
+
+  // UI State API
+  void setDisplayFormat(const char* volume_unit_format,
+                        const char* temp_unit_format);
+  void setTheme(bool darkmode);
+  void setLayout(uint8_t layout_id);
+  uint8_t getLayout();
+
+  // Device Status API
+  void setStatus(const char* status);
+
+  // Main loop handler for LVGL thread
+  void loop();
 
   // LVGL methods
-  bool getTouch(uint16_t* x, uint16_t* y);  // Check for touch callback
-  void handleButtonEvent(char btn);
-  void createUI();
+  // bool getTouch(uint16_t* x, uint16_t* y);  // Check for touch callback
+  // void handleGestureEventEvent(char gesture);
+  SemaphoreHandle_t getUISemaphore() { return _uiSemaphore; }
 };
 
+// LVGL handlers and utilities
+#if defined(ENABLE_TFT)
+// void touchScreenHandler(lv_indev_t* indev, lv_indev_data_t* data);
+// void gestureScreenHandler(lv_event_t* e);
+// void btnLeftEventHandler(lv_event_t* e);
+// void btnRightEventHandler(lv_event_t* e);
+// void gestureLeft();
+// void gestureRight();
+#endif
 #if defined(ENABLE_LVGL)
-// Wrappers to simplify interaction with LVGL
-lv_obj_t* createButton(const char* label, int32_t x, int32_t y, int32_t w,
-                       int32_t h, lv_event_cb_t handler);
-lv_obj_t* createLabel(const char* label, int32_t x, int32_t y, int32_t w,
-                      int32_t h, lv_style_t* style);
-void updateLabel(lv_obj_t* obj, const char* label);
-void setStyle(lv_obj_t* obj, lv_style_t* style);
-
-void btnBeerEventHandler(lv_event_t* e);
-void btnChamberEventHandler(lv_event_t* e);
-void btnOffEventHandler(lv_event_t* e);
-void btnUpEventHandler(lv_event_t* e);
-void btnDownEventHandler(lv_event_t* e);
-
-void touchscreenHandler(lv_indev_t* indev, lv_indev_data_t* data);
 void log_print(lv_log_level_t level, const char* buf);
 void lvgl_loop_handler(void* parameter);
-#endif
+#endif // ENABLE_LVGL
 
 extern Display myDisplay;
 

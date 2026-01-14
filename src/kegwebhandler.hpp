@@ -42,9 +42,10 @@ class KegWebHandler : public BaseWebServer {
   // Ringbuffer for recent events (last 10)
   static constexpr size_t RECENT_EVENTS_SIZE = 10;
   ChangeDetectionEvent _recentEvents[RECENT_EVENTS_SIZE];
-  std::atomic<size_t> _eventHead = 0;  // Write position
+  std::atomic<size_t> _eventHead = 0;   // Write position
   std::atomic<size_t> _eventCount = 0;  // Number of events stored
-  mutable portMUX_TYPE _eventLock = portMUX_INITIALIZER_UNLOCKED;  // Thread safety
+  mutable portMUX_TYPE _eventLock =
+      portMUX_INITIALIZER_UNLOCKED;  // Thread safety
 
   void setupWebHandlers();
 
@@ -66,12 +67,12 @@ class KegWebHandler : public BaseWebServer {
   explicit KegWebHandler(KegConfig *config);
 
   void loop();
-  
+
   // Queue an event for publishing in status endpoint
-  void queueEvent(const ChangeDetectionEvent& event);
-  
+  void queueEvent(const ChangeDetectionEvent &event);
+
   // Get recent events (called by status endpoint)
-  void getRecentEvents(ChangeDetectionEvent* outEvents, size_t& count);
+  void getRecentEvents(ChangeDetectionEvent *outEvents, size_t &count);
 };
 
 #endif  // SRC_KEGWEBHANDLER_HPP_

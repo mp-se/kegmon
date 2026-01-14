@@ -424,7 +424,7 @@ void KegWebHandler::webStatus(AsyncWebServerRequest *request) {
 
       // Weight and volume data (in kg and cl)
       scale[PARAM_STABLE_WEIGHT] = myChangeDetection.getStableWeight(idx);
-      scale[PARAM_POUR_VOLUME] = myChangeDetection.getPourVolume(idx);
+      scale[PARAM_POUR_VOLUME] = myChangeDetection.getPouringVolume(idx);
 
       // Keg volume in centiliters
       float keg_volume_liters = myConfig.getKegVolume(idx);
