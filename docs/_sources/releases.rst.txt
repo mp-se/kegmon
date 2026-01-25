@@ -3,6 +3,13 @@
 Releases 
 ########
 
+v1.2.0
+======
+
+* (Bug) Fixed the issue that page did not show when integrations was updated last
+* Upgraded depdendencies to latest versions
+* Force device to scan for the strongest AP when connectiing to wifi.
+
 v1.1.0
 ======
 
