@@ -1,0 +1,472 @@
+<!doctype html>
+<html class="no-js">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Functionality" href="functionality.html" />
+
+    <meta name="generator" content="sphinx-4.3.2, furo 2022.01.02"/>
+        <title>KegMon v1.0.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=df49af52631e7917044a9c21a57f7b83170a6dd0" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=fade93df149f7c5fedb3ff897f799dc7d283b420" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  body[data-theme="dark"] {
+    --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+  }
+  @media (prefers-color-scheme: dark) {
+    body:not([data-theme="light"]) {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+  }
+</style></head>
+  <body>
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z" />
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="10" y1="12" x2="20" y2="12" />
+      <line x1="6" y1="18" x2="20" y2="18" />
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="#"><div class="brand">KegMon v1.0.0</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand centered" href="#">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="_static/kegmon_logo.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">KegMon v1.0.0</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="functionality.html">Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html">Releases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3dmodels.html">3D Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Software Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">Licence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="q_and_a.html">Q &amp; A</a></li>
+</ul>
+
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <div class="section" id="welcome-to-kegmon-keg-level-monitor">
+<h1>Welcome to KegMon - Keg Level Monitor<a class="headerlink" href="#welcome-to-kegmon-keg-level-monitor" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Reflects version <em>v1.0.0 beta2</em>, Last updated 2024-09-09</p>
+</div>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>The software is tailored towards my personal needs and external services that I use, but suggestions are always
+welcome.</p>
+<p>The software has two interfaces, displays and web-browser. Integrations with external services is available,
+currently BrewFather, BrewSpy and Home Assistant. If you have requests for other services raise a request on github.</p>
+<p>The cheap load cells are quite unpredicteble so it’s hard to get a fully accurate and stable system. In order to
+compensate for this I have built in the possibility to add filters and clean up the values, these filters include:</p>
+<ul class="simple">
+<li><p>raw average (makes an average over the last 10 readings)</p></li>
+<li><p>kalman (smooths out the peaks readings, but slows down level detection)</p></li>
+<li><p>temperature adjustment (this is not yet active, but its possible to add a formula and adjust the weight, for instance compensate for temperature)</p></li>
+</ul>
+<p>Here are two views on the data change over time, the temperature in my keezer is between 4 and 5 degress Celcius. My two
+scales behave diffrently even though the load cells are from the same batch. I guess that the peak in the first
+graph is due to interference from the compressor when it starts to cool. The orange line shows the stable level that
+is used. Level change is triggered by a change up or down of more than the threasholds. In the image below the peak
+is approx 16-20 cl above the stable level, so its not a big difference.</p>
+<a class="reference internal image-reference" href="_images/temp_variation.png"><img alt="Scale variation" src="_images/temp_variation.png" style="width: 400px;"/></a>
+<a class="reference internal image-reference" href="_images/temp_variation2.png"><img alt="temp_variation" src="_images/temp_variation2.png" style="width: 400px;"/></a>
+<p>Since the level will vary slightly based on the temperature (on my scale +0.04 to -0.01 kg), I have added a level detection algorithm
+that uses the average level over time and dont adjust unless the delta is larger than the defined threasholds (can be set in configuration).</p>
+<p>In order to trigger a level change then both the raw values and the kalman value needs to be aligned and the minium level change
+must exceed 10 cl. This means that a pour needs to be more than this level. It can take up to 60 seconds for a new level to
+be detected and a pour registered. This means that if you pour a number of glasses quickly, this will be detected as
+one large pour.</p>
+<p>The design is created for 2 kegs but it will work if you only use one (make sure to use the pins for scale 1 in that case).</p>
+<p>The displays will show the name of the beer, abv and alternate between weight and pours. The first screen will display
+values for keg 1 and the second for keg 2.</p>
+<p>The values presented on the displays is the raw values so that you can see directly if the level changes. Stable values can be screen
+at the web UI or via the external integrations.</p>
+<p>The software will automatically detect how many sensor boards are connected and if there is a temperature sensor.</p>
+<p>The project contains the following parts:</p>
+<ul class="simple">
+<li><p>Software that manage the scale and present the readings</p></li>
+<li><p>Hardware design based on standard HX711 AD converter with load cells and temperature sensor</p></li>
+<li><p>3D models for the base</p></li>
+<li><p>3D models for display case</p></li>
+</ul>
+</div>
+<div class="section" id="help-wanted">
+<h2>Help wanted<a class="headerlink" href="#help-wanted" title="Permalink to this headline">¶</a></h2>
+<p>I have not had the possibility to test / validate all the options so any feedback and updates to the documentation is appreciated.</p>
+<p>Topics that need verification:</p>
+<ul class="simple">
+<li><p>Using BME280 in a scale base to measure temperature</p></li>
+<li><p>Using NAU7802 ADC to measure weight</p></li>
+</ul>
+</div>
+<div class="section" id="hardware-options">
+<h2>Hardware options<a class="headerlink" href="#hardware-options" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="display">
+<h3>Display<a class="headerlink" href="#display" title="Permalink to this headline">¶</a></h3>
+<p>For display there are two options that can be used:</p>
+<ul class="simple">
+<li><p>OLED 0.96” display based on SH1106</p></li>
+<li><p>LED display based on PCF8574, both 20x4 and 20x2 displays can be used.</p></li>
+</ul>
+<p>The <em>OLED 0.96” display</em> is the option that is the primary option used in the design.</p>
+<p>There are larger OLED displays that could be used, but most of these dont have the option to
+change I2C adress so this would require a different hardware design.</p>
+</div>
+<div class="section" id="adc">
+<h3>ADC<a class="headerlink" href="#adc" title="Permalink to this headline">¶</a></h3>
+<p>For ADC there are a few options available:</p>
+<ul class="simple">
+<li><p>HX711 based boards (3 main options, green, purple and red boards)</p></li>
+<li><p>NAU7802 requires a differnt hardware wiring. NAU782 uses I2C communication and for two scales an ESP32S2/S3 is required.</p></li>
+</ul>
+<p>The <em>HX711 purple board</em> is the primary option used in the design. The green board has a different pin configuration.</p>
+</div>
+<div class="section" id="temperature-sensor">
+<h3>Temperature sensor<a class="headerlink" href="#temperature-sensor" title="Permalink to this headline">¶</a></h3>
+<p>For temperature sensor you can use:</p>
+<ul class="simple">
+<li><p>DS18B20, one wire sensor</p></li>
+<li><p>DHT22, one wire sensor</p></li>
+<li><p>BME280, i2c sensor. This option require a different wiring</p></li>
+</ul>
+<p>The <em>DS18B20 temperature sensor</em> is the primary option.</p>
+</div>
+</div>
+<div class="section" id="credits-to">
+<h2>Credits to<a class="headerlink" href="#credits-to" title="Permalink to this headline">¶</a></h2>
+<p>Thanks to the following projects.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/mp-se/gravitymon">https://github.com/mp-se/gravitymon</a></p></li>
+<li><p><a class="reference external" href="https://github.com/mp-se/espframework">https://github.com/mp-se/espframework</a></p></li>
+<li><p><a class="reference external" href="https://github.com/graphitemaster/incbin">https://github.com/graphitemaster/incbin</a></p></li>
+<li><p><a class="reference external" href="https://github.com/thijse/Arduino-Log">https://github.com/thijse/Arduino-Log</a></p></li>
+<li><p><a class="reference external" href="https://github.com/bblanchon/ArduinoJson">https://github.com/bblanchon/ArduinoJson</a></p></li>
+<li><p><a class="reference external" href="https://getbootstrap.com">https://getbootstrap.com</a></p></li>
+<li><p><a class="reference external" href="https://jquery.com">https://jquery.com</a></p></li>
+<li><p><a class="reference external" href="https://chartjs.org">https://chartjs.org</a></p></li>
+<li><p><a class="reference external" href="https://github.com/bogde/HX711">https://github.com/bogde/HX711</a></p></li>
+<li><p><a class="reference external" href="https://github.com/ThingPulse/esp8266-oled-ssd1306">https://github.com/ThingPulse/esp8266-oled-ssd1306</a></p></li>
+<li><p><a class="reference external" href="https://modelviewer.dev/">https://modelviewer.dev/</a></p></li>
+<li><p><a class="reference external" href="https://github.com/RobTillaart/Statistic">https://github.com/RobTillaart/Statistic</a></p></li>
+<li><p><a class="reference external" href="https://github.com/denyssene/SimpleKalmanFilter">https://github.com/denyssene/SimpleKalmanFilter</a></p></li>
+<li><p><a class="reference external" href="https://github.com/mp-se/ESPAsyncWebServer">https://github.com/mp-se/ESPAsyncWebServer</a></p></li>
+<li><p><a class="reference external" href="https://github.com/mp-se/ESPAsyncTCP">https://github.com/mp-se/ESPAsyncTCP</a></p></li>
+<li><p><a class="reference external" href="https://github.com/adafruit/Adafruit_BME280_Library">https://github.com/adafruit/Adafruit_BME280_Library</a></p></li>
+<li><p><a class="reference external" href="https://github.com/enjoyneering/LiquidCrystal_I2C">https://github.com/enjoyneering/LiquidCrystal_I2C</a></p></li>
+<li><p><a class="reference external" href="https://github.com/sparkfun/SparkFun_Qwiic_Scale_NAU7802_Arduino_Library">https://github.com/sparkfun/SparkFun_Qwiic_Scale_NAU7802_Arduino_Library</a></p></li>
+</ul>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="functionality.html">Functionality</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="functionality.html#the-main-features">The main features</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html">Releases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="releases.html#v1-1-0">v1.1.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releases.html#v1-0-0">v1.0.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releases.html#v0-9-0">v0.9.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releases.html#v0-8-0">v0.8.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releases.html#v0-7-1">v0.7.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releases.html#v0-7-0">v0.7.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releases.html#v0-6-0">v0.6.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releases.html#v0-5-0">v0.5.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releases.html#v0-4-0">v0.4.0</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Getting started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#step-1-build-the-scale-bases">Step 1 - Build the scale bases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#step-2-build-the-case">Step 2 - Build the case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#step-3-flash-the-device">Step 3 - Flash the device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#step-4-setup-wifi">Step 4 - Setup WIFI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#step-5-configuration">Step 5 - Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#step-4-completed">Step 4 - Completed</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="hardware.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hardware.html#hx711">HX711</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hardware.html#nau7802">NAU7802</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hardware.html#schema-for-hx711">Schema for HX711</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hardware.html#schema-for-nau7802">Schema for NAU7802</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hardware.html#case">Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hardware.html#scale-base">Scale Base</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="3dmodels.html">3D Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="3dmodels.html#base">Base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="3dmodels.html#cover">Cover</a></li>
+<li class="toctree-l2"><a class="reference internal" href="3dmodels.html#case">Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="3dmodels.html#case-top">Case Top</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Software Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#checklist-for-configuring-the-device">Checklist for configuring the device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#brewflasher">Brewflasher</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#updating-firmware">Updating firmware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#serial-monitoring">Serial Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#configuring-wifi">Configuring WIFI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#finding-the-device-adress">Finding the device adress</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Software</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#index">Index</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#device-settings">Device - Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#device-hardware">Device - Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#device-calibration">Device - Calibration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#device-stability">Device - Stability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#device-wifi">Device - Wifi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#taps-settings">Taps - Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#taps-beers">Taps - Beers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#taps-history">Taps - History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#integration-home-assistant">Integration - Home Assistant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#integration-brewfather">Integration - Brewfather</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#integration-brewspy">Integration - Brewspy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#integration-barhelper">Integration - Barhelper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#integration-influx">Integration - Influx</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#serial-console">Serial console</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#backup-recovery">Backup &amp; Recovery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#firmware-update">Firmware update</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#support">Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#tools">Tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">Licence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="development.html#future">Future</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#links">Links</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="q_and_a.html">Q &amp; A</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+</div>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="functionality.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Functionality</div>
+              </div>
+              <svg><use href="#svg-arrow-right"></use></svg>
+            </a>
+          
+        </div>
+
+        <div class="related-information">
+              Copyright &#169; 2022-2024, Magnus Persson |
+          Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+          <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Welcome to KegMon - Keg Level Monitor</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#help-wanted">Help wanted</a></li>
+<li><a class="reference internal" href="#hardware-options">Hardware options</a><ul>
+<li><a class="reference internal" href="#display">Display</a></li>
+<li><a class="reference internal" href="#adc">ADC</a></li>
+<li><a class="reference internal" href="#temperature-sensor">Temperature sensor</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#credits-to">Credits to</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/scripts/furo.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    </body>
+</html>

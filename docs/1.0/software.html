@@ -1,0 +1,449 @@
+<!doctype html>
+<html class="no-js">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Hardware" href="hardware.html" /><link rel="prev" title="Welcome to KegMon - Keezer Level Monitor" href="index.html" />
+
+    <meta name="generator" content="sphinx-4.3.2, furo 2022.01.02"/>
+        <title>Software - KegMon v0.5.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=df49af52631e7917044a9c21a57f7b83170a6dd0" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=fade93df149f7c5fedb3ff897f799dc7d283b420" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  body[data-theme="dark"] {
+    --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+  }
+  @media (prefers-color-scheme: dark) {
+    body:not([data-theme="light"]) {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+  }
+</style></head>
+  <body>
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z" />
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="10" y1="12" x2="20" y2="12" />
+      <line x1="6" y1="18" x2="20" y2="18" />
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">KegMon v0.5.0</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand centered" href="index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="_static/kegmon_logo.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">KegMon v0.5.0</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware.html#case">Case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware.html#base-for-one">Base (for one)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3d.html">3D Models</a></li>
+</ul>
+
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <div class="section" id="software">
+<span id="id1"></span><h1>Software<a class="headerlink" href="#software" title="Permalink to this headline">¶</a></h1>
+<p>THe software is tailored towards my personal needs and external services
+that I use, but suggestions are always welcome. The software has two interfaces,
+one via the OLED displays and one via the web-browser.</p>
+<p>The cheap load cells are quite unpredicteble so it’s hard to get a fully accurate system, but they are really
+cheap.</p>
+<p>In order to compensate for this I have build in the possibility to add filters and clean up the read values,
+these filters include:</p>
+<ul class="simple">
+<li><p>raw average (makes an average over the last 10 readings)</p></li>
+<li><p>kalman (smooths out the peaks readings, but slows down level detection)</p></li>
+<li><p>formula adjustment (this is not yet active, but its possible to add an equation to adjust the weight, for instance compensate for temperature)</p></li>
+</ul>
+<p>Here are two views on the data change over time, the temperature in my keezer is
+between 4 and 5 degress Celcius. My two scales behave diffrently even though the
+load cells are from the same batch. I would guess that the peak in the first graph is due to
+interference from the compressor when it starts to cool.</p>
+<a class="reference internal image-reference" href="_images/temp_variation.png"><img alt="Scale variation" src="_images/temp_variation.png" style="width: 400px;"/></a>
+<a class="reference internal image-reference" href="_images/temp_variation2.png"><img alt="temp_variation" src="_images/temp_variation2.png" style="width: 400px;"/></a>
+<p>Since the level will vary slightly based on the temperature (on my scale +0.04 to -0.01 kg), I have added a level detection algorithm
+that uses the average level over time and done adjust unless the delta is larger than the defined threasholds (can be defined).</p>
+<p>I have prepared for adding a temperature correction option but I’m still working defining a formula for that weight compensation.</p>
+<p>In order to trigger a level change then both the raw values and the kalman value needs to be aligned and the minium level change
+needed to detect a pour is by default set to 10 cl. It can take up to 60 seconds for a new level to be detected and a pour registered.</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>If there is an interest let me know and I will add the project to brewflasher for easier flashing.</p>
+</div>
+<div class="section" id="wifi">
+<h2>WIFI<a class="headerlink" href="#wifi" title="Permalink to this headline">¶</a></h2>
+<p>To be documented.</p>
+</div>
+<div class="section" id="oled-screens">
+<h2>OLED Screens<a class="headerlink" href="#oled-screens" title="Permalink to this headline">¶</a></h2>
+<p>The OLD screens will show the name of the beer, abv and alternate between weight and pours. The first
+screen will display values for keg 1 and the second for keg 2.</p>
+<p>The values presented on the screen is the raw values so that you can see directly if the level changes.</p>
+</div>
+<div class="section" id="index">
+<h2>Index<a class="headerlink" href="#index" title="Permalink to this headline">¶</a></h2>
+<p>This is the web page accessed by accessing the device via a web-browser. This
+section will show the general device information.</p>
+<a class="reference internal image-reference" href="_images/index.png"><img alt="Index" src="_images/index.png" style="width: 600px;"/></a>
+<ul class="simple">
+<li><p><strong>Temperature</strong></p></li>
+</ul>
+<p>Temperature reading (not shown if there is no sensor).</p>
+<ul class="simple">
+<li><p><strong>Humidity</strong></p></li>
+</ul>
+<p>Humidity reading (not shown if there is no sensor).</p>
+<ul class="simple">
+<li><p><strong>Weights/Volumes</strong></p></li>
+</ul>
+<p>Shows weighs for scale 1 and 2.</p>
+<ul class="simple">
+<li><p><strong>Glasses</strong></p></li>
+</ul>
+<p>Shows glasses (pours) left for scale 1 and 2.</p>
+<ul class="simple">
+<li><p><strong>Current version</strong></p></li>
+</ul>
+<p>Shows the current software version including git revision.</p>
+<ul class="simple">
+<li><p><strong>Host name</strong></p></li>
+</ul>
+<p>Name of the device on the network.</p>
+<ul class="simple">
+<li><p><strong>Device ID</strong></p></li>
+</ul>
+<p>ESP8266 chip ID. Used for identifying the device.</p>
+<ul class="simple">
+<li><p><strong>SSID</strong></p></li>
+</ul>
+<p>Name of network we are connected to.</p>
+</div>
+<div class="section" id="beers">
+<h2>Beers<a class="headerlink" href="#beers" title="Permalink to this headline">¶</a></h2>
+<p>This is where the software is configured.</p>
+<a class="reference internal image-reference" href="_images/beer.png"><img alt="Beer configuration" src="_images/beer.png" style="width: 600px;"/></a>
+<ul class="simple">
+<li><p><strong>Empty keg weight</strong></p></li>
+</ul>
+<p>Weight of the empty keg, used to determine how much beer is in the keg.</p>
+<ul class="simple">
+<li><p><strong>Glass volume</strong></p></li>
+</ul>
+<p>Choose the volume of the beer glasses, used to determine how many pours are left.</p>
+<ul class="simple">
+<li><p><strong>Beer name</strong>, <strong>Beer ABV</strong>, <strong>Beer EBC</strong>, <strong>Beer IBU</strong></p></li>
+</ul>
+<p>Information about the beer, used to show on user interfaces.</p>
+<ul class="simple">
+<li><p><strong>Beer FG</strong></p></li>
+</ul>
+<p>Used in formula for calculating the beer volume. FG has a slight impact on the weight / volume unit. If not defined 1 will be used for calculations.</p>
+</div>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>This is where the software is configured.</p>
+<a class="reference internal image-reference" href="_images/config.png"><img alt="Configuration" src="_images/config.png" style="width: 600px;"/></a>
+<ul class="simple">
+<li><p><strong>Device name</strong></p></li>
+</ul>
+<p>Set the name of the device on the network, your network needs to support mDNS.</p>
+<ul class="simple">
+<li><p><strong>Temperature format</strong></p></li>
+</ul>
+<p>Select format for temperatures</p>
+<ul class="simple">
+<li><p><strong>Weight unit</strong></p></li>
+</ul>
+<p>Select format for weights</p>
+<ul class="simple">
+<li><p><strong>Volume unit</strong></p></li>
+</ul>
+<p>Select format for volumes</p>
+<ul class="simple">
+<li><p><strong>Display layout</strong></p></li>
+</ul>
+<p>Choose the layout/information on the OLED displays.</p>
+<ul class="simple">
+<li><p><strong>Brewfather user key</strong>, <strong>Brewfather API key</strong></p></li>
+</ul>
+<p>Brewfather User key/API key.</p>
+<ul class="simple">
+<li><p><strong>Brewspy token</strong></p></li>
+</ul>
+<p>Brewspy tokens for keg 1 &amp; keg 2.</p>
+</div>
+<div class="section" id="calibration">
+<h2>Calibration<a class="headerlink" href="#calibration" title="Permalink to this headline">¶</a></h2>
+<p>This is the page where you can calibrate your scales.</p>
+<a class="reference internal image-reference" href="_images/calibration.png"><img alt="Calibration" src="_images/calibration.png" style="width: 600px;"/></a>
+<ul class="simple">
+<li><p><strong>STEP 1 - Tare scale</strong></p></li>
+</ul>
+<p>The first step is to tare the scale. First select the scale from the dropdown list that you
+want to operate on. Make sure the scale is empty.</p>
+<ul class="simple">
+<li><p><strong>STEP 2 - Calculate factor</strong></p></li>
+</ul>
+<p>The second step is to calculate the factor used to calculate the weight. Place a thing with a
+known weight on the scale and enter the weight of that object. The software will then calculate
+the factor for estimating the weight.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>I need to do more testing in order to have recommendations on what is a good option for this.</p>
+</div>
+<ul class="simple">
+<li><p><strong>STEP 3 - Validate</strong></p></li>
+</ul>
+<p>The third step is to validate that everything works, place anohter thing with a know weight and
+check the measured value. If you are satisfied then you are done.</p>
+</div>
+<div class="section" id="history">
+<h2>History<a class="headerlink" href="#history" title="Permalink to this headline">¶</a></h2>
+<p>Shows the last level changes detected by the software. There is a second graph for the pours.</p>
+<a class="reference internal image-reference" href="_images/history.png"><img alt="Level changes" src="_images/history.png" style="width: 600px;"/></a>
+<a class="reference internal image-reference" href="_images/history2.png"><img alt="Pours" src="_images/history2.png" style="width: 600px;"/></a>
+</div>
+<div class="section" id="stability">
+<h2>Stability<a class="headerlink" href="#stability" title="Permalink to this headline">¶</a></h2>
+<p>Information page that can determine the stability of your hardware build.</p>
+<a class="reference internal image-reference" href="_images/stability.png"><img alt="Statistics" src="_images/stability.png" style="width: 600px;"/></a>
+<p>I have found that some of my hardware builds was not really stable so I added this
+feature to check the scale build before doing the final assembly.</p>
+<p>If you keep the browser open you can also see the history of the values (raw, kalman &amp; stable). This can help to show
+how your scale varies over time. Data is only stored in the browser so any refresh or page change will delete the graphs.</p>
+</div>
+<div class="section" id="firmware-update">
+<h2>Firmware update<a class="headerlink" href="#firmware-update" title="Permalink to this headline">¶</a></h2>
+<p>Here you can upload a new firmware version without the need to hook the device to a serial port
+on your computer.</p>
+<a class="reference internal image-reference" href="_images/upload.png"><img alt="Upload firmware" src="_images/upload.png" style="width: 600px;"/></a>
+</div>
+</div>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="hardware.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Hardware</div>
+              </div>
+              <svg><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="index.html">
+              <svg><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Home</div>
+                
+              </div>
+            </a>
+        </div>
+
+        <div class="related-information">
+              Copyright &#169; 2022-23, Magnus Persson |
+          Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+          <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Software</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#wifi">WIFI</a></li>
+<li><a class="reference internal" href="#oled-screens">OLED Screens</a></li>
+<li><a class="reference internal" href="#index">Index</a></li>
+<li><a class="reference internal" href="#beers">Beers</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
+<li><a class="reference internal" href="#calibration">Calibration</a></li>
+<li><a class="reference internal" href="#history">History</a></li>
+<li><a class="reference internal" href="#stability">Stability</a></li>
+<li><a class="reference internal" href="#firmware-update">Firmware update</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/scripts/furo.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    </body>
+</html>
