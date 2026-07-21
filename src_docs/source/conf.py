@@ -18,11 +18,11 @@
 # -- Project information -----------------------------------------------------
 
 project = 'KegMon'
-copyright = '2022-2024, Magnus Persson'
+copyright = '2022-2025, Magnus Persson'
 author = 'Magnus Persson'
 
 # The full version, including alpha/beta/rc tags
-release = '1.0.0'
+release = '1.2.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -49,7 +49,7 @@ exclude_patterns = []
 #
 html_theme = 'furo'
 html_logo = "images/kegmon_logo.png"
-html_title = "KegMon v1.0.0"
+html_title = "Kegmon v1.2.0"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
