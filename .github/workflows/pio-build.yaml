@@ -13,12 +13,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
     
-      - name: Checkout UI
+      - uses: actions/setup-node@v4
+        with:
+          cache: 'npm'
+          cache-dependency-path: ui/package-lock.json
+
+      - name: Build UI
+        working-directory: ui
         run: |
-          echo "Checkout UI"
-          git clone https://github.com/mp-se/kegmon-ui kegmon-ui 
-          cp kegmon-ui/dist/assets/style.css.gz html/app.css.gz
-          cp kegmon-ui/dist/assets/index.js.gz html/app.js.gz
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git fetch --tags
+          REV=`git rev-parse HEAD | rev | cut -c 1-6 | rev`
+          TAG=`git tag --sort=creatordate | tail -1`
+          echo "VITE_APP_BUILD=..$REV" >> .env
+          echo "VITE_APP_VERSION=$TAG" >> .env
+          cat .env
+          npm install
+          npm run build
+
+      - name: Copy UI assets
+        run: |
+          cp ui/dist/assets/*.css.gz html/app.css.gz
+          cp ui/dist/assets/*.js.gz html/app.js.gz
 
       - name: Setup PlatformIO
         uses: n-vr/setup-platformio-action@v1.0.1    
