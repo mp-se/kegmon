@@ -11,9 +11,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
     
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '22'
           cache: 'npm'
@@ -38,17 +38,19 @@ jobs:
           cp ui/dist/assets/*.js.gz html/app.js.gz
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: '3.12'
 
       - name: Install PlatformIO and IntelHex
+        # intelhex is required by PlatformIO but missing from its dependencies
         run: python -m pip install --upgrade platformio intelhex
 
       - name: Run PlatformIO
         run: python -m platformio run -e kegmon-release -e kegmon32s2-release -e kegmon32s3-release -j 6 -v
 
-      - uses: EndBug/add-and-commit@v9 # You can change this to use a specific version. https://github.com/marketplace/actions/add-commit
+      # Pull requests only verify that the build works, nothing is committed
+      - uses: EndBug/add-and-commit@v11 # You can change this to use a specific version. https://github.com/marketplace/actions/add-commit
         if: ${{ github.event_name != 'pull_request' }}
         with:
           add: 'bin html'
