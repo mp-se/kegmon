@@ -26,6 +26,7 @@ SOFTWARE.
 #include <kegpush.hpp>
 #include <kegwebhandler.hpp>
 #include <levels.hpp>
+#include <looptimer.hpp>
 #include <main.hpp>
 #include <scale.hpp>
 #include <temp_mgr.hpp>
@@ -499,8 +500,7 @@ void KegWebHandler::webStatus(AsyncWebServerRequest *request) {
   if (myConfig.hasTargetMqtt()) {
     JsonObject o = obj[PARAM_HOMEASSISTANT].to<JsonObject>();
     HomeAssist *ha = myPush.getHomeAssist();
-    o[PARAM_PUSH_AGE] =
-        abs(static_cast<int32_t>((millis() - ha->getLastTimeStamp())));
+    o[PARAM_PUSH_AGE] = LoopTimer::elapsedMillis(ha->getLastTimeStamp());
     o[PARAM_PUSH_STATUS] = ha->getLastStatus();
     o[PARAM_PUSH_CODE] = ha->getLastError();
     o[PARAM_PUSH_RESPONSE] = "";
@@ -511,8 +511,7 @@ void KegWebHandler::webStatus(AsyncWebServerRequest *request) {
   if (strlen(myConfig.getBarhelperApiKey()) > 0) {
     JsonObject o = obj[PARAM_BARHELPER].to<JsonObject>();
     Barhelper *bar = myPush.getBarHelper();
-    o[PARAM_PUSH_AGE] =
-        abs(static_cast<int32_t>((millis() - bar->getLastTimeStamp())));
+    o[PARAM_PUSH_AGE] = LoopTimer::elapsedMillis(bar->getLastTimeStamp());
     o[PARAM_PUSH_STATUS] = bar->getLastStatus();
     o[PARAM_PUSH_CODE] = bar->getLastError();
     o[PARAM_PUSH_RESPONSE] = bar->getLastResponse();
@@ -523,8 +522,7 @@ void KegWebHandler::webStatus(AsyncWebServerRequest *request) {
   if (strlen(myConfig.getBrewLoggerUrl()) > 0) {
     JsonObject o = obj[PARAM_BREWLOGGER].to<JsonObject>();
     BrewLogger *blog = myPush.getBrewLogger();
-    o[PARAM_PUSH_AGE] =
-        abs(static_cast<int32_t>((millis() - blog->getLastTimeStamp())));
+    o[PARAM_PUSH_AGE] = LoopTimer::elapsedMillis(blog->getLastTimeStamp());
     o[PARAM_PUSH_STATUS] = blog->getLastStatus();
     o[PARAM_PUSH_CODE] = blog->getLastError();
     o[PARAM_PUSH_RESPONSE] = blog->getLastResponse();
@@ -536,8 +534,7 @@ void KegWebHandler::webStatus(AsyncWebServerRequest *request) {
       strlen(myConfig.getBrewspyToken(UnitIndex::U2)) > 0) {
     JsonObject o = obj[PARAM_BREWSPY].to<JsonObject>();
     Brewspy *brew = myPush.getBrewspy();
-    o[PARAM_PUSH_AGE] =
-        abs(static_cast<int32_t>((millis() - brew->getLastTimeStamp())));
+    o[PARAM_PUSH_AGE] = LoopTimer::elapsedMillis(brew->getLastTimeStamp());
     o[PARAM_PUSH_STATUS] = brew->getLastStatus();
     o[PARAM_PUSH_CODE] = brew->getLastError();
     o[PARAM_PUSH_RESPONSE] = brew->getLastResponse();

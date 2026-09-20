@@ -29,6 +29,9 @@ SOFTWARE.
 #include <main.hpp>
 #include <utils.hpp>
 #include <wificonnection.hpp>
+#include <looptimer.hpp>
+
+constexpr uint32_t DISPLAY_ITER_TIME = 4000;
 
 enum DisplayIterator {
   ShowWeight = 0,
@@ -42,7 +45,7 @@ extern WifiConnection myWifi;
 class DisplayLayout {
  private:
   DisplayIterator _iter = DisplayIterator::ShowWeight;
-  uint32_t _loopMillis = 0;
+  LoopTimer _loopTimer{DISPLAY_ITER_TIME};
   char _buf[30] = "";
 
   String getFormattedBeerName(UnitIndex idx) {

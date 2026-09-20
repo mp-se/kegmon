@@ -26,13 +26,11 @@ SOFTWARE.
 #include <displayout.hpp>
 #include <levels.hpp>
 
-constexpr auto DISPLAY_ITER_TIME = 4000;
-
-DisplayLayout::DisplayLayout() { _loopMillis = millis(); }
+DisplayLayout::DisplayLayout() = default;
 
 void DisplayLayout::loop() {
-  if (abs(static_cast<int32_t>((millis() - _loopMillis))) > DISPLAY_ITER_TIME) {
-    _loopMillis = millis();
+  if (_loopTimer.hasExpired()) {
+    _loopTimer.reset();
 
     switch (_iter) {
       case DisplayIterator::ShowWeight:
