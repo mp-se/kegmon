@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
-    "@vitejs/plugin-vue": "^5.2.1",
+    "@vitejs/plugin-vue": "^6.0.9",
     "@vitest/eslint-plugin": "^1.1.36",
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/test-utils": "^2.4.0",
@@ -35,9 +35,9 @@
     "multer": "^1.4.5-lts.1",
     "nodemon": "^3.1.9",
     "prettier": "3.5.3",
-    "vite": "^6.2.1",
+    "vite": "^8.3.0",
     "vite-plugin-compression": "^0.5.1",
-    "vite-plugin-vue-devtools": "^7.7.2",
+    "vite-plugin-vue-devtools": "^8.2.1",
     "vitest": "^3.0.8"
   }
 }
