@@ -3,6 +3,13 @@
 Releases 
 ########
 
+v1.3.0
+======
+
+* Added BrewGraph integration for keg pour and level data.
+* Added BrewGraph configuration and status information to the web interface.
+* Updated dependencies and improved loop timer handling.
+
 v1.2.0
 ======
 

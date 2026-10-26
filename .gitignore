@@ -1,6 +1,6 @@
 .pio/*
 .vscode/*
 *.map
-src_docs/_build/*
-test/__pycache__/*
+src_docs/_build/
+test/__pycache__/
 .DS_Store

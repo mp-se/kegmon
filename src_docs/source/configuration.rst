@@ -50,6 +50,11 @@ Device - Hardware
 
 * **Pins**: If you dont follow the standard hardware wiring then you can customize the pins here.
 
+The scale deviation, Kalman alignment, and stable-reading count settings also
+affect how quickly a level change or pour is accepted. Tune them against the
+stability page with the finished scale and keg in place; noisy readings can
+delay detection or make the reported level less steady.
+
 Device - Calibration
 *********************
 
@@ -134,6 +139,9 @@ Taps - Settings
 
 * **Beer FG**: Used in formula for calculating the beer volume. FG has a slight impact on the weight / volume unit. If not defined 1 will be used for calculations.
 
+The device has two physical scale/tap channels. A keg token or service slot
+does not add another physical scale input.
+
 Taps - Beers
 ************
 
@@ -217,6 +225,29 @@ Integration - Influx
   :alt: Influx integration
 
 Sends scale and internal parameters to an influx db v2 for debugging and detailed analysis.
+
+Enter the server URL, organization, bucket, and write token. This integration
+is intended for scale and diagnostic data collection; it is separate from the
+tap-level and pour integrations.
+
+Integration - BrewLogger
+************************
+
+Open **Integrations → BrewLogger** and enter the base URL of the BrewLogger
+service. KegMon sends stable keg-level updates and pour events to BrewLogger.
+The service URL is saved without trailing slashes.
+
+Integration - BrewGraph
+***********************
+
+Open **Integrations → BrewGraph** and enter the base URL and token for each
+configured keg. KegMon uses the corresponding token when sending stable volume
+and pour updates, and when fetching beer details from the **Taps → Beers**
+page. The URL is saved without trailing slashes.
+
+KegMon currently has two physical scale/tap channels (Keg 1 and Keg 2). The UI
+also exposes token fields for Keg 3 and Keg 4 for future/service-side use;
+those fields do not create additional physical measurement channels.
 
 
 Serial console

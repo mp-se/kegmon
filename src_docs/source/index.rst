@@ -7,7 +7,7 @@ Welcome to KegMon - Keg Level Monitor
 -------------------------------------
 
 .. note::
-  Reflects version *v1.2.0*, Last updated 2025-12-29
+  Reflects version *v1.3.0*, Last updated 2026-10-26
 
 Introduction
 ============
@@ -15,15 +15,17 @@ Introduction
 The software is tailored towards my personal needs and external services that I use, but suggestions are always 
 welcome. 
 
-The software has two interfaces, displays and web-browser. Integrations with external services is available, 
-currently BrewFather, BrewSpy and Home Assistant. If you have requests for other services raise a request on github. 
+The software has two interfaces, displays and web browser. It integrates with
+Home Assistant, Brewfather, BrewSpy, BrewLogger, BrewGraph, Barhelper, InfluxDB
+v2, and Chamber Controller temperature sources. The available features differ
+by service.
 
 The cheap load cells are quite unpredicteble so it's hard to get a fully accurate and stable system. In order to 
 compensate for this I have built in the possibility to add filters and clean up the values, these filters include:
 
 * raw average (makes an average over the last 10 readings)
 * kalman (smooths out the peaks readings, but slows down level detection)
-* temperature adjustment (this is not yet active, but its possible to add a formula and adjust the weight, for instance compensate for temperature)
+* optional temperature adjustment using a formula for each scale
 
 Here are two views on the data change over time, the temperature in my keezer is between 4 and 5 degress Celcius. My two 
 scales behave diffrently even though the load cells are from the same batch. I guess that the peak in the first 
@@ -42,10 +44,13 @@ is approx 16-20 cl above the stable level, so its not a big difference.
 Since the level will vary slightly based on the temperature (on my scale +0.04 to -0.01 kg), I have added a level detection algorithm
 that uses the average level over time and dont adjust unless the delta is larger than the defined threasholds (can be set in configuration).
 
-In order to trigger a level change then both the raw values and the kalman value needs to be aligned and the minium level change 
-must exceed 10 cl. This means that a pour needs to be more than this level. It can take up to 60 seconds for a new level to 
-be detected and a pour registered. This means that if you pour a number of glasses quickly, this will be detected as 
-one large pour. 
+To accept a new level, raw and Kalman-filtered values must be sufficiently
+aligned and enough readings must accumulate according to the configured
+stability count. A pour is detected when the stable weight decreases beyond
+the configured decrease threshold. These settings determine the minimum
+detectable change and response time; there is no fixed 10 cl cutoff or fixed
+40-second settling period. Several quick pours can be recorded as one larger
+pour if the scale does not settle between them.
 
 The design is created for 2 kegs but it will work if you only use one (make sure to use the pins for scale 1 in that case). 
 
