@@ -58,7 +58,7 @@ class KegPushHandler : public BasePush {
 
   void pushTempInformation(float tempC, bool isLoop = false);
   void pushPourInformation(UnitIndex idx, float stableVol, float pourVol,
-                           bool isLoop = false);
+                           uint32_t eventTimeMs, bool isLoop = false);
   void pushKegInformation(UnitIndex idx, float stableVol, float pourVol,
                           float glasses, bool isLoop = false);
 

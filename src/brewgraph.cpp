@@ -36,7 +36,7 @@ String BrewGraph::getApiUrl(const char* path) const {
 }
 
 void BrewGraph::sendPourInformation(UnitIndex idx, float pourVol,
-                                    float kegVol) {
+                                    float kegVol, uint32_t eventTimeMs) {
   const uint8_t kegIdx = static_cast<uint8_t>(idx);
   if (strlen(myConfig.getBrewGraphUrl()) == 0 ||
       strlen(myConfig.getBrewGraphToken(kegIdx)) == 0)
@@ -47,6 +47,10 @@ void BrewGraph::sendPourInformation(UnitIndex idx, float pourVol,
   doc["pour"] = pourVol;
   doc["volume"] = kegVol;
   doc["maxVolume"] = myConfig.getKegVolume(idx);
+  char eventId[32];
+  snprintf(eventId, sizeof(eventId), "keg-%u-%lu", kegIdx + 1,
+           static_cast<unsigned long>(eventTimeMs));
+  doc["eventId"] = eventId;
 
   String out;
   out.reserve(120);

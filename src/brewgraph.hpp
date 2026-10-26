@@ -43,7 +43,8 @@ class BrewGraph {
  public:
   explicit BrewGraph(BasePush* push) : _push(push) {}
 
-  void sendPourInformation(UnitIndex idx, float pourVol, float kegVol);
+  void sendPourInformation(UnitIndex idx, float pourVol, float kegVol,
+                           uint32_t eventTimeMs);
   void sendKegInformation(UnitIndex idx, float kegVol);
   bool getBeerInformation(JsonObject& obj, UnitIndex idx);
 
