@@ -55,6 +55,11 @@ void KegConfig::createJson(JsonObject& doc) const {
   doc[PARAM_CHAMBERCTRL_URL] = getChamberCtrlUrl();
 
   doc[PARAM_BREWLOGGER_URL] = getBrewLoggerUrl();
+  doc[PARAM_BREWGRAPH_URL] = getBrewGraphUrl();
+  doc[PARAM_BREWGRAPH_TOKEN1] = getBrewGraphToken(0);
+  doc[PARAM_BREWGRAPH_TOKEN2] = getBrewGraphToken(1);
+  doc[PARAM_BREWGRAPH_TOKEN3] = getBrewGraphToken(2);
+  doc[PARAM_BREWGRAPH_TOKEN4] = getBrewGraphToken(3);
 
   doc[PARAM_BREWSPY_TOKEN1] = getBrewspyToken(UnitIndex::U1);
   doc[PARAM_BREWSPY_TOKEN2] = getBrewspyToken(UnitIndex::U2);
@@ -164,6 +169,17 @@ void KegConfig::parseJson(JsonObject& doc) {
 
   if (!doc[PARAM_BREWLOGGER_URL].isNull())
     setBrewLoggerUrl(doc[PARAM_BREWLOGGER_URL]);
+
+  if (!doc[PARAM_BREWGRAPH_URL].isNull())
+    setBrewGraphUrl(doc[PARAM_BREWGRAPH_URL]);
+  if (!doc[PARAM_BREWGRAPH_TOKEN1].isNull())
+    setBrewGraphToken(0, doc[PARAM_BREWGRAPH_TOKEN1]);
+  if (!doc[PARAM_BREWGRAPH_TOKEN2].isNull())
+    setBrewGraphToken(1, doc[PARAM_BREWGRAPH_TOKEN2]);
+  if (!doc[PARAM_BREWGRAPH_TOKEN3].isNull())
+    setBrewGraphToken(2, doc[PARAM_BREWGRAPH_TOKEN3]);
+  if (!doc[PARAM_BREWGRAPH_TOKEN4].isNull())
+    setBrewGraphToken(3, doc[PARAM_BREWGRAPH_TOKEN4]);
 
   if (!doc[PARAM_BREWSPY_TOKEN1].isNull())
     setBrewspyToken(UnitIndex::U1, doc[PARAM_BREWSPY_TOKEN1]);

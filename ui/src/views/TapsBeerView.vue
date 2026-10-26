@@ -155,6 +155,22 @@
               &nbsp;Fetch from BrewLogger</button
             >&nbsp;
           </template>
+          <template v-if="config.brewgraph_url != '' && config.brewgraph_token1 != ''">
+            <button
+              @click="fetchBrewGraph(1)"
+              type="button"
+              class="btn btn-secondary w-2"
+              :disabled="global.disabled"
+            >
+              <span
+                class="spinner-border spinner-border-sm"
+                role="status"
+                aria-hidden="true"
+                :hidden="!global.disabled"
+              ></span>
+              &nbsp;Fetch from BrewGraph</button
+            >&nbsp;
+          </template>
           <template v-if="config.brewspy_token1 != ''">
             <button
               @click="fetchBrewspy(1)"
@@ -204,6 +220,22 @@
                 :hidden="!global.disabled"
               ></span>
               &nbsp;Fetch from BrewLogger</button
+            >&nbsp;
+          </template>
+          <template v-if="config.brewgraph_url != '' && config.brewgraph_token2 != ''">
+            <button
+              @click="fetchBrewGraph(2)"
+              type="button"
+              class="btn btn-secondary w-2"
+              :disabled="global.disabled"
+            >
+              <span
+                class="spinner-border spinner-border-sm"
+                role="status"
+                aria-hidden="true"
+                :hidden="!global.disabled"
+              ></span>
+              &nbsp;Fetch from BrewGraph</button
             >&nbsp;
           </template>
           <template v-if="config.brewspy_token2 != ''">
@@ -434,6 +466,44 @@ const fetchBrewspy = (tap) => {
     .catch((err) => {
       logError('configStore.sendBrewspyRequest()', err)
       global.messageError = 'Failed to fetch data from brewspy'
+      global.disabled = false
+    })
+}
+
+const fetchBrewGraph = (tap) => {
+  logInfo('TapsBeerView.fetchBrewGraph()', tap)
+
+  global.disabled = true
+  fetch(global.baseURL + 'api/brewgraph/beer', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: global.token },
+    body: JSON.stringify({ tap }),
+    signal: AbortSignal.timeout(global.fetchTimout)
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error(`Request failed with status ${res.status}`)
+      return res.json()
+    })
+    .then((json) => {
+      if (!json.name) throw new Error('BrewGraph returned no beer name')
+
+      if (tap == 1) {
+        config.beer_name1 = json.name
+        config.beer_abv1 = json.abv || 0
+        config.beer_ibu1 = json.ibu || 0
+        config.beer_ebc1 = json.ebc || 0
+      } else if (tap == 2) {
+        config.beer_name2 = json.name
+        config.beer_abv2 = json.abv || 0
+        config.beer_ibu2 = json.ibu || 0
+        config.beer_ebc2 = json.ebc || 0
+      }
+
+      global.disabled = false
+    })
+    .catch((err) => {
+      logError('TapsBeerView.fetchBrewGraph()', err)
+      global.messageError = 'Failed to fetch beer information from BrewGraph'
       global.disabled = false
     })
 }

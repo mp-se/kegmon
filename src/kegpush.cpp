@@ -39,6 +39,7 @@ void KegPushHandler::pushPourInformation(UnitIndex idx, float stableVol,
 
   _ha->sendPourInformation(idx, pourVol);
   _brewLogger->sendPourInformation(idx, pourVol, stableVol);
+  _brewGraph->sendPourInformation(idx, pourVol, stableVol);
 }
 
 void KegPushHandler::pushKegInformation(UnitIndex idx, float stableVol,
@@ -50,6 +51,7 @@ void KegPushHandler::pushKegInformation(UnitIndex idx, float stableVol,
   _ha->sendTapInformation(idx, stableVol, glasses);
   _barhelper->sendKegInformation(idx, stableVol);
   _brewLogger->sendKegInformation(idx, stableVol);
+  _brewGraph->sendKegInformation(idx, stableVol);
 }
 
 // EOF

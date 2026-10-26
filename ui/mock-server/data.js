@@ -19,6 +19,7 @@ export var configData = {
   brewpi_url: "http://192.168.0.23",
   chamberctrl_url: "http://192.168.0.25",
   brewlogger_url: "http://192.168.0.24",
+  brewgraph_url: "http://localhost:8080",
   scale_sensor: 0,
   display_driver: 0,
   pin_display_data: 33,
@@ -48,6 +49,10 @@ export var configData = {
   brewfather_userkey: "", // "Urz3aoQ5KJhaH8883DIXWZlUoHpG42",
   brewspy_token1: "",
   brewspy_token2: "",
+  brewgraph_token1: "mock-brewgraph-token-1",
+  brewgraph_token2: "",
+  brewgraph_token3: "",
+  brewgraph_token4: "",
   barhelper_apikey: '',
   barhelper_monitor1: 'Monitor 1',
   barhelper_monitor2: 'Monitor 2',
@@ -166,6 +171,20 @@ export var statusData = {
       push_age: 288986,
       push_status: false,
       push_code: 0,
+      push_response: "",
+      push_used: false
+  },
+  brewlogger: {
+      push_age: 288986,
+      push_status: false,
+      push_code: 0,
+      push_response: "",
+      push_used: false
+  },
+  brewgraph: {
+      push_age: 0,
+      push_status: true,
+      push_code: 200,
       push_response: "",
       push_used: false
   },
