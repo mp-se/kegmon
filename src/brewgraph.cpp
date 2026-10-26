@@ -23,11 +23,21 @@ SOFTWARE.
  */
 #include <brewgraph.hpp>
 
+#include <ctime>
+
 #include <kegconfig.hpp>
 #include <log.hpp>
 
 constexpr auto BREWGRAPH_API = "/ingest/kegmon";
 constexpr auto BREWGRAPH_BEER_API = "/ingest/kegmon/beer";
+
+namespace {
+constexpr time_t MIN_VALID_EVENT_TIME = 1700000000;
+uint32_t fallbackBootNonce() {
+  static const uint32_t nonce = static_cast<uint32_t>(random(1, 0x7fffffffL));
+  return nonce;
+}
+}  // namespace
 
 String BrewGraph::getApiUrl(const char* path) const {
   String url = myConfig.getBrewGraphUrl();
@@ -47,9 +57,17 @@ void BrewGraph::sendPourInformation(UnitIndex idx, float pourVol,
   doc["pour"] = pourVol;
   doc["volume"] = kegVol;
   doc["maxVolume"] = myConfig.getKegVolume(idx);
-  char eventId[32];
-  snprintf(eventId, sizeof(eventId), "keg-%u-%lu", kegIdx + 1,
-           static_cast<unsigned long>(eventTimeMs));
+  char eventId[48];
+  const time_t now = time(nullptr);
+  if (now >= MIN_VALID_EVENT_TIME) {
+    snprintf(eventId, sizeof(eventId), "keg-%u-%llu-%lu", kegIdx + 1,
+             static_cast<unsigned long long>(now),
+             static_cast<unsigned long>(eventTimeMs));
+  } else {
+    snprintf(eventId, sizeof(eventId), "keg-%u-%lu-%lu", kegIdx + 1,
+             static_cast<unsigned long>(fallbackBootNonce()),
+             static_cast<unsigned long>(eventTimeMs));
+  }
   doc["eventId"] = eventId;
 
   String out;
