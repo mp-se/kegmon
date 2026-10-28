@@ -11,7 +11,7 @@
             v-model="config.brewgraph_url"
             type="url"
             maxlength="120"
-            label="BrewGraph URL"
+            label="Use only the server like http://ingest.brewgraph.com or your local instance"
             :disabled="global.disabled"
           />
         </div>
