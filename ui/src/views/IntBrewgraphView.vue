@@ -33,24 +33,6 @@
             :disabled="global.disabled"
           />
         </div>
-        <div class="col-md-12">
-          <BsInputText
-            v-model="config.brewgraph_token3"
-            type="password"
-            maxlength="120"
-            label="Token keg 3"
-            :disabled="global.disabled"
-          />
-        </div>
-        <div class="col-md-12">
-          <BsInputText
-            v-model="config.brewgraph_token4"
-            type="password"
-            maxlength="120"
-            label="Token keg 4"
-            :disabled="global.disabled"
-          />
-        </div>
       </div>
       <div class="row gy-2">
         <div class="col-md-12">

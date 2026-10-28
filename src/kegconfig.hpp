@@ -31,8 +31,6 @@ constexpr auto PARAM_BREWLOGGER_URL = "brewlogger_url";
 constexpr auto PARAM_BREWGRAPH_URL = "brewgraph_url";
 constexpr auto PARAM_BREWGRAPH_TOKEN1 = "brewgraph_token1";
 constexpr auto PARAM_BREWGRAPH_TOKEN2 = "brewgraph_token2";
-constexpr auto PARAM_BREWGRAPH_TOKEN3 = "brewgraph_token3";
-constexpr auto PARAM_BREWGRAPH_TOKEN4 = "brewgraph_token4";
 constexpr auto PARAM_BREWFATHER_USERKEY = "brewfather_userkey";
 constexpr auto PARAM_BREWFATHER_APIKEY = "brewfather_apikey";
 constexpr auto PARAM_BREWSPY_TOKEN1 = "brewspy_token1";
@@ -183,7 +181,7 @@ class KegConfig : public BaseConfig {
 
   String _brewLoggerUrl = "";
   String _brewGraphUrl = "";
-  String _brewGraphToken[4] = {"", "", "", ""};
+  String _brewGraphToken[2] = {"", ""};
 
   DisplayLayoutType _displayLayout = DisplayLayoutType::Default;
   TempSensorType _tempSensor = TempSensorType::SensorDS18B20;
@@ -273,11 +271,11 @@ class KegConfig : public BaseConfig {
   }
 
   const char* getBrewGraphToken(uint8_t idx) const {
-    if (idx >= 4) return "";
+    if (idx >= 2) return "";
     return _brewGraphToken[idx].c_str();
   }
   void setBrewGraphToken(uint8_t idx, String s) {
-    if (idx >= 4) return;
+    if (idx >= 2) return;
     _brewGraphToken[idx] = s;
     _saveNeeded = true;
   }

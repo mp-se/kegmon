@@ -55,8 +55,6 @@ export const useConfigStore = defineStore('config', {
       brewgraph_url: '',
       brewgraph_token1: '',
       brewgraph_token2: '',
-      brewgraph_token3: '',
-      brewgraph_token4: '',
       // Push - Http Post 1
       http_post_target: '',
       http_post_header1: '',
@@ -193,8 +191,6 @@ export const useConfigStore = defineStore('config', {
           this.brewgraph_url = json.brewgraph_url
           this.brewgraph_token1 = json.brewgraph_token1
           this.brewgraph_token2 = json.brewgraph_token2
-          this.brewgraph_token3 = json.brewgraph_token3
-          this.brewgraph_token4 = json.brewgraph_token4
           // Push - Http Post 1
           this.http_post_target = json.http_post_target
           this.http_post_header1 = json.http_post_header1

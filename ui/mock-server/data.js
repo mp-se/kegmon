@@ -51,8 +51,6 @@ export var configData = {
   brewspy_token2: "",
   brewgraph_token1: "mock-brewgraph-token-1",
   brewgraph_token2: "",
-  brewgraph_token3: "",
-  brewgraph_token4: "",
   barhelper_apikey: '',
   barhelper_monitor1: 'Monitor 1',
   barhelper_monitor2: 'Monitor 2',

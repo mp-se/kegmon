@@ -245,9 +245,8 @@ configured keg. KegMon uses the corresponding token when sending stable volume
 and pour updates, and when fetching beer details from the **Taps → Beers**
 page. The URL is saved without trailing slashes.
 
-KegMon currently has two physical scale/tap channels (Keg 1 and Keg 2). The UI
-also exposes token fields for Keg 3 and Keg 4 for future/service-side use;
-those fields do not create additional physical measurement channels.
+KegMon supports two physical scale/tap channels (Keg 1 and Keg 2), so the UI
+provides one token field for each supported keg.
 
 
 Serial console
