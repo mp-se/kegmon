@@ -58,9 +58,11 @@ class KegPushHandler : public BasePush {
 
   void pushTempInformation(float tempC, bool isLoop = false);
   void pushPourInformation(UnitIndex idx, float stableVol, float pourVol,
-                           uint32_t eventTimeMs, bool isLoop = false);
+                           uint32_t eventTimeMs, bool isLoop = false,
+                           float temperature = NAN);
   void pushKegInformation(UnitIndex idx, float stableVol, float pourVol,
-                          float glasses, bool isLoop = false);
+                          float glasses, bool isLoop = false,
+                          float temperature = NAN);
 
   Brewspy* getBrewspy() { return _brewspy; }
   HomeAssist* getHomeAssist() { return _ha; }

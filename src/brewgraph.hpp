@@ -44,8 +44,9 @@ class BrewGraph {
   explicit BrewGraph(BasePush* push) : _push(push) {}
 
   void sendPourInformation(UnitIndex idx, float pourVol, float kegVol,
-                           uint32_t eventTimeMs);
-  void sendKegInformation(UnitIndex idx, float kegVol);
+                           uint32_t eventTimeMs, float temperature = NAN);
+  void sendKegInformation(UnitIndex idx, float kegVol,
+                          float temperature = NAN);
   bool getBeerInformation(JsonObject& obj, UnitIndex idx);
 
   bool hasRun() const { return _hasRun; }

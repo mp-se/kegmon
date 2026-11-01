@@ -7,6 +7,7 @@ v1.3.0
 ======
 
 * Added BrewGraph integration for keg pour and level data.
+* Included the current temperature reading in BrewGraph pour and level updates.
 * Added BrewGraph configuration and status information to the web interface.
 * Added time-based BrewGraph pour event IDs, with a randomized uptime fallback when time is unavailable, to prevent duplicate records on retry.
 * Updated dependencies and improved loop timer handling.

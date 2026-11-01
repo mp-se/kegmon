@@ -212,13 +212,15 @@ void loop() {
         myPush.pushKegInformation(
             UnitIndex::U1, myLevelDetection.getBeerStableVolume(UnitIndex::U1),
             myLevelDetection.getPourVolume(UnitIndex::U1),
-            myLevelDetection.getNoStableGlasses(UnitIndex::U1), true);
+            myLevelDetection.getNoStableGlasses(UnitIndex::U1), true,
+            myTemp.getLastTempC());
 
       if (myLevelDetection.hasStableWeight(UnitIndex::U2))
         myPush.pushKegInformation(
             UnitIndex::U2, myLevelDetection.getBeerStableVolume(UnitIndex::U2),
             myLevelDetection.getPourVolume(UnitIndex::U2),
-            myLevelDetection.getNoStableGlasses(UnitIndex::U2), true);
+            myLevelDetection.getNoStableGlasses(UnitIndex::U2), true,
+            myTemp.getLastTempC());
     }
 
     // Try to reconnect to scales if they are missing (60 seconds)

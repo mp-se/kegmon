@@ -70,11 +70,11 @@ void LevelDetection::update(UnitIndex idx, float raw, float temp) {
       raw, getRawDetection(idx)->getKalmanValue());
 
   if (getStatsDetection(idx)->newPourValue())
-    pushPourUpdate(idx, getBeerStableVolume(idx), getPourVolume(idx));
+    pushPourUpdate(idx, getBeerStableVolume(idx), getPourVolume(idx), temp);
 
   if (getStatsDetection(idx)->newStableValue())
     pushKegUpdate(idx, getBeerStableVolume(idx), getPourVolume(idx),
-                  getNoStableGlasses(idx));
+                  getNoStableGlasses(idx), temp);
   PERF_END("level-filter-stats");
 
   Log.verbose(F("LVL : raw=%F, ave=%F, temp=%F, stat=%F, slope=%F [%d]." CR),
@@ -82,8 +82,10 @@ void LevelDetection::update(UnitIndex idx, float raw, float temp) {
 }
 
 void LevelDetection::pushKegUpdate(UnitIndex idx, float stableVol,
-                                   float pourVol, float glasses) {
-  myPush.pushKegInformation(idx, stableVol, pourVol, glasses);
+                                   float pourVol, float glasses,
+                                   float temperature) {
+  myPush.pushKegInformation(idx, stableVol, pourVol, glasses, false,
+                             temperature);
   // Log.notice(F("LEVL: New level found: vol=%F, pour=%F [%d]." CR), stableVol,
   // pourVol, idx);
 
@@ -99,8 +101,9 @@ void LevelDetection::pushKegUpdate(UnitIndex idx, float stableVol,
 }
 
 void LevelDetection::pushPourUpdate(UnitIndex idx, float stableVol,
-                                    float pourVol) {
-  myPush.pushPourInformation(idx, stableVol, pourVol, millis());
+                                    float pourVol, float temperature) {
+  myPush.pushPourInformation(idx, stableVol, pourVol, millis(), false,
+                             temperature);
   // Log.notice(F("LEVL: New pour found: vol=%F, pour=%F [%d]." CR), stableVol,
   // pourVol, idx);
 

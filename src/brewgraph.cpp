@@ -46,7 +46,8 @@ String BrewGraph::getApiUrl(const char* path) const {
 }
 
 void BrewGraph::sendPourInformation(UnitIndex idx, float pourVol,
-                                    float kegVol, uint32_t eventTimeMs) {
+                                    float kegVol, uint32_t eventTimeMs,
+                                    float temperature) {
   const uint8_t kegIdx = static_cast<uint8_t>(idx);
   if (strlen(myConfig.getBrewGraphUrl()) == 0 ||
       strlen(myConfig.getBrewGraphToken(kegIdx)) == 0)
@@ -57,6 +58,7 @@ void BrewGraph::sendPourInformation(UnitIndex idx, float pourVol,
   doc["pour"] = pourVol;
   doc["volume"] = kegVol;
   doc["maxVolume"] = myConfig.getKegVolume(idx);
+  if (!isnan(temperature)) doc["temperature"] = temperature;
   char eventId[48];
   const time_t now = time(nullptr);
   if (now >= MIN_VALID_EVENT_TIME) {
@@ -74,6 +76,11 @@ void BrewGraph::sendPourInformation(UnitIndex idx, float pourVol,
   out.reserve(120);
   serializeJson(doc, out);
 
+  String logPayload;
+  serializeJson(doc, logPayload);
+  Log.notice(F("BGRF: Pour payload for keg %d: %s" CR), kegIdx + 1,
+             logPayload.c_str());
+
   Log.notice(F("BGRF: Sending pour information for keg %d." CR), kegIdx + 1);
   const String response = _push->sendHttpPost(
       out, getApiUrl(BREWGRAPH_API).c_str(), "Content-Type: application/json",
@@ -82,7 +89,8 @@ void BrewGraph::sendPourInformation(UnitIndex idx, float pourVol,
   Log.info(F("BGRF: Response code %d." CR), _lastHttpError);
 }
 
-void BrewGraph::sendKegInformation(UnitIndex idx, float kegVol) {
+void BrewGraph::sendKegInformation(UnitIndex idx, float kegVol,
+                                   float temperature) {
   const uint8_t kegIdx = static_cast<uint8_t>(idx);
   if (strlen(myConfig.getBrewGraphUrl()) == 0 ||
       strlen(myConfig.getBrewGraphToken(kegIdx)) == 0)
@@ -92,10 +100,16 @@ void BrewGraph::sendKegInformation(UnitIndex idx, float kegVol) {
   doc["token"] = myConfig.getBrewGraphToken(kegIdx);
   doc["volume"] = kegVol;
   doc["maxVolume"] = myConfig.getKegVolume(idx);
+  if (!isnan(temperature)) doc["temperature"] = temperature;
 
   String out;
   out.reserve(100);
   serializeJson(doc, out);
+
+  String logPayload;
+  serializeJson(doc, logPayload);
+  Log.notice(F("BGRF: Level payload for keg %d: %s" CR), kegIdx + 1,
+             logPayload.c_str());
 
   Log.notice(F("BGRF: Sending level information for keg %d." CR), kegIdx + 1);
   const String response = _push->sendHttpPost(
@@ -117,6 +131,11 @@ bool BrewGraph::getBeerInformation(JsonObject& obj, UnitIndex idx) {
   String payload;
   payload.reserve(80);
   serializeJson(request, payload);
+
+  String logPayload;
+  serializeJson(request, logPayload);
+  Log.notice(F("BGRF: Beer request payload for keg %d: %s" CR), kegIdx + 1,
+             logPayload.c_str());
 
   Log.notice(F("BGRF: Requesting beer information for keg %d." CR),
              kegIdx + 1);
