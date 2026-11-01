@@ -490,13 +490,13 @@ const fetchBrewGraph = (tap) => {
       if (tap == 1) {
         config.beer_name1 = json.name
         config.beer_abv1 = json.abv || 0
-        config.beer_ibu1 = json.ibu || 0
-        config.beer_ebc1 = json.ebc || 0
+        config.beer_ibu1 = Math.round(Number(json.ibu) || 0)
+        config.beer_ebc1 = Math.round(Number(json.ebc) || 0)
       } else if (tap == 2) {
         config.beer_name2 = json.name
         config.beer_abv2 = json.abv || 0
-        config.beer_ibu2 = json.ibu || 0
-        config.beer_ebc2 = json.ebc || 0
+        config.beer_ibu2 = Math.round(Number(json.ibu) || 0)
+        config.beer_ebc2 = Math.round(Number(json.ebc) || 0)
       }
 
       global.disabled = false
