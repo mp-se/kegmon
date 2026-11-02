@@ -55,9 +55,10 @@ void BrewGraph::sendPourInformation(UnitIndex idx, float pourVol,
 
   JsonDocument doc;
   doc["token"] = myConfig.getBrewGraphToken(kegIdx);
-  doc["pour"] = pourVol;
-  doc["volume"] = kegVol;
-  doc["maxVolume"] = myConfig.getKegVolume(idx);
+  if (!isnan(pourVol)) doc["pour"] = pourVol;
+  if (!isnan(kegVol)) doc["volume"] = kegVol;
+  const float maxVolume = myConfig.getKegVolume(idx);
+  if (!isnan(maxVolume)) doc["maxVolume"] = maxVolume;
   if (!isnan(temperature)) doc["temperature"] = temperature;
   char eventId[48];
   const time_t now = time(nullptr);
@@ -98,8 +99,9 @@ void BrewGraph::sendKegInformation(UnitIndex idx, float kegVol,
 
   JsonDocument doc;
   doc["token"] = myConfig.getBrewGraphToken(kegIdx);
-  doc["volume"] = kegVol;
-  doc["maxVolume"] = myConfig.getKegVolume(idx);
+  if (!isnan(kegVol)) doc["volume"] = kegVol;
+  const float maxVolume = myConfig.getKegVolume(idx);
+  if (!isnan(maxVolume)) doc["maxVolume"] = maxVolume;
   if (!isnan(temperature)) doc["temperature"] = temperature;
 
   String out;
