@@ -32,15 +32,20 @@ The main features
 
 * **Pour detection**
 
-  Can detect when a beer is poured. Needs to be more than 10 cl and there needs to be a stable level of approx 40 seconds after the pour.
+  Detects a decrease in the stable keg weight and reports the difference as a
+  pour. Detection uses configurable deviation and stability thresholds; the
+  firmware does not apply a fixed 10 cl minimum or fixed 40-second delay.
 
 * **Estimating remaning glasses/pints**
 
   Based on weight and final gravity the remaning volume can be calculated. The weight of the empty keg can be entered so that this is removed from the masurement. 
 
-* **Integration with Home Assistant**
+* **Integrations**
 
-  Data can be sent to home assistant to show current beers, last pour, remaning glasses etc.
+  Keg levels and pour events can be sent to Home Assistant, BrewSpy,
+  BrewLogger, BrewGraph, and Barhelper. InfluxDB v2 can receive scale and
+  diagnostic readings. Brewfather, BrewSpy, and BrewGraph can also provide beer
+  details for the tap list; available features differ by service.
 
 * **Integration with BrewSpy**
 
@@ -52,7 +57,10 @@ The main features
 
 * **Load cell temperature compensation**
 
-  Formula can be added to do temperature compensation for each loadcell.
+  A formula can be configured separately for each scale using the measured
+  weight (``weight``), temperature in Celsius (``tempC``), and temperature in
+  Fahrenheit (``tempF``). The formula result is used as the filtered weight
+  when it evaluates successfully.
 
 * **Easy software updates**
 
@@ -60,7 +68,9 @@ The main features
 
 * **Temperature & Humidity sensor**
 
-  Place a temperature sensor close to the base, this can be used to do temperature adjustments of the load cells using a formula. Supports either a DS18B20, BME280 or a DHT22.
+  Temperature readings can feed the scale compensation formula. Supported
+  local sensors include DS18B20, BME280, and DHT22; a BrewPi-ESP temperature
+  source is also available in supported builds.
 
 * **Backup and Restore of settings**
 
