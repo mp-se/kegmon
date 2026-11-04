@@ -46,8 +46,9 @@ class LevelDetection {
   void logLevels(float kegVolume1, float kegVolume2, float pourVolume1,
                  float pourVolume2);
   void pushKegUpdate(UnitIndex idx, float stableVol, float pourVol,
-                     float glasses);
-  void pushPourUpdate(UnitIndex idx, float stableVol, float pourVol);
+                     float glasses, float temperature);
+  void pushPourUpdate(UnitIndex idx, float stableVol, float pourVol,
+                      float temperature);
 
  public:
   LevelDetection();

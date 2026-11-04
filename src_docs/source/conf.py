@@ -18,11 +18,11 @@
 # -- Project information -----------------------------------------------------
 
 project = 'KegMon'
-copyright = '2022-2025, Magnus Persson'
+copyright = '2022-2026, Magnus Persson'
 author = 'Magnus Persson'
 
 # The full version, including alpha/beta/rc tags
-release = '1.2.0'
+release = '1.3.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -47,14 +47,16 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'furo'
+html_theme = 'shibuya'
 html_logo = "images/kegmon_logo.png"
+html_favicon = "images/kegmon_logo_s.png"
 html_title = "Kegmon v1.2.0"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+html_css_files = ['custom.css']
 
 html_show_sourcelink = False
 html_show_sphinx = True

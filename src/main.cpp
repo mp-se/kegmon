@@ -26,6 +26,7 @@ SOFTWARE.
 #include <kegconfig.hpp>
 #include <kegpush.hpp>
 #include <kegwebhandler.hpp>
+#include <looptimer.hpp>
 #include <main.hpp>
 #include <ota.hpp>
 #include <perf.hpp>
@@ -61,9 +62,8 @@ TempSensorManager myTemp;
 SerialWebSocket mySerialWebSocket;
 DisplayLayout myDisplayLayout;
 
-const int loopInterval = 2000;
-int loopCounter = 0;
-uint32_t loopMillis = 0;
+constexpr uint32_t LOOP_INTERVAL = 2000;
+LoopTimer loopTimer(LOOP_INTERVAL);
 
 RunMode runMode = RunMode::normalMode;
 
@@ -198,10 +198,9 @@ void loop() {
   myScale.loop(UnitIndex::U1);
   myScale.loop(UnitIndex::U2);
 
-  if (abs(static_cast<int32_t>((millis() - loopMillis))) >
-      loopInterval) {  // 2 seconds loop interval
-    loopMillis = millis();
-    loopCounter++;
+  if (loopTimer.hasExpired()) {  // 2 seconds loop interval
+    loopTimer.reset();
+    const uint64_t loopCounter = loopTimer.getLoopCounter();
 
     // Send updates to push targets at regular intervals (300 seconds / 5min)
     if (!(loopCounter % 300)) {
@@ -213,13 +212,15 @@ void loop() {
         myPush.pushKegInformation(
             UnitIndex::U1, myLevelDetection.getBeerStableVolume(UnitIndex::U1),
             myLevelDetection.getPourVolume(UnitIndex::U1),
-            myLevelDetection.getNoStableGlasses(UnitIndex::U1), true);
+            myLevelDetection.getNoStableGlasses(UnitIndex::U1), true,
+            myTemp.getLastTempC());
 
       if (myLevelDetection.hasStableWeight(UnitIndex::U2))
         myPush.pushKegInformation(
             UnitIndex::U2, myLevelDetection.getBeerStableVolume(UnitIndex::U2),
             myLevelDetection.getPourVolume(UnitIndex::U2),
-            myLevelDetection.getNoStableGlasses(UnitIndex::U2), true);
+            myLevelDetection.getNoStableGlasses(UnitIndex::U2), true,
+            myTemp.getLastTempC());
     }
 
     // Try to reconnect to scales if they are missing (60 seconds)

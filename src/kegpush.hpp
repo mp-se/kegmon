@@ -26,6 +26,7 @@ SOFTWARE.
 
 #include <barhelper.hpp>
 #include <basepush.hpp>
+#include <brewgraph.hpp>
 #include <brewlogger.hpp>
 #include <brewspy.hpp>
 #include <homeassist.hpp>
@@ -37,6 +38,7 @@ class KegPushHandler : public BasePush {
   HomeAssist* _ha = NULL;
   Barhelper* _barhelper = NULL;
   BrewLogger* _brewLogger = NULL;
+  BrewGraph* _brewGraph = NULL;
 
  public:
   explicit KegPushHandler(KegConfig* config) : BasePush(config) {
@@ -44,22 +46,29 @@ class KegPushHandler : public BasePush {
     _ha = new HomeAssist(this);
     _barhelper = new Barhelper(this);
     _brewLogger = new BrewLogger(this);
+    _brewGraph = new BrewGraph(this);
   }
 
   void requestTapInfoFromBrewspy(JsonObject& obj, String token) {
     _brewspy->getTapInformation(obj, token);
   }
+  bool requestBeerInfoFromBrewGraph(JsonObject& obj, UnitIndex idx) {
+    return _brewGraph->getBeerInformation(obj, idx);
+  }
 
   void pushTempInformation(float tempC, bool isLoop = false);
   void pushPourInformation(UnitIndex idx, float stableVol, float pourVol,
-                           bool isLoop = false);
+                           uint32_t eventTimeMs, bool isLoop = false,
+                           float temperature = NAN);
   void pushKegInformation(UnitIndex idx, float stableVol, float pourVol,
-                          float glasses, bool isLoop = false);
+                          float glasses, bool isLoop = false,
+                          float temperature = NAN);
 
   Brewspy* getBrewspy() { return _brewspy; }
   HomeAssist* getHomeAssist() { return _ha; }
   Barhelper* getBarHelper() { return _barhelper; }
   BrewLogger* getBrewLogger() { return _brewLogger; }
+  BrewGraph* getBrewGraph() { return _brewGraph; }
 };
 
 extern KegPushHandler myPush;

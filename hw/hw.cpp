@@ -25,6 +25,7 @@ SOFTWARE.
 #include <kegconfig.hpp>
 #include <kegpush.hpp>
 #include <kegwebhandler.hpp>
+#include <looptimer.hpp>
 #include <main.hpp>
 #include <ota.hpp>
 #include <perf.hpp>
@@ -42,9 +43,8 @@ Scale myScale;
 LevelDetection myLevelDetection;
 TempSensorManager myTemp;
 
-const int loopInterval = 2000;
-int loopCounter = 0;
-uint32_t loopMillis = 0;
+constexpr uint32_t LOOP_INTERVAL = 2000;
+LoopTimer loopTimer(LOOP_INTERVAL);
 
 void setup() {
 #if defined(ESP8266)
@@ -116,10 +116,9 @@ void loop() {
   myScale.loop(UnitIndex::U1);
   myScale.loop(UnitIndex::U2);
 
-  if (abs((int32_t)(millis() - loopMillis)) >
-      loopInterval) {  // 2 seconds loop interval
-    loopMillis = millis();
-    loopCounter++;
+  if (loopTimer.hasExpired()) {  // 2 seconds loop interval
+    loopTimer.reset();
+    const uint64_t loopCounter = loopTimer.getLoopCounter();
 
     // Try to reconnect to scales if they are missing (6 seconds)
     if (!(loopCounter % 3)) {

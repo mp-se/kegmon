@@ -26,6 +26,7 @@ SOFTWARE.
 #include <kegpush.hpp>
 #include <kegwebhandler.hpp>
 #include <levels.hpp>
+#include <looptimer.hpp>
 #include <main.hpp>
 #include <scale.hpp>
 #include <temp_mgr.hpp>
@@ -94,6 +95,7 @@ constexpr auto PARAM_HOMEASSISTANT = "ha";
 constexpr auto PARAM_BARHELPER = "barhelper";
 constexpr auto PARAM_BREWSPY = "brewspy";
 constexpr auto PARAM_BREWLOGGER = "brewlogger";
+constexpr auto PARAM_BREWGRAPH = "brewgraph";
 constexpr auto PARAM_PUSH_USED = "push_used";
 constexpr auto PARAM_PUSH_AGE = "push_age";
 constexpr auto PARAM_PUSH_STATUS = "push_status";
@@ -121,6 +123,11 @@ void KegWebHandler::setupWebHandlers() {
       "/api/scale/tare",
       std::bind(&KegWebHandler::webScaleTare, this, std::placeholders::_1,
                 std::placeholders::_2));
+  _server->addHandler(handler);
+  handler = new AsyncCallbackJsonWebHandler(
+      "/api/brewgraph/beer",
+      std::bind(&KegWebHandler::webHandleBrewGraph, this,
+                std::placeholders::_1, std::placeholders::_2));
   _server->addHandler(handler);
   handler = new AsyncCallbackJsonWebHandler(
       "/api/scale/factor",
@@ -258,6 +265,31 @@ void KegWebHandler::webHandleBrewspy(AsyncWebServerRequest *request,
   AsyncJsonResponse *response = new AsyncJsonResponse(false);
   JsonObject obj2 = response->getRoot().as<JsonObject>();
   myPush.requestTapInfoFromBrewspy(obj2, obj[PARAM_TOKEN]);
+  response->setLength();
+  request->send(response);
+}
+
+void KegWebHandler::webHandleBrewGraph(AsyncWebServerRequest *request,
+                                       JsonVariant &json) {
+  if (!isAuthenticated(request)) {
+    return;
+  }
+
+  const uint8_t tap = json["tap"] | 0;
+  if (tap < 1 || tap > 2) {
+    request->send(400, "application/json", "{\"error\":\"Invalid tap\"}");
+    return;
+  }
+
+  AsyncJsonResponse* response = new AsyncJsonResponse(false);
+  JsonObject obj = response->getRoot().as<JsonObject>();
+  if (!myPush.requestBeerInfoFromBrewGraph(obj,
+                                            static_cast<UnitIndex>(tap - 1))) {
+    delete response;
+    request->send(502, "application/json",
+                  "{\"error\":\"BrewGraph lookup failed\"}");
+    return;
+  }
   response->setLength();
   request->send(response);
 }
@@ -499,8 +531,7 @@ void KegWebHandler::webStatus(AsyncWebServerRequest *request) {
   if (myConfig.hasTargetMqtt()) {
     JsonObject o = obj[PARAM_HOMEASSISTANT].to<JsonObject>();
     HomeAssist *ha = myPush.getHomeAssist();
-    o[PARAM_PUSH_AGE] =
-        abs(static_cast<int32_t>((millis() - ha->getLastTimeStamp())));
+    o[PARAM_PUSH_AGE] = LoopTimer::elapsedMillis(ha->getLastTimeStamp());
     o[PARAM_PUSH_STATUS] = ha->getLastStatus();
     o[PARAM_PUSH_CODE] = ha->getLastError();
     o[PARAM_PUSH_RESPONSE] = "";
@@ -511,8 +542,7 @@ void KegWebHandler::webStatus(AsyncWebServerRequest *request) {
   if (strlen(myConfig.getBarhelperApiKey()) > 0) {
     JsonObject o = obj[PARAM_BARHELPER].to<JsonObject>();
     Barhelper *bar = myPush.getBarHelper();
-    o[PARAM_PUSH_AGE] =
-        abs(static_cast<int32_t>((millis() - bar->getLastTimeStamp())));
+    o[PARAM_PUSH_AGE] = LoopTimer::elapsedMillis(bar->getLastTimeStamp());
     o[PARAM_PUSH_STATUS] = bar->getLastStatus();
     o[PARAM_PUSH_CODE] = bar->getLastError();
     o[PARAM_PUSH_RESPONSE] = bar->getLastResponse();
@@ -523,12 +553,23 @@ void KegWebHandler::webStatus(AsyncWebServerRequest *request) {
   if (strlen(myConfig.getBrewLoggerUrl()) > 0) {
     JsonObject o = obj[PARAM_BREWLOGGER].to<JsonObject>();
     BrewLogger *blog = myPush.getBrewLogger();
-    o[PARAM_PUSH_AGE] =
-        abs(static_cast<int32_t>((millis() - blog->getLastTimeStamp())));
+    o[PARAM_PUSH_AGE] = LoopTimer::elapsedMillis(blog->getLastTimeStamp());
     o[PARAM_PUSH_STATUS] = blog->getLastStatus();
     o[PARAM_PUSH_CODE] = blog->getLastError();
     o[PARAM_PUSH_RESPONSE] = blog->getLastResponse();
     o[PARAM_PUSH_USED] = blog->hasRun();
+  }
+
+  // BrewGraph
+  if (strlen(myConfig.getBrewGraphUrl()) > 0) {
+    JsonObject o = obj[PARAM_BREWGRAPH].to<JsonObject>();
+    BrewGraph* brewGraph = myPush.getBrewGraph();
+    o[PARAM_PUSH_AGE] =
+        LoopTimer::elapsedMillis(brewGraph->getLastTimeStamp());
+    o[PARAM_PUSH_STATUS] = brewGraph->getLastStatus();
+    o[PARAM_PUSH_CODE] = brewGraph->getLastError();
+    o[PARAM_PUSH_RESPONSE] = brewGraph->getLastResponse();
+    o[PARAM_PUSH_USED] = brewGraph->hasRun();
   }
 
   // Brewspy
@@ -536,8 +577,7 @@ void KegWebHandler::webStatus(AsyncWebServerRequest *request) {
       strlen(myConfig.getBrewspyToken(UnitIndex::U2)) > 0) {
     JsonObject o = obj[PARAM_BREWSPY].to<JsonObject>();
     Brewspy *brew = myPush.getBrewspy();
-    o[PARAM_PUSH_AGE] =
-        abs(static_cast<int32_t>((millis() - brew->getLastTimeStamp())));
+    o[PARAM_PUSH_AGE] = LoopTimer::elapsedMillis(brew->getLastTimeStamp());
     o[PARAM_PUSH_STATUS] = brew->getLastStatus();
     o[PARAM_PUSH_CODE] = brew->getLastError();
     o[PARAM_PUSH_RESPONSE] = brew->getLastResponse();
